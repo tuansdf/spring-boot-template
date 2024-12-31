@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
@@ -22,11 +23,26 @@ public class User {
     @Column(name = "username")
     private String username;
 
+    @Column(name = "created_at")
+    private ZonedDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private ZonedDateTime updatedAt;
+
     @PrePersist
     private void prePersist() {
+        ZonedDateTime now = ZonedDateTime.now();
         if (id == null) {
             id = UUIDUtils.generateId();
         }
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        ZonedDateTime now = ZonedDateTime.now();
+        updatedAt = now;
     }
 
 }
