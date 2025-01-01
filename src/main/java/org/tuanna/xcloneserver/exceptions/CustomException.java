@@ -1,11 +1,13 @@
 package org.tuanna.xcloneserver.exceptions;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public class CustomException extends Exception {
@@ -15,6 +17,11 @@ public class CustomException extends Exception {
     public CustomException(String message) {
         super(message);
         this.status = HttpStatus.INTERNAL_SERVER_ERROR;
+    }
+
+    public CustomException(HttpStatus status) {
+        super(status.getReasonPhrase());
+        this.status = status;
     }
 
     public CustomException(String message, HttpStatus status) {

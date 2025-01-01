@@ -34,9 +34,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     implementation 'io.lettuce:lettuce-core:6.5.1.RELEASE'
-    implementation 'com.auth0:java-jwt:4.4.0'
     implementation 'com.google.guava:guava:33.4.0-jre'
     implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.0'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'

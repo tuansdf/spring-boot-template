@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
 
+import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
@@ -16,7 +17,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "_user")
-public class User {
+public class User implements Serializable {
 
     @Id
     @Column(name = "id", columnDefinition = "uuid")
