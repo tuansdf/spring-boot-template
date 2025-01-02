@@ -27,13 +27,14 @@ public class JWTPayload implements Serializable {
     @JsonProperty("exp")
     private Instant expiresAt;
 
+    @JsonProperty("typ")
+    private String type;
+    @JsonProperty("tid")
+    private String tokenId;
+
     @JsonProperty("sid")
     private String subjectId;
     @JsonProperty("per")
     private List<String> permissions;
-    @JsonProperty("tid")
-    private String tokenId;
-    @JsonProperty("typ")
-    private String type;
 
 }

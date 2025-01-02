@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.Envs;
+import org.tuanna.xcloneserver.constants.TokenTypes;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.utils.Base64Utils;
 
@@ -53,6 +54,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(envs.getJwtAccessLifetime()));
+        jwtPayload.setType(TokenTypes.REFRESH);
         return create(jwtPayload);
     }
 
@@ -62,6 +64,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(envs.getJwtRefreshLifetime()));
+        jwtPayload.setType(TokenTypes.REFRESH);
         return create(jwtPayload);
     }
 
