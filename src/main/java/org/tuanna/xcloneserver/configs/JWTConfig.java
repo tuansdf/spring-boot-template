@@ -1,4 +1,4 @@
-package org.tuanna.xcloneserver.modules.jwt;
+package org.tuanna.xcloneserver.configs;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
