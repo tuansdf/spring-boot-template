@@ -1,4 +1,4 @@
-package org.tuanna.xcloneserver.modules.auth;
+package org.tuanna.xcloneserver.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
+import org.tuanna.xcloneserver.modules.auth.AuthService;
 import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
 import org.tuanna.xcloneserver.utils.ExceptionUtils;
