@@ -1,4 +1,4 @@
-package org.tuanna.xcloneserver.modules.auth;
+package org.tuanna.xcloneserver.modules.auth.dtos;
 
 import lombok.*;
 

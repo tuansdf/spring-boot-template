@@ -11,10 +11,10 @@ import org.tuanna.xcloneserver.constants.PermissionCode;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("private")
+@RequestMapping("/private")
 public class PrivateController {
 
-    @GetMapping("health")
+    @GetMapping("/health")
     @Secured({PermissionCode.ADMIN})
     public String check() {
         return "OK";

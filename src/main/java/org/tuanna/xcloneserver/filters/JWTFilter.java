@@ -45,12 +45,15 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
 
+            boolean isValid = true;
             if (!Strings.isNullOrEmpty(jwtPayload.getTokenId())) {
-                boolean isValid = tokenService.validateTokenById(CommonUtils.safeToUUID(jwtPayload.getTokenId()), TokenType.REFRESH);
-                if (!isValid) {
-                    chain.doFilter(servletRequest, servletResponse);
-                    return;
-                }
+                isValid = tokenService.validateTokenById(CommonUtils.safeToUUID(jwtPayload.getTokenId()), TokenType.REFRESH);
+            } else {
+                isValid = TokenType.ACCESS.equals(jwtPayload.getType());
+            }
+            if (!isValid) {
+                chain.doFilter(servletRequest, servletResponse);
+                return;
             }
 
             AuthUtils.setAuthentication(jwtPayload);

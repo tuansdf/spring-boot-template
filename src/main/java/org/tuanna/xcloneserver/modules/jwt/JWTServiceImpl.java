@@ -42,7 +42,7 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public String createAccessToken(JWTPayload jwtPayload) {
+    public String createAccessJwt(JWTPayload jwtPayload) {
         Instant now = Instant.now();
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);

@@ -6,7 +6,7 @@ public interface JWTService {
 
     String create(JWTPayload payload);
 
-    String createAccessToken(JWTPayload payload);
+    String createAccessJwt(JWTPayload payload);
 
     String createRefreshToken(JWTPayload payload);
 

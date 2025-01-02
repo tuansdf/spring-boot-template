@@ -41,15 +41,15 @@ public class TokenServiceImpl implements TokenService {
         }
 
         Token token = tokenOptional.get();
-        boolean isCorrectType = !Strings.isNullOrEmpty(type) && type.equals(token.getType());
+        boolean isTypeCorrect = !Strings.isNullOrEmpty(type) && type.equals(token.getType());
         boolean hasValue = !Strings.isNullOrEmpty(token.getValue());
         boolean isExpired = token.getExpiresAt().isAfter(now);
         boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
-        return isCorrectType && hasValue && isExpired && isActive;
+        return isTypeCorrect && hasValue && isExpired && isActive;
     }
 
     @Override
-    public Token createJwtRefreshToken(JWTPayload jwtPayload) {
+    public Token createRefreshJwt(JWTPayload jwtPayload) {
         UUID id = UUIDUtils.generateId();
         jwtPayload.setTokenId(id.toString());
         String jwt = jwtService.createRefreshToken(jwtPayload);

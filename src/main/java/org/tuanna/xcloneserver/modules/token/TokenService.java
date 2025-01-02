@@ -9,5 +9,5 @@ public interface TokenService {
 
     boolean validateTokenById(UUID id, String type);
 
-    Token createJwtRefreshToken(JWTPayload jwtPayload);
+    Token createRefreshJwt(JWTPayload jwtPayload);
 }
