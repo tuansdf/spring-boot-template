@@ -4,15 +4,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.CollectionUtils;
 import org.tuanna.xcloneserver.modules.auth.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
+
+import java.util.ArrayList;
 
 public class AuthUtils {
 
     public static void setAuthentication(JWTPayload jwtPayload) {
-        if (jwtPayload == null || CollectionUtils.isEmpty(jwtPayload.getPermissions())) {
+        if (jwtPayload == null) {
             return;
+        }
+        if (jwtPayload.getPermissions() == null) {
+            jwtPayload.setPermissions(new ArrayList<>());
         }
         AuthenticationPrincipal principal = AuthenticationPrincipal.builder()
                 .userId(jwtPayload.getSubjectId())

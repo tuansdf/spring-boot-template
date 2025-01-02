@@ -12,7 +12,7 @@ import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.tuanna.xcloneserver.constants.Constants;
-import org.tuanna.xcloneserver.constants.TokenTypes;
+import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.token.TokenService;
@@ -46,7 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             if (!Strings.isNullOrEmpty(jwtPayload.getTokenId())) {
-                boolean isValid = tokenService.validateTokenById(CommonUtils.safeToUUID(jwtPayload.getTokenId()), TokenTypes.REFRESH);
+                boolean isValid = tokenService.validateTokenById(CommonUtils.safeToUUID(jwtPayload.getTokenId()), TokenType.REFRESH);
                 if (!isValid) {
                     chain.doFilter(servletRequest, servletResponse);
                     return;

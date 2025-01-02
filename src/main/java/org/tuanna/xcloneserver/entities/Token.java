@@ -20,7 +20,7 @@ public class Token extends BaseEntity {
     @Column(name = "owner_id")
     private UUID ownerId;
 
-    @Column(name = "value")
+    @Column(name = "value", columnDefinition = "text")
     private String value;
 
     @Column(name = "type")

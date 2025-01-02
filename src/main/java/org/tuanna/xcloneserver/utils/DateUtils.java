@@ -1,6 +1,8 @@
 package org.tuanna.xcloneserver.utils;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class DateUtils {
 
@@ -13,6 +15,10 @@ public class DateUtils {
 
     public static long getEpochMicro() {
         return getEpochMicro(null);
+    }
+
+    public static ZonedDateTime convertInstantToZonedDateTime(Instant input) {
+        return ZonedDateTime.ofInstant(input, ZoneId.systemDefault());
     }
 
 }

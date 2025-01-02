@@ -4,13 +4,14 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.tuanna.xcloneserver.constants.CommonStatus;
 import org.tuanna.xcloneserver.constants.Envs;
-import org.tuanna.xcloneserver.constants.Statuses;
-import org.tuanna.xcloneserver.constants.TokenTypes;
+import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.utils.CommonUtils;
+import org.tuanna.xcloneserver.utils.DateUtils;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
 
 import java.time.ZonedDateTime;
@@ -40,10 +41,11 @@ public class TokenServiceImpl implements TokenService {
         }
 
         Token token = tokenOptional.get();
-        boolean isCorrectType = Strings.isNullOrEmpty(type) && type.equals(token.getType());
+        boolean isCorrectType = !Strings.isNullOrEmpty(type) && type.equals(token.getType());
         boolean hasValue = !Strings.isNullOrEmpty(token.getValue());
         boolean isExpired = token.getExpiresAt().isAfter(now);
-        return isCorrectType && hasValue && isExpired;
+        boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
+        return isCorrectType && hasValue && isExpired && isActive;
     }
 
     @Override
@@ -54,11 +56,11 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
-        token.setExpiresAt(ZonedDateTime.from(jwtPayload.getExpiresAt()));
-        token.setType(TokenTypes.REFRESH);
+        token.setExpiresAt(DateUtils.convertInstantToZonedDateTime(jwtPayload.getExpiresAt()));
+        token.setType(TokenType.REFRESH);
         token.setOwnerId(CommonUtils.safeToUUID(jwtPayload.getSubjectId()));
         token.setValue(jwt);
-        token.setStatus(Statuses.ACTIVE);
+        token.setStatus(CommonStatus.ACTIVE);
         return tokenRepository.save(token);
     }
 
