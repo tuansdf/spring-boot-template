@@ -1,7 +1,10 @@
 package org.tuanna.xcloneserver.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Base64;
 
+@Slf4j
 public class Base64Utils {
 
     private static final Base64.Encoder encoder = Base64.getEncoder();
@@ -10,23 +13,43 @@ public class Base64Utils {
     private static final Base64.Decoder urlDecoder = Base64.getUrlDecoder();
 
     public static String encode(String input) {
-        return encoder.encodeToString(input.getBytes());
+        try {
+            return encoder.encodeToString(input.getBytes());
+        } catch (Exception e) {
+            log.error("base64 encode", e);
+            return "";
+        }
     }
 
     public static String encodeUrl(String input) {
-        return urlEncoder.encodeToString(input.getBytes());
+        try {
+            return urlEncoder.encodeToString(input.getBytes());
+        } catch (Exception e) {
+            log.error("base64 encode url", e);
+            return "";
+        }
     }
 
     public static String decode(String input) {
-        byte[] result = decoder.decode(input.getBytes());
-        if (result == null) return "";
-        return new String(result);
+        try {
+            byte[] result = decoder.decode(input.getBytes());
+            if (result == null) return "";
+            return new String(result);
+        } catch (Exception e) {
+            log.error("base64 decode", e);
+            return "";
+        }
     }
 
     public static String decodeUrl(String input) {
-        byte[] result = urlDecoder.decode(input.getBytes());
-        if (result == null) return "";
-        return new String(result);
+        try {
+            byte[] result = urlDecoder.decode(input.getBytes());
+            if (result == null) return "";
+            return new String(result);
+        } catch (Exception e) {
+            log.error("base64 decode url", e);
+            return "";
+        }
     }
 
 }

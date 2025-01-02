@@ -1,27 +1,18 @@
 package org.tuanna.xcloneserver.entities;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.tuanna.xcloneserver.utils.UUIDUtils;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.*;
 
-import java.io.Serializable;
-import java.time.ZonedDateTime;
-import java.util.UUID;
-
+@EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Entity
 @Table(name = "_user")
-public class User implements Serializable {
-
-    @Id
-    @Column(name = "id", columnDefinition = "uuid")
-    private UUID id;
+public class User extends BaseEntity {
 
     @Column(name = "username", unique = true)
     private String username;
@@ -34,30 +25,5 @@ public class User implements Serializable {
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "status")
-    private String status;
-
-    @Column(name = "created_at")
-    private ZonedDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
-
-    @PrePersist
-    private void prePersist() {
-        ZonedDateTime now = ZonedDateTime.now();
-        createdAt = now;
-        updatedAt = now;
-        if (id == null) {
-            id = UUIDUtils.generateId();
-        }
-    }
-
-    @PreUpdate
-    private void preUpdate() {
-        ZonedDateTime now = ZonedDateTime.now();
-        updatedAt = now;
-    }
 
 }

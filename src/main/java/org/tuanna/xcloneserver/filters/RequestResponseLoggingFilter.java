@@ -24,8 +24,8 @@ public class RequestResponseLoggingFilter implements Filter {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
             log.info("ENTER method={} path={} query={}", request.getMethod(), request.getServletPath(), request.getQueryString());
             filterChain.doFilter(servletRequest, servletResponse);
-            log.info("EXIT");
         } finally {
+            log.info("EXIT");
             MDC.clear();
         }
     }
