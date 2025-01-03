@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.tuanna.xcloneserver.constants.Envs;
+import org.tuanna.xcloneserver.constants.Env;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.utils.Base64Utils;
@@ -19,7 +19,7 @@ import java.time.Instant;
 @Service
 public class JWTServiceImpl implements JWTService {
 
-    private final Envs envs;
+    private final Env env;
     private final Algorithm algorithm;
     private final JWTVerifier jwtVerifier;
     private final ObjectMapper objectMapper;
@@ -34,7 +34,7 @@ public class JWTServiceImpl implements JWTService {
             jwtPayload.setNotBefore(now);
         }
         if (jwtPayload.getExpiresAt() == null) {
-            jwtPayload.setExpiresAt(now.plusSeconds(envs.getJwtAccessLifetime()));
+            jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
         }
         return JWT.create()
                 .withPayload(jwtPayload.toMap())
@@ -46,7 +46,7 @@ public class JWTServiceImpl implements JWTService {
         Instant now = Instant.now();
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(envs.getJwtAccessLifetime()));
+        jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
         jwtPayload.setType(TokenType.ACCESS_TOKEN);
         return create(jwtPayload);
     }
@@ -56,7 +56,7 @@ public class JWTServiceImpl implements JWTService {
         Instant now = Instant.now();
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(envs.getJwtRefreshLifetime()));
+        jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtRefreshLifetime()));
         jwtPayload.setType(TokenType.REFRESH_TOKEN);
         return create(jwtPayload);
     }

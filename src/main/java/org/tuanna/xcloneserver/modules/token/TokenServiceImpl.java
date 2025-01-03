@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.CommonStatus;
-import org.tuanna.xcloneserver.constants.Envs;
+import org.tuanna.xcloneserver.constants.Env;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
@@ -25,7 +25,7 @@ public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
-    private final Envs envs;
+    private final Env env;
 
     @Override
     public boolean validateTokenById(UUID id, String value, String type) {

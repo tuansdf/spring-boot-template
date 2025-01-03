@@ -1,4 +1,4 @@
-package org.tuanna.xcloneserver.modules.auth;
+package org.tuanna.xcloneserver.utils;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

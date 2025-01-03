@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.CommonStatus;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.entities.User;
-import org.tuanna.xcloneserver.modules.exception.CustomException;
+import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;

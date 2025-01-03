@@ -11,7 +11,7 @@ import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.modules.auth.AuthService;
 import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
-import org.tuanna.xcloneserver.modules.exception.ExceptionUtils;
+import org.tuanna.xcloneserver.utils.ExceptionUtils;
 
 @Slf4j
 @RequiredArgsConstructor

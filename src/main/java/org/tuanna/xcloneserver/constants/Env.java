@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Getter
 @Component
-public class Envs {
+public class Env {
 
     @Value("${custom.jwt-secret}")
     private String jwtSecret;

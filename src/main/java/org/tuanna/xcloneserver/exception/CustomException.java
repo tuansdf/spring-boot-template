@@ -1,4 +1,4 @@
-package org.tuanna.xcloneserver.modules.exception;
+package org.tuanna.xcloneserver.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
