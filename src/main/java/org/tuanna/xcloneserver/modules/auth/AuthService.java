@@ -1,6 +1,6 @@
 package org.tuanna.xcloneserver.modules.auth;
 
-import org.tuanna.xcloneserver.exceptions.CustomException;
+import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
@@ -13,6 +13,6 @@ public interface AuthService {
 
     AuthResponseDTO register(RegisterRequestDTO requestDTO) throws CustomException;
 
-    AuthResponseDTO createAccessJwt(String userId, List<String> permissions);
+    AuthResponseDTO createAccessToken(String userId, List<String> permissions);
 
 }

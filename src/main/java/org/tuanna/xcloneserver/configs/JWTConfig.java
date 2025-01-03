@@ -6,17 +6,17 @@ import com.auth0.jwt.algorithms.Algorithm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.tuanna.xcloneserver.constants.Envs;
+import org.tuanna.xcloneserver.constants.Env;
 
 @RequiredArgsConstructor
 @Configuration
 public class JWTConfig {
 
-    private final Envs envs;
+    private final Env env;
 
     @Bean
     public Algorithm algorithm() {
-        return Algorithm.HMAC256(envs.getJwtSecret());
+        return Algorithm.HMAC256(env.getJwtSecret());
     }
 
     @Bean

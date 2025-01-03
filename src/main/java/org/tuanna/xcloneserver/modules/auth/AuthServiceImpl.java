@@ -1,5 +1,6 @@
 package org.tuanna.xcloneserver.modules.auth;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.CommonStatus;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.entities.User;
-import org.tuanna.xcloneserver.exceptions.CustomException;
+import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
@@ -24,6 +25,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -98,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDTO createAccessJwt(String userId, List<String> permissions) {
+    public AuthResponseDTO createAccessToken(String userId, List<String> permissions) {
         String accessJwt = jwtService.createAccessJwt(JWTPayload.builder()
                 .subjectId(userId)
                 .permissions(permissions)

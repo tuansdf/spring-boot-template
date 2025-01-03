@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.CommonStatus;
-import org.tuanna.xcloneserver.constants.Envs;
+import org.tuanna.xcloneserver.constants.Env;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
@@ -25,15 +25,13 @@ public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
-    private final Envs envs;
+    private final Env env;
 
     @Override
-    public boolean validateTokenById(UUID id, String type) {
+    public boolean validateTokenById(UUID id, String value, String type) {
         if (id == null) {
             return false;
         }
-
-        ZonedDateTime now = ZonedDateTime.now();
 
         Optional<Token> tokenOptional = tokenRepository.findById(id);
         if (tokenOptional.isEmpty()) {
@@ -41,11 +39,11 @@ public class TokenServiceImpl implements TokenService {
         }
 
         Token token = tokenOptional.get();
-        boolean isTypeCorrect = !Strings.isNullOrEmpty(type) && type.equals(token.getType());
-        boolean hasValue = !Strings.isNullOrEmpty(token.getValue());
-        boolean isExpired = token.getExpiresAt().isAfter(now);
+        boolean isTypeCorrect = !Strings.isNullOrEmpty(token.getType()) && token.getType().equals(type);
+        boolean isValueCorrect = !Strings.isNullOrEmpty(token.getValue()) && token.getValue().equals(value);
         boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
-        return isTypeCorrect && hasValue && isExpired && isActive;
+        boolean isExpired = token.getExpiresAt().isAfter(ZonedDateTime.now());
+        return isTypeCorrect && isValueCorrect && isActive && isExpired;
     }
 
     @Override
@@ -57,7 +55,7 @@ public class TokenServiceImpl implements TokenService {
         Token token = new Token();
         token.setId(id);
         token.setExpiresAt(DateUtils.convertInstantToZonedDateTime(jwtPayload.getExpiresAt()));
-        token.setType(TokenType.REFRESH);
+        token.setType(TokenType.REFRESH_TOKEN);
         token.setOwnerId(CommonUtils.safeToUUID(jwtPayload.getSubjectId()));
         token.setValue(jwt);
         token.setStatus(CommonStatus.ACTIVE);
