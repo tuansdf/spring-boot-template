@@ -34,7 +34,7 @@ public class ExcelUtils {
                         CellRangeAddress mergedRegion = new CellRangeAddress(config.getRow(), toRow, config.getCol(), toCol);
                         sheet.addMergedRegion(mergedRegion);
                     }
-                    Cell cell = safeGetCell(safeGetRow(sheet, config.getRow()), config.getCol());
+                    Cell cell = getCell(getRow(sheet, config.getRow()), config.getCol());
                     cell.setCellValue(CommonUtils.safeToString(config.getValue()));
                     cell.setCellStyle(centerCellStyle);
                     continue;
@@ -49,11 +49,11 @@ public class ExcelUtils {
                 Class<?> dataClass = dataList.getFirst().getClass();
                 for (int i = 0; i < dataList.size(); i++) {
                     Object data = dataList.get(i);
-                    Row row = safeGetRow(sheet, config.getRow() + i);
+                    Row row = getRow(sheet, config.getRow() + i);
                     for (String key : mapperKeys) {
                         int col = config.getCol() + config.getMapper().get(key);
                         String value = CommonUtils.safeToString(dataClass.getMethod(key).invoke(data));
-                        safeGetCell(row, col).setCellValue(value);
+                        getCell(row, col).setCellValue(value);
                     }
                 }
             } catch (Exception e) {
@@ -70,7 +70,7 @@ public class ExcelUtils {
         System.out.println("Report exported to " + outputPath);
     }
 
-    private static Row safeGetRow(Sheet sheet, int i) {
+    private static Row getRow(Sheet sheet, int i) {
         Row result = sheet.getRow(i);
         if (result == null) {
             result = sheet.createRow(i);
@@ -78,7 +78,7 @@ public class ExcelUtils {
         return result;
     }
 
-    private static Cell safeGetCell(Row row, int i) {
+    private static Cell getCell(Row row, int i) {
         Cell result = row.getCell(i);
         if (result == null) {
             result = row.createCell(i);
