@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.TestUser;
 import org.tuanna.xcloneserver.modules.excel.TestUserReportTemplate;
-import org.tuanna.xcloneserver.utils.DateUtils;
-import org.tuanna.xcloneserver.utils.ExcelUtils;
-import org.tuanna.xcloneserver.utils.ExceptionUtils;
-import org.tuanna.xcloneserver.utils.UUIDUtils;
+import org.tuanna.xcloneserver.utils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +30,8 @@ public class PublicController {
         try {
             log.info("POP");
             List<TestUser> data = new ArrayList<>();
-            for (int i = 0; i < 500_000; i++) {
+            int TOTAL = 500_000;
+            for (int i = 0; i < TOTAL; i++) {
                 TestUser user = new TestUser();
                 user.setId(UUIDUtils.generateId());
                 user.setUsername("username" + i);
@@ -46,9 +44,13 @@ public class PublicController {
                 data.add(user);
             }
             log.info("POPEND");
-            log.info("WORKBOOK");
-            ExcelUtils.processTemplate(new TestUserReportTemplate(data), "test-excel-" + DateUtils.getEpochMicro() + ".xlsx");
-            log.info("WORKBOOKEND");
+//            log.info("WORKBOOK");
+//            ExcelUtils.processTemplate(new TestUserReportTemplate(data), "test-excel-" + DateUtils.getEpochMicro() + ".xlsx");
+//            log.info("WORKBOOKEND");
+            log.info("CSV");
+            String outPath = "test-csv-" + DateUtils.getEpochMicro() + ".csv";
+            FileUtils.writeFile(CSVUtils.processTemplateToBytes(new TestUserReportTemplate(data)), outPath);
+            log.info("CSVEND");
             return ResponseEntity.ok(new CommonResponse());
         } catch (Exception e) {
             log.error("loi nay", e);

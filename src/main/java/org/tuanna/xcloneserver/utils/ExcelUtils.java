@@ -10,6 +10,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.tuanna.xcloneserver.modules.excel.ReportTemplate;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -62,62 +63,63 @@ public class ExcelUtils {
         }
     }
 
-    public static byte[] processTemplate(ReportTemplate reportTemplate) {
+    public static Workbook processTemplate(ReportTemplate reportTemplate) {
         try {
             if (CollectionUtils.isEmpty(reportTemplate.getHeader()) || CollectionUtils.isEmpty(reportTemplate.getBody()) || CollectionUtils.isEmpty(reportTemplate.getMapper()))
-                return new byte[]{};
+                return null;
 
             Workbook workbook = new XSSFWorkbook();
             processTemplate(workbook, reportTemplate);
-            return toBytes(workbook);
+            return workbook;
         } catch (Exception e) {
             log.error("processtemplate", e);
-            return new byte[]{};
+            return null;
         }
     }
 
     public static void processTemplate(ReportTemplate reportTemplate, String outputPath) {
         try {
-            byte[] bytes = processTemplate(reportTemplate);
-            writeFile(bytes, outputPath);
+            if (CollectionUtils.isEmpty(reportTemplate.getHeader()) || CollectionUtils.isEmpty(reportTemplate.getBody()) || CollectionUtils.isEmpty(reportTemplate.getMapper()))
+                return;
+
+            try (Workbook workbook = processTemplate(reportTemplate)) {
+                writeFile(workbook, outputPath);
+            }
         } catch (Exception e) {
             log.error("processtemplate", e);
         }
     }
 
-    public static void writeFile(Workbook workbook, String outputPath) {
+    public static void writeFile(Workbook workbook, String outputPath) throws IOException {
         try {
             if (workbook == null) return;
-            try (FileOutputStream outputStream = new FileOutputStream(outputPath)) {
-                workbook.write(outputStream);
+            try (FileOutputStream outputStream = new FileOutputStream(outputPath);
+                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+                workbook.write(bufferedOutputStream);
+            }
+        } catch (Exception e) {
+            log.error("writefile", e);
+        } finally {
+            if (workbook != null) {
                 workbook.close();
             }
-        } catch (Exception e) {
-            log.error("writefile", e);
-        }
-    }
-
-    public static void writeFile(byte[] bytes, String outputPath) {
-        try {
-            if (bytes == null) return;
-            try (FileOutputStream outputStream = new FileOutputStream(outputPath)) {
-                outputStream.write(bytes);
-            }
-        } catch (Exception e) {
-            log.error("writefile", e);
         }
     }
 
     public static byte[] toBytes(Workbook workbook) throws IOException {
         try {
             if (workbook == null) return new byte[]{};
-            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                workbook.write(outputStream);
-                workbook.close();
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+                workbook.write(bufferedOutputStream);
                 return outputStream.toByteArray();
             }
         } catch (Exception e) {
             return new byte[]{};
+        } finally {
+            if (workbook != null) {
+                workbook.close();
+            }
         }
     }
 
