@@ -38,8 +38,8 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
 
-            final String token = header.split(" ")[1].trim();
-            JWTPayload jwtPayload = jwtService.verify(token);
+            final String jwt = header.split(" ")[1].trim();
+            JWTPayload jwtPayload = jwtService.verify(jwt);
             if (jwtPayload == null) {
                 chain.doFilter(servletRequest, servletResponse);
                 return;
@@ -47,7 +47,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             boolean isValid = true;
             if (!Strings.isNullOrEmpty(jwtPayload.getTokenId())) {
-                isValid = tokenService.validateTokenById(CommonUtils.safeToUUID(jwtPayload.getTokenId()), TokenType.REFRESH_TOKEN);
+                isValid = tokenService.validateTokenById(CommonUtils.safeToUUID(jwtPayload.getTokenId()), jwt, TokenType.REFRESH_TOKEN);
             } else {
                 isValid = TokenType.ACCESS_TOKEN.equals(jwtPayload.getType());
             }

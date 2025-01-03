@@ -28,7 +28,7 @@ public class TokenServiceImpl implements TokenService {
     private final Envs envs;
 
     @Override
-    public boolean validateTokenById(UUID id, String type) {
+    public boolean validateTokenById(UUID id, String value, String type) {
         if (id == null) {
             return false;
         }
@@ -39,11 +39,11 @@ public class TokenServiceImpl implements TokenService {
         }
 
         Token token = tokenOptional.get();
-        boolean isTypeCorrect = !Strings.isNullOrEmpty(type) && type.equals(token.getType());
-        boolean hasValue = !Strings.isNullOrEmpty(token.getValue());
+        boolean isTypeCorrect = !Strings.isNullOrEmpty(token.getType()) && token.getType().equals(type);
+        boolean isValueCorrect = !Strings.isNullOrEmpty(token.getValue()) && token.getValue().equals(value);
         boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
         boolean isExpired = token.getExpiresAt().isAfter(ZonedDateTime.now());
-        return isTypeCorrect && hasValue && isActive && isExpired;
+        return isTypeCorrect && isValueCorrect && isActive && isExpired;
     }
 
     @Override

@@ -24,4 +24,16 @@ public class CommonResponse {
         this.setMessage("OK");
     }
 
+    public CommonResponse(String message, int status) {
+        this.data = null;
+        this.status = status;
+        this.message = message;
+    }
+
+    public CommonResponse(HttpStatus httpStatus) {
+        this.data = null;
+        this.status = httpStatus.value();
+        this.message = httpStatus.getReasonPhrase();
+    }
+
 }
