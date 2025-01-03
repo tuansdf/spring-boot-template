@@ -47,7 +47,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(envs.getJwtAccessLifetime()));
-        jwtPayload.setType(TokenType.ACCESS);
+        jwtPayload.setType(TokenType.ACCESS_TOKEN);
         return create(jwtPayload);
     }
 
@@ -57,7 +57,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(envs.getJwtRefreshLifetime()));
-        jwtPayload.setType(TokenType.REFRESH);
+        jwtPayload.setType(TokenType.REFRESH_TOKEN);
         return create(jwtPayload);
     }
 

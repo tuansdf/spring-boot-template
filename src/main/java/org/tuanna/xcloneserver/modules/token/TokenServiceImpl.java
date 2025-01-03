@@ -33,8 +33,6 @@ public class TokenServiceImpl implements TokenService {
             return false;
         }
 
-        ZonedDateTime now = ZonedDateTime.now();
-
         Optional<Token> tokenOptional = tokenRepository.findById(id);
         if (tokenOptional.isEmpty()) {
             return false;
@@ -43,9 +41,9 @@ public class TokenServiceImpl implements TokenService {
         Token token = tokenOptional.get();
         boolean isTypeCorrect = !Strings.isNullOrEmpty(type) && type.equals(token.getType());
         boolean hasValue = !Strings.isNullOrEmpty(token.getValue());
-        boolean isExpired = token.getExpiresAt().isAfter(now);
         boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
-        return isTypeCorrect && hasValue && isExpired && isActive;
+        boolean isExpired = token.getExpiresAt().isAfter(ZonedDateTime.now());
+        return isTypeCorrect && hasValue && isActive && isExpired;
     }
 
     @Override
@@ -57,7 +55,7 @@ public class TokenServiceImpl implements TokenService {
         Token token = new Token();
         token.setId(id);
         token.setExpiresAt(DateUtils.convertInstantToZonedDateTime(jwtPayload.getExpiresAt()));
-        token.setType(TokenType.REFRESH);
+        token.setType(TokenType.REFRESH_TOKEN);
         token.setOwnerId(CommonUtils.safeToUUID(jwtPayload.getSubjectId()));
         token.setValue(jwt);
         token.setStatus(CommonStatus.ACTIVE);
