@@ -1,6 +1,6 @@
 package org.tuanna.xcloneserver.modules.auth;
 
-import org.tuanna.xcloneserver.exceptions.CustomException;
+import org.tuanna.xcloneserver.modules.exception.CustomException;
 import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;

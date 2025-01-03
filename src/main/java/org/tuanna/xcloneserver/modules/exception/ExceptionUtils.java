@@ -1,9 +1,8 @@
-package org.tuanna.xcloneserver.utils;
+package org.tuanna.xcloneserver.modules.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
-import org.tuanna.xcloneserver.exceptions.CustomException;
 
 public class ExceptionUtils {
 

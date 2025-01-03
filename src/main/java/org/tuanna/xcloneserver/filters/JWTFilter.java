@@ -16,7 +16,7 @@ import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.token.TokenService;
-import org.tuanna.xcloneserver.utils.AuthUtils;
+import org.tuanna.xcloneserver.modules.auth.AuthUtils;
 import org.tuanna.xcloneserver.utils.CommonUtils;
 
 import java.io.IOException;

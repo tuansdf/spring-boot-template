@@ -12,4 +12,12 @@ public class CommonUtils {
         }
     }
 
+    public static String safeToString(Object input) {
+        try {
+            return input.toString();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
 }
