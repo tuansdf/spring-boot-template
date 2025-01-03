@@ -13,6 +13,6 @@ public interface AuthService {
 
     AuthResponseDTO register(RegisterRequestDTO requestDTO) throws CustomException;
 
-    AuthResponseDTO createAccessJwt(String userId, List<String> permissions);
+    AuthResponseDTO createAccessToken(String userId, List<String> permissions);
 
 }
