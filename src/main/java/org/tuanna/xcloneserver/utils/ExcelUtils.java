@@ -1,73 +1,132 @@
 package org.tuanna.xcloneserver.utils;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.util.CollectionUtils;
-import org.tuanna.xcloneserver.dtos.ExcelCellConfig;
+import org.springframework.util.StringUtils;
+import org.tuanna.xcloneserver.modules.excel.ReportTemplate;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class ExcelUtils {
 
-    public static void exportReport(List<ExcelCellConfig> excelCellConfigs, String outputPath) throws IOException {
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet();
-        CellStyle centerCellStyle = workbook.createCellStyle();
-        centerCellStyle.setAlignment(HorizontalAlignment.CENTER);
-        centerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+    private static final String DEFAULT_SHEET = "Sheet1";
+    private static final int DEFAULT_HEADER_START_AT_ROW = 0;
+    private static final int DEFAULT_BODY_START_AT_ROW = 1;
 
-        for (ExcelCellConfig config : excelCellConfigs) {
-            try {
-                if (config.getValue() == null) continue;
+    public static void processTemplate(Workbook workbook, ReportTemplate reportTemplate) {
+        try {
+            if (CollectionUtils.isEmpty(reportTemplate.getHeader()) || CollectionUtils.isEmpty(reportTemplate.getBody()) || CollectionUtils.isEmpty(reportTemplate.getMapper()))
+                return;
 
-                boolean isList = config.getValue() instanceof List<?>;
-                if (!isList) {
-                    if (config.getColMergedTo() >= 0 || config.getRowMergedTo() >= 0) {
-                        int toCol = config.getColMergedTo() >= 0 ? config.getColMergedTo() : config.getCol();
-                        int toRow = config.getRowMergedTo() >= 0 ? config.getRowMergedTo() : config.getRow();
-                        CellRangeAddress mergedRegion = new CellRangeAddress(config.getRow(), toRow, config.getCol(), toCol);
-                        sheet.addMergedRegion(mergedRegion);
-                    }
-                    Cell cell = getCell(getRow(sheet, config.getRow()), config.getCol());
-                    cell.setCellValue(CommonUtils.safeToString(config.getValue()));
-                    cell.setCellStyle(centerCellStyle);
-                    continue;
-                }
+            Sheet sheet = getSheet(workbook);
 
-                if (CollectionUtils.isEmpty(config.getMapper())) continue;
-
-                List<?> dataList = (List<?>) config.getValue();
-                if (CollectionUtils.isEmpty(dataList)) continue;
-
-                List<String> mapperKeys = new ArrayList<>(config.getMapper().keySet());
-                Class<?> dataClass = dataList.getFirst().getClass();
-                for (int i = 0; i < dataList.size(); i++) {
-                    Object data = dataList.get(i);
-                    Row row = getRow(sheet, config.getRow() + i);
-                    for (String key : mapperKeys) {
-                        int col = config.getCol() + config.getMapper().get(key);
-                        String value = CommonUtils.safeToString(dataClass.getMethod(key).invoke(data));
-                        getCell(row, col).setCellValue(value);
-                    }
-                }
-            } catch (Exception e) {
-                log.error("error for cell {}", config, e);
+            for (int i = 0; i < reportTemplate.getHeader().size(); i++) {
+                getCell(getRow(sheet, DEFAULT_HEADER_START_AT_ROW), i).setCellValue(reportTemplate.getHeader().get(i));
             }
+
+            Class<?> dataClass = reportTemplate.getBody().getFirst().getClass();
+            Map<String, Method> methods = new HashMap<>();
+            for (String key : new ArrayList<>(reportTemplate.getMapper().keySet())) {
+                try {
+                    methods.put(key, dataClass.getMethod("get" + StringUtils.capitalize(key)));
+                } catch (Exception ignored) {
+                }
+            }
+            List<String> mapperKeys = new ArrayList<>(methods.keySet());
+            if (CollectionUtils.isEmpty(mapperKeys)) return;
+
+            for (int i = 0; i < reportTemplate.getBody().size(); i++) {
+                Object data = reportTemplate.getBody().get(i);
+                Row row = getRow(sheet, DEFAULT_BODY_START_AT_ROW + i);
+                for (String key : mapperKeys) {
+                    int col = reportTemplate.getMapper().get(key);
+                    String value = CommonUtils.safeToString(methods.get(key).invoke(data));
+                    getCell(row, col).setCellValue(value);
+                }
+            }
+        } catch (Exception e) {
+            log.error("processtemplate", e);
         }
+    }
 
-        FileOutputStream outputStream = new FileOutputStream(outputPath);
-        workbook.write(outputStream);
+    public static byte[] processTemplate(ReportTemplate reportTemplate) {
+        try {
+            if (CollectionUtils.isEmpty(reportTemplate.getHeader()) || CollectionUtils.isEmpty(reportTemplate.getBody()) || CollectionUtils.isEmpty(reportTemplate.getMapper()))
+                return new byte[]{};
 
-        outputStream.close();
-        workbook.close();
+            Workbook workbook = new XSSFWorkbook();
+            processTemplate(workbook, reportTemplate);
+            return toBytes(workbook);
+        } catch (Exception e) {
+            log.error("processtemplate", e);
+            return new byte[]{};
+        }
+    }
 
-        System.out.println("Report exported to " + outputPath);
+    public static void processTemplate(ReportTemplate reportTemplate, String outputPath) {
+        try {
+            byte[] bytes = processTemplate(reportTemplate);
+            writeFile(bytes, outputPath);
+        } catch (Exception e) {
+            log.error("processtemplate", e);
+        }
+    }
+
+    public static void writeFile(Workbook workbook, String outputPath) {
+        try {
+            if (workbook == null) return;
+            try (FileOutputStream outputStream = new FileOutputStream(outputPath)) {
+                workbook.write(outputStream);
+                workbook.close();
+            }
+        } catch (Exception e) {
+            log.error("writefile", e);
+        }
+    }
+
+    public static void writeFile(byte[] bytes, String outputPath) {
+        try {
+            if (bytes == null) return;
+            try (FileOutputStream outputStream = new FileOutputStream(outputPath)) {
+                outputStream.write(bytes);
+            }
+        } catch (Exception e) {
+            log.error("writefile", e);
+        }
+    }
+
+    public static byte[] toBytes(Workbook workbook) throws IOException {
+        try {
+            if (workbook == null) return new byte[]{};
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                workbook.write(outputStream);
+                workbook.close();
+                return outputStream.toByteArray();
+            }
+        } catch (Exception e) {
+            return new byte[]{};
+        }
+    }
+
+    private static Sheet getSheet(Workbook workbook) {
+        Sheet result = workbook.getSheet(DEFAULT_SHEET);
+        if (result == null) {
+            result = workbook.createSheet(DEFAULT_SHEET);
+        }
+        return result;
     }
 
     private static Row getRow(Sheet sheet, int i) {

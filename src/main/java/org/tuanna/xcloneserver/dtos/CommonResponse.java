@@ -11,8 +11,10 @@ import org.springframework.http.HttpStatus;
 @Builder
 public class CommonResponse {
 
-    private String message;
-    private int status;
+    @Builder.Default
+    private String message = HttpStatus.OK.getReasonPhrase();
+    @Builder.Default
+    private int status = HttpStatus.OK.value();
     private Object data;
 
     @JsonIgnore
@@ -20,8 +22,6 @@ public class CommonResponse {
 
     public CommonResponse(Object data) {
         this.data = data;
-        this.setStatus(200);
-        this.setMessage("OK");
     }
 
     public CommonResponse(String message, int status) {

@@ -2,6 +2,8 @@ package org.tuanna.xcloneserver.dtos;
 
 import lombok.*;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -9,9 +11,13 @@ import lombok.*;
 @Builder
 public class TestUser {
 
-    private Integer id;
-    private String user;
+    private UUID id;
+    private String username;
     private String email;
     private String name;
+    private String address;
+    private String street;
+    private String city;
+    private String country;
 
 }

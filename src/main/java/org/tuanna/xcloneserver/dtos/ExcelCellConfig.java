@@ -2,8 +2,6 @@ package org.tuanna.xcloneserver.dtos;
 
 import lombok.*;
 
-import java.util.Map;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,6 +19,11 @@ public class ExcelCellConfig {
     private int colMergedTo = -1;
 
     private Object value; // single value (string/int/date) or a list of objects
-    private Map<String, Integer> mapper; // map each value to column
+
+    public ExcelCellConfig(int row, int col, Object value) {
+        this.row = row;
+        this.col = col;
+        this.value = value;
+    }
 
 }
