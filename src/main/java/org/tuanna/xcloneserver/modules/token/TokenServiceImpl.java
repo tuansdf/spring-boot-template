@@ -1,11 +1,10 @@
 package org.tuanna.xcloneserver.modules.token;
 
-import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.CommonStatus;
-import org.tuanna.xcloneserver.constants.Env;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
@@ -25,7 +24,6 @@ public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
-    private final Env env;
 
     @Override
     public boolean validateTokenById(UUID id, String value, String type) {
@@ -39,8 +37,8 @@ public class TokenServiceImpl implements TokenService {
         }
 
         Token token = tokenOptional.get();
-        boolean isTypeCorrect = !Strings.isNullOrEmpty(token.getType()) && token.getType().equals(type);
-        boolean isValueCorrect = !Strings.isNullOrEmpty(token.getValue()) && token.getValue().equals(value);
+        boolean isTypeCorrect = !StringUtils.isEmpty(token.getType()) && token.getType().equals(type);
+        boolean isValueCorrect = !StringUtils.isEmpty(token.getValue()) && token.getValue().equals(value);
         boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
         boolean isExpired = token.getExpiresAt().isAfter(ZonedDateTime.now());
         return isTypeCorrect && isValueCorrect && isActive && isExpired;
@@ -54,7 +52,7 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
-        token.setExpiresAt(DateUtils.convertInstantToZonedDateTime(jwtPayload.getExpiresAt()));
+        token.setExpiresAt(DateUtils.toZonedDateTime(jwtPayload.getExpiresAt()));
         token.setType(TokenType.REFRESH_TOKEN);
         token.setOwnerId(CommonUtils.safeToUUID(jwtPayload.getSubjectId()));
         token.setValue(jwt);

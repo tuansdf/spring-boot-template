@@ -1,8 +1,12 @@
 package org.tuanna.xcloneserver.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
 
@@ -17,8 +21,32 @@ public class DateUtils {
         return getEpochMicro(null);
     }
 
-    public static ZonedDateTime convertInstantToZonedDateTime(Instant input) {
+    public static ZonedDateTime toZonedDateTime(Instant input) {
+        if (input == null) return null;
         return ZonedDateTime.ofInstant(input, ZoneId.systemDefault());
+    }
+
+    public static String toFormat(ZonedDateTime dateTime, String format) {
+        if (dateTime == null || StringUtils.isEmpty(format)) return "";
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+            return formatter.format(dateTime);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static String toFormat(ZonedDateTime dateTime, DateTimeFormatter formatter) {
+        if (dateTime == null || formatter == null) return "";
+        try {
+            return formatter.format(dateTime);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static class Formatter {
+        public static final DateTimeFormatter DATE_TIME_BE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX").withZone(ZoneOffset.UTC);
     }
 
 }

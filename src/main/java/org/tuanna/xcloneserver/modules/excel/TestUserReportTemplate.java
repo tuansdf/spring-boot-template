@@ -1,40 +1,46 @@
 package org.tuanna.xcloneserver.modules.excel;
 
+import org.tuanna.xcloneserver.dtos.TestUser;
+import org.tuanna.xcloneserver.utils.DateUtils;
+
 import java.util.List;
-import java.util.Map;
+import java.util.function.Function;
 
-public class TestUserReportTemplate implements ReportTemplate {
+public class TestUserReportTemplate implements ReportTemplate<TestUser> {
 
-    private static final List<String> header = List.of("ID", "Username", "Email", "Name", "Address", "Street", "City", "Country");
-    private static final Map<String, Integer> mapper = Map.of(
-            "id", 0,
-            "username", 1,
-            "email", 2,
-            "name", 3,
-            "address", 4,
-            "street", 5,
-            "city", 6,
-            "country", 7);
+    private static final String[] header = new String[]{"ID", "Username", "Email", "Name", "Address", "Street", "City", "Country", "Created At", "Updated At"};
+    private static final Function<TestUser, Object[]> rowExtractor = user -> new Object[]{
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getName(),
+            user.getAddress(),
+            user.getStreet(),
+            user.getCity(),
+            user.getCountry(),
+            DateUtils.toFormat(user.getCreatedAt(), DateUtils.Formatter.DATE_TIME_BE),
+            DateUtils.toFormat(user.getUpdatedAt(), DateUtils.Formatter.DATE_TIME_BE),
+    };
 
-    private final List<?> body;
+    private final List<TestUser> body;
 
-    public TestUserReportTemplate(List<?> body) {
+    public TestUserReportTemplate(List<TestUser> body) {
         this.body = body;
     }
 
     @Override
-    public List<String> getHeader() {
+    public String[] getHeader() {
         return header;
     }
 
     @Override
-    public List<?> getBody() {
+    public List<TestUser> getBody() {
         return body;
     }
 
     @Override
-    public Map<String, Integer> getMapper() {
-        return mapper;
+    public Function<TestUser, Object[]> getRowExtractor() {
+        return rowExtractor;
     }
 
 }

@@ -2,6 +2,7 @@ package org.tuanna.xcloneserver.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,8 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.TestUser;
 import org.tuanna.xcloneserver.modules.excel.TestUserReportTemplate;
-import org.tuanna.xcloneserver.utils.*;
+import org.tuanna.xcloneserver.utils.CSVUtils;
+import org.tuanna.xcloneserver.utils.DateUtils;
+import org.tuanna.xcloneserver.utils.ExceptionUtils;
+import org.tuanna.xcloneserver.utils.UUIDUtils;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +33,10 @@ public class PublicController {
     @GetMapping("/excel")
     public ResponseEntity<CommonResponse> excel() {
         try {
-            log.info("POP");
+            log.info("START");
             List<TestUser> data = new ArrayList<>();
-            int TOTAL = 500_000;
+            int TOTAL = 100_000;
+            ZonedDateTime now = ZonedDateTime.now();
             for (int i = 0; i < TOTAL; i++) {
                 TestUser user = new TestUser();
                 user.setId(UUIDUtils.generateId());
@@ -41,17 +47,19 @@ public class PublicController {
                 user.setStreet("street" + i);
                 user.setCountry("country" + i);
                 user.setCity("city" + i);
+                user.setCreatedAt(now.plusSeconds(i));
+                user.setUpdatedAt(now.plusMinutes(i));
                 data.add(user);
             }
-            log.info("POPEND");
-//            log.info("WORKBOOK");
-//            ExcelUtils.processTemplate(new TestUserReportTemplate(data), "test-excel-" + DateUtils.getEpochMicro() + ".xlsx");
-//            log.info("WORKBOOKEND");
-            log.info("CSV");
-            String outPath = "test-csv-" + DateUtils.getEpochMicro() + ".csv";
-            FileUtils.writeFile(CSVUtils.processTemplateToBytes(new TestUserReportTemplate(data)), outPath);
+            TestUserReportTemplate reportTemplate = new TestUserReportTemplate(data);
+            log.info("DATAEND");
+//            String excelPath = "test-excel-" + DateUtils.getEpochMicro() + ".xlsx";
+//            ExcelUtils.processTemplateToFile(reportTemplate, excelPath);
+//            log.info("EXCELEND");
+            String csvPath = "test-csv-" + DateUtils.getEpochMicro() + ".csv";
+            CSVUtils.processTemplateToFile(reportTemplate, csvPath);
             log.info("CSVEND");
-            return ResponseEntity.ok(new CommonResponse());
+            return ResponseEntity.ok(new CommonResponse(HttpStatus.OK));
         } catch (Exception e) {
             log.error("loi nay", e);
             return ExceptionUtils.toResponseEntity(e);

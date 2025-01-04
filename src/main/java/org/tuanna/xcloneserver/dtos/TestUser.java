@@ -2,6 +2,7 @@ package org.tuanna.xcloneserver.dtos;
 
 import lombok.*;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
@@ -19,5 +20,7 @@ public class TestUser {
     private String street;
     private String city;
     private String country;
+    private ZonedDateTime createdAt;
+    private ZonedDateTime updatedAt;
 
 }

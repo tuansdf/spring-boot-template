@@ -1,7 +1,10 @@
 package org.tuanna.xcloneserver.entities;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
 

@@ -2,9 +2,9 @@ package org.tuanna.xcloneserver.modules.jwt.dtos;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.base.Strings;
 import lombok.*;
-import org.springframework.util.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -43,14 +43,14 @@ public class JWTPayload implements Serializable {
 
     public Map<String, Object> toMap() {
         Map<String, Object> result = new HashMap<>();
-        if (!Strings.isNullOrEmpty(issuer)) result.put("iss", issuer);
-        if (!Strings.isNullOrEmpty(subject)) result.put("sub", subject);
+        if (!StringUtils.isEmpty(issuer)) result.put("iss", issuer);
+        if (!StringUtils.isEmpty(subject)) result.put("sub", subject);
         if (issuedAt != null) result.put("iat", issuedAt);
         if (notBefore != null) result.put("nbf", notBefore);
         if (expiresAt != null) result.put("exp", expiresAt);
-        if (!Strings.isNullOrEmpty(type)) result.put("typ", type);
-        if (!Strings.isNullOrEmpty(tokenId)) result.put("tid", tokenId);
-        if (!Strings.isNullOrEmpty(subjectId)) result.put("sid", subjectId);
+        if (!StringUtils.isEmpty(type)) result.put("typ", type);
+        if (!StringUtils.isEmpty(tokenId)) result.put("tid", tokenId);
+        if (!StringUtils.isEmpty(subjectId)) result.put("sid", subjectId);
         if (!CollectionUtils.isEmpty(permissions)) result.put("per", permissions);
         return result;
     }

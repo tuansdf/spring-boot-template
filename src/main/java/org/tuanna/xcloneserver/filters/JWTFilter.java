@@ -1,14 +1,14 @@
 package org.tuanna.xcloneserver.filters;
 
-import com.google.common.base.Strings;
-import com.google.common.net.HttpHeaders;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.tuanna.xcloneserver.constants.Constants;
@@ -33,7 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
         try {
             final String header = servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-            if (Strings.isNullOrEmpty(header) || !header.startsWith("Bearer ")) {
+            if (StringUtils.isEmpty(header) || !header.startsWith("Bearer ")) {
                 chain.doFilter(servletRequest, servletResponse);
                 return;
             }
@@ -46,7 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             boolean isValid = true;
-            if (!Strings.isNullOrEmpty(jwtPayload.getTokenId())) {
+            if (!StringUtils.isEmpty(jwtPayload.getTokenId())) {
                 isValid = tokenService.validateTokenById(CommonUtils.safeToUUID(jwtPayload.getTokenId()), jwt, TokenType.REFRESH_TOKEN);
             } else {
                 isValid = TokenType.ACCESS_TOKEN.equals(jwtPayload.getType());
