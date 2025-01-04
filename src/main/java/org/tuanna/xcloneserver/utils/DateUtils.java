@@ -21,6 +21,14 @@ public class DateUtils {
         return getEpochMicro(null);
     }
 
+    public static ZonedDateTime toZonedDateTime(String input, DateTimeFormatter formatter) {
+        try {
+            return ZonedDateTime.parse(input, formatter);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
     public static ZonedDateTime toZonedDateTime(Instant input) {
         if (input == null) return null;
         return ZonedDateTime.ofInstant(input, ZoneId.systemDefault());

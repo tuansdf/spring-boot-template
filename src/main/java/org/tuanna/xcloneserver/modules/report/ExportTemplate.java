@@ -1,14 +1,14 @@
-package org.tuanna.xcloneserver.modules.excel;
+package org.tuanna.xcloneserver.modules.report;
 
 import java.util.List;
 import java.util.function.Function;
 
 public interface ExportTemplate<T> {
 
-    String[] getHeader();
+    List<String> getHeader();
 
     List<T> getBody();
 
-    Function<T, Object[]> getRowExtractor();
+    Function<T, List<Object>> getRowExtractor();
 
 }

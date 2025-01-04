@@ -2,20 +2,18 @@ package org.tuanna.xcloneserver.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.tuanna.xcloneserver.modules.excel.ExportTemplate;
+import org.tuanna.xcloneserver.modules.report.ExportTemplate;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.util.List;
-import java.util.function.Function;
 
 @Slf4j
 public class ExcelUtils {
@@ -26,12 +24,12 @@ public class ExcelUtils {
 
     public static <T> void processTemplate(Workbook workbook, ExportTemplate<T> template) {
         try {
-            if (template == null || workbook == null || ArrayUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
+            if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
                 return;
 
-            String[] header = template.getHeader();
-            List<T> body = template.getBody();
-            Function<T, Object[]> rowExtractor = template.getRowExtractor();
+            var header = template.getHeader();
+            var body = template.getBody();
+            var rowExtractor = template.getRowExtractor();
 
             Sheet sheet = getSheet(workbook);
             setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), header);
@@ -46,10 +44,10 @@ public class ExcelUtils {
         }
     }
 
-    public static <T> Workbook processTemplate(ExportTemplate<T> exportTemplate) {
+    public static <T> Workbook processTemplate(ExportTemplate<T> template) {
         try {
             Workbook workbook = new SXSSFWorkbook();
-            processTemplate(workbook, exportTemplate);
+            processTemplate(workbook, template);
             return workbook;
         } catch (Exception e) {
             log.error("processTemplate", e);
@@ -57,9 +55,9 @@ public class ExcelUtils {
         }
     }
 
-    public static <T> void processTemplateToFile(ExportTemplate<T> exportTemplate, String outputPath) {
+    public static <T> void processTemplateToFile(ExportTemplate<T> template, String outputPath) {
         try {
-            writeFile(processTemplate(exportTemplate), outputPath);
+            writeFile(processTemplate(template), outputPath);
         } catch (Exception e) {
             log.error("processTemplateToFile", e);
         }
