@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class CSVUtils {
 
-    public static <T> void processTemplate(ExportTemplate<T> template, Writer writer) {
+    public static <T> void exportTemplate(ExportTemplate<T> template, Writer writer) {
         try {
             if (template == null || writer == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
                 return;
@@ -32,28 +32,28 @@ public class CSVUtils {
                 }
             }
         } catch (Exception e) {
-            log.error("processTemplate", e);
+            log.error("exportTemplate", e);
         }
     }
 
-    public static <T> byte[] processTemplateToBytes(ExportTemplate<T> exportTemplate) {
+    public static <T> byte[] exportTemplateToBytes(ExportTemplate<T> exportTemplate) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
              OutputStreamWriter writer = new OutputStreamWriter(bufferedOutputStream)) {
-            processTemplate(exportTemplate, writer);
+            exportTemplate(exportTemplate, writer);
             return outputStream.toByteArray();
         } catch (Exception e) {
-            log.error("processTemplateToBytes", e);
+            log.error("exportTemplateToBytes", e);
             return new byte[0];
         }
     }
 
-    public static <T> void processTemplateToFile(ExportTemplate<T> exportTemplate, String outputPath) {
+    public static <T> void exportTemplateToFile(ExportTemplate<T> exportTemplate, String outputPath) {
         try (FileWriter writer = new FileWriter(outputPath, StandardCharsets.UTF_8);
              BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
-            processTemplate(exportTemplate, bufferedWriter);
+            exportTemplate(exportTemplate, bufferedWriter);
         } catch (Exception e) {
-            log.error("processTemplateToFile", e);
+            log.error("exportTemplateToFile", e);
         }
     }
 

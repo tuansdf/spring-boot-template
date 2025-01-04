@@ -22,7 +22,7 @@ public class ExcelUtils {
     private static final int DEFAULT_HEADER_ROW = 0;
     private static final int DEFAULT_BODY_ROW = 1;
 
-    public static <T> void processTemplate(Workbook workbook, ExportTemplate<T> template) {
+    public static <T> void exportTemplate(Workbook workbook, ExportTemplate<T> template) {
         try {
             if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
                 return;
@@ -40,34 +40,34 @@ public class ExcelUtils {
                 setRowCellValue(row, rowExtractor.apply(data));
             }
         } catch (Exception e) {
-            log.error("processTemplate", e);
+            log.error("exportTemplate", e);
         }
     }
 
-    public static <T> Workbook processTemplate(ExportTemplate<T> template) {
+    public static <T> Workbook exportTemplate(ExportTemplate<T> template) {
         try {
             Workbook workbook = new SXSSFWorkbook();
-            processTemplate(workbook, template);
+            exportTemplate(workbook, template);
             return workbook;
         } catch (Exception e) {
-            log.error("processTemplate", e);
+            log.error("exportTemplate", e);
             return null;
         }
     }
 
-    public static <T> void processTemplateToFile(ExportTemplate<T> template, String outputPath) {
+    public static <T> void exportTemplateToFile(ExportTemplate<T> template, String outputPath) {
         try {
-            writeFile(processTemplate(template), outputPath);
+            writeFile(exportTemplate(template), outputPath);
         } catch (Exception e) {
-            log.error("processTemplateToFile", e);
+            log.error("exportTemplateToFile", e);
         }
     }
 
-    public static <T> byte[] processTemplateToBytes(ExportTemplate<T> exportTemplate) {
+    public static <T> byte[] exportTemplateToBytes(ExportTemplate<T> exportTemplate) {
         try {
-            return toBytes(processTemplate(exportTemplate));
+            return toBytes(exportTemplate(exportTemplate));
         } catch (Exception e) {
-            log.error("processTemplateToBytes", e);
+            log.error("exportTemplateToBytes", e);
             return new byte[0];
         }
     }

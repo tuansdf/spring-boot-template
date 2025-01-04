@@ -55,10 +55,10 @@ public class PublicController {
             TestUserExportTemplate exportTemplate = new TestUserExportTemplate(data);
 
             String excelPath = ".temp/test-excel-" + DateUtils.getEpochMicro() + ".xlsx";
-            ExcelUtils.processTemplateToFile(exportTemplate, excelPath);
+            ExcelUtils.exportTemplateToFile(exportTemplate, excelPath);
 
             String csvPath = ".temp/test-csv-" + DateUtils.getEpochMicro() + ".csv";
-            CSVUtils.processTemplateToFile(exportTemplate, csvPath);
+            CSVUtils.exportTemplateToFile(exportTemplate, csvPath);
 
             return ResponseEntity.ok(new CommonResponse(HttpStatus.OK));
         } catch (Exception e) {
