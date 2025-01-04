@@ -39,7 +39,7 @@ public class CSVUtils {
             return outputStream.toByteArray();
         } catch (IOException e) {
             log.error("processTemplateToBytes", e);
-            return new byte[]{};
+            return new byte[0];
         }
     }
 

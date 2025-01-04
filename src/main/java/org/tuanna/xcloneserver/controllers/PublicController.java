@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.TestUser;
 import org.tuanna.xcloneserver.modules.excel.TestUserReportTemplate;
-import org.tuanna.xcloneserver.utils.CSVUtils;
-import org.tuanna.xcloneserver.utils.DateUtils;
-import org.tuanna.xcloneserver.utils.ExceptionUtils;
-import org.tuanna.xcloneserver.utils.UUIDUtils;
+import org.tuanna.xcloneserver.utils.*;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -35,7 +32,7 @@ public class PublicController {
         try {
             log.info("START");
             List<TestUser> data = new ArrayList<>();
-            int TOTAL = 100_000;
+            int TOTAL = 500_000;
             ZonedDateTime now = ZonedDateTime.now();
             for (int i = 0; i < TOTAL; i++) {
                 TestUser user = new TestUser();
@@ -57,7 +54,11 @@ public class PublicController {
 //            ExcelUtils.processTemplateToFile(reportTemplate, excelPath);
 //            log.info("EXCELEND");
             String csvPath = "test-csv-" + DateUtils.getEpochMicro() + ".csv";
-            CSVUtils.processTemplateToFile(reportTemplate, csvPath);
+            String compressedCsvPath = "test-csv-" + DateUtils.getEpochMicro() + ".csv.gz";
+            byte[] csvBytes = CSVUtils.processTemplateToBytes(reportTemplate);
+            FileUtils.writeFile(csvBytes, csvPath);
+            byte[] compressedCsv = CompressUtils.toGzip(csvBytes);
+            FileUtils.writeFile(compressedCsv, compressedCsvPath);
             log.info("CSVEND");
             return ResponseEntity.ok(new CommonResponse(HttpStatus.OK));
         } catch (Exception e) {

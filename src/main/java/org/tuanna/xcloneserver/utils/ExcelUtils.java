@@ -70,12 +70,12 @@ public class ExcelUtils {
 
     public static <T> byte[] processTemplateToBytes(ReportTemplate<T> reportTemplate) {
         try {
-            if (CollectionUtils.isEmpty(reportTemplate.getBody())) return new byte[]{};
+            if (CollectionUtils.isEmpty(reportTemplate.getBody())) return new byte[0];
 
             return toBytes(processTemplate(reportTemplate));
         } catch (Exception e) {
             log.error("processTemplateToBytes", e);
-            return new byte[]{};
+            return new byte[0];
         }
     }
 
@@ -98,14 +98,14 @@ public class ExcelUtils {
 
     public static byte[] toBytes(Workbook workbook) {
         try {
-            if (workbook == null) return new byte[]{};
+            if (workbook == null) return new byte[0];
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                  BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
                 workbook.write(bufferedOutputStream);
                 return outputStream.toByteArray();
             }
         } catch (Exception e) {
-            return new byte[]{};
+            return new byte[0];
         } finally {
             try {
                 if (workbook != null) workbook.close();
