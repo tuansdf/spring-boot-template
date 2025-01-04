@@ -45,6 +45,10 @@ public class DateUtils {
         }
     }
 
+    public static class Format {
+        public static final String DATE_TIME_FE = "dd/MM/yyyy HH:mm:ss";
+    }
+
     public static class Formatter {
         public static final DateTimeFormatter DATE_TIME_BE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX").withZone(ZoneOffset.UTC);
     }

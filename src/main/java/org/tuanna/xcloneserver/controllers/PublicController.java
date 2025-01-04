@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.TestUser;
-import org.tuanna.xcloneserver.modules.excel.TestUserReportTemplate;
+import org.tuanna.xcloneserver.modules.excel.TestUserExportTemplate;
 import org.tuanna.xcloneserver.utils.*;
 
 import java.time.ZonedDateTime;
@@ -32,34 +32,37 @@ public class PublicController {
         try {
             log.info("START");
             List<TestUser> data = new ArrayList<>();
-            int TOTAL = 500_000;
+            int TOTAL = 1_000;
             ZonedDateTime now = ZonedDateTime.now();
             for (int i = 0; i < TOTAL; i++) {
                 TestUser user = new TestUser();
-                user.setId(UUIDUtils.generateId());
-                user.setUsername("username" + i);
-                user.setEmail("email" + i);
-                user.setName("name" + i);
-                user.setAddress("address" + i);
-                user.setStreet("street" + i);
-                user.setCountry("country" + i);
-                user.setCity("city" + i);
+                user.setId(UUIDUtils.generate());
+                user.setUsername(String.valueOf(UUIDUtils.generate()));
+                user.setEmail(String.valueOf(UUIDUtils.generate()));
+//                user.setName(String.valueOf(UUIDUtils.generate()));
+//                user.setAddress(String.valueOf(UUIDUtils.generate()));
+//                user.setStreet(String.valueOf(UUIDUtils.generate()));
+//                user.setCountry(String.valueOf(UUIDUtils.generate()));
+//                user.setCity(String.valueOf(UUIDUtils.generate()));
                 user.setCreatedAt(now.plusSeconds(i));
                 user.setUpdatedAt(now.plusMinutes(i));
                 data.add(user);
             }
-            TestUserReportTemplate reportTemplate = new TestUserReportTemplate(data);
-            log.info("DATAEND");
-//            String excelPath = "test-excel-" + DateUtils.getEpochMicro() + ".xlsx";
+            TestUserExportTemplate exportTemplate = new TestUserExportTemplate(data);
+            String excelPath = ".temp/test-excel-" + DateUtils.getEpochMicro() + ".xlsx";
+            String excelComPath = ".temp/test-excel-" + DateUtils.getEpochMicro() + ".xlsx.gz";
 //            ExcelUtils.processTemplateToFile(reportTemplate, excelPath);
-//            log.info("EXCELEND");
-            String csvPath = "test-csv-" + DateUtils.getEpochMicro() + ".csv";
-            String compressedCsvPath = "test-csv-" + DateUtils.getEpochMicro() + ".csv.gz";
-            byte[] csvBytes = CSVUtils.processTemplateToBytes(reportTemplate);
+            byte[] excelBytes = ExcelUtils.processTemplateToBytes(exportTemplate);
+            FileUtils.writeFile(excelBytes, excelPath);
+//            byte[] excelComBytes = CompressUtils.toGzip(excelBytes);
+//            FileUtils.writeFile(excelComBytes, excelComPath);
+
+            String csvPath = ".temp/test-csv-" + DateUtils.getEpochMicro() + ".csv";
+            String compressedCsvPath = ".temp/test-csv-" + DateUtils.getEpochMicro() + ".csv.gz";
+            byte[] csvBytes = CSVUtils.processTemplateToBytes(exportTemplate);
             FileUtils.writeFile(csvBytes, csvPath);
             byte[] compressedCsv = CompressUtils.toGzip(csvBytes);
             FileUtils.writeFile(compressedCsv, compressedCsvPath);
-            log.info("CSVEND");
             return ResponseEntity.ok(new CommonResponse(HttpStatus.OK));
         } catch (Exception e) {
             log.error("loi nay", e);

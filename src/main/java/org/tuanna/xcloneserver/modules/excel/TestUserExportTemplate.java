@@ -6,7 +6,7 @@ import org.tuanna.xcloneserver.utils.DateUtils;
 import java.util.List;
 import java.util.function.Function;
 
-public class TestUserReportTemplate implements ReportTemplate<TestUser> {
+public class TestUserExportTemplate implements ExportTemplate<TestUser> {
 
     private static final String[] header = new String[]{"ID", "Username", "Email", "Name", "Address", "Street", "City", "Country", "Created At", "Updated At"};
     private static final Function<TestUser, Object[]> rowExtractor = user -> new Object[]{
@@ -24,7 +24,7 @@ public class TestUserReportTemplate implements ReportTemplate<TestUser> {
 
     private final List<TestUser> body;
 
-    public TestUserReportTemplate(List<TestUser> body) {
+    public TestUserExportTemplate(List<TestUser> body) {
         this.body = body;
     }
 
