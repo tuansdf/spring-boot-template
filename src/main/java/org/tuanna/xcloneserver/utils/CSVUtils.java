@@ -25,10 +25,10 @@ public class CSVUtils {
 
             var header = template.getHeader();
             var body = template.getBody();
-            var rowExtractor = template.getRowExtractor();
+            var rowDataExtractor = template.getRowDataExtractor(true);
             try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.builder().setHeader(header.toArray(new String[0])).build())) {
                 for (T data : body) {
-                    csvPrinter.printRecord(rowExtractor.apply(data));
+                    csvPrinter.printRecord(rowDataExtractor.apply(data));
                 }
             }
         } catch (Exception e) {

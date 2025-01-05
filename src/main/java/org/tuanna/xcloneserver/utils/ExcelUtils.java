@@ -3,10 +3,7 @@ package org.tuanna.xcloneserver.utils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.tuanna.xcloneserver.modules.report.ExportTemplate;
@@ -17,7 +14,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -34,15 +37,20 @@ public class ExcelUtils {
 
             var header = template.getHeader();
             var body = template.getBody();
-            var rowExtractor = template.getRowExtractor();
+            var rowDataExtractor = template.getRowDataExtractor(false);
+
+            List<CellStyle> styles = null;
+            if (template.getRowStyleExtractor() != null) {
+                styles = template.getRowStyleExtractor().apply(workbook);
+            }
 
             Sheet sheet = getSheet(workbook);
             setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), header);
 
             for (int i = 0; i < body.size(); i++) {
-                T data = body.get(i);
+                T item = body.get(i);
                 Row row = getRow(sheet, DEFAULT_BODY_ROW + i);
-                setRowCellValue(row, rowExtractor.apply(data));
+                setRowCellValue(row, rowDataExtractor.apply(item), styles);
             }
         } catch (Exception e) {
             log.error("exportTemplate", e);
@@ -157,13 +165,42 @@ public class ExcelUtils {
 
     private static <T> void setRowCellValue(Row row, List<T> objects) {
         for (int i = 0; i < objects.size(); i++) {
-            getCell(row, i).setCellValue(CommonUtils.safeToString(objects.get(i)));
+            setCellValue(getCell(row, i), objects.get(i));
+        }
+    }
+
+    private static <T> void setRowCellValue(Row row, List<T> objects, List<CellStyle> styles) {
+        for (int i = 0; i < objects.size(); i++) {
+            if (objects.get(i) == null) continue;
+            Cell cell = getCell(row, i);
+            setCellValue(cell, objects.get(i));
+            if (styles == null || styles.get(i) == null) continue;
+            cell.setCellStyle(styles.get(i));
         }
     }
 
     private static <T> void setRowCellValue(Row row, T[] objects) {
         for (int i = 0; i < objects.length; i++) {
-            getCell(row, i).setCellValue(CommonUtils.safeToString(objects[i]));
+            setCellValue(getCell(row, i), CommonUtils.safeToString(objects[i]));
+        }
+    }
+
+    private static void setCellValue(Cell cell, Object value) {
+        if (cell == null) return;
+        switch (value) {
+            case null -> cell.setCellValue("");
+            case String v -> cell.setCellValue(v);
+            case Double v -> cell.setCellValue(v);
+            case Integer v -> cell.setCellValue(v);
+            case Long v -> cell.setCellValue(v);
+            case Boolean v -> cell.setCellValue(v);
+            case Time v -> cell.setCellValue(v);
+            case Date v -> cell.setCellValue(v);
+            case LocalTime v -> cell.setCellValue(v.toString());
+            case LocalDate v -> cell.setCellValue(v);
+            case LocalDateTime v -> cell.setCellValue(v);
+            case ZonedDateTime v -> cell.setCellValue(v.toLocalDateTime());
+            default -> cell.setCellValue(value.toString());
         }
     }
 
