@@ -35,21 +35,22 @@ public class ExcelUtils {
             if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
                 return;
 
-            var header = template.getHeader();
-            var body = template.getBody();
-            var rowDataExtractor = template.getRowDataExtractor(false);
+            Sheet sheet = getSheet(workbook);
+            if (sheet.getLastRowNum() < 0) {
+                setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), template.getHeader());
+            }
 
             List<CellStyle> styles = null;
             if (template.getRowStyleExtractor() != null) {
                 styles = template.getRowStyleExtractor().apply(workbook);
             }
 
-            Sheet sheet = getSheet(workbook);
-            setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), header);
-
+            var body = template.getBody();
+            var rowDataExtractor = template.getRowDataExtractor(false);
+            int fromRow = sheet.getLastRowNum() + 1;
             for (int i = 0; i < body.size(); i++) {
                 T item = body.get(i);
-                Row row = getRow(sheet, DEFAULT_BODY_ROW + i);
+                Row row = getRow(sheet, fromRow + i);
                 setRowCellValue(row, rowDataExtractor.apply(item), styles);
             }
         } catch (Exception e) {

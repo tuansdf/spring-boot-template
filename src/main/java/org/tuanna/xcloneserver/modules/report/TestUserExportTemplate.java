@@ -1,5 +1,8 @@
 package org.tuanna.xcloneserver.modules.report;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -10,6 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TestUserExportTemplate implements ExportTemplate<TestUser> {
 
     private static final List<String> HEADER = List.of("ID", "Username", "Email", "Name", "Address", "Street", "City", "Country", "Created At", "Updated At");
@@ -42,11 +48,7 @@ public class TestUserExportTemplate implements ExportTemplate<TestUser> {
         return Arrays.asList(null, null, null, null, null, null, null, null, dateCellStyle, dateCellStyle);
     };
 
-    private final List<TestUser> body;
-
-    public TestUserExportTemplate(List<TestUser> body) {
-        this.body = body;
-    }
+    private List<TestUser> body;
 
     @Override
     public List<String> getHeader() {

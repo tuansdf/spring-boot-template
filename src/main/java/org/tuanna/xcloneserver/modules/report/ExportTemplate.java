@@ -16,5 +16,4 @@ public interface ExportTemplate<T> {
 
     Function<Workbook, List<CellStyle>> getRowStyleExtractor();
 
-
 }

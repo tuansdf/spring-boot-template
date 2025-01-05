@@ -2,6 +2,8 @@ package org.tuanna.xcloneserver.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,6 +54,21 @@ public class PublicController {
         List<TestUser> data = createData(total);
         String exportPath = ".temp/excel-" + DateUtils.getEpochMicro() + ".xlsx";
         ExcelUtils.exportTemplateToFile(new TestUserExportTemplate(data), exportPath);
+        return "OK";
+    }
+
+    @GetMapping("/export-excel-batch")
+    public String exportExcelBatch(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+        int BATCH = 1000;
+        List<TestUser> data = createData(total);
+        Workbook workbook = new SXSSFWorkbook();
+        TestUserExportTemplate template = new TestUserExportTemplate();
+        for (int i = 0; i < total; i += BATCH) {
+            template.setBody(data.subList(i, Math.min(total, i + BATCH)));
+            ExcelUtils.exportTemplate(workbook, template);
+        }
+        String exportPath = ".temp/excel-" + DateUtils.getEpochMicro() + ".xlsx";
+        ExcelUtils.writeFile(workbook, exportPath);
         return "OK";
     }
 
