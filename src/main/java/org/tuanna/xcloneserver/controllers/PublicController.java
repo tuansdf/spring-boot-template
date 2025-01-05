@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.report.UserExportTemplate;
 import org.tuanna.xcloneserver.modules.report.UserImportTemplate;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
@@ -22,6 +23,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/public")
 public class PublicController {
+
+    private final CommonMapper commonMapper;
 
     @GetMapping("/health")
     public String check() {
@@ -90,6 +93,14 @@ public class PublicController {
     public String importCsv(@RequestParam String inputPath) {
         var items = CSVUtils.Import.processTemplate(new UserImportTemplate(), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
+        return "OK";
+    }
+
+    @GetMapping("/test-mapper")
+    public String mapper() {
+        List<UserDTO> data = createData(10);
+        log.info("DTOs: {}", data);
+        log.info("Entities: {}", data.stream().map(commonMapper::userDTOToEntity).toList());
         return "OK";
     }
 

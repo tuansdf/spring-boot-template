@@ -23,19 +23,14 @@ public class BaseEntity implements Serializable {
     @Id
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
-
     @Column(name = "status")
     private String status;
-
-    @Column(name = "created_by")
+    @Column(name = "created_by", columnDefinition = "uuid")
     private UUID createdBy;
-
-    @Column(name = "updated_by")
+    @Column(name = "updated_by", columnDefinition = "uuid")
     private UUID updatedBy;
-
     @Column(name = "created_at")
     private ZonedDateTime createdAt;
-
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
 
