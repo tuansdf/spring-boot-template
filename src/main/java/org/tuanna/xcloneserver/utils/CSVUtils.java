@@ -60,22 +60,24 @@ public class CSVUtils {
     public static <T> List<T> importTemplate(ImportTemplate<T> template, String inputPath) {
         List<T> result = new ArrayList<>();
 
-        if (template == null || CollectionUtils.isEmpty(template.getHeader())) return result;
+        try {
+            if (template == null || CollectionUtils.isEmpty(template.getHeader())) return result;
 
-        var header = template.getHeader();
-        var rowExtractor = template.getRowExtractor();
+            var header = template.getHeader();
+            var rowExtractor = template.getRowExtractor();
 
-        try (FileReader reader = new FileReader(Paths.get(inputPath).toFile());
-             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().build())) {
+            try (FileReader reader = new FileReader(Paths.get(inputPath).toFile());
+                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().build())) {
 
-            List<String> csvHeader = csvParser.getHeaderNames();
-            if (csvHeader.size() != header.size()) return result;
-            for (int i = 0; i < csvHeader.size(); i++) {
-                if (!csvHeader.get(i).equals(header.get(i))) return result;
-            }
+                List<String> csvHeader = csvParser.getHeaderNames();
+                if (csvHeader.size() != header.size()) return result;
+                for (int i = 0; i < csvHeader.size(); i++) {
+                    if (!csvHeader.get(i).equals(header.get(i))) return result;
+                }
 
-            for (CSVRecord record : csvParser) {
-                result.add(rowExtractor.apply(record.stream().toList()));
+                for (CSVRecord record : csvParser) {
+                    result.add(rowExtractor.apply(record.stream().toList()));
+                }
             }
         } catch (Exception e) {
             log.error("importTemplate", e);

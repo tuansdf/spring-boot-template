@@ -13,6 +13,7 @@ public class CommonUtils {
     }
 
     public static String safeToString(Object input) {
+        if (input == null) return "";
         try {
             return input.toString();
         } catch (Exception e) {

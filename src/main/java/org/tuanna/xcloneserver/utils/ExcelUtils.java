@@ -8,11 +8,16 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.tuanna.xcloneserver.modules.report.ExportTemplate;
+import org.tuanna.xcloneserver.modules.report.ImportTemplate;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -63,6 +68,41 @@ public class ExcelUtils {
         }
     }
 
+    public static <T> List<T> importTemplate(ImportTemplate<T> template, String inputPath) {
+        List<T> result = new ArrayList<>();
+
+        if (template == null || CollectionUtils.isEmpty(template.getHeader()) || StringUtils.isEmpty(inputPath))
+            return result;
+
+        var header = template.getHeader();
+        var rowExtractor = template.getRowExtractor();
+
+        try {
+            try (FileInputStream inputStream = new FileInputStream(Paths.get(inputPath).toFile());
+                 Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+                Sheet sheet = workbook.getSheetAt(0);
+
+                if (sheet.getLastRowNum() == 0) return result;
+
+                Row headerRow = sheet.getRow(0);
+                if (headerRow.getLastCellNum() != header.size()) return result;
+                for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+                    if (!header.get(i).equals(headerRow.getCell(i).getStringCellValue())) return result;
+                }
+
+                for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                    Row row = sheet.getRow(i);
+                    result.add(rowExtractor.apply(getRowCellValues(row)));
+                }
+            }
+        } catch (Exception e) {
+            log.error("importTemplate", e);
+        }
+
+        return result;
+    }
+
     public static <T> byte[] exportTemplateToBytes(ExportTemplate<T> exportTemplate) {
         try {
             return toBytes(exportTemplate(exportTemplate));
@@ -105,6 +145,14 @@ public class ExcelUtils {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    private static List<String> getRowCellValues(Row row) {
+        List<String> rowData = new ArrayList<>();
+        for (Cell cell : row) {
+            rowData.add(cell.getStringCellValue());
+        }
+        return rowData;
     }
 
     private static <T> void setRowCellValue(Row row, List<T> objects) {

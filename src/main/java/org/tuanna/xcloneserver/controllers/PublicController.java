@@ -2,14 +2,13 @@ package org.tuanna.xcloneserver.controllers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.TestUser;
 import org.tuanna.xcloneserver.modules.report.TestUserExportTemplate;
+import org.tuanna.xcloneserver.modules.report.TestUserImportTemplate;
 import org.tuanna.xcloneserver.utils.*;
 
 import java.time.ZonedDateTime;
@@ -27,44 +26,55 @@ public class PublicController {
         return "OK";
     }
 
-    @GetMapping("/excel")
-    public ResponseEntity<CommonResponse> excel() {
-        try {
-            log.info("START");
-            List<TestUser> data = new ArrayList<>();
-            int TOTAL = 1_000_000;
-            ZonedDateTime now = ZonedDateTime.now();
+    private List<TestUser> createData(int total) {
+        List<TestUser> data = new ArrayList<>();
+        ZonedDateTime now = ZonedDateTime.now();
 
-//            var items = CSVUtils.importTemplate(new TestUserImportTemplate(), ".temp/test-csv.csv");
-//            log.info("items {}", items);
-
-            for (int i = 0; i < TOTAL; i++) {
-                TestUser user = new TestUser();
-                user.setId(UUIDUtils.generate());
-                user.setUsername(String.valueOf(UUIDUtils.generate()));
-                user.setEmail(String.valueOf(UUIDUtils.generate()));
-                user.setName(String.valueOf(UUIDUtils.generate()));
-                user.setAddress(String.valueOf(UUIDUtils.generate()));
-                user.setStreet(String.valueOf(UUIDUtils.generate()));
-                user.setCountry(String.valueOf(UUIDUtils.generate()));
-                user.setCity(String.valueOf(UUIDUtils.generate()));
-                user.setCreatedAt(now.plusSeconds(i));
-                user.setUpdatedAt(now.plusMinutes(i));
-                data.add(user);
-            }
-            TestUserExportTemplate exportTemplate = new TestUserExportTemplate(data);
-
-            String excelPath = ".temp/test-excel-" + DateUtils.getEpochMicro() + ".xlsx";
-            ExcelUtils.exportTemplateToFile(exportTemplate, excelPath);
-
-            String csvPath = ".temp/test-csv-" + DateUtils.getEpochMicro() + ".csv";
-            CSVUtils.exportTemplateToFile(exportTemplate, csvPath);
-
-            return ResponseEntity.ok(new CommonResponse(HttpStatus.OK));
-        } catch (Exception e) {
-            log.error("loi nay", e);
-            return ExceptionUtils.toResponseEntity(e);
+        for (int i = 0; i < total; i++) {
+            TestUser user = new TestUser();
+            user.setId(UUIDUtils.generate());
+            user.setUsername(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setEmail(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setName(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setAddress(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setStreet(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setCountry(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setCity(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setCreatedAt(now.plusSeconds(i));
+            user.setUpdatedAt(now.plusMinutes(i));
+            data.add(user);
         }
+        return data;
+    }
+
+    @GetMapping("/export-excel")
+    public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+        List<TestUser> data = createData(total);
+        String exportPath = ".temp/excel-" + DateUtils.getEpochMicro() + ".xlsx";
+        ExcelUtils.exportTemplateToFile(new TestUserExportTemplate(data), exportPath);
+        return "OK";
+    }
+
+    @GetMapping("/export-csv")
+    public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+        List<TestUser> data = createData(total);
+        String exportPath = ".temp/csv-" + DateUtils.getEpochMicro() + ".csv";
+        CSVUtils.exportTemplateToFile(new TestUserExportTemplate(data), exportPath);
+        return "OK";
+    }
+
+    @GetMapping("/import-excel")
+    public String importExcel(@RequestParam String inputPath) {
+        var items = ExcelUtils.importTemplate(new TestUserImportTemplate(), inputPath);
+        log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
+        return "OK";
+    }
+
+    @GetMapping("/import-csv")
+    public String importCsv(@RequestParam String inputPath) {
+        var items = CSVUtils.importTemplate(new TestUserImportTemplate(), inputPath);
+        log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
+        return "OK";
     }
 
 }
