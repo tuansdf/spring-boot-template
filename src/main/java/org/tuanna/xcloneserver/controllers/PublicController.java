@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tuanna.xcloneserver.dtos.TestUser;
-import org.tuanna.xcloneserver.modules.report.TestUserExportTemplate;
-import org.tuanna.xcloneserver.modules.report.TestUserImportTemplate;
+import org.tuanna.xcloneserver.modules.report.UserExportTemplate;
+import org.tuanna.xcloneserver.modules.report.UserImportTemplate;
+import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.*;
 
 import java.time.ZonedDateTime;
@@ -28,20 +28,19 @@ public class PublicController {
         return "OK";
     }
 
-    private List<TestUser> createData(int total) {
-        List<TestUser> data = new ArrayList<>();
+    private List<UserDTO> createData(int total) {
+        List<UserDTO> data = new ArrayList<>();
         ZonedDateTime now = ZonedDateTime.now();
 
         for (int i = 0; i < total; i++) {
-            TestUser user = new TestUser();
+            UserDTO user = new UserDTO();
             user.setId(UUIDUtils.generate());
             user.setUsername(CommonUtils.safeToString(UUIDUtils.generate()));
             user.setEmail(CommonUtils.safeToString(UUIDUtils.generate()));
             user.setName(CommonUtils.safeToString(UUIDUtils.generate()));
-            user.setAddress(CommonUtils.safeToString(UUIDUtils.generate()));
-            user.setStreet(CommonUtils.safeToString(UUIDUtils.generate()));
-            user.setCountry(CommonUtils.safeToString(UUIDUtils.generate()));
-            user.setCity(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setStatus(CommonUtils.safeToString(UUIDUtils.generate()));
+            user.setCreatedBy(UUIDUtils.generate());
+            user.setUpdatedBy(UUIDUtils.generate());
             user.setCreatedAt(now.plusSeconds(i));
             user.setUpdatedAt(now.plusMinutes(i));
             data.add(user);
@@ -51,21 +50,21 @@ public class PublicController {
 
     @GetMapping("/export-excel")
     public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
-        List<TestUser> data = createData(total);
+        List<UserDTO> data = createData(total);
         String exportPath = ".temp/excel-" + DateUtils.getEpochMicro() + ".xlsx";
-        ExcelUtils.exportTemplateToFile(new TestUserExportTemplate(data), exportPath);
+        ExcelUtils.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
 
     @GetMapping("/export-excel-batch")
     public String exportExcelBatch(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         int BATCH = 1000;
-        List<TestUser> data = createData(total);
+        List<UserDTO> data = createData(total);
         Workbook workbook = new SXSSFWorkbook();
-        TestUserExportTemplate template = new TestUserExportTemplate();
+        UserExportTemplate template = new UserExportTemplate();
         for (int i = 0; i < total; i += BATCH) {
             template.setBody(data.subList(i, Math.min(total, i + BATCH)));
-            ExcelUtils.exportTemplate(workbook, template);
+            ExcelUtils.Export.processTemplate(workbook, template);
         }
         String exportPath = ".temp/excel-" + DateUtils.getEpochMicro() + ".xlsx";
         ExcelUtils.writeFile(workbook, exportPath);
@@ -74,22 +73,22 @@ public class PublicController {
 
     @GetMapping("/export-csv")
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
-        List<TestUser> data = createData(total);
+        List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.getEpochMicro() + ".csv";
-        CSVUtils.exportTemplateToFile(new TestUserExportTemplate(data), exportPath);
+        CSVUtils.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
 
     @GetMapping("/import-excel")
     public String importExcel(@RequestParam String inputPath) {
-        var items = ExcelUtils.importTemplate(new TestUserImportTemplate(), inputPath);
+        var items = ExcelUtils.Import.processTemplate(new UserImportTemplate(), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
 
     @GetMapping("/import-csv")
     public String importCsv(@RequestParam String inputPath) {
-        var items = CSVUtils.importTemplate(new TestUserImportTemplate(), inputPath);
+        var items = CSVUtils.Import.processTemplate(new UserImportTemplate(), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }

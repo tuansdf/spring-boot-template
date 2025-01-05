@@ -30,97 +30,6 @@ public class ExcelUtils {
     private static final int DEFAULT_HEADER_ROW = 0;
     private static final int DEFAULT_BODY_ROW = 1;
 
-    public static <T> void exportTemplate(Workbook workbook, ExportTemplate<T> template) {
-        try {
-            if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
-                return;
-
-            Sheet sheet = getSheet(workbook);
-            if (sheet.getLastRowNum() < 0) {
-                setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), template.getHeader());
-            }
-
-            List<CellStyle> styles = null;
-            if (template.getRowStyleExtractor() != null) {
-                styles = template.getRowStyleExtractor().apply(workbook);
-            }
-
-            var body = template.getBody();
-            var rowDataExtractor = template.getRowDataExtractor(false);
-            int fromRow = sheet.getLastRowNum() + 1;
-            for (int i = 0; i < body.size(); i++) {
-                T item = body.get(i);
-                Row row = getRow(sheet, fromRow + i);
-                setRowCellValue(row, rowDataExtractor.apply(item), styles);
-            }
-        } catch (Exception e) {
-            log.error("exportTemplate", e);
-        }
-    }
-
-    public static <T> Workbook exportTemplate(ExportTemplate<T> template) {
-        try {
-            Workbook workbook = new SXSSFWorkbook();
-            exportTemplate(workbook, template);
-            return workbook;
-        } catch (Exception e) {
-            log.error("exportTemplate", e);
-            return null;
-        }
-    }
-
-    public static <T> void exportTemplateToFile(ExportTemplate<T> template, String outputPath) {
-        try {
-            writeFile(exportTemplate(template), outputPath);
-        } catch (Exception e) {
-            log.error("exportTemplateToFile", e);
-        }
-    }
-
-    public static <T> List<T> importTemplate(ImportTemplate<T> template, String inputPath) {
-        List<T> result = new ArrayList<>();
-
-        if (template == null || CollectionUtils.isEmpty(template.getHeader()) || StringUtils.isEmpty(inputPath))
-            return result;
-
-        var header = template.getHeader();
-        var rowExtractor = template.getRowExtractor();
-
-        try {
-            try (FileInputStream inputStream = new FileInputStream(Paths.get(inputPath).toFile());
-                 Workbook workbook = new XSSFWorkbook(inputStream)) {
-
-                Sheet sheet = workbook.getSheetAt(0);
-
-                if (sheet.getLastRowNum() == 0) return result;
-
-                Row headerRow = sheet.getRow(0);
-                if (headerRow.getLastCellNum() != header.size()) return result;
-                for (int i = 0; i < headerRow.getLastCellNum(); i++) {
-                    if (!header.get(i).equals(headerRow.getCell(i).getStringCellValue())) return result;
-                }
-
-                for (int i = 1; i < sheet.getLastRowNum(); i++) {
-                    Row row = sheet.getRow(i);
-                    result.add(rowExtractor.apply(getRowCellValues(row)));
-                }
-            }
-        } catch (Exception e) {
-            log.error("importTemplate", e);
-        }
-
-        return result;
-    }
-
-    public static <T> byte[] exportTemplateToBytes(ExportTemplate<T> exportTemplate) {
-        try {
-            return toBytes(exportTemplate(exportTemplate));
-        } catch (Exception e) {
-            log.error("exportTemplateToBytes", e);
-            return new byte[0];
-        }
-    }
-
     public static void writeFile(Workbook workbook, String outputPath) {
         try {
             if (workbook == null || StringUtils.isEmpty(outputPath)) return;
@@ -227,6 +136,101 @@ public class ExcelUtils {
             result = row.createCell(i);
         }
         return result;
+    }
+
+    public static class Export {
+        public static <T> void processTemplate(Workbook workbook, ExportTemplate<T> template) {
+            try {
+                if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
+                    return;
+
+                Sheet sheet = getSheet(workbook);
+                if (sheet.getLastRowNum() < 0) {
+                    setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), template.getHeader());
+                }
+
+                List<CellStyle> styles = null;
+                if (template.getRowStyleExtractor() != null) {
+                    styles = template.getRowStyleExtractor().apply(workbook);
+                }
+
+                var body = template.getBody();
+                var rowDataExtractor = template.getRowDataExtractor(false);
+                int fromRow = sheet.getLastRowNum() + 1;
+                for (int i = 0; i < body.size(); i++) {
+                    T item = body.get(i);
+                    Row row = getRow(sheet, fromRow + i);
+                    setRowCellValue(row, rowDataExtractor.apply(item), styles);
+                }
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+            }
+        }
+
+        public static <T> Workbook processTemplate(ExportTemplate<T> template) {
+            try {
+                Workbook workbook = new SXSSFWorkbook();
+                processTemplate(workbook, template);
+                return workbook;
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+                return null;
+            }
+        }
+
+        public static <T> void processTemplateWriteFile(ExportTemplate<T> template, String outputPath) {
+            try {
+                writeFile(processTemplate(template), outputPath);
+            } catch (Exception e) {
+                log.error("processTemplateWriteFile", e);
+            }
+        }
+
+        public static <T> byte[] processTemplateToBytes(ExportTemplate<T> exportTemplate) {
+            try {
+                return toBytes(processTemplate(exportTemplate));
+            } catch (Exception e) {
+                log.error("processTemplateToBytes", e);
+                return new byte[0];
+            }
+        }
+    }
+
+    public static class Import {
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, String inputPath) {
+            List<T> result = new ArrayList<>();
+
+            if (template == null || CollectionUtils.isEmpty(template.getHeader()) || StringUtils.isEmpty(inputPath))
+                return result;
+
+            var header = template.getHeader();
+            var rowExtractor = template.getRowExtractor();
+
+            try {
+                try (FileInputStream inputStream = new FileInputStream(Paths.get(inputPath).toFile());
+                     Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+                    Sheet sheet = workbook.getSheetAt(0);
+
+                    if (sheet.getLastRowNum() == 0) return result;
+
+                    Row headerRow = sheet.getRow(0);
+                    if (headerRow.getLastCellNum() != header.size()) return result;
+                    for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+                        if (!header.get(i).equals(headerRow.getCell(i).getStringCellValue())) return result;
+                    }
+
+                    for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                        Row row = sheet.getRow(i);
+                        result.add(rowExtractor.apply(getRowCellValues(row)));
+                    }
+                }
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+            }
+
+            return result;
+        }
     }
 
 }
