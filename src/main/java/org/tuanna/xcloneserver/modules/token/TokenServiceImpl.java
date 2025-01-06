@@ -54,7 +54,7 @@ public class TokenServiceImpl implements TokenService {
         token.setId(id);
         token.setExpiresAt(DateUtils.toZonedDateTime(jwtPayload.getExpiresAt()));
         token.setType(TokenType.REFRESH_TOKEN);
-        token.setOwnerId(ConversionUtils.safeToUUID(jwtPayload.getSubjectId()));
+        token.setOwnerId(ConversionUtils.toUUID(jwtPayload.getSubjectId()));
         token.setValue(jwt);
         token.setStatus(Status.ACTIVE);
         return tokenRepository.save(token);
