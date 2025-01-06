@@ -17,12 +17,12 @@ public class CommonResponse<T> {
     private String message = HttpStatus.OK.getReasonPhrase();
     @Builder.Default
     private int status = HttpStatus.OK.value();
-    private Object data;
+    private T data;
 
     @JsonIgnore
     private HttpStatus httpStatus;
 
-    public CommonResponse(Object data) {
+    public CommonResponse(T data) {
         this.data = data;
     }
 

@@ -7,11 +7,12 @@ import org.tuanna.xcloneserver.exception.CustomException;
 
 public class ExceptionUtils {
 
-    public static CommonResponse toResponse(Exception e) {
-        CommonResponse result = CommonResponse.builder()
+    public static <T> CommonResponse<T> toResponse(Exception e) {
+        CommonResponse<T> result = CommonResponse.<T>builder()
                 .message(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+                .data(null)
                 .build();
         if (e instanceof CustomException ce) {
             result.setMessage(ce.getMessage());
@@ -21,8 +22,8 @@ public class ExceptionUtils {
         return result;
     }
 
-    public static ResponseEntity<CommonResponse> toResponseEntity(Exception e) {
-        CommonResponse response = toResponse(e);
+    public static <T> ResponseEntity<CommonResponse<T>> toResponseEntity(Exception e) {
+        CommonResponse<T> response = toResponse(e);
         return new ResponseEntity<>(response, response.getHttpStatus());
     }
 

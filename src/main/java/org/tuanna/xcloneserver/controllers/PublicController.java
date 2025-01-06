@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.report.UserExportTemplate;
 import org.tuanna.xcloneserver.modules.report.UserImportTemplate;
@@ -100,14 +98,6 @@ public class PublicController {
 
     @GetMapping("/test-mapper")
     public String mapper() {
-        List<UserDTO> data = createData(10);
-        log.info("DTOs: {}", data);
-        log.info("Entities: {}", data.stream().map(commonMapper::userDTOToEntity).toList());
-        return "OK";
-    }
-
-    @GetMapping("/login")
-    public ResponseEntity<CommonResponse> login() {
         List<UserDTO> data = createData(10);
         log.info("DTOs: {}", data);
         log.info("Entities: {}", data.stream().map(commonMapper::userDTOToEntity).toList());
