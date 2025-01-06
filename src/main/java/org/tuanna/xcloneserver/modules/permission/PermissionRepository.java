@@ -11,6 +11,17 @@ import java.util.UUID;
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
+    @Query(value = "select p.code from role_permission rp " +
+            "left join permission p on (p.id = rp.permission_id) " +
+            "where rp.role_id = :roleId", nativeQuery = true)
+    List<String> findAllCodesByRoleId(Long roleId);
+
+    @Query(value = "select p.code from user_role ur " +
+            "left join role_permission rp on (rp.role_id = ur.role_id) " +
+            "left join permission p on (p.id = rp.permission_id) " +
+            "where ur.user_id = :userId", nativeQuery = true)
+    List<String> findAllCodesByUserId(UUID userId);
+
     @Query(value = "select p.* from role_permission rp " +
             "left join permission p on (p.id = rp.permission_id) " +
             "where rp.role_id = :roleId", nativeQuery = true)

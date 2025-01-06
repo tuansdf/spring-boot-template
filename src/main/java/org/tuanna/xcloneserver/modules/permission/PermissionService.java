@@ -7,6 +7,10 @@ import java.util.UUID;
 
 public interface PermissionService {
 
+    List<String> findAllCodesByRoleId(Long roleId);
+
+    List<String> findAllCodesByUserId(UUID userId);
+
     List<PermissionDTO> findAllByRoleId(Long roleId);
 
     List<PermissionDTO> findAllByUserId(UUID userId);

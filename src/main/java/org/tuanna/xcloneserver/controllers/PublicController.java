@@ -100,7 +100,7 @@ public class PublicController {
     public String mapper() {
         List<UserDTO> data = createData(10);
         log.info("DTOs: {}", data);
-        log.info("Entities: {}", data.stream().map(commonMapper::userDTOToEntity).toList());
+        log.info("Entities: {}", data.stream().map(commonMapper::toEntity).toList());
         return "OK";
     }
 

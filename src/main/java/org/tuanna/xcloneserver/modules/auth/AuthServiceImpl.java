@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.entities.Token;
-import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
@@ -18,14 +17,13 @@ import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.permission.PermissionService;
-import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
 import org.tuanna.xcloneserver.modules.token.TokenService;
-import org.tuanna.xcloneserver.modules.user.UserRepository;
+import org.tuanna.xcloneserver.modules.user.UserService;
+import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -34,20 +32,19 @@ import java.util.UUID;
 @Transactional
 public class AuthServiceImpl implements AuthService {
 
-    private final UserRepository userRepository;
-    private final PermissionService permissionService;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
+    private final UserService userService;
+    private final PermissionService permissionService;
     private final TokenService tokenService;
 
     @Override
     public AuthResponseDTO login(LoginRequestDTO requestDTO) throws CustomException {
-        Optional<User> userOptional = userRepository.findTopByUsernameOrEmail(requestDTO.getUsername(), requestDTO.getUsername());
-        if (userOptional.isEmpty()) {
+        UserDTO user = userService.findOneByUsername(requestDTO.getUsername());
+        if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        User user = userOptional.get();
         boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getPassword(), user.getPassword());
         if (!isPasswordCorrect) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -58,9 +55,9 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        List<PermissionDTO> permissions = permissionService.findAllByUserId(user.getId());
+        List<String> permissions = permissionService.findAllCodesByUserId(user.getId());
 
-        AuthResponseDTO responseDTO = createAuthResponse(user.getId(), permissions.stream().map(PermissionDTO::getCode).toList());
+        AuthResponseDTO responseDTO = createAuthResponse(user.getId(), permissions);
         responseDTO.setUserId(user.getId());
         responseDTO.setUsername(user.getUsername());
         responseDTO.setEmail(user.getEmail());
@@ -71,19 +68,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO register(RegisterRequestDTO requestDTO) throws CustomException {
-        boolean isUserExisted = userRepository.existsByUsernameOrEmail(requestDTO.getUsername(), requestDTO.getEmail());
+        boolean isUserExisted = userService.existsByUsernameOrEmail(requestDTO.getUsername(), requestDTO.getEmail());
         if (isUserExisted) {
             throw new CustomException(HttpStatus.CONFLICT);
         }
 
         String hashedPassword = passwordEncoder.encode(requestDTO.getPassword());
-        User user = new User();
+        UserDTO user = new UserDTO();
         user.setUsername(requestDTO.getUsername());
         user.setEmail(requestDTO.getEmail());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
         user.setStatus(Status.ACTIVE);
-        user = userRepository.save(user);
+        user = userService.save(user);
 
         AuthResponseDTO responseDTO = createAuthResponse(user.getId(), new ArrayList<>());
         responseDTO.setUserId(user.getId());
@@ -114,18 +111,17 @@ public class AuthServiceImpl implements AuthService {
         if (userId == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
+        UserDTO user = userService.findOneById(userId);
+        if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        User user = userOptional.get();
         if (!Status.ACTIVE.equals(user.getStatus())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        List<PermissionDTO> permissions = permissionService.findAllByUserId(user.getId());
+        List<String> permissions = permissionService.findAllCodesByUserId(user.getId());
         String accessJwt = jwtService.createAccessJwt(JWTPayload.builder()
                 .subjectId(ConversionUtils.safeToString(userId))
-                .permissions(PermissionCode.toIndexes(permissions.stream().map(PermissionDTO::getCode).toList()))
+                .permissions(PermissionCode.toIndexes(permissions))
                 .build());
         return AuthResponseDTO.builder()
                 .accessToken(accessJwt)

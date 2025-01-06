@@ -21,6 +21,24 @@ public class PermissionServiceImpl implements PermissionService {
     private final PermissionRepository permissionRepository;
 
     @Override
+    public List<String> findAllCodesByRoleId(Long roleId) {
+        List<String> result = permissionRepository.findAllCodesByRoleId(roleId);
+        if (CollectionUtils.isEmpty(result)) {
+            return new ArrayList<>();
+        }
+        return result;
+    }
+
+    @Override
+    public List<String> findAllCodesByUserId(UUID userId) {
+        List<String> result = permissionRepository.findAllCodesByUserId(userId);
+        if (CollectionUtils.isEmpty(result)) {
+            return new ArrayList<>();
+        }
+        return result;
+    }
+
+    @Override
     public List<PermissionDTO> findAllByRoleId(Long roleId) {
         List<Permission> result = permissionRepository.findAllByRoleId(roleId);
         if (CollectionUtils.isEmpty(result)) {
