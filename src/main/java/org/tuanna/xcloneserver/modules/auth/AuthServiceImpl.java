@@ -95,12 +95,12 @@ public class AuthServiceImpl implements AuthService {
 
     private AuthResponseDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
         JWTPayload accessPayload = new JWTPayload();
-        accessPayload.setSubjectId(userId.toString());
+        accessPayload.setSubjectId(ConversionUtils.safeToString(userId));
         if (!CollectionUtils.isEmpty(permissionCodes)) {
             accessPayload.setPermissions(PermissionCode.toIndexes(permissionCodes));
         }
         String accessJwt = jwtService.createAccessJwt(accessPayload);
-        Token refreshToken = tokenService.createRefreshJwt(JWTPayload.builder().subjectId(userId.toString()).build());
+        Token refreshToken = tokenService.createRefreshJwt(JWTPayload.builder().subjectId(ConversionUtils.safeToString(userId)).build());
         String refreshJwt = refreshToken.getValue();
         return AuthResponseDTO.builder()
                 .accessToken(accessJwt)

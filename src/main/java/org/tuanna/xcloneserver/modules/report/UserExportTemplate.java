@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
+import org.tuanna.xcloneserver.utils.ConversionUtils;
 import org.tuanna.xcloneserver.utils.DateUtils;
 
 import java.util.Arrays;
@@ -20,13 +21,13 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
 
     private static final List<String> HEADER = List.of("ID", "Username", "Email", "Name", "Status", "Created By", "Updated By", "Created At", "Updated At");
     private static final Function<UserDTO, List<Object>> ROW_DATA_EXTRACTOR_FORMATTED = user -> Arrays.asList(
-            user.getId().toString(),
+            ConversionUtils.safeToString(user.getId()),
             user.getUsername(),
             user.getEmail(),
             user.getName(),
             user.getStatus(),
-            user.getCreatedBy().toString(),
-            user.getUpdatedBy().toString(),
+            ConversionUtils.safeToString(user.getCreatedBy()),
+            ConversionUtils.safeToString(user.getUpdatedBy()),
             DateUtils.toFormat(user.getCreatedAt(), DateUtils.Formatter.DATE_TIME_BE),
             DateUtils.toFormat(user.getUpdatedAt(), DateUtils.Formatter.DATE_TIME_BE));
     private static final Function<UserDTO, List<Object>> ROW_DATA_EXTRACTOR = user -> Arrays.asList(
