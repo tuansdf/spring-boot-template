@@ -66,7 +66,7 @@ public class JWTServiceImpl implements JWTService {
         try {
             return objectMapper.readValue(Base64Utils.decodeUrl(jwtVerifier.verify(token).getPayload()), JWTPayload.class);
         } catch (Exception e) {
-            log.error("jwtservice verify", e);
+            log.error("verify", e);
             return null;
         }
     }
