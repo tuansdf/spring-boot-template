@@ -23,7 +23,7 @@ public class BaseEntity implements Serializable {
     @Id
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
-    @Column(name = "status")
+    @Column(name = "status", columnDefinition = "text")
     private String status;
     @Column(name = "created_by", columnDefinition = "uuid")
     private UUID createdBy;

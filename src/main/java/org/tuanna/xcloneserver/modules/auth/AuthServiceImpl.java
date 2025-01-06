@@ -6,7 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.tuanna.xcloneserver.constants.CommonStatus;
+import org.tuanna.xcloneserver.constants.PermissionCode;
+import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -17,7 +18,9 @@ import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.modules.user.UserRepository;
+import org.tuanna.xcloneserver.utils.ConversionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -46,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        boolean isActive = CommonStatus.ACTIVE.equals(user.getStatus());
+        boolean isActive = Status.ACTIVE.equals(user.getStatus());
         if (!isActive) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -73,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(requestDTO.getEmail());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
-        user.setStatus(CommonStatus.ACTIVE);
+        user.setStatus(Status.ACTIVE);
         user = userRepository.save(user);
 
         AuthResponseDTO responseDTO = createAuthResponse(user.getId());
@@ -100,10 +103,23 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDTO createAccessToken(String userId, List<String> permissions) {
+    public AuthResponseDTO refreshAccessToken(UUID userId) throws CustomException {
+        if (userId == null) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userOptional.get();
+        if (!Status.ACTIVE.equals(user.getStatus())) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        // TODO: fetch permissions
+        List<String> permissions = new ArrayList<>();
         String accessJwt = jwtService.createAccessJwt(JWTPayload.builder()
-                .subjectId(userId)
-                .permissions(permissions)
+                .subjectId(ConversionUtils.safeToString(userId))
+                .permissions(PermissionCode.toIndexes(permissions))
                 .build());
         return AuthResponseDTO.builder()
                 .accessToken(accessJwt)

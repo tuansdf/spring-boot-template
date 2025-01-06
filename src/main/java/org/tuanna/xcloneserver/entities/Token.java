@@ -17,15 +17,12 @@ import java.util.UUID;
 @Table(name = "token")
 public class Token extends BaseEntity {
 
-    @Column(name = "owner_id")
+    @Column(name = "owner_id", columnDefinition = "uuid")
     private UUID ownerId;
-
     @Column(name = "value", columnDefinition = "text")
     private String value;
-
-    @Column(name = "type")
+    @Column(name = "type", columnDefinition = "text")
     private String type;
-
     @Column(name = "expires_at")
     private ZonedDateTime expiresAt;
 

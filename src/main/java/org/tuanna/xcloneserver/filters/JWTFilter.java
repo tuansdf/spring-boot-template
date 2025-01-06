@@ -17,7 +17,7 @@ import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.utils.AuthUtils;
-import org.tuanna.xcloneserver.utils.CommonUtils;
+import org.tuanna.xcloneserver.utils.ConversionUtils;
 
 import java.io.IOException;
 
@@ -47,7 +47,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             boolean isValid = true;
             if (!StringUtils.isEmpty(jwtPayload.getTokenId())) {
-                isValid = tokenService.validateTokenById(CommonUtils.safeToUUID(jwtPayload.getTokenId()), jwt, TokenType.REFRESH_TOKEN);
+                isValid = tokenService.validateTokenById(ConversionUtils.safeToUUID(jwtPayload.getTokenId()), jwt, TokenType.REFRESH_TOKEN);
             } else {
                 isValid = TokenType.ACCESS_TOKEN.equals(jwtPayload.getType());
             }

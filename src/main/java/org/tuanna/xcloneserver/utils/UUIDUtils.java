@@ -9,14 +9,6 @@ public class UUIDUtils {
 
     private static final TimeBasedEpochRandomGenerator timeBasedEpochRandomGenerator = Generators.timeBasedEpochRandomGenerator();
 
-    public static UUID fromString(String input) {
-        try {
-            return UUID.fromString(input);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public static UUID generate() {
         return UUID.randomUUID();
     }

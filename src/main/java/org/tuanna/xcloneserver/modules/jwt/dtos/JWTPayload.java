@@ -39,7 +39,7 @@ public class JWTPayload implements Serializable {
     @JsonProperty("sid")
     private String subjectId;
     @JsonProperty("per")
-    private List<String> permissions;
+    private List<Integer> permissions;
 
     public Map<String, Object> toMap() {
         Map<String, Object> result = new HashMap<>();

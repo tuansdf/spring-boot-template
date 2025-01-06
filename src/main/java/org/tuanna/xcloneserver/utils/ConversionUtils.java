@@ -2,7 +2,7 @@ package org.tuanna.xcloneserver.utils;
 
 import java.util.UUID;
 
-public class CommonUtils {
+public class ConversionUtils {
 
     public static UUID safeToUUID(String input) {
         try {

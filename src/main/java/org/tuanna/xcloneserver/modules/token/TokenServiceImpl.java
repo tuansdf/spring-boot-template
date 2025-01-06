@@ -4,12 +4,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.tuanna.xcloneserver.constants.CommonStatus;
+import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
-import org.tuanna.xcloneserver.utils.CommonUtils;
+import org.tuanna.xcloneserver.utils.ConversionUtils;
 import org.tuanna.xcloneserver.utils.DateUtils;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
 
@@ -39,7 +39,7 @@ public class TokenServiceImpl implements TokenService {
         Token token = tokenOptional.get();
         boolean isTypeCorrect = !StringUtils.isEmpty(token.getType()) && token.getType().equals(type);
         boolean isValueCorrect = !StringUtils.isEmpty(token.getValue()) && token.getValue().equals(value);
-        boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
+        boolean isActive = Status.ACTIVE.equals(token.getStatus());
         boolean isExpired = token.getExpiresAt().isAfter(ZonedDateTime.now());
         return isTypeCorrect && isValueCorrect && isActive && isExpired;
     }
@@ -54,9 +54,9 @@ public class TokenServiceImpl implements TokenService {
         token.setId(id);
         token.setExpiresAt(DateUtils.toZonedDateTime(jwtPayload.getExpiresAt()));
         token.setType(TokenType.REFRESH_TOKEN);
-        token.setOwnerId(CommonUtils.safeToUUID(jwtPayload.getSubjectId()));
+        token.setOwnerId(ConversionUtils.safeToUUID(jwtPayload.getSubjectId()));
         token.setValue(jwt);
-        token.setStatus(CommonStatus.ACTIVE);
+        token.setStatus(Status.ACTIVE);
         return tokenRepository.save(token);
     }
 

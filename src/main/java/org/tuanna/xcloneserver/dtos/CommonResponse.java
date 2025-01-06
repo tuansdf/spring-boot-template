@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @ToString
 @Builder
-public class CommonResponse {
+public class CommonResponse<T> {
 
     @Builder.Default
     private String message = HttpStatus.OK.getReasonPhrase();

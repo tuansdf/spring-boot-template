@@ -5,7 +5,7 @@ import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
 
-import java.util.List;
+import java.util.UUID;
 
 public interface AuthService {
 
@@ -13,6 +13,5 @@ public interface AuthService {
 
     AuthResponseDTO register(RegisterRequestDTO requestDTO) throws CustomException;
 
-    AuthResponseDTO createAccessToken(String userId, List<String> permissions);
-
+    AuthResponseDTO refreshAccessToken(UUID userId) throws CustomException;
 }

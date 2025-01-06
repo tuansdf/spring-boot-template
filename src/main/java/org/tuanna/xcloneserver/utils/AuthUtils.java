@@ -4,10 +4,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.modules.auth.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class AuthUtils {
 
@@ -15,18 +16,16 @@ public class AuthUtils {
         if (jwtPayload == null) {
             return;
         }
-        if (jwtPayload.getPermissions() == null) {
-            jwtPayload.setPermissions(new ArrayList<>());
-        }
+        List<String> permissions = PermissionCode.fromIndexes(jwtPayload.getPermissions());
         AuthenticationPrincipal principal = AuthenticationPrincipal.builder()
                 .userId(jwtPayload.getSubjectId())
                 .tokenId(jwtPayload.getTokenId())
-                .permissions(jwtPayload.getPermissions())
+                .permissions(permissions)
                 .build();
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 principal,
                 null,
-                jwtPayload.getPermissions().stream().map(SimpleGrantedAuthority::new).toList());
+                permissions.stream().map(SimpleGrantedAuthority::new).toList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

@@ -91,7 +91,7 @@ public class ExcelUtils {
 
     private static <T> void setRowCellValue(Row row, T[] objects) {
         for (int i = 0; i < objects.length; i++) {
-            setCellValue(getCell(row, i), CommonUtils.safeToString(objects[i]));
+            setCellValue(getCell(row, i), ConversionUtils.safeToString(objects[i]));
         }
     }
 
