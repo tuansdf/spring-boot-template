@@ -13,15 +13,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "configuration")
-public class Configuration extends BaseResourceEntity {
+@Table(name = "permission")
+public class Permission extends BaseResourceEntity {
 
     @Column(name = "code", columnDefinition = "text", unique = true, updatable = false)
     private String code;
-    @Column(name = "value", columnDefinition = "text")
-    private String value;
-    @Column(name = "description", columnDefinition = "text")
-    private String description;
+    @Column(name = "name", columnDefinition = "text")
+    private String name;
     @Column(name = "status", columnDefinition = "text")
     private String status;
     @Column(name = "updated_by", columnDefinition = "uuid")

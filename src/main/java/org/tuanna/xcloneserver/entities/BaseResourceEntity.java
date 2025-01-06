@@ -9,7 +9,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.ZonedDateTime;
-import java.util.UUID;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -23,9 +22,19 @@ public class BaseResourceEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-    @Column(name = "updated_by", columnDefinition = "uuid")
-    private UUID updatedBy;
+    @Column(name = "created_at", updatable = false)
+    private ZonedDateTime createdAt;
     @Column(name = "updated_at")
     private ZonedDateTime updatedAt;
+
+    @PrePersist
+    private void prePersist() {
+        updatedAt = ZonedDateTime.now();
+    }
+
+    @PreUpdate
+    private void preUpdate() {
+        updatedAt = ZonedDateTime.now();
+    }
 
 }

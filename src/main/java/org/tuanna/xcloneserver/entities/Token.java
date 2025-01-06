@@ -25,5 +25,11 @@ public class Token extends BaseEntity {
     private String type;
     @Column(name = "expires_at")
     private ZonedDateTime expiresAt;
+    @Column(name = "status", columnDefinition = "text")
+    private String status;
+    @Column(name = "created_by", columnDefinition = "uuid", updatable = false)
+    private UUID createdBy;
+    @Column(name = "updated_by", columnDefinition = "uuid")
+    private UUID updatedBy;
 
 }

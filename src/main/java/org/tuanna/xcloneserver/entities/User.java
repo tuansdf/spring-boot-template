@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -16,13 +18,19 @@ import lombok.NoArgsConstructor;
 @Table(name = "_user")
 public class User extends BaseEntity {
 
-    @Column(name = "username", unique = true)
+    @Column(name = "username", columnDefinition = "text", unique = true)
     private String username;
-    @Column(name = "email")
+    @Column(name = "email", columnDefinition = "text")
     private String email;
-    @Column(name = "password")
+    @Column(name = "password", columnDefinition = "text")
     private String password;
-    @Column(name = "name")
+    @Column(name = "name", columnDefinition = "text")
     private String name;
+    @Column(name = "status", columnDefinition = "text")
+    private String status;
+    @Column(name = "created_by", columnDefinition = "uuid", updatable = false)
+    private UUID createdBy;
+    @Column(name = "updated_by", columnDefinition = "uuid")
+    private UUID updatedBy;
 
 }
