@@ -13,10 +13,8 @@ import org.springframework.http.HttpStatus;
 @Builder
 public class CommonResponse<T> {
 
-    @Builder.Default
-    private String message = HttpStatus.OK.getReasonPhrase();
-    @Builder.Default
-    private int status = HttpStatus.OK.value();
+    private String message;
+    private int status;
     private T data;
 
     @JsonIgnore
@@ -24,11 +22,19 @@ public class CommonResponse<T> {
 
     public CommonResponse(T data) {
         this.data = data;
+        this.status = HttpStatus.OK.value();
+        this.message = HttpStatus.OK.getReasonPhrase();
     }
 
-    public CommonResponse(String message, int status) {
+    public CommonResponse(String message, HttpStatus status) {
         this.data = null;
-        this.status = status;
+        this.status = status.value();
+        this.message = message;
+    }
+
+    public CommonResponse(HttpStatus status, String message) {
+        this.data = null;
+        this.status = status.value();
         this.message = message;
     }
 

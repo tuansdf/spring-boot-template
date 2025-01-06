@@ -44,12 +44,16 @@ public class JWTFilter extends OncePerRequestFilter {
                 chain.doFilter(servletRequest, servletResponse);
                 return;
             }
+            String tokenType = TokenType.fromIndex(jwtPayload.getType());
 
             boolean isValid = true;
             if (!StringUtils.isEmpty(jwtPayload.getTokenId())) {
-                isValid = tokenService.validateTokenById(ConversionUtils.safeToUUID(jwtPayload.getTokenId()), jwt, TokenType.REFRESH_TOKEN);
+                isValid = TokenType.REFRESH_TOKEN.equals(tokenType);
+                if (isValid) {
+                    isValid = tokenService.validateTokenById(ConversionUtils.safeToUUID(jwtPayload.getTokenId()), jwt, TokenType.REFRESH_TOKEN);
+                }
             } else {
-                isValid = TokenType.ACCESS_TOKEN.equals(jwtPayload.getType());
+                isValid = TokenType.ACCESS_TOKEN.equals(tokenType);
             }
             if (!isValid) {
                 chain.doFilter(servletRequest, servletResponse);

@@ -40,4 +40,13 @@ public class PublicAuthController {
         }
     }
 
+    @PostMapping("/token/refresh")
+    public ResponseEntity<CommonResponse<AuthResponseDTO>> refreshAccessToken(@RequestBody AuthResponseDTO requestDTO) {
+        try {
+            return ResponseEntity.ok(new CommonResponse<>(authService.refreshAccessToken(requestDTO.getRefreshToken())));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
+
 }

@@ -4,11 +4,13 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
@@ -91,11 +93,11 @@ public class AuthServiceImpl implements AuthService {
         return responseDTO;
     }
 
-    private AuthResponseDTO createAuthResponse(UUID userId, List<String> permissions) {
+    private AuthResponseDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
         JWTPayload accessPayload = new JWTPayload();
         accessPayload.setSubjectId(userId.toString());
-        if (!CollectionUtils.isEmpty(permissions)) {
-            accessPayload.setPermissions(PermissionCode.toIndexes(permissions));
+        if (!CollectionUtils.isEmpty(permissionCodes)) {
+            accessPayload.setPermissions(PermissionCode.toIndexes(permissionCodes));
         }
         String accessJwt = jwtService.createAccessJwt(accessPayload);
         Token refreshToken = tokenService.createRefreshJwt(JWTPayload.builder().subjectId(userId.toString()).build());
@@ -107,11 +109,19 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDTO refreshAccessToken(UUID userId) throws CustomException {
-        if (userId == null) {
+    public AuthResponseDTO refreshAccessToken(String refreshJwt) throws CustomException {
+        if (StringUtils.isEmpty(refreshJwt)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UserDTO user = userService.findOneById(userId);
+        JWTPayload jwtPayload = jwtService.verify(refreshJwt);
+        if (StringUtils.isEmpty(jwtPayload.getTokenId()) || !TokenType.REFRESH_TOKEN.equals(TokenType.fromIndex(jwtPayload.getType()))) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        boolean isTokenValid = tokenService.validateTokenById(ConversionUtils.safeToUUID(jwtPayload.getTokenId()), refreshJwt, TokenType.REFRESH_TOKEN);
+        if (!isTokenValid) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        UserDTO user = userService.findOneById(ConversionUtils.safeToUUID(jwtPayload.getSubjectId()));
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -120,7 +130,7 @@ public class AuthServiceImpl implements AuthService {
         }
         List<String> permissions = permissionService.findAllCodesByUserId(user.getId());
         String accessJwt = jwtService.createAccessJwt(JWTPayload.builder()
-                .subjectId(ConversionUtils.safeToString(userId))
+                .subjectId(ConversionUtils.safeToString(user.getId()))
                 .permissions(PermissionCode.toIndexes(permissions))
                 .build());
         return AuthResponseDTO.builder()

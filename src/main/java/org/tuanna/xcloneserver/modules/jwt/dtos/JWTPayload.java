@@ -32,7 +32,7 @@ public class JWTPayload implements Serializable {
     private Instant expiresAt;
 
     @JsonProperty("typ")
-    private String type;
+    private Integer type;
     @JsonProperty("tid")
     private String tokenId;
 
@@ -48,7 +48,7 @@ public class JWTPayload implements Serializable {
         if (issuedAt != null) result.put("iat", issuedAt);
         if (notBefore != null) result.put("nbf", notBefore);
         if (expiresAt != null) result.put("exp", expiresAt);
-        if (!StringUtils.isEmpty(type)) result.put("typ", type);
+        if (type != null) result.put("typ", type);
         if (!StringUtils.isEmpty(tokenId)) result.put("tid", tokenId);
         if (!StringUtils.isEmpty(subjectId)) result.put("sid", subjectId);
         if (!CollectionUtils.isEmpty(permissions)) result.put("per", permissions);

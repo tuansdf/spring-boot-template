@@ -29,4 +29,9 @@ public class CustomException extends Exception {
         this.status = status;
     }
 
+    public CustomException(HttpStatus status, String message) {
+        super(message);
+        this.status = status;
+    }
+
 }

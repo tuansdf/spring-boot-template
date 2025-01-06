@@ -21,9 +21,9 @@ public class PermissionCode {
         List<String> codes = List.of(SUPER_ADMIN, READ_USER, CREATE_USER, UPDATE_USER, DELETE_USER);
         Map<String, Integer> tempStringToIndex = new HashMap<>();
         Map<Integer, String> tempIndexToString = new HashMap<>();
-        for (int i = 1; i < codes.size() + 1; i++) {
-            tempStringToIndex.put(codes.get(i), i);
-            tempIndexToString.put(i, codes.get(i));
+        for (int i = 0; i < codes.size(); i++) {
+            tempStringToIndex.put(codes.get(i), i + 1);
+            tempIndexToString.put(i + 1, codes.get(i));
         }
         stringToIndex = Collections.unmodifiableMap(tempStringToIndex);
         indexToString = Collections.unmodifiableMap(tempIndexToString);
