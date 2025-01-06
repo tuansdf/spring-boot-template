@@ -10,12 +10,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public class BaseResourceEntity implements Serializable {
 
     @Id
@@ -29,7 +29,9 @@ public class BaseResourceEntity implements Serializable {
 
     @PrePersist
     private void prePersist() {
-        updatedAt = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.now();
+        createdAt = now;
+        updatedAt = now;
     }
 
     @PreUpdate

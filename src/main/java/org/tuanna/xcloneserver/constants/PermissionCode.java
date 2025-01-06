@@ -7,7 +7,7 @@ import java.util.*;
 
 public class PermissionCode {
 
-    public static final String SUPER_ADMIN = "ROLE_P_SUPER_ADMIN";
+    public static final String SYSTEM_ADMIN = "ROLE_P_SYSTEM_ADMIN";
     public static final String READ_USER = "ROLE_P_READ_USER";
     public static final String CREATE_USER = "ROLE_P_CREATE_USER";
     public static final String UPDATE_USER = "ROLE_P_UPDATE_USER";
@@ -18,7 +18,7 @@ public class PermissionCode {
 
     static {
         // WARN: Order matters. Be careful when rearranging in production
-        List<String> codes = List.of(SUPER_ADMIN, READ_USER, CREATE_USER, UPDATE_USER, DELETE_USER);
+        List<String> codes = List.of(SYSTEM_ADMIN, READ_USER, CREATE_USER, UPDATE_USER, DELETE_USER);
         Map<String, Integer> tempStringToIndex = new HashMap<>();
         Map<Integer, String> tempIndexToString = new HashMap<>();
         for (int i = 0; i < codes.size(); i++) {

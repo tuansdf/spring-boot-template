@@ -12,12 +12,12 @@ import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
-@MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@MappedSuperclass
+@EntityListeners(AuditingEntityListener.class)
 public class BaseEntity implements Serializable {
 
     @Id
@@ -40,8 +40,7 @@ public class BaseEntity implements Serializable {
 
     @PreUpdate
     private void preUpdate() {
-        ZonedDateTime now = ZonedDateTime.now();
-        updatedAt = now;
+        updatedAt = ZonedDateTime.now();
     }
 
 }
