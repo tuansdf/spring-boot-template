@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public interface RoleService {
 
+    List<String> findAllCodesByUserId(UUID userId);
+
     List<RoleDTO> findAllByUserId(UUID userId);
 
 }

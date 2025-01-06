@@ -21,6 +21,15 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     @Override
+    public List<String> findAllCodesByUserId(UUID userId) {
+        List<String> result = roleRepository.findAllCodesByUserId(userId);
+        if (CollectionUtils.isEmpty(result)) {
+            return new ArrayList<>();
+        }
+        return result;
+    }
+
+    @Override
     public List<RoleDTO> findAllByUserId(UUID userId) {
         List<Role> result = roleRepository.findAllByUserId(userId);
         if (CollectionUtils.isEmpty(result)) {
