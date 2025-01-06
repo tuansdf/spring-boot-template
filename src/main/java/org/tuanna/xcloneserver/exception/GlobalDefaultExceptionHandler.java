@@ -16,12 +16,12 @@ import org.tuanna.xcloneserver.utils.ExceptionUtils;
 public class GlobalDefaultExceptionHandler {
 
     @ExceptionHandler(AuthorizationDeniedException.class)
-    public ResponseEntity<CommonResponse> authorizationDeniedHandler(HttpServletRequest servletRequest, HttpServletResponse servletResponse, Exception e) throws Exception {
-        return new ResponseEntity<>(new CommonResponse(HttpStatus.FORBIDDEN), HttpStatus.FORBIDDEN);
+    public ResponseEntity<CommonResponse<Object>> authorizationDeniedHandler(HttpServletRequest servletRequest, HttpServletResponse servletResponse, Exception e) throws Exception {
+        return new ResponseEntity<>(new CommonResponse<>(HttpStatus.FORBIDDEN), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<CommonResponse> defaultExceptionHandler(HttpServletRequest servletRequest, Exception e) throws Exception {
+    public ResponseEntity<CommonResponse<Object>> defaultExceptionHandler(HttpServletRequest servletRequest, Exception e) throws Exception {
         log.error("defaultExceptionHandler", e);
         return ExceptionUtils.toResponseEntity(e);
     }

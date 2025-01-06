@@ -15,7 +15,7 @@ import org.tuanna.xcloneserver.constants.PermissionCode;
 public class PrivateController {
 
     @GetMapping("/health")
-    @Secured({PermissionCode.ADMIN})
+    @Secured({PermissionCode.SUPER_ADMIN})
     public String check() {
         return "OK";
     }

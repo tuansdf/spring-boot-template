@@ -14,7 +14,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "user_role")
-public class UserRole extends BaseResourceEntity {
+public class UserRole extends BaseEntity {
 
     @Column(name = "user_id", columnDefinition = "uuid")
     private UUID userId;

@@ -1,22 +1,27 @@
 package org.tuanna.xcloneserver.constants;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
 public class PermissionCode {
 
-    public static final String ADMIN = "ROLE_ADMIN";
-    public static final String USER = "ROLE_USER";
+    public static final String SUPER_ADMIN = "ROLE_P_SUPER_ADMIN";
+    public static final String READ_USER = "ROLE_P_READ_USER";
+    public static final String CREATE_USER = "ROLE_P_CREATE_USER";
+    public static final String UPDATE_USER = "ROLE_P_UPDATE_USER";
+    public static final String DELETE_USER = "ROLE_P_DELETE_USER";
 
     private static final Map<String, Integer> stringToIndex;
     private static final Map<Integer, String> indexToString;
 
     static {
-        List<String> codes = List.of(ADMIN, USER);
+        // WARN: Order matters. Be careful when rearranging in production
+        List<String> codes = List.of(SUPER_ADMIN, READ_USER, CREATE_USER, UPDATE_USER, DELETE_USER);
         Map<String, Integer> tempStringToIndex = new HashMap<>();
         Map<Integer, String> tempIndexToString = new HashMap<>();
-        for (int i = 0; i < codes.size(); i++) {
+        for (int i = 1; i < codes.size() + 1; i++) {
             tempStringToIndex.put(codes.get(i), i);
             tempIndexToString.put(i, codes.get(i));
         }
@@ -45,6 +50,7 @@ public class PermissionCode {
     public static List<Integer> toIndexes(List<String> codes) {
         List<Integer> result = new ArrayList<>();
         for (String code : codes) {
+            if (StringUtils.isEmpty(code)) continue;
             Integer index = toIndex(code);
             if (index != null) result.add(index);
         }

@@ -3,6 +3,7 @@ package org.tuanna.xcloneserver.modules.auth;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,8 @@ import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
+import org.tuanna.xcloneserver.modules.permission.PermissionService;
+import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
 import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.modules.user.UserRepository;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
@@ -32,6 +35,7 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
+    private final PermissionService permissionService;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
     private final TokenService tokenService;
@@ -54,7 +58,9 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        AuthResponseDTO responseDTO = createAuthResponse(user.getId());
+        List<PermissionDTO> permissions = permissionService.findAllByUserId(user.getId());
+
+        AuthResponseDTO responseDTO = createAuthResponse(user.getId(), permissions.stream().map(PermissionDTO::getCode).toList());
         responseDTO.setUserId(user.getId());
         responseDTO.setUsername(user.getUsername());
         responseDTO.setEmail(user.getEmail());
@@ -79,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
         user.setStatus(Status.ACTIVE);
         user = userRepository.save(user);
 
-        AuthResponseDTO responseDTO = createAuthResponse(user.getId());
+        AuthResponseDTO responseDTO = createAuthResponse(user.getId(), new ArrayList<>());
         responseDTO.setUserId(user.getId());
         responseDTO.setUsername(user.getUsername());
         responseDTO.setEmail(user.getEmail());
@@ -88,13 +94,14 @@ public class AuthServiceImpl implements AuthService {
         return responseDTO;
     }
 
-    private AuthResponseDTO createAuthResponse(UUID userId) {
-        String accessJwt = jwtService.createAccessJwt(JWTPayload.builder()
-                .subjectId(userId.toString())
-                .build());
-        Token refreshToken = tokenService.createRefreshJwt(JWTPayload.builder()
-                .subjectId(userId.toString())
-                .build());
+    private AuthResponseDTO createAuthResponse(UUID userId, List<String> permissions) {
+        JWTPayload accessPayload = new JWTPayload();
+        accessPayload.setSubjectId(userId.toString());
+        if (!CollectionUtils.isEmpty(permissions)) {
+            accessPayload.setPermissions(PermissionCode.toIndexes(permissions));
+        }
+        String accessJwt = jwtService.createAccessJwt(accessPayload);
+        Token refreshToken = tokenService.createRefreshJwt(JWTPayload.builder().subjectId(userId.toString()).build());
         String refreshJwt = refreshToken.getValue();
         return AuthResponseDTO.builder()
                 .accessToken(accessJwt)
@@ -115,11 +122,10 @@ public class AuthServiceImpl implements AuthService {
         if (!Status.ACTIVE.equals(user.getStatus())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        // TODO: fetch permissions
-        List<String> permissions = new ArrayList<>();
+        List<PermissionDTO> permissions = permissionService.findAllByUserId(user.getId());
         String accessJwt = jwtService.createAccessJwt(JWTPayload.builder()
                 .subjectId(ConversionUtils.safeToString(userId))
-                .permissions(PermissionCode.toIndexes(permissions))
+                .permissions(PermissionCode.toIndexes(permissions.stream().map(PermissionDTO::getCode).toList()))
                 .build());
         return AuthResponseDTO.builder()
                 .accessToken(accessJwt)
