@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
-import org.tuanna.xcloneserver.modules.permission.PermissionService;
-import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
-import org.tuanna.xcloneserver.modules.permission.dtos.SearchPermissionRequestDTO;
+import org.tuanna.xcloneserver.modules.role.RoleService;
+import org.tuanna.xcloneserver.modules.role.dtos.RoleDTO;
+import org.tuanna.xcloneserver.modules.role.dtos.SearchRoleRequestDTO;
 import org.tuanna.xcloneserver.utils.ExceptionUtils;
 
 import java.time.OffsetDateTime;
@@ -18,16 +18,16 @@ import java.time.OffsetDateTime;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/permissions")
-public class PermissionController {
+@RequestMapping("/roles")
+public class RoleController {
 
-    private final PermissionService permissionService;
+    private final RoleService roleService;
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PermissionDTO>> findOne(@PathVariable Long id) {
+    public ResponseEntity<CommonResponse<RoleDTO>> findOne(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.findOneById(id)));
+            return ResponseEntity.ok(new CommonResponse<>(roleService.findOneById(id)));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -35,9 +35,9 @@ public class PermissionController {
 
     @PostMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PermissionDTO>> save(@RequestBody PermissionDTO requestDTO) {
+    public ResponseEntity<CommonResponse<RoleDTO>> save(@RequestBody RoleDTO requestDTO) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.save(requestDTO)));
+            return ResponseEntity.ok(new CommonResponse<>(roleService.save(requestDTO)));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -45,7 +45,7 @@ public class PermissionController {
 
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PaginationResponseData<PermissionDTO>>> search(
+    public ResponseEntity<CommonResponse<PaginationResponseData<RoleDTO>>> search(
             @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
             @RequestParam(required = false, defaultValue = "10") Integer pageSize,
             @RequestParam(required = false) String code,
@@ -54,7 +54,7 @@ public class PermissionController {
             @RequestParam(required = false) OffsetDateTime createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
         try {
-            SearchPermissionRequestDTO requestDTO = SearchPermissionRequestDTO.builder()
+            SearchRoleRequestDTO requestDTO = SearchRoleRequestDTO.builder()
                     .pageNumber(pageNumber)
                     .pageSize(pageSize)
                     .code(code)
@@ -62,7 +62,7 @@ public class PermissionController {
                     .createdAtTo(createdAtTo)
                     .createdAtFrom(createdAtFrom)
                     .build();
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.search(requestDTO, count)));
+            return ResponseEntity.ok(new CommonResponse<>(roleService.search(requestDTO, count)));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

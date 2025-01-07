@@ -21,6 +21,5 @@ public interface PermissionService {
 
     List<PermissionDTO> findAllByUserId(UUID userId);
 
-    PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO);
-
+    PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCountOnly);
 }

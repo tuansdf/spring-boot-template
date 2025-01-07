@@ -12,4 +12,20 @@ public class CommonUtils {
         }
     }
 
+    public static boolean isTrue(Boolean input) {
+        try {
+            return Boolean.TRUE.equals(input);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isFalse(Boolean input) {
+        try {
+            return Boolean.FALSE.equals(input);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

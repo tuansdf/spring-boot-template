@@ -75,9 +75,9 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO) {
+    public PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCountOnly) {
         PaginationResponseData<PermissionDTO> result = executeSearch(requestDTO, true);
-        if (result.getTotalItems() > 0) {
+        if (!isCountOnly && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
         }
         return result;
