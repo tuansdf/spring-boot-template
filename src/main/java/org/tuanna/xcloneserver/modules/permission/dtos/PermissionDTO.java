@@ -29,13 +29,13 @@ public class PermissionDTO {
 
     public static PermissionDTO fromTuple(Tuple tuple) {
         PermissionDTO result = new PermissionDTO();
-        result.id = CommonUtils.getValue(tuple, "id", Long.class);
-        result.code = CommonUtils.getValue(tuple, "code", String.class);
-        result.name = CommonUtils.getValue(tuple, "name", String.class);
-        result.status = CommonUtils.getValue(tuple, "status", String.class);
-        result.updatedBy = CommonUtils.getValue(tuple, "updated_by", UUID.class);
-        result.createdAt = DateUtils.toOffsetDateTime(CommonUtils.getValue(tuple, "created_at", Instant.class));
-        result.updatedAt = DateUtils.toOffsetDateTime(CommonUtils.getValue(tuple, "updated_at", Instant.class));
+        result.setId(CommonUtils.getValue(tuple, "id", Long.class));
+        result.setCode(CommonUtils.getValue(tuple, "code", String.class));
+        result.setName(CommonUtils.getValue(tuple, "name", String.class));
+        result.setStatus(CommonUtils.getValue(tuple, "status", String.class));
+        result.setUpdatedBy(CommonUtils.getValue(tuple, "updated_by", UUID.class));
+        result.setCreatedAt(DateUtils.toOffsetDateTime(CommonUtils.getValue(tuple, "created_at", Instant.class)));
+        result.setUpdatedAt(DateUtils.toOffsetDateTime(CommonUtils.getValue(tuple, "updated_at", Instant.class)));
         return result;
     }
 
