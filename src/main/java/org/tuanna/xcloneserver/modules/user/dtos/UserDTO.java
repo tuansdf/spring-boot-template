@@ -2,7 +2,7 @@ package org.tuanna.xcloneserver.modules.user.dtos;
 
 import lombok.*;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -20,7 +20,7 @@ public class UserDTO {
     private String status;
     private UUID createdBy;
     private UUID updatedBy;
-    private ZonedDateTime createdAt;
-    private ZonedDateTime updatedAt;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 
 }

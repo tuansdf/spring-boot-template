@@ -21,8 +21,8 @@ public class UserImportTemplate implements ImportTemplate<UserDTO> {
         result.setStatus(row.get(4));
         result.setCreatedBy(ConversionUtils.toUUID(row.get(5)));
         result.setUpdatedBy(ConversionUtils.toUUID(row.get(6)));
-        result.setCreatedAt(DateUtils.toZonedDateTime(row.get(7), DateUtils.Formatter.DATE_TIME_BE));
-        result.setUpdatedAt(DateUtils.toZonedDateTime(row.get(8), DateUtils.Formatter.DATE_TIME_BE));
+        result.setCreatedAt(DateUtils.toOffsetDateTime(row.get(7), DateUtils.Formatter.DATE_TIME_BE));
+        result.setUpdatedAt(DateUtils.toOffsetDateTime(row.get(8), DateUtils.Formatter.DATE_TIME_BE));
         return result;
     };
 

@@ -8,7 +8,7 @@ import lombok.ToString;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @NoArgsConstructor
@@ -23,20 +23,20 @@ public class BaseResourceEntity implements Serializable {
     @Column(name = "id")
     private Long id;
     @Column(name = "created_at", updatable = false)
-    private ZonedDateTime createdAt;
+    private OffsetDateTime createdAt;
     @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     @PrePersist
     private void prePersist() {
-        ZonedDateTime now = ZonedDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
         createdAt = now;
         updatedAt = now;
     }
 
     @PreUpdate
     private void preUpdate() {
-        updatedAt = ZonedDateTime.now();
+        updatedAt = OffsetDateTime.now();
     }
 
 }

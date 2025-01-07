@@ -2,10 +2,7 @@ package org.tuanna.xcloneserver.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
@@ -21,7 +18,26 @@ public class DateUtils {
         return getEpochMicro(null);
     }
 
+    public static OffsetDateTime toOffsetDateTime(String input, DateTimeFormatter formatter) {
+        if (StringUtils.isEmpty(input)) return null;
+        try {
+            return OffsetDateTime.parse(input, formatter);
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
+    public static OffsetDateTime toOffsetDateTime(Instant input) {
+        if (input == null) return null;
+        try {
+            return OffsetDateTime.ofInstant(input, ZoneOffset.systemDefault());
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
     public static ZonedDateTime toZonedDateTime(String input, DateTimeFormatter formatter) {
+        if (StringUtils.isEmpty(input)) return null;
         try {
             return ZonedDateTime.parse(input, formatter);
         } catch (Exception ignored) {
@@ -31,13 +47,16 @@ public class DateUtils {
 
     public static ZonedDateTime toZonedDateTime(Instant input) {
         if (input == null) return null;
-        return ZonedDateTime.ofInstant(input, ZoneId.systemDefault());
+        try {
+            return ZonedDateTime.ofInstant(input, ZoneId.systemDefault());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
-    public static String toFormat(ZonedDateTime dateTime, String format) {
-        if (dateTime == null || StringUtils.isEmpty(format)) return "";
+    public static String toFormat(OffsetDateTime dateTime, DateTimeFormatter formatter) {
+        if (dateTime == null || formatter == null) return "";
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
             return formatter.format(dateTime);
         } catch (Exception e) {
             return "";

@@ -1,6 +1,8 @@
 package org.tuanna.xcloneserver.modules.permission;
 
+import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
+import org.tuanna.xcloneserver.modules.permission.dtos.SearchPermissionRequestDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,5 +20,7 @@ public interface PermissionService {
     List<PermissionDTO> findAllByRoleId(Long roleId);
 
     List<PermissionDTO> findAllByUserId(UUID userId);
+
+    PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO);
 
 }

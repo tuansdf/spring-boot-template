@@ -13,7 +13,7 @@ import org.tuanna.xcloneserver.utils.ConversionUtils;
 import org.tuanna.xcloneserver.utils.DateUtils;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,7 +40,7 @@ public class TokenServiceImpl implements TokenService {
         boolean isTypeCorrect = !StringUtils.isEmpty(token.getType()) && token.getType().equals(type);
         boolean isValueCorrect = !StringUtils.isEmpty(token.getValue()) && token.getValue().equals(value);
         boolean isActive = Status.ACTIVE.equals(token.getStatus());
-        boolean isExpired = token.getExpiresAt().isAfter(ZonedDateTime.now());
+        boolean isExpired = token.getExpiresAt().isAfter(OffsetDateTime.now());
         return isTypeCorrect && isValueCorrect && isActive && isExpired;
     }
 
@@ -52,7 +52,7 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
-        token.setExpiresAt(DateUtils.toZonedDateTime(jwtPayload.getExpiresAt()));
+        token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
         token.setType(TokenType.REFRESH_TOKEN);
         token.setOwnerId(ConversionUtils.toUUID(jwtPayload.getSubjectId()));
         token.setValue(jwt);

@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -24,7 +24,7 @@ public class Token extends BaseEntity {
     @Column(name = "type", columnDefinition = "text")
     private String type;
     @Column(name = "expires_at")
-    private ZonedDateTime expiresAt;
+    private OffsetDateTime expiresAt;
     @Column(name = "status", columnDefinition = "text")
     private String status;
     @Column(name = "created_by", columnDefinition = "uuid", updatable = false)

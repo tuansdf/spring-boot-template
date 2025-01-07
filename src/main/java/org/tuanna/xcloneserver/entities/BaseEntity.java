@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
 
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
@@ -24,13 +24,13 @@ public class BaseEntity implements Serializable {
     @Column(name = "id", columnDefinition = "uuid")
     private UUID id;
     @Column(name = "created_at", updatable = false)
-    private ZonedDateTime createdAt;
+    private OffsetDateTime createdAt;
     @Column(name = "updated_at")
-    private ZonedDateTime updatedAt;
+    private OffsetDateTime updatedAt;
 
     @PrePersist
     private void prePersist() {
-        ZonedDateTime now = ZonedDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
         createdAt = now;
         updatedAt = now;
         if (id == null) {
@@ -40,7 +40,7 @@ public class BaseEntity implements Serializable {
 
     @PreUpdate
     private void preUpdate() {
-        updatedAt = ZonedDateTime.now();
+        updatedAt = OffsetDateTime.now();
     }
 
 }

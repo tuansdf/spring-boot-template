@@ -14,7 +14,7 @@ import org.tuanna.xcloneserver.modules.report.UserImportTemplate;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.*;
 
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class PublicController {
 
     private List<UserDTO> createData(int total) {
         List<UserDTO> data = new ArrayList<>();
-        ZonedDateTime now = ZonedDateTime.now();
+        OffsetDateTime now = OffsetDateTime.now();
 
         for (int i = 0; i < total; i++) {
             UserDTO user = new UserDTO();
