@@ -3,6 +3,7 @@ package org.tuanna.xcloneserver.modules.permission.dtos;
 import jakarta.persistence.Tuple;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.tuanna.xcloneserver.utils.CommonUtils;
 import org.tuanna.xcloneserver.utils.DateUtils;
 
 import java.time.Instant;
@@ -28,13 +29,13 @@ public class PermissionDTO {
 
     public static PermissionDTO fromTuple(Tuple tuple) {
         PermissionDTO result = new PermissionDTO();
-        result.id = tuple.get("id", Long.class);
-        result.code = tuple.get("code", String.class);
-        result.name = tuple.get("name", String.class);
-        result.status = tuple.get("status", String.class);
-        result.updatedBy = tuple.get("updated_by", UUID.class);
-        result.createdAt = DateUtils.toOffsetDateTime(tuple.get("created_at", Instant.class));
-        result.updatedAt = DateUtils.toOffsetDateTime(tuple.get("updated_at", Instant.class));
+        result.id = CommonUtils.getValue(tuple, "id", Long.class);
+        result.code = CommonUtils.getValue(tuple, "code", String.class);
+        result.name = CommonUtils.getValue(tuple, "name", String.class);
+        result.status = CommonUtils.getValue(tuple, "status", String.class);
+        result.updatedBy = CommonUtils.getValue(tuple, "updated_by", UUID.class);
+        result.createdAt = DateUtils.toOffsetDateTime(CommonUtils.getValue(tuple, "created_at", Instant.class));
+        result.updatedAt = DateUtils.toOffsetDateTime(CommonUtils.getValue(tuple, "updated_at", Instant.class));
         return result;
     }
 

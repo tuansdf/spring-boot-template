@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.Permission;
@@ -27,7 +26,6 @@ public class PermissionServiceImpl implements PermissionService {
     private final CommonMapper commonMapper;
     private final PermissionRepository permissionRepository;
     private final EntityManager entityManager;
-    private final SqlInitializationAutoConfiguration sqlInitializationAutoConfiguration;
 
     @Override
     public PermissionDTO save(PermissionDTO permissionDTO) {

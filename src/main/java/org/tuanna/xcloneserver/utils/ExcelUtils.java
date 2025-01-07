@@ -15,10 +15,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Paths;
 import java.sql.Time;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -110,6 +107,7 @@ public class ExcelUtils {
             case LocalDate v -> cell.setCellValue(v);
             case LocalDateTime v -> cell.setCellValue(v);
             case ZonedDateTime v -> cell.setCellValue(v.toLocalDateTime());
+            case OffsetDateTime v -> cell.setCellValue(v.toLocalDateTime());
             default -> cell.setCellValue(value.toString());
         }
     }
