@@ -139,7 +139,7 @@ public class ExcelUtils {
     public static class Export {
         public static <T> void processTemplate(Workbook workbook, ExportTemplate<T> template) {
             try {
-                if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
+                if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor(false) == null)
                     return;
 
                 Sheet sheet = getSheet(workbook);
@@ -147,10 +147,7 @@ public class ExcelUtils {
                     setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), template.getHeader());
                 }
 
-                List<CellStyle> styles = null;
-                if (template.getRowStyleExtractor() != null) {
-                    styles = template.getRowStyleExtractor().apply(workbook);
-                }
+                List<CellStyle> styles = template.getColStyles(workbook);
 
                 var body = template.getBody();
                 var rowDataExtractor = template.getRowDataExtractor(false);

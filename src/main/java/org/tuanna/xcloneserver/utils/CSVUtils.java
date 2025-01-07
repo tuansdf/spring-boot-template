@@ -21,7 +21,7 @@ public class CSVUtils {
     public static class Export {
         public static <T> void processTemplate(ExportTemplate<T> template, Writer writer) {
             try {
-                if (template == null || writer == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()))
+                if (template == null || writer == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor(true) == null)
                     return;
 
                 var header = template.getHeader();

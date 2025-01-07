@@ -14,6 +14,6 @@ public interface ExportTemplate<T> {
 
     Function<T, List<Object>> getRowDataExtractor(boolean formatAsString);
 
-    Function<Workbook, List<CellStyle>> getRowStyleExtractor();
+    List<CellStyle> getColStyles(Workbook workbook);
 
 }

@@ -40,12 +40,6 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
             user.getUpdatedBy(),
             user.getCreatedAt(),
             user.getUpdatedAt());
-    private static final Function<Workbook, List<CellStyle>> ROW_STYLE_EXTRACTOR = workbook -> {
-        CellStyle dateCellStyle = workbook.createCellStyle();
-        DataFormat dataFormat = workbook.createDataFormat();
-        dateCellStyle.setDataFormat(dataFormat.getFormat(DateUtils.Format.DATE_TIME_FE));
-        return Arrays.asList(null, null, null, null, null, null, null, dateCellStyle, dateCellStyle);
-    };
 
     private List<UserDTO> body;
 
@@ -65,8 +59,11 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
     }
 
     @Override
-    public Function<Workbook, List<CellStyle>> getRowStyleExtractor() {
-        return ROW_STYLE_EXTRACTOR;
+    public List<CellStyle> getColStyles(Workbook workbook) {
+        CellStyle dateCellStyle = workbook.createCellStyle();
+        DataFormat dataFormat = workbook.createDataFormat();
+        dateCellStyle.setDataFormat(dataFormat.getFormat(DateUtils.Format.DATE_TIME_FE));
+        return Arrays.asList(null, null, null, null, null, null, null, dateCellStyle, dateCellStyle);
     }
 
 }
