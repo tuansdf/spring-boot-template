@@ -1,6 +1,7 @@
 package org.tuanna.xcloneserver.modules.permission;
 
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
+import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
 import org.tuanna.xcloneserver.modules.permission.dtos.SearchPermissionRequestDTO;
 
@@ -9,7 +10,7 @@ import java.util.UUID;
 
 public interface PermissionService {
 
-    PermissionDTO save(PermissionDTO permissionDTO);
+    PermissionDTO save(PermissionDTO permissionDTO, UUID byUserId) throws CustomException;
 
     PermissionDTO findOneById(Long id);
 

@@ -3,6 +3,7 @@ package org.tuanna.xcloneserver.modules.auth.dtos;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -11,8 +12,7 @@ import java.util.List;
 @Builder
 public class AuthenticationPrincipal {
 
-    private String userId;
-    private String tokenId;
+    private UUID userId;
     private List<String> permissions;
 
 }

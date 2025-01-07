@@ -18,8 +18,7 @@ public class AuthUtils {
         }
         List<String> permissions = PermissionCode.fromIndexes(jwtPayload.getPermissions());
         AuthenticationPrincipal principal = AuthenticationPrincipal.builder()
-                .userId(jwtPayload.getSubjectId())
-                .tokenId(jwtPayload.getTokenId())
+                .userId(ConversionUtils.toUUID(jwtPayload.getSubjectId()))
                 .permissions(permissions)
                 .build();
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -30,11 +29,15 @@ public class AuthUtils {
     }
 
     public static AuthenticationPrincipal getAuthenticationPrincipal() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticationPrincipal)) {
-            return null;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticationPrincipal)) {
+                return new AuthenticationPrincipal();
+            }
+            return (AuthenticationPrincipal) authentication.getPrincipal();
+        } catch (Exception e) {
+            return new AuthenticationPrincipal();
         }
-        return (AuthenticationPrincipal) authentication.getPrincipal();
     }
 
 }

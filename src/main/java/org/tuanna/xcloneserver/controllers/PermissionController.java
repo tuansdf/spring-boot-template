@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
+import org.tuanna.xcloneserver.modules.auth.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.permission.PermissionService;
 import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
 import org.tuanna.xcloneserver.modules.permission.dtos.SearchPermissionRequestDTO;
+import org.tuanna.xcloneserver.utils.AuthUtils;
 import org.tuanna.xcloneserver.utils.ExceptionUtils;
 
 import java.time.OffsetDateTime;
@@ -37,7 +39,8 @@ public class PermissionController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PermissionDTO>> save(@RequestBody PermissionDTO requestDTO) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.save(requestDTO)));
+            AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
+            return ResponseEntity.ok(new CommonResponse<>(permissionService.save(requestDTO, principal.getUserId())));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
