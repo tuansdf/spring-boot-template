@@ -2,9 +2,7 @@ package org.tuanna.xcloneserver.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
@@ -24,6 +22,9 @@ public class DateUtils {
         try {
             return switch (input) {
                 case Instant v -> OffsetDateTime.ofInstant(v, ZoneOffset.systemDefault());
+                case LocalDate v -> OffsetDateTime.of(v.atStartOfDay(), ZoneOffset.UTC);
+                case LocalDateTime v -> OffsetDateTime.of(v, ZoneOffset.UTC);
+                case ZonedDateTime v -> v.toOffsetDateTime();
                 case String v -> toOffsetDateTime(v, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
                 case null, default -> null;
             };
