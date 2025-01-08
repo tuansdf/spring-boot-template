@@ -2,7 +2,9 @@ package org.tuanna.xcloneserver.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.*;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 public class DateUtils {
@@ -18,52 +20,28 @@ public class DateUtils {
         return getEpochMicro(null);
     }
 
+    public static OffsetDateTime toOffsetDateTime(Object input) {
+        try {
+            return switch (input) {
+                case Instant v -> OffsetDateTime.ofInstant(v, ZoneOffset.systemDefault());
+                case String v -> toOffsetDateTime(v, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+                case null, default -> null;
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static OffsetDateTime toOffsetDateTime(String input, DateTimeFormatter formatter) {
         if (StringUtils.isEmpty(input)) return null;
         try {
             return OffsetDateTime.parse(input, formatter);
-        } catch (Exception ignored) {
-            return null;
-        }
-    }
-
-    public static OffsetDateTime toOffsetDateTime(Instant input) {
-        if (input == null) return null;
-        try {
-            return OffsetDateTime.ofInstant(input, ZoneOffset.systemDefault());
-        } catch (Exception ignored) {
-            return null;
-        }
-    }
-
-    public static ZonedDateTime toZonedDateTime(String input, DateTimeFormatter formatter) {
-        if (StringUtils.isEmpty(input)) return null;
-        try {
-            return ZonedDateTime.parse(input, formatter);
-        } catch (Exception ignored) {
-            return null;
-        }
-    }
-
-    public static ZonedDateTime toZonedDateTime(Instant input) {
-        if (input == null) return null;
-        try {
-            return ZonedDateTime.ofInstant(input, ZoneId.systemDefault());
         } catch (Exception e) {
             return null;
         }
     }
 
-    public static String toFormat(OffsetDateTime dateTime, DateTimeFormatter formatter) {
-        if (dateTime == null || formatter == null) return "";
-        try {
-            return formatter.format(dateTime);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    public static String toFormat(ZonedDateTime dateTime, DateTimeFormatter formatter) {
+    public static String toString(OffsetDateTime dateTime, DateTimeFormatter formatter) {
         if (dateTime == null || formatter == null) return "";
         try {
             return formatter.format(dateTime);

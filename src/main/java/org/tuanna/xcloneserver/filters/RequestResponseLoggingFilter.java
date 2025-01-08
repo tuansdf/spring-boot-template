@@ -8,7 +8,7 @@ import org.slf4j.MDC;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.tuanna.xcloneserver.constants.Constants;
-import org.tuanna.xcloneserver.utils.DateUtils;
+import org.tuanna.xcloneserver.utils.UUIDUtils;
 
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class RequestResponseLoggingFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         try {
-            MDC.put(Constants.KEY_IN_MDC.REQUEST_ID, String.valueOf(DateUtils.getEpochMicro()));
+            MDC.put(Constants.KEY_IN_MDC.REQUEST_ID, UUIDUtils.generateId().toString());
 
             log.info("ENTER method={} path={} query={}", httpServletRequest.getMethod(), httpServletRequest.getServletPath(), httpServletRequest.getQueryString());
             filterChain.doFilter(servletRequest, servletResponse);

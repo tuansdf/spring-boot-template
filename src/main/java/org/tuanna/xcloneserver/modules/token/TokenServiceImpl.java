@@ -47,7 +47,7 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Token createRefreshJwt(JWTPayload jwtPayload) {
         UUID id = UUIDUtils.generateId();
-        jwtPayload.setTokenId(ConversionUtils.safeToString(id));
+        jwtPayload.setTokenId(ConversionUtils.toString(id));
         String jwt = jwtService.createRefreshToken(jwtPayload);
 
         Token token = new Token();

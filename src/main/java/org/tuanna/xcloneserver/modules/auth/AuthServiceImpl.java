@@ -99,12 +99,12 @@ public class AuthServiceImpl implements AuthService {
 
     private AuthResponseDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
         JWTPayload accessPayload = new JWTPayload();
-        accessPayload.setSubjectId(ConversionUtils.safeToString(userId));
+        accessPayload.setSubjectId(ConversionUtils.toString(userId));
         if (!CollectionUtils.isEmpty(permissionCodes)) {
             accessPayload.setPermissions(PermissionCode.toIndexes(permissionCodes));
         }
         String accessJwt = jwtService.createAccessJwt(accessPayload);
-        Token refreshToken = tokenService.createRefreshJwt(JWTPayload.builder().subjectId(ConversionUtils.safeToString(userId)).build());
+        Token refreshToken = tokenService.createRefreshJwt(JWTPayload.builder().subjectId(ConversionUtils.toString(userId)).build());
         String refreshJwt = refreshToken.getValue();
         return AuthResponseDTO.builder()
                 .accessToken(accessJwt)
@@ -134,7 +134,7 @@ public class AuthServiceImpl implements AuthService {
         }
         List<String> permissions = permissionService.findAllCodesByUserId(user.getId());
         String accessJwt = jwtService.createAccessJwt(JWTPayload.builder()
-                .subjectId(ConversionUtils.safeToString(user.getId()))
+                .subjectId(ConversionUtils.toString(user.getId()))
                 .permissions(PermissionCode.toIndexes(permissions))
                 .build());
         return AuthResponseDTO.builder()

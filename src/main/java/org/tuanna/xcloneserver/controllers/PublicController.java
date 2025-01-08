@@ -41,14 +41,14 @@ public class PublicController {
 
         for (int i = 0; i < total; i++) {
             UserDTO user = new UserDTO();
-            user.setId(UUIDUtils.generate());
-            user.setUsername(ConversionUtils.safeToString(UUIDUtils.generate()));
-            user.setEmail(ConversionUtils.safeToString(UUIDUtils.generate()));
-            user.setName(ConversionUtils.safeToString(UUIDUtils.generate()));
-            user.setPassword(ConversionUtils.safeToString(UUIDUtils.generate()));
+            user.setId(UUIDUtils.generateId());
+            user.setUsername(ConversionUtils.toString(UUIDUtils.generateId()));
+            user.setEmail(ConversionUtils.toString(UUIDUtils.generateId()));
+            user.setName(ConversionUtils.toString(UUIDUtils.generateId()));
+            user.setPassword(ConversionUtils.toString(UUIDUtils.generateId()));
             user.setStatus(Status.ACTIVE);
-            user.setCreatedBy(UUIDUtils.generate());
-            user.setUpdatedBy(UUIDUtils.generate());
+            user.setCreatedBy(UUIDUtils.generateId());
+            user.setUpdatedBy(UUIDUtils.generateId());
             user.setCreatedAt(now.plusSeconds(i));
             user.setUpdatedAt(now.plusMinutes(i));
             data.add(user);

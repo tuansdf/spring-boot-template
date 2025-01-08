@@ -2,7 +2,6 @@ package org.tuanna.xcloneserver.modules.user;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import jakarta.persistence.Tuple;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +13,6 @@ import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.user.dtos.SearchUserRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
-import org.tuanna.xcloneserver.utils.MapperListObjectUtils;
 import org.tuanna.xcloneserver.utils.SQLUtils;
 
 import java.util.*;
@@ -88,7 +86,7 @@ public class UserServiceImpl implements UserService {
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select u.id, u.username ");
+            builder.append(" select u.* ");
         }
         builder.append(" from _user u ");
         builder.append(" where 1=1 ");
@@ -121,20 +119,17 @@ public class UserServiceImpl implements UserService {
             Long count = ConversionUtils.toLong(query.getSingleResult());
             result.setTotalItems(count);
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), Tuple.class);
-            SQLUtils.setParams(query, params);
-            List<Tuple> tuples = query.getResultList();
-            result.setItems(UserDTO.fromTuples(tuples));
 
-//            Query query = entityManager.createNativeQuery(builder.toString(), "UserDTO");
-//            SQLUtils.setParams(query, params);
-//            List<UserDTO> tuples = query.getResultList();
-//            result.setItems(tuples);
+            Query query = entityManager.createNativeQuery(builder.toString(), "UserDTO");
+            SQLUtils.setParams(query, params);
+            List<UserDTO> tuples = query.getResultList();
+            result.setItems(tuples);
 
 //            Query query = entityManager.createNativeQuery(builder.toString(), Tuple.class);
 //            SQLUtils.setParams(query, params);
 //            List<Tuple> tuples = query.getResultList();
 //            result.setItems(MapperListObjectUtils.mapListOfObjects(tuples, UserDTO.class));
+
         }
         return result;
     }

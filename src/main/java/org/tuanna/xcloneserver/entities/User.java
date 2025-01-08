@@ -16,20 +16,24 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "_user")
-@SqlResultSetMappings({
-        @SqlResultSetMapping(name = "UserDTO", classes = {
-                @ConstructorResult(targetClass = UserDTO.class, columns = {
-                        @ColumnResult(name = "id", type = UUID.class),
-                        @ColumnResult(name = "username", type = String.class),
-                        @ColumnResult(name = "email", type = String.class),
-                        @ColumnResult(name = "name", type = String.class),
-                        @ColumnResult(name = "status", type = String.class),
-                        @ColumnResult(name = "created_by", type = UUID.class),
-                        @ColumnResult(name = "updated_by", type = UUID.class),
-                        @ColumnResult(name = "created_at", type = OffsetDateTime.class),
-                        @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
-                })
-        }),
+@SqlResultSetMapping(name = "UserDTO", classes = {
+        @ConstructorResult(targetClass = UserDTO.class, columns = {
+                @ColumnResult(name = "id", type = UUID.class),
+                @ColumnResult(name = "username", type = String.class),
+                @ColumnResult(name = "email", type = String.class),
+                @ColumnResult(name = "name", type = String.class),
+                @ColumnResult(name = "status", type = String.class),
+                @ColumnResult(name = "created_by", type = UUID.class),
+                @ColumnResult(name = "updated_by", type = UUID.class),
+                @ColumnResult(name = "created_at", type = OffsetDateTime.class),
+                @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
+        })
+})
+@SqlResultSetMapping(name = "User1DTO", classes = {
+        @ConstructorResult(targetClass = UserDTO.class, columns = {
+                @ColumnResult(name = "id", type = UUID.class),
+                @ColumnResult(name = "username", type = String.class),
+        })
 })
 public class User extends BaseEntity {
 
