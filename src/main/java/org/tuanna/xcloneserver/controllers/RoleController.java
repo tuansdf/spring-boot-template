@@ -49,8 +49,8 @@ public class RoleController {
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PaginationResponseData<RoleDTO>>> search(
-            @RequestParam(required = false, defaultValue = "1") Integer pageNumber,
-            @RequestParam(required = false, defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) Integer pageNumber,
+            @RequestParam(required = false) Integer pageSize,
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) OffsetDateTime createdAtFrom,

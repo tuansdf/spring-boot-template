@@ -23,6 +23,7 @@ import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.modules.user.UserService;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
+import org.tuanna.xcloneserver.utils.UUIDUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,6 +71,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO register(RegisterRequestDTO requestDTO) throws CustomException {
+        requestDTO.validate();
+
         boolean isUserExisted = userService.existsByUsernameOrEmail(requestDTO.getUsername(), requestDTO.getEmail());
         if (isUserExisted) {
             throw new CustomException(HttpStatus.CONFLICT);
@@ -77,12 +80,13 @@ public class AuthServiceImpl implements AuthService {
 
         String hashedPassword = passwordEncoder.encode(requestDTO.getPassword());
         UserDTO user = new UserDTO();
+        user.setId(UUIDUtils.generateId());
         user.setUsername(requestDTO.getUsername());
         user.setEmail(requestDTO.getEmail());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
         user.setStatus(Status.ACTIVE);
-        user = userService.save(user);
+        user = userService.save(user, user.getId());
 
         AuthResponseDTO responseDTO = createAuthResponse(user.getId(), new ArrayList<>());
         responseDTO.setUserId(user.getId());

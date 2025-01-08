@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Tuple;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.utils.CommonUtils;
 import org.tuanna.xcloneserver.utils.DateUtils;
+import org.tuanna.xcloneserver.utils.ValidationUtils;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -50,6 +53,17 @@ public class UserDTO implements Serializable {
     public static List<UserDTO> fromTuples(List<Tuple> tuples) {
         if (CollectionUtils.isEmpty(tuples)) return new ArrayList<>();
         return tuples.stream().map(UserDTO::fromTuple).toList();
+    }
+
+    public void validate() throws CustomException {
+        ValidationUtils.notEmpty(this.username, "Username is required");
+        ValidationUtils.maxLength(this.username, 255, "Username exceeds the maximum length of 255 characters");
+        ValidationUtils.notEmpty(this.email, "Email is required");
+        ValidationUtils.isEmail(this.email, "Email is invalid");
+        ValidationUtils.maxLength(this.email, 255, "Email exceeds the maximum length of 255 characters");
+        ValidationUtils.notEmpty(this.password, "Password is required");
+        ValidationUtils.maxLength(this.password, 255, "Password exceeds the maximum length of 255 characters");
+        ValidationUtils.isIn(this.status, List.of(Status.ACTIVE, Status.INACTIVE, Status.PENDING), "Status is invalid");
     }
 
 }

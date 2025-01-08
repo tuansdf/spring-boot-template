@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.tuanna.xcloneserver.constants.Constants;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.Role;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -17,7 +16,6 @@ import org.tuanna.xcloneserver.modules.role.dtos.RoleDTO;
 import org.tuanna.xcloneserver.modules.role.dtos.SearchRoleRequestDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
 import org.tuanna.xcloneserver.utils.SQLUtils;
-import org.tuanna.xcloneserver.utils.ValidationUtils;
 
 import java.util.*;
 
@@ -31,24 +29,26 @@ public class RoleServiceImpl implements RoleService {
     private final EntityManager entityManager;
 
     @Override
-    public RoleDTO save(RoleDTO roleDTO, UUID byUser) throws CustomException {
-        Role role = null;
-        if (roleDTO.getId() != null) {
-            Optional<Role> roleOptional = roleRepository.findById(roleDTO.getId());
-            role = roleOptional.orElse(null);
+    public RoleDTO save(RoleDTO requestDTO, UUID byUser) throws CustomException {
+        Role result = null;
+        if (requestDTO.getId() != null) {
+            Optional<Role> roleOptional = roleRepository.findById(requestDTO.getId());
+            if (roleOptional.isPresent()) {
+                requestDTO.validateUpdate();
+                result = roleOptional.get();
+            }
         }
-        if (role == null) {
-            ValidationUtils.startsWith(roleDTO.getCode(), Constants.ROLE_STARTS_WITH, "Missing code");
-
-            role = new Role();
-            role.setCode(roleDTO.getCode());
-            role.setCreatedBy(byUser);
+        if (result == null) {
+            requestDTO.validateCreate();
+            result = new Role();
+            result.setCode(requestDTO.getCode());
+            result.setCreatedBy(byUser);
         }
-        role.setName(roleDTO.getName());
-        role.setDescription(roleDTO.getDescription());
-        role.setStatus(roleDTO.getStatus());
-        role.setUpdatedBy(byUser);
-        return commonMapper.toDTO(roleRepository.save(role));
+        result.setName(requestDTO.getName());
+        result.setDescription(requestDTO.getDescription());
+        result.setStatus(requestDTO.getStatus());
+        result.setUpdatedBy(byUser);
+        return commonMapper.toDTO(roleRepository.save(result));
     }
 
     @Override

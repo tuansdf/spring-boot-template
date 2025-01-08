@@ -12,17 +12,17 @@ public class CommonUtils {
         }
     }
 
-    public static boolean isTrue(Boolean input) {
+    public static boolean isTrue(String input) {
         try {
-            return Boolean.TRUE.equals(input);
+            return "true".equals(input);
         } catch (Exception e) {
             return false;
         }
     }
 
-    public static boolean isFalse(Boolean input) {
+    public static boolean isFalse(String input) {
         try {
-            return Boolean.FALSE.equals(input);
+            return "false".equals(input);
         } catch (Exception e) {
             return false;
         }

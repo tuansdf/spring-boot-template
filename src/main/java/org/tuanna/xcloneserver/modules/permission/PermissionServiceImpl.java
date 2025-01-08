@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.tuanna.xcloneserver.constants.Constants;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.Permission;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -18,7 +17,6 @@ import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
 import org.tuanna.xcloneserver.modules.permission.dtos.SearchPermissionRequestDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
 import org.tuanna.xcloneserver.utils.SQLUtils;
-import org.tuanna.xcloneserver.utils.ValidationUtils;
 
 import java.util.*;
 
@@ -33,23 +31,25 @@ public class PermissionServiceImpl implements PermissionService {
     private final EntityManager entityManager;
 
     @Override
-    public PermissionDTO save(PermissionDTO permissionDTO, UUID byUser) throws CustomException {
-        Permission permission = null;
-        if (permissionDTO.getId() != null) {
-            Optional<Permission> permissionOptional = permissionRepository.findById(permissionDTO.getId());
-            permission = permissionOptional.orElse(null);
+    public PermissionDTO save(PermissionDTO requestDTO, UUID byUser) throws CustomException {
+        Permission result = null;
+        if (requestDTO.getId() != null) {
+            Optional<Permission> permissionOptional = permissionRepository.findById(requestDTO.getId());
+            if (permissionOptional.isPresent()) {
+                requestDTO.validateUpdate();
+                result = permissionOptional.get();
+            }
         }
-        if (permission == null) {
-            ValidationUtils.startsWith(permissionDTO.getCode(), Constants.PERMISSION_STARTS_WITH, "Missing code");
-
-            permission = new Permission();
-            permission.setCode(permissionDTO.getCode());
-            permission.setCreatedBy(byUser);
+        if (result == null) {
+            requestDTO.validateCreate();
+            result = new Permission();
+            result.setCode(requestDTO.getCode());
+            result.setCreatedBy(byUser);
         }
-        permission.setName(permissionDTO.getName());
-        permission.setStatus(permissionDTO.getStatus());
-        permission.setUpdatedBy(byUser);
-        return commonMapper.toDTO(permissionRepository.save(permission));
+        result.setName(requestDTO.getName());
+        result.setStatus(requestDTO.getStatus());
+        result.setUpdatedBy(byUser);
+        return commonMapper.toDTO(permissionRepository.save(result));
     }
 
     @Override

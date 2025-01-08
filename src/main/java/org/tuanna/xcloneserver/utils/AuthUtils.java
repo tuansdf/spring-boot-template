@@ -1,5 +1,6 @@
 package org.tuanna.xcloneserver.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +11,7 @@ import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 
 import java.util.List;
 
+@Slf4j
 public class AuthUtils {
 
     public static void setAuthentication(JWTPayload jwtPayload) {
@@ -38,6 +40,11 @@ public class AuthUtils {
         } catch (Exception e) {
             return new AuthenticationPrincipal();
         }
+    }
+
+    public static boolean hasAnyPermission(List<String> permissions) {
+        AuthenticationPrincipal principal = getAuthenticationPrincipal();
+        return permissions.stream().anyMatch(permissions::contains);
     }
 
 }

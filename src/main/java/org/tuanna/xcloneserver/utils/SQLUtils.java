@@ -1,6 +1,7 @@
 package org.tuanna.xcloneserver.utils;
 
 import jakarta.persistence.Query;
+import org.apache.commons.collections4.MapUtils;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 
 import java.util.Map;
@@ -25,7 +26,7 @@ public class SQLUtils {
     }
 
     static public void setParams(Query query, Map<String, Object> params) {
-        if (params == null || params.isEmpty()) return;
+        if (query == null || MapUtils.isEmpty(params)) return;
 
         for (Map.Entry<String, Object> item : params.entrySet()) {
             query.setParameter(item.getKey(), item.getValue());

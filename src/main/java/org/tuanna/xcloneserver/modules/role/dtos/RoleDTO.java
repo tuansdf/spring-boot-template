@@ -3,8 +3,12 @@ package org.tuanna.xcloneserver.modules.role.dtos;
 import jakarta.persistence.Tuple;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.tuanna.xcloneserver.constants.Constants;
+import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.utils.CommonUtils;
 import org.tuanna.xcloneserver.utils.DateUtils;
+import org.tuanna.xcloneserver.utils.ValidationUtils;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -47,6 +51,20 @@ public class RoleDTO implements Serializable {
     public static List<RoleDTO> fromTuples(List<Tuple> tuples) {
         if (CollectionUtils.isEmpty(tuples)) return new ArrayList<>();
         return tuples.stream().map(RoleDTO::fromTuple).toList();
+    }
+
+    public void validateCreate() throws CustomException {
+        ValidationUtils.notEmpty(this.code, "Code is required");
+        ValidationUtils.startsWith(this.code, Constants.ROLE_STARTS_WITH, "Code must start with " + Constants.ROLE_STARTS_WITH);
+        ValidationUtils.maxLength(this.code, 255, "Code exceeds the maximum length of 255 characters");
+        ValidationUtils.maxLength(this.name, 255, "Name exceeds the maximum length of 255 characters");
+        ValidationUtils.maxLength(this.description, 255, "Description exceeds the maximum length of 255 characters");
+        ValidationUtils.isIn(this.status, List.of(Status.ACTIVE, Status.INACTIVE), "Status is invalid");
+    }
+
+    public void validateUpdate() throws CustomException {
+        ValidationUtils.maxLength(this.name, 255, "Name exceeds the maximum length of 255 characters");
+        ValidationUtils.isIn(this.status, List.of(Status.ACTIVE, Status.INACTIVE), "Status is invalid");
     }
 
 }
