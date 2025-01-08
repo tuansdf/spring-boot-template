@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.report.UserExportTemplate;
 import org.tuanna.xcloneserver.modules.report.UserImportTemplate;
+import org.tuanna.xcloneserver.modules.user.UserRepository;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.*;
 
@@ -25,6 +28,7 @@ import java.util.List;
 public class PublicController {
 
     private final CommonMapper commonMapper;
+    private final UserRepository userRepository;
 
     @GetMapping("/health")
     public String check() {
@@ -41,7 +45,8 @@ public class PublicController {
             user.setUsername(ConversionUtils.safeToString(UUIDUtils.generate()));
             user.setEmail(ConversionUtils.safeToString(UUIDUtils.generate()));
             user.setName(ConversionUtils.safeToString(UUIDUtils.generate()));
-            user.setStatus(ConversionUtils.safeToString(UUIDUtils.generate()));
+            user.setPassword(ConversionUtils.safeToString(UUIDUtils.generate()));
+            user.setStatus(Status.ACTIVE);
             user.setCreatedBy(UUIDUtils.generate());
             user.setUpdatedBy(UUIDUtils.generate());
             user.setCreatedAt(now.plusSeconds(i));
@@ -101,6 +106,14 @@ public class PublicController {
         List<UserDTO> data = createData(10);
         log.info("DTOs: {}", data);
         log.info("Entities: {}", data.stream().map(commonMapper::toEntity).toList());
+        return "OK";
+    }
+
+    @GetMapping("/generate-users")
+    public String generateUsers(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+        List<UserDTO> data = createData(total);
+        List<User> entities = data.stream().map(commonMapper::toEntity).toList();
+        userRepository.saveAll(entities);
         return "OK";
     }
 

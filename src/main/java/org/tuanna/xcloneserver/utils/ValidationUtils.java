@@ -58,7 +58,7 @@ public class ValidationUtils {
     }
 
     public static <T> void isIn(T input, List<T> valid, String message) throws CustomException {
-        if (input != null && !CollectionUtils.isEmpty(valid) && valid.contains(input)) {
+        if (input != null && !CollectionUtils.isEmpty(valid) && !valid.contains(input)) {
             throw new CustomException(message, HttpStatus.BAD_REQUEST);
         }
     }

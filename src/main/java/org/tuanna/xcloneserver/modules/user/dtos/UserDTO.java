@@ -36,6 +36,20 @@ public class UserDTO implements Serializable {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
+    public UserDTO(
+            UUID id, String username, String email, String name, String status, UUID createdBy, UUID updatedBy,
+            OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.name = name;
+        this.status = status;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public static UserDTO fromTuple(Tuple tuple) {
         UserDTO result = new UserDTO();
         result.setId(CommonUtils.getValue(tuple, "id", UUID.class));
