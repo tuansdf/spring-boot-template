@@ -33,12 +33,43 @@ public class ConversionUtils {
                 case Integer v -> v.longValue();
                 case Double v -> v.longValue();
                 case BigDecimal v -> v.longValue();
-                case String v -> Long.valueOf(v);
+                case String v -> Long.parseLong(v);
                 case null, default -> null;
             };
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static Integer toInt(Object input) {
+        try {
+            return switch (input) {
+                case Integer v -> v;
+                case Long v -> v.intValue();
+                case Double v -> v.intValue();
+                case BigDecimal v -> v.intValue();
+                case String v -> Integer.parseInt(v);
+                case null, default -> null;
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static long safeToLong(Object input) {
+        Long result = toLong(input);
+        if (result == null) {
+            return 0L;
+        }
+        return result;
+    }
+
+    public static int safeToInt(Object input) {
+        Integer result = toInt(input);
+        if (result == null) {
+            return 0;
+        }
+        return result;
     }
 
 }

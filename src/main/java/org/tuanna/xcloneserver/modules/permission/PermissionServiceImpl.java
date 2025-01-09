@@ -2,13 +2,13 @@ package org.tuanna.xcloneserver.modules.permission;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import jakarta.persistence.Tuple;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.tuanna.xcloneserver.constants.ResultSetName;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.Permission;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -136,13 +136,14 @@ public class PermissionServiceImpl implements PermissionService {
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
             SQLUtils.setParams(query, params);
-            Long count = ConversionUtils.toLong(query.getSingleResult());
+            long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
+            result.setTotalPages(SQLUtils.getTotalPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), Tuple.class);
+            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.PERMISSION_SEARCH);
             SQLUtils.setParams(query, params);
-            List<Tuple> tuples = query.getResultList();
-            result.setItems(PermissionDTO.fromTuples(tuples));
+            List<PermissionDTO> items = query.getResultList();
+            result.setItems(items);
         }
         return result;
     }

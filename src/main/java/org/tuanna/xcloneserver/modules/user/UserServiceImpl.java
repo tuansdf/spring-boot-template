@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.tuanna.xcloneserver.constants.ResultSet;
+import org.tuanna.xcloneserver.constants.ResultSetName;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -117,13 +117,14 @@ public class UserServiceImpl implements UserService {
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
             SQLUtils.setParams(query, params);
-            Long count = ConversionUtils.toLong(query.getSingleResult());
+            long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
+            result.setTotalPages(SQLUtils.getTotalPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSet.SEARCH_USER);
+            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.USER_SEARCH);
             SQLUtils.setParams(query, params);
-            List<UserDTO> tuples = query.getResultList();
-            result.setItems(tuples);
+            List<UserDTO> items = query.getResultList();
+            result.setItems(items);
         }
         return result;
     }

@@ -33,4 +33,8 @@ public class SQLUtils {
         }
     }
 
+    public static int getTotalPages(long totalItems, int pageSize) {
+        return ConversionUtils.safeToInt(totalItems / pageSize + (totalItems % pageSize > 0 ? 1 : 0));
+    }
+
 }
