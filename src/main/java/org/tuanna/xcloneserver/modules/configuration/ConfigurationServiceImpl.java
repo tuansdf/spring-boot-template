@@ -27,8 +27,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public String findOneValueById(Long id) {
-        Optional<Configuration> configurationOptional = configurationRepository.findById(id);
+    public String findOneValueByCode(String code) {
+        Optional<Configuration> configurationOptional = configurationRepository.findTopByCode(code);
         if (configurationOptional.isEmpty()) {
             return null;
         }

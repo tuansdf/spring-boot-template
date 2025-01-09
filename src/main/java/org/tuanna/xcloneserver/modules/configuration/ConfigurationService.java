@@ -6,5 +6,5 @@ public interface ConfigurationService {
 
     ConfigurationDTO findOneById(Long id);
 
-    String findOneValueById(Long id);
+    String findOneValueByCode(String code);
 }
