@@ -29,7 +29,7 @@ public class RoleServiceImpl implements RoleService {
     private final EntityManager entityManager;
 
     @Override
-    public RoleDTO save(RoleDTO requestDTO, UUID byUser) throws CustomException {
+    public RoleDTO save(RoleDTO requestDTO, UUID actionBy) throws CustomException {
         Role result = null;
         if (requestDTO.getId() != null) {
             Optional<Role> roleOptional = roleRepository.findById(requestDTO.getId());
@@ -42,12 +42,12 @@ public class RoleServiceImpl implements RoleService {
             requestDTO.validateCreate();
             result = new Role();
             result.setCode(requestDTO.getCode());
-            result.setCreatedBy(byUser);
+            result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
         result.setDescription(requestDTO.getDescription());
         result.setStatus(requestDTO.getStatus());
-        result.setUpdatedBy(byUser);
+        result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(roleRepository.save(result));
     }
 

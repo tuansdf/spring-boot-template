@@ -121,7 +121,7 @@ public class AuthServiceImpl implements AuthService {
         if (StringUtils.isEmpty(jwtPayload.getTokenId()) || !TokenType.REFRESH_TOKEN.equals(TokenType.fromIndex(jwtPayload.getType()))) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        boolean isTokenValid = tokenService.validateTokenById(ConversionUtils.toUUID(jwtPayload.getTokenId()), refreshJwt, TokenType.REFRESH_TOKEN);
+        boolean isTokenValid = tokenService.validateToken(ConversionUtils.toUUID(jwtPayload.getTokenId()), refreshJwt, TokenType.REFRESH_TOKEN);
         if (!isTokenValid) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }

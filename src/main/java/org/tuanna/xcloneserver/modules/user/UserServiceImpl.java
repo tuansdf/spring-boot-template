@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserDTO save(UserDTO requestDTO, UUID byUser) throws CustomException {
+    public UserDTO save(UserDTO requestDTO, UUID actionBy) throws CustomException {
         requestDTO.validate();
         User result = null;
         if (requestDTO.getId() != null) {
@@ -37,14 +37,14 @@ public class UserServiceImpl implements UserService {
         }
         if (result == null) {
             result = new User();
-            result.setCreatedBy(byUser);
+            result.setCreatedBy(actionBy);
         }
         result.setUsername(requestDTO.getUsername());
         result.setEmail(requestDTO.getEmail());
         result.setName(requestDTO.getName());
         result.setPassword(requestDTO.getPassword());
         result.setStatus(requestDTO.getStatus());
-        result.setUpdatedBy(byUser);
+        result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(userRepository.save(result));
     }
 

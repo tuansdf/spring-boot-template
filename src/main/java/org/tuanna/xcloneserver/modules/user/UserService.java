@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserDTO save(UserDTO userDTO, UUID byUser) throws CustomException;
+    UserDTO save(UserDTO userDTO, UUID actionBy) throws CustomException;
 
     boolean existsByUsernameOrEmail(String username, String email);
 

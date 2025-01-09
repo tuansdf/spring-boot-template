@@ -31,7 +31,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final EntityManager entityManager;
 
     @Override
-    public PermissionDTO save(PermissionDTO requestDTO, UUID byUser) throws CustomException {
+    public PermissionDTO save(PermissionDTO requestDTO, UUID actionBy) throws CustomException {
         Permission result = null;
         if (requestDTO.getId() != null) {
             Optional<Permission> permissionOptional = permissionRepository.findById(requestDTO.getId());
@@ -44,11 +44,11 @@ public class PermissionServiceImpl implements PermissionService {
             requestDTO.validateCreate();
             result = new Permission();
             result.setCode(requestDTO.getCode());
-            result.setCreatedBy(byUser);
+            result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
         result.setStatus(requestDTO.getStatus());
-        result.setUpdatedBy(byUser);
+        result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(permissionRepository.save(result));
     }
 

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface TokenService {
 
-    boolean validateTokenById(UUID id, String value, String type);
+    boolean validateToken(UUID id, String value, String type);
 
     Token createRefreshJwt(JWTPayload jwtPayload);
 }

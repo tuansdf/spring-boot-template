@@ -26,7 +26,7 @@ public class TokenServiceImpl implements TokenService {
     private final JWTService jwtService;
 
     @Override
-    public boolean validateTokenById(UUID id, String value, String type) {
+    public boolean validateToken(UUID id, String value, String type) {
         if (id == null) {
             return false;
         }
@@ -44,8 +44,16 @@ public class TokenServiceImpl implements TokenService {
         return isTypeCorrect && isValueCorrect && isActive && isExpired;
     }
 
+    public void deactivatePastRefreshToken(UUID ownerId, UUID actionBy) {
+        OffsetDateTime now = OffsetDateTime.now();
+        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(ownerId, TokenType.REFRESH_TOKEN, now, Status.INACTIVE, now, actionBy);
+    }
+
     @Override
     public Token createRefreshJwt(JWTPayload jwtPayload) {
+        UUID userId = ConversionUtils.toUUID(jwtPayload.getSubjectId());
+        deactivatePastRefreshToken(userId, userId);
+
         UUID id = UUIDUtils.generateId();
         jwtPayload.setTokenId(ConversionUtils.toString(id));
         String jwt = jwtService.createRefreshToken(jwtPayload);
@@ -54,9 +62,11 @@ public class TokenServiceImpl implements TokenService {
         token.setId(id);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
         token.setType(TokenType.REFRESH_TOKEN);
-        token.setOwnerId(ConversionUtils.toUUID(jwtPayload.getSubjectId()));
+        token.setOwnerId(userId);
         token.setValue(jwt);
         token.setStatus(Status.ACTIVE);
+        token.setCreatedBy(userId);
+        token.setUpdatedBy(userId);
         return tokenRepository.save(token);
     }
 
