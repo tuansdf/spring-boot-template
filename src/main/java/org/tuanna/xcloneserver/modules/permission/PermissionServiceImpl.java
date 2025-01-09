@@ -5,7 +5,6 @@ import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ResultSetName;
@@ -61,7 +60,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<String> findAllCodesByRoleId(Long roleId) {
         List<String> result = permissionRepository.findAllCodesByRoleId(roleId);
-        if (CollectionUtils.isEmpty(result)) {
+        if (result == null) {
             return new ArrayList<>();
         }
         return result;
@@ -70,7 +69,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<String> findAllCodesByUserId(UUID userId) {
         List<String> result = permissionRepository.findAllCodesByUserId(userId);
-        if (CollectionUtils.isEmpty(result)) {
+        if (result == null) {
             return new ArrayList<>();
         }
         return result;
@@ -79,7 +78,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<PermissionDTO> findAllByRoleId(Long roleId) {
         List<Permission> result = permissionRepository.findAllByRoleId(roleId);
-        if (CollectionUtils.isEmpty(result)) {
+        if (result == null) {
             return new ArrayList<>();
         }
         return result.stream().map(commonMapper::toDTO).toList();
@@ -88,7 +87,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public List<PermissionDTO> findAllByUserId(UUID userId) {
         List<Permission> result = permissionRepository.findAllByUserId(userId);
-        if (CollectionUtils.isEmpty(result)) {
+        if (result == null) {
             return new ArrayList<>();
         }
         return result.stream().map(commonMapper::toDTO).toList();

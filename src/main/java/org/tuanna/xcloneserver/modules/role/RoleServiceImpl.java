@@ -5,7 +5,6 @@ import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ResultSetName;
@@ -62,7 +61,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<String> findAllCodesByUserId(UUID userId) {
         List<String> result = roleRepository.findAllCodesByUserId(userId);
-        if (CollectionUtils.isEmpty(result)) {
+        if (result == null) {
             return new ArrayList<>();
         }
         return result;
@@ -71,7 +70,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<RoleDTO> findAllByUserId(UUID userId) {
         List<Role> result = roleRepository.findAllByUserId(userId);
-        if (CollectionUtils.isEmpty(result)) {
+        if (result == null) {
             return new ArrayList<>();
         }
         return result.stream().map(commonMapper::toDTO).toList();
