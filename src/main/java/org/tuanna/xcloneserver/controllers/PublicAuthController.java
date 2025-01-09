@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
-import org.tuanna.xcloneserver.modules.auth.AuthService;
-import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
-import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
-import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
+import org.tuanna.xcloneserver.modules.authentication.AuthService;
+import org.tuanna.xcloneserver.modules.authentication.dtos.AuthResponseDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.LoginRequestDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.RegisterRequestDTO;
 import org.tuanna.xcloneserver.utils.ExceptionUtils;
 
 @Slf4j

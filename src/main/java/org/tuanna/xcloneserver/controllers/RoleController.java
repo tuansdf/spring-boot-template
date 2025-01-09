@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
-import org.tuanna.xcloneserver.modules.auth.dtos.AuthenticationPrincipal;
+import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.role.RoleService;
 import org.tuanna.xcloneserver.modules.role.dtos.RoleDTO;
 import org.tuanna.xcloneserver.modules.role.dtos.SearchRoleRequestDTO;

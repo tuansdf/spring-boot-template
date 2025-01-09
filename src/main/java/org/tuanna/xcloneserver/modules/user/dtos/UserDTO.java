@@ -6,7 +6,6 @@ import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.utils.ValidationUtils;
 
-import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Builder
-public class UserDTO implements Serializable {
+public class UserDTO {
 
     private UUID id;
     private String username;
@@ -30,12 +29,13 @@ public class UserDTO implements Serializable {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
-    // User1DTO
+    // SEARCH_USER_CONTACT
     public UserDTO(UUID id, String username) {
         this.id = id;
         this.username = username;
     }
 
+    // SEARCH_USER
     public UserDTO(
             UUID id, String username, String email, String name, String status, UUID createdBy, UUID updatedBy,
             OffsetDateTime createdAt, OffsetDateTime updatedAt) {

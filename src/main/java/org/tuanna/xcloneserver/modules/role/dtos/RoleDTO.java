@@ -6,7 +6,6 @@ import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.utils.ValidationUtils;
 
-import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Builder
-public class RoleDTO implements Serializable {
+public class RoleDTO {
 
     private Long id;
     private String code;

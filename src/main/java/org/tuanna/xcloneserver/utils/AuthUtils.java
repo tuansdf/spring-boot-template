@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.tuanna.xcloneserver.constants.PermissionCode;
-import org.tuanna.xcloneserver.modules.auth.dtos.AuthenticationPrincipal;
+import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 
 import java.util.List;

@@ -1,9 +1,9 @@
-package org.tuanna.xcloneserver.modules.auth;
+package org.tuanna.xcloneserver.modules.authentication;
 
 import org.tuanna.xcloneserver.exception.CustomException;
-import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
-import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
-import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.AuthResponseDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.LoginRequestDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.RegisterRequestDTO;
 
 public interface AuthService {
 

@@ -1,7 +1,8 @@
-package org.tuanna.xcloneserver.modules.auth.dtos;
+package org.tuanna.xcloneserver.modules.authentication.dtos;
 
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -17,5 +18,6 @@ public class AuthResponseDTO {
     private String username;
     private String email;
     private String name;
+    private List<String> permissions;
 
 }

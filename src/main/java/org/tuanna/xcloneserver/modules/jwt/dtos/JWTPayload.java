@@ -6,7 +6,6 @@ import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.Map;
 @ToString
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class JWTPayload implements Serializable {
+public class JWTPayload {
 
     @JsonProperty("iss")
     private String issuer;

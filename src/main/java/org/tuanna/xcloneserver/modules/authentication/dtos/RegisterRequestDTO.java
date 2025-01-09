@@ -1,4 +1,4 @@
-package org.tuanna.xcloneserver.modules.auth.dtos;
+package org.tuanna.xcloneserver.modules.authentication.dtos;
 
 import lombok.*;
 import org.tuanna.xcloneserver.exception.CustomException;

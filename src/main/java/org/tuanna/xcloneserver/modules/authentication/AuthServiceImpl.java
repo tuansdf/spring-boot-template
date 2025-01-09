@@ -1,4 +1,4 @@
-package org.tuanna.xcloneserver.modules.auth;
+package org.tuanna.xcloneserver.modules.authentication;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +13,9 @@ import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.exception.CustomException;
-import org.tuanna.xcloneserver.modules.auth.dtos.AuthResponseDTO;
-import org.tuanna.xcloneserver.modules.auth.dtos.LoginRequestDTO;
-import org.tuanna.xcloneserver.modules.auth.dtos.RegisterRequestDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.AuthResponseDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.LoginRequestDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.RegisterRequestDTO;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.permission.PermissionService;
@@ -65,6 +65,7 @@ public class AuthServiceImpl implements AuthService {
         responseDTO.setUsername(user.getUsername());
         responseDTO.setEmail(user.getEmail());
         responseDTO.setName(user.getName());
+        responseDTO.setPermissions(permissions);
 
         return responseDTO;
     }
