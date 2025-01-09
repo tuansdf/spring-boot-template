@@ -32,7 +32,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Transactional
+@Transactional(rollbackOn = Exception.class)
 public class AuthServiceImpl implements AuthService {
 
     private final PasswordEncoder passwordEncoder;

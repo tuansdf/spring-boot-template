@@ -1,5 +1,6 @@
 package org.tuanna.xcloneserver.modules.token;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;

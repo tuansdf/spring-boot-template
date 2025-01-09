@@ -2,6 +2,7 @@ package org.tuanna.xcloneserver.modules.user;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
 
     private final CommonMapper commonMapper;

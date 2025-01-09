@@ -1,6 +1,7 @@
 package org.tuanna.xcloneserver.modules.configuration;
 
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class ConfigurationServiceImpl implements ConfigurationService {
 
     private final CommonMapper commonMapper;

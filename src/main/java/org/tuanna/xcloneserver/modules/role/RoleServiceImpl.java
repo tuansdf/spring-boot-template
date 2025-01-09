@@ -2,6 +2,7 @@ package org.tuanna.xcloneserver.modules.role;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -22,6 +23,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class RoleServiceImpl implements RoleService {
 
     private final CommonMapper commonMapper;
