@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.tuanna.xcloneserver.constants.ResultSet;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 
 import java.time.OffsetDateTime;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(name = "_user")
-@SqlResultSetMapping(name = "UserDTO", classes = {
+@SqlResultSetMapping(name = ResultSet.SEARCH_USER, classes = {
         @ConstructorResult(targetClass = UserDTO.class, columns = {
                 @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "username", type = String.class),
@@ -29,7 +30,7 @@ import java.util.UUID;
                 @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
         })
 })
-@SqlResultSetMapping(name = "User1DTO", classes = {
+@SqlResultSetMapping(name = ResultSet.SEARCH_USER_CONTACT, classes = {
         @ConstructorResult(targetClass = UserDTO.class, columns = {
                 @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "username", type = String.class),

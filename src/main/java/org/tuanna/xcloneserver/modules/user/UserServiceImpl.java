@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.tuanna.xcloneserver.constants.ResultSet;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -119,17 +120,10 @@ public class UserServiceImpl implements UserService {
             Long count = ConversionUtils.toLong(query.getSingleResult());
             result.setTotalItems(count);
         } else {
-
-            Query query = entityManager.createNativeQuery(builder.toString(), "UserDTO");
+            Query query = entityManager.createNativeQuery(builder.toString(), ResultSet.SEARCH_USER);
             SQLUtils.setParams(query, params);
             List<UserDTO> tuples = query.getResultList();
             result.setItems(tuples);
-
-//            Query query = entityManager.createNativeQuery(builder.toString(), Tuple.class);
-//            SQLUtils.setParams(query, params);
-//            List<Tuple> tuples = query.getResultList();
-//            result.setItems(MapperListObjectUtils.mapListOfObjects(tuples, UserDTO.class));
-
         }
         return result;
     }
