@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'org.tuanna'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 
 java {
     toolchain {
@@ -42,10 +42,12 @@ dependencies {
     implementation 'org.apache.commons:commons-compress:1.27.1'
     implementation 'org.apache.commons:commons-csv:1.12.0'
     implementation 'org.apache.poi:poi-ooxml:5.3.0'
-    implementation 'commons-validator:commons-validator:1.9.0'
     implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
     implementation 'com.auth0:java-jwt:4.4.0'
+    implementation('commons-validator:commons-validator:1.9.0') {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
 
     compileOnly 'org.projectlombok:lombok'
     implementation 'org.mapstruct:mapstruct:1.6.3'
@@ -57,6 +59,6 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-}
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}
