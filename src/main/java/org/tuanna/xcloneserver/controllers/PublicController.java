@@ -1,9 +1,11 @@
 package org.tuanna.xcloneserver.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +32,7 @@ public class PublicController {
 
     private final CommonMapper commonMapper;
     private final UserRepository userRepository;
+    private final MessageSource messageSource;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
@@ -116,6 +119,11 @@ public class PublicController {
         List<User> entities = data.stream().map(commonMapper::toEntity).toList();
         userRepository.saveAll(entities);
         return "OK";
+    }
+
+    @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String testI18n(HttpServletRequest servletRequest, @RequestParam(required = false, defaultValue = "John Doe") String name) {
+        return messageSource.getMessage("msg.hello", new String[]{name}, servletRequest.getLocale());
     }
 
 }
