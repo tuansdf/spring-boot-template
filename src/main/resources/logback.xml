@@ -1,5 +1,5 @@
 <configuration>
-    <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+    <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>10000</queueSize>
         <discardingThreshold>0</discardingThreshold>
         <appender-ref ref="CONSOLE"/>
@@ -7,23 +7,30 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%thread] %-5level %logger{36} - requestId=%X{requestId} - userId=%X{userId} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%thread] %-5level %logger{36} - requestId=%X{requestId} - userId=%X{userId} - %replace(%msg){'[\r\n]+', ''} %replace(%ex){'[\r\n]+', ''}%n</pattern>
         </encoder>
     </appender>
 
-    <!--        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
-    <!--            <file>./logs/app.log</file>-->
-    <!--            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
-    <!--                <fileNamePattern>./logs/app-%d{yyyy-MM-dd}.log</fileNamePattern>-->
-    <!--                <maxFileSize>10MB</maxFileSize>-->
-    <!--                <maxHistory>30</maxHistory>-->
-    <!--            </rollingPolicy>-->
-    <!--            <encoder>-->
-    <!--                <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%thread] %-5level %logger{36} - requestId=%X{requestId} - userId=%X{userId} - %msg%n</pattern>-->
-    <!--            </encoder>-->
-    <!--        </appender>-->
+<!--    <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">-->
+<!--        <queueSize>10000</queueSize>-->
+<!--        <discardingThreshold>0</discardingThreshold>-->
+<!--        <appender-ref ref="FILE"/>-->
+<!--    </appender>-->
+
+<!--    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <file>./logs/app1.log</file>-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">-->
+<!--            <fileNamePattern>./logs/app1-%d{yyyy-MM-dd}.log</fileNamePattern>-->
+<!--            <maxFileSize>10MB</maxFileSize>-->
+<!--            <maxHistory>30</maxHistory>-->
+<!--        </rollingPolicy>-->
+<!--        <encoder>-->
+<!--            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%thread] %-5level %logger{36} - requestId=%X{requestId} - userId=%X{userId} - %replace(%msg){'[\r\n]+', ''} %replace(%ex){'[\r\n]+', ''}%n</pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
 
     <root level="info">
-        <appender-ref ref="ASYNC"/>
+        <appender-ref ref="ASYNC_CONSOLE"/>
+<!--        <appender-ref ref="ASYNC_FILE"/>-->
     </root>
 </configuration>
