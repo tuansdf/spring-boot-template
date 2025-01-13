@@ -34,10 +34,13 @@ public class AuthUtils {
     public static AuthenticationPrincipal getAuthenticationPrincipal() {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !(authentication.getPrincipal() instanceof AuthenticationPrincipal)) {
+            if (authentication == null) {
                 return new AuthenticationPrincipal();
             }
-            return (AuthenticationPrincipal) authentication.getPrincipal();
+            if (authentication.getPrincipal() instanceof AuthenticationPrincipal authenticationPrincipal) {
+                return authenticationPrincipal;
+            }
+            return new AuthenticationPrincipal();
         } catch (Exception e) {
             return new AuthenticationPrincipal();
         }
