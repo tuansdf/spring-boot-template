@@ -42,7 +42,6 @@ public class UserController {
     public ResponseEntity<CommonResponse<UserDTO>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
         try {
             AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
-            requestDTO.setUserId(principal.getUserId());
             return ResponseEntity.ok(new CommonResponse<>(userService.changePassword(requestDTO, principal.getUserId())));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

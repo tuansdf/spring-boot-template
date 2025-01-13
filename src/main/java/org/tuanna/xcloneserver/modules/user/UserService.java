@@ -13,7 +13,7 @@ public interface UserService {
 
     UserDTO saveRaw(UserDTO requestDTO);
 
-    UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID actionBy) throws CustomException;
+    UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) throws CustomException;
 
     UserDTO updatePassword(UUID userId, String password, UUID actionBy, Locale locale) throws CustomException;
 

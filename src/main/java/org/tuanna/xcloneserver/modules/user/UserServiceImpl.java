@@ -44,8 +44,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID actionBy) throws CustomException {
-        Optional<User> userOptional = userRepository.findById(requestDTO.getUserId());
+    public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) throws CustomException {
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
-        user.setUpdatedBy(actionBy);
+        user.setUpdatedBy(userId);
         user = userRepository.save(user);
         tokenService.deactivatePastToken(user.getId(), TokenType.REFRESH_TOKEN);
         return commonMapper.toDTO(user);
