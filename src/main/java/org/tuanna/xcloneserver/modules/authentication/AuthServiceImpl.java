@@ -24,6 +24,7 @@ import org.tuanna.xcloneserver.modules.user.UserService;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -35,6 +36,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class AuthServiceImpl implements AuthService {
 
+    private final static int DEFAULT_LOGIN_LOCKOUT_TIME = 5;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
     private final UserService userService;
@@ -46,28 +48,28 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthDTO login(LoginRequestDTO requestDTO) throws CustomException {
-        UserDTO user = userService.findOneByUsername(requestDTO.getUsername());
-        if (user == null) {
+        UserDTO userDTO = userService.findOneByUsername(requestDTO.getUsername());
+        if (userDTO == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getPassword(), user.getPassword());
-        if (!isPasswordCorrect) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED);
-        }
-
-        boolean isActive = Status.ACTIVE.equals(user.getStatus());
+        boolean isActive = Status.ACTIVE.equals(userDTO.getStatus());
         if (!isActive) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        List<String> permissions = permissionService.findAllCodesByUserId(user.getId());
+        boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getPassword(), userDTO.getPassword());
+        if (!isPasswordCorrect) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
 
-        AuthDTO responseDTO = createAuthResponse(user.getId(), permissions);
-        responseDTO.setUserId(user.getId());
-        responseDTO.setUsername(user.getUsername());
-        responseDTO.setEmail(user.getEmail());
-        responseDTO.setName(user.getName());
+        List<String> permissions = permissionService.findAllCodesByUserId(userDTO.getId());
+
+        AuthDTO responseDTO = createAuthResponse(userDTO.getId(), permissions);
+        responseDTO.setUserId(userDTO.getId());
+        responseDTO.setUsername(userDTO.getUsername());
+        responseDTO.setEmail(userDTO.getEmail());
+        responseDTO.setName(userDTO.getName());
         responseDTO.setPermissions(permissions);
 
         return responseDTO;
@@ -77,8 +79,8 @@ public class AuthServiceImpl implements AuthService {
     public AuthDTO register(RegisterRequestDTO requestDTO) throws CustomException {
         requestDTO.validate();
 
-        Boolean isRegistrationAllowed = configurationService.findBooleanValueByCode(ConfigurationCode.IS_REGISTRATION_ENABLED);
-        if (isRegistrationAllowed != null && !isRegistrationAllowed) {
+        Boolean isRegistrationEnabled = ConversionUtils.toBool(configurationService.findValueByCode(ConfigurationCode.IS_REGISTRATION_ENABLED));
+        if (isRegistrationEnabled != null && !isRegistrationEnabled) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 

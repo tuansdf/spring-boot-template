@@ -16,7 +16,6 @@ import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.configuration.dtos.ConfigurationDTO;
 import org.tuanna.xcloneserver.modules.configuration.dtos.SearchConfigurationRequestDTO;
-import org.tuanna.xcloneserver.utils.CommonUtils;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
 import org.tuanna.xcloneserver.utils.SQLUtils;
 
@@ -96,15 +95,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public String findValueByCode(String code) {
         return configurationRepository.findTopValueByCodeAndStatus(code, Status.ACTIVE);
-    }
-
-    @Override
-    public Boolean findBooleanValueByCode(String code) {
-        String result = configurationRepository.findTopValueByCodeAndStatus(code, Status.ACTIVE);
-        if (result == null) {
-            return null;
-        }
-        return CommonUtils.isTrue(result);
     }
 
     @Override

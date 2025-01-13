@@ -21,8 +21,6 @@ public interface ConfigurationService {
 
     String findValueByCode(String code);
 
-    Boolean findBooleanValueByCode(String code);
-
     PaginationResponseData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCountOnly);
 
 }

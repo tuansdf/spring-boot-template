@@ -13,20 +13,4 @@ public class CommonUtils {
         }
     }
 
-    public static boolean isTrue(String input) {
-        try {
-            return "true".equals(input);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public static boolean isFalse(String input) {
-        try {
-            return "false".equals(input);
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
 }

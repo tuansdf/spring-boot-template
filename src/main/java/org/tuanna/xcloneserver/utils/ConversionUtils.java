@@ -77,4 +77,28 @@ public class ConversionUtils {
         }
     }
 
+    public static Boolean toBool(Object input) {
+        try {
+            return switch (input) {
+                case Boolean v -> v;
+                case String v -> Boolean.parseBoolean(v);
+                case null, default -> null;
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static boolean safeToBool(Object input) {
+        try {
+            return switch (input) {
+                case Boolean v -> v;
+                case String v -> Boolean.parseBoolean(v);
+                case null, default -> false;
+            };
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }

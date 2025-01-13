@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) throws CustomException {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED);
+            throw new CustomException(HttpStatus.NOT_FOUND);
         }
         User user = userOptional.get();
         boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword());
@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO updatePassword(UUID userId, String password, UUID actionBy, Locale locale) throws CustomException {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED);
+            throw new CustomException(HttpStatus.NOT_FOUND);
         }
         User user = userOptional.get();
         user.setPassword(passwordEncoder.encode(password));
@@ -114,8 +114,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneById(UUID userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        return userOptional.map(commonMapper::toDTO).orElse(null);
+        Optional<User> result = userRepository.findById(userId);
+        return result.map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
