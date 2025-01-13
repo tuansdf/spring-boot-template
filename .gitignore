@@ -40,3 +40,9 @@ out/
 *.xlsx
 *.csv
 *.gz
+
+logs/
+
+.env
+.env.*
+!.env.example

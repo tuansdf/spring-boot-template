@@ -1,0 +1,48 @@
+services:
+  springboot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot
+    environment:
+      - DB_URL=jdbc:postgresql://postgres:5432/springboot
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=password
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - springboot
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=springboot
+    networks:
+      - springboot
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+  
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: [ "redis-server", "--save", "60", "1", "--loglevel", "warning" ]
+    networks:
+      - springboot
+    restart: unless-stopped
+
+networks:
+  springboot:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
