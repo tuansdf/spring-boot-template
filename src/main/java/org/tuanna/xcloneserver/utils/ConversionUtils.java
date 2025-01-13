@@ -14,6 +14,10 @@ public class ConversionUtils {
         }
     }
 
+    public static String toStringTrim(Object input) {
+        return toString(input).trim();
+    }
+
     public static UUID toUUID(Object input) {
         try {
             return switch (input) {

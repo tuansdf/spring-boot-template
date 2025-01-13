@@ -9,9 +9,9 @@ import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
-import org.tuanna.xcloneserver.modules.permission.PermissionService;
-import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
-import org.tuanna.xcloneserver.modules.permission.dtos.SearchPermissionRequestDTO;
+import org.tuanna.xcloneserver.modules.configuration.ConfigurationService;
+import org.tuanna.xcloneserver.modules.configuration.dtos.ConfigurationDTO;
+import org.tuanna.xcloneserver.modules.configuration.dtos.SearchConfigurationRequestDTO;
 import org.tuanna.xcloneserver.utils.AuthUtils;
 import org.tuanna.xcloneserver.utils.ExceptionUtils;
 
@@ -20,16 +20,16 @@ import java.time.OffsetDateTime;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/permissions")
-public class PermissionController {
+@RequestMapping("/configurations")
+public class ConfigurationController {
 
-    private final PermissionService permissionService;
+    private final ConfigurationService configurationService;
 
     @GetMapping("/code/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PermissionDTO>> findOneByCode(@PathVariable String code) {
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(@PathVariable String code) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.findOneByCode(code)));
+            return ResponseEntity.ok(new CommonResponse<>(configurationService.findOneByCode(code)));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -37,9 +37,9 @@ public class PermissionController {
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PermissionDTO>> findOne(@PathVariable Long id) {
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.findOneById(id)));
+            return ResponseEntity.ok(new CommonResponse<>(configurationService.findOneById(id)));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -47,10 +47,10 @@ public class PermissionController {
 
     @PostMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PermissionDTO>> save(@RequestBody PermissionDTO requestDTO) {
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> save(@RequestBody ConfigurationDTO requestDTO) {
         try {
             AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.save(requestDTO, principal.getUserId())));
+            return ResponseEntity.ok(new CommonResponse<>(configurationService.save(requestDTO, principal.getUserId())));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -58,7 +58,7 @@ public class PermissionController {
 
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PaginationResponseData<PermissionDTO>>> search(
+    public ResponseEntity<CommonResponse<PaginationResponseData<ConfigurationDTO>>> search(
             @RequestParam(required = false) Integer pageNumber,
             @RequestParam(required = false) Integer pageSize,
             @RequestParam(required = false) String code,
@@ -67,7 +67,7 @@ public class PermissionController {
             @RequestParam(required = false) OffsetDateTime createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
         try {
-            SearchPermissionRequestDTO requestDTO = SearchPermissionRequestDTO.builder()
+            SearchConfigurationRequestDTO requestDTO = SearchConfigurationRequestDTO.builder()
                     .pageNumber(pageNumber)
                     .pageSize(pageSize)
                     .code(code)
@@ -75,7 +75,7 @@ public class PermissionController {
                     .createdAtTo(createdAtTo)
                     .createdAtFrom(createdAtFrom)
                     .build();
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.search(requestDTO, count)));
+            return ResponseEntity.ok(new CommonResponse<>(configurationService.search(requestDTO, count)));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

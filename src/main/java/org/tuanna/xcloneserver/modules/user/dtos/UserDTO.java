@@ -20,34 +20,19 @@ public class UserDTO {
     private UUID id;
     private String username;
     private String email;
+    private String name;
     @JsonIgnore
     private String password;
-    private String name;
     private String status;
     private UUID createdBy;
     private UUID updatedBy;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
-    // SEARCH_USER_CONTACT
+    // USER_SEARCH_CONTACT
     public UserDTO(UUID id, String username) {
         this.id = id;
         this.username = username;
-    }
-
-    // SEARCH_USER
-    public UserDTO(
-            UUID id, String username, String email, String name, String status, UUID createdBy, UUID updatedBy,
-            OffsetDateTime createdAt, OffsetDateTime updatedAt) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.name = name;
-        this.status = status;
-        this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 
     public void validate() throws CustomException {

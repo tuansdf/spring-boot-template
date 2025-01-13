@@ -14,9 +14,12 @@ public interface RoleService {
 
     RoleDTO findOneById(Long id);
 
+    RoleDTO findOneByCode(String code);
+
     List<String> findAllCodesByUserId(UUID userId);
 
     List<RoleDTO> findAllByUserId(UUID userId);
 
     PaginationResponseData<RoleDTO> search(SearchRoleRequestDTO requestDTO, boolean isCountOnly);
+
 }

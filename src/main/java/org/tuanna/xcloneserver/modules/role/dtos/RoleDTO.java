@@ -38,6 +38,7 @@ public class RoleDTO {
 
     public void validateUpdate() throws CustomException {
         ValidationUtils.maxLength(this.name, 255, "Name exceeds the maximum length of 255 characters");
+        ValidationUtils.maxLength(this.description, 255, "Description exceeds the maximum length of 255 characters");
         ValidationUtils.isIn(this.status, List.of(Status.ACTIVE, Status.INACTIVE), "Status is invalid");
     }
 

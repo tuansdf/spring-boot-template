@@ -25,9 +25,19 @@ public class RoleController {
 
     private final RoleService roleService;
 
+    @GetMapping("/code/{code}")
+    @Secured({PermissionCode.SYSTEM_ADMIN})
+    public ResponseEntity<CommonResponse<RoleDTO>> findOneByCode(@PathVariable String code) {
+        try {
+            return ResponseEntity.ok(new CommonResponse<>(roleService.findOneByCode(code)));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
+
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<RoleDTO>> findOne(@PathVariable Long id) {
+    public ResponseEntity<CommonResponse<RoleDTO>> findOneById(@PathVariable Long id) {
         try {
             return ResponseEntity.ok(new CommonResponse<>(roleService.findOneById(id)));
         } catch (Exception e) {

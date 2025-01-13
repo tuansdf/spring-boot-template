@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.tuanna.xcloneserver.entities.Role;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -20,5 +21,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             "left join Role r on (r.id = ur.roleId) " +
             "where ur.userId = :userId")
     List<Role> findAllByUserId(UUID userId);
+   
+    Optional<Role> findTopByCode(String code);
 
 }

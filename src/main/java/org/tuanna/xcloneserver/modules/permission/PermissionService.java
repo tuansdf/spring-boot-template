@@ -14,6 +14,8 @@ public interface PermissionService {
 
     PermissionDTO findOneById(Long id);
 
+    PermissionDTO findOneByCode(String code);
+
     List<String> findAllCodesByRoleId(Long roleId);
 
     List<String> findAllCodesByUserId(UUID userId);
@@ -23,4 +25,5 @@ public interface PermissionService {
     List<PermissionDTO> findAllByUserId(UUID userId);
 
     PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCountOnly);
+
 }

@@ -42,11 +42,11 @@ public class PermissionServiceImpl implements PermissionService {
         if (result == null) {
             requestDTO.validateCreate();
             result = new Permission();
-            result.setCode(requestDTO.getCode());
+            result.setCode(ConversionUtils.toStringTrim(requestDTO.getCode()));
             result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
-        result.setStatus(requestDTO.getStatus());
+        result.setStatus(ConversionUtils.toStringTrim(requestDTO.getStatus()));
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(permissionRepository.save(result));
     }
@@ -54,6 +54,12 @@ public class PermissionServiceImpl implements PermissionService {
     @Override
     public PermissionDTO findOneById(Long id) {
         Optional<Permission> result = permissionRepository.findById(id);
+        return result.map(commonMapper::toDTO).orElse(null);
+    }
+
+    @Override
+    public PermissionDTO findOneByCode(String code) {
+        Optional<Permission> result = permissionRepository.findTopByCode(code);
         return result.map(commonMapper::toDTO).orElse(null);
     }
 

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import org.tuanna.xcloneserver.entities.Permission;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -32,5 +33,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
             "left join Permission p on (p.id = rp.permissionId) " +
             "where ur.userId = :userId")
     List<Permission> findAllByUserId(UUID userId);
+
+    Optional<Permission> findTopByCode(String code);
 
 }

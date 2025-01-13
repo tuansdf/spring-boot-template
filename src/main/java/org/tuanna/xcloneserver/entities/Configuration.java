@@ -1,10 +1,11 @@
 package org.tuanna.xcloneserver.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import org.tuanna.xcloneserver.constants.ResultSetName;
+import org.tuanna.xcloneserver.modules.configuration.dtos.ConfigurationDTO;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -14,6 +15,19 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "configuration")
+@SqlResultSetMapping(name = ResultSetName.CONFIGURATION_SEARCH, classes = {
+        @ConstructorResult(targetClass = ConfigurationDTO.class, columns = {
+                @ColumnResult(name = "id", type = Long.class),
+                @ColumnResult(name = "code", type = String.class),
+                @ColumnResult(name = "value", type = String.class),
+                @ColumnResult(name = "description", type = String.class),
+                @ColumnResult(name = "status", type = String.class),
+                @ColumnResult(name = "created_by", type = UUID.class),
+                @ColumnResult(name = "updated_by", type = UUID.class),
+                @ColumnResult(name = "created_at", type = OffsetDateTime.class),
+                @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
+        })
+})
 public class Configuration extends BaseResourceEntity {
 
     @Column(name = "code", columnDefinition = "text", unique = true, updatable = false)

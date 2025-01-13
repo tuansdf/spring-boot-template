@@ -20,4 +20,5 @@ public interface UserService {
     UserDTO findOneByEmail(String email);
 
     PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCountOnly);
+
 }

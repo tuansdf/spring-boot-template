@@ -42,12 +42,12 @@ public class RoleServiceImpl implements RoleService {
         if (result == null) {
             requestDTO.validateCreate();
             result = new Role();
-            result.setCode(requestDTO.getCode());
+            result.setCode(ConversionUtils.toStringTrim(requestDTO.getCode()));
             result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
         result.setDescription(requestDTO.getDescription());
-        result.setStatus(requestDTO.getStatus());
+        result.setStatus(ConversionUtils.toStringTrim(requestDTO.getStatus()));
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(roleRepository.save(result));
     }
@@ -55,6 +55,12 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDTO findOneById(Long id) {
         Optional<Role> result = roleRepository.findById(id);
+        return result.map(commonMapper::toDTO).orElse(null);
+    }
+
+    @Override
+    public RoleDTO findOneByCode(String code) {
+        Optional<Role> result = roleRepository.findTopByCode(code);
         return result.map(commonMapper::toDTO).orElse(null);
     }
 
