@@ -14,8 +14,8 @@ public class ConversionUtils {
         }
     }
 
-    public static String toStringTrim(Object input) {
-        return toString(input).trim();
+    public static String toCode(Object input) {
+        return toString(input).trim().toUpperCase();
     }
 
     public static UUID toUUID(Object input) {

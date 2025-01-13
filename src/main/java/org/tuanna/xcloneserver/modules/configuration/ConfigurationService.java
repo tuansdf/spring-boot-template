@@ -13,7 +13,11 @@ public interface ConfigurationService {
 
     ConfigurationDTO findOneById(Long id);
 
+    ConfigurationDTO findOneByIdOrThrow(Long id) throws CustomException;
+
     ConfigurationDTO findOneByCode(String code);
+
+    ConfigurationDTO findOneByCodeOrThrow(String code) throws CustomException;
 
     String findValueByCode(String code);
 

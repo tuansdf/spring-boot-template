@@ -14,7 +14,11 @@ public interface RoleService {
 
     RoleDTO findOneById(Long id);
 
+    RoleDTO findOneByIdOrThrow(Long id) throws CustomException;
+
     RoleDTO findOneByCode(String code);
+
+    RoleDTO findOneByCodeOrThrow(String code) throws CustomException;
 
     List<String> findAllCodesByUserId(UUID userId);
 

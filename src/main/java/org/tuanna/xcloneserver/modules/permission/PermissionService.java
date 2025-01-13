@@ -14,7 +14,11 @@ public interface PermissionService {
 
     PermissionDTO findOneById(Long id);
 
+    PermissionDTO findOneByIdOrThrow(Long id) throws CustomException;
+
     PermissionDTO findOneByCode(String code);
+
+    PermissionDTO findOneByCodeOrThrow(String code) throws CustomException;
 
     List<String> findAllCodesByRoleId(Long roleId);
 

@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ResultSetName;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
@@ -42,11 +43,11 @@ public class PermissionServiceImpl implements PermissionService {
         if (result == null) {
             requestDTO.validateCreate();
             result = new Permission();
-            result.setCode(ConversionUtils.toStringTrim(requestDTO.getCode()));
+            result.setCode(ConversionUtils.toCode(requestDTO.getCode()));
             result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
-        result.setStatus(ConversionUtils.toStringTrim(requestDTO.getStatus()));
+        result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(permissionRepository.save(result));
     }
@@ -58,9 +59,27 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    public PermissionDTO findOneByIdOrThrow(Long id) throws CustomException {
+        PermissionDTO result = findOneById(id);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
+    }
+
+    @Override
     public PermissionDTO findOneByCode(String code) {
         Optional<Permission> result = permissionRepository.findTopByCode(code);
         return result.map(commonMapper::toDTO).orElse(null);
+    }
+
+    @Override
+    public PermissionDTO findOneByCodeOrThrow(String code) throws CustomException {
+        PermissionDTO result = findOneByCode(code);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
     }
 
     @Override

@@ -29,7 +29,7 @@ public class RoleController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<RoleDTO>> findOneByCode(@PathVariable String code) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(roleService.findOneByCode(code)));
+            return ResponseEntity.ok(new CommonResponse<>(roleService.findOneByCodeOrThrow(code)));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -39,7 +39,7 @@ public class RoleController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<RoleDTO>> findOneById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(roleService.findOneById(id)));
+            return ResponseEntity.ok(new CommonResponse<>(roleService.findOneByIdOrThrow(id)));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

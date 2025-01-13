@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ResultSetName;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
@@ -42,12 +43,12 @@ public class RoleServiceImpl implements RoleService {
         if (result == null) {
             requestDTO.validateCreate();
             result = new Role();
-            result.setCode(ConversionUtils.toStringTrim(requestDTO.getCode()));
+            result.setCode(ConversionUtils.toCode(requestDTO.getCode()));
             result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
         result.setDescription(requestDTO.getDescription());
-        result.setStatus(ConversionUtils.toStringTrim(requestDTO.getStatus()));
+        result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(roleRepository.save(result));
     }
@@ -59,9 +60,27 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
+    public RoleDTO findOneByIdOrThrow(Long id) throws CustomException {
+        RoleDTO result = findOneById(id);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
+    }
+
+    @Override
     public RoleDTO findOneByCode(String code) {
         Optional<Role> result = roleRepository.findTopByCode(code);
         return result.map(commonMapper::toDTO).orElse(null);
+    }
+
+    @Override
+    public RoleDTO findOneByCodeOrThrow(String code) throws CustomException {
+        RoleDTO result = findOneByCode(code);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
     }
 
     @Override

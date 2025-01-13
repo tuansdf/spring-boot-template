@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ResultSetName;
 import org.tuanna.xcloneserver.constants.Status;
@@ -44,12 +45,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         if (result == null) {
             requestDTO.validateCreate();
             result = new Configuration();
-            result.setCode(ConversionUtils.toStringTrim(requestDTO.getCode()));
+            result.setCode(ConversionUtils.toCode(requestDTO.getCode()));
             result.setCreatedBy(actionBy);
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
-        result.setStatus(ConversionUtils.toStringTrim(requestDTO.getStatus()));
+        result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(configurationRepository.save(result));
     }
@@ -61,9 +62,27 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
+    public ConfigurationDTO findOneByIdOrThrow(Long id) throws CustomException {
+        ConfigurationDTO result = findOneById(id);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
+    }
+
+    @Override
     public ConfigurationDTO findOneByCode(String code) {
         Optional<Configuration> configurationOptional = configurationRepository.findTopByCode(code);
         return commonMapper.toDTO(configurationOptional.orElse(null));
+    }
+
+    @Override
+    public ConfigurationDTO findOneByCodeOrThrow(String code) throws CustomException {
+        ConfigurationDTO result = findOneByCode(code);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
     }
 
     @Override
