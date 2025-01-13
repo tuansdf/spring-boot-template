@@ -9,6 +9,7 @@ import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.entities.Configuration;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.configuration.dtos.ConfigurationDTO;
+import org.tuanna.xcloneserver.utils.CommonUtils;
 
 import java.util.Optional;
 
@@ -29,16 +30,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public String findOneValueByCode(String code) {
-        Optional<Configuration> configurationOptional = configurationRepository.findTopByCode(code);
-        if (configurationOptional.isEmpty()) {
+    public String findValueByCode(String code) {
+        return configurationRepository.findTopValueByCodeAndStatus(code, Status.ACTIVE);
+    }
+
+    @Override
+    public Boolean findBooleanValueByCode(String code) {
+        String result = configurationRepository.findTopValueByCodeAndStatus(code, Status.ACTIVE);
+        if (result == null) {
             return null;
         }
-        Configuration configuration = configurationOptional.get();
-        if (!Status.ACTIVE.equals(configuration.getStatus())) {
-            return null;
-        }
-        return configuration.getValue();
+        return CommonUtils.isTrue(result);
     }
 
 }

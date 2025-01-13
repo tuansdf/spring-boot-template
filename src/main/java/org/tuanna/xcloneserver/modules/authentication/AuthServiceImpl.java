@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.tuanna.xcloneserver.constants.ConfigurationCode;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.constants.TokenType;
@@ -16,6 +17,7 @@ import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.authentication.dtos.AuthResponseDTO;
 import org.tuanna.xcloneserver.modules.authentication.dtos.LoginRequestDTO;
 import org.tuanna.xcloneserver.modules.authentication.dtos.RegisterRequestDTO;
+import org.tuanna.xcloneserver.modules.configuration.ConfigurationService;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.permission.PermissionService;
@@ -40,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final PermissionService permissionService;
     private final TokenService tokenService;
+    private final ConfigurationService configurationService;
 
     @Override
     public AuthResponseDTO login(LoginRequestDTO requestDTO) throws CustomException {
@@ -73,6 +76,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseDTO register(RegisterRequestDTO requestDTO) throws CustomException {
         requestDTO.validate();
+
+        Boolean isRegisterAllowed = configurationService.findBooleanValueByCode(ConfigurationCode.IS_REGISTRATION_ALLOWED);
+        if (isRegisterAllowed != null && !isRegisterAllowed) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
 
         boolean isUserExisted = userService.existsByUsernameOrEmail(requestDTO.getUsername(), requestDTO.getEmail());
         if (isUserExisted) {
