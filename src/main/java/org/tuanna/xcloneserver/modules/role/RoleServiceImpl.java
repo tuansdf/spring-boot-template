@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ResultSetName;
+import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.Role;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -42,13 +43,21 @@ public class RoleServiceImpl implements RoleService {
         }
         if (result == null) {
             requestDTO.validateCreate();
+            String code = ConversionUtils.toCode(requestDTO.getCode());
+            if (roleRepository.existsByCode(code)) {
+                throw new CustomException(HttpStatus.CONFLICT);
+            }
             result = new Role();
-            result.setCode(ConversionUtils.toCode(requestDTO.getCode()));
+            result.setCode(code);
             result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
         result.setDescription(requestDTO.getDescription());
-        result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
+        if (StringUtils.isBlank(requestDTO.getStatus())) {
+            result.setStatus(Status.ACTIVE);
+        } else {
+            result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
+        }
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(roleRepository.save(result));
     }

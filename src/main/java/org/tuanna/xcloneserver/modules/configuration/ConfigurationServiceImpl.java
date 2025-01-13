@@ -44,13 +44,21 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         if (result == null) {
             requestDTO.validateCreate();
+            String code = ConversionUtils.toCode(requestDTO.getCode());
+            if (configurationRepository.existsByCode(code)) {
+                throw new CustomException(HttpStatus.CONFLICT);
+            }
             result = new Configuration();
-            result.setCode(ConversionUtils.toCode(requestDTO.getCode()));
+            result.setCode(code);
             result.setCreatedBy(actionBy);
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
-        result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
+        if (StringUtils.isBlank(requestDTO.getStatus())) {
+            result.setStatus(Status.ACTIVE);
+        } else {
+            result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
+        }
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(configurationRepository.save(result));
     }

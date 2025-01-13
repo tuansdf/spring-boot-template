@@ -24,4 +24,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
 
     Optional<Role> findTopByCode(String code);
 
+    boolean existsByCode(String code);
+
 }

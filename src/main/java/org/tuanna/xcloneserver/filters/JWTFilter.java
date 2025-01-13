@@ -15,7 +15,6 @@ import org.tuanna.xcloneserver.constants.Constants;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
-import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.utils.AuthUtils;
 
 import java.io.IOException;
@@ -26,7 +25,6 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTService jwtService;
-    private final TokenService tokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {

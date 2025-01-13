@@ -129,8 +129,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneByUsername(String username) {
-        Optional<User> userOptional = userRepository.findTopByUsername(username);
-        return userOptional.map(commonMapper::toDTO).orElse(null);
+        Optional<User> result = userRepository.findTopByUsername(username);
+        return result.map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -144,8 +144,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneByEmail(String email) {
-        Optional<User> userOptional = userRepository.findTopByEmail(email);
-        return userOptional.map(commonMapper::toDTO).orElse(null);
+        Optional<User> result = userRepository.findTopByEmail(email);
+        return result.map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
