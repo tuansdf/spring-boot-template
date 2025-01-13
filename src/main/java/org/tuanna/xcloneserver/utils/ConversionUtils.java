@@ -1,6 +1,5 @@
 package org.tuanna.xcloneserver.utils;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 public class ConversionUtils {
@@ -33,10 +32,7 @@ public class ConversionUtils {
     public static Long toLong(Object input) {
         try {
             return switch (input) {
-                case Long v -> v;
-                case Integer v -> v.longValue();
-                case Double v -> v.longValue();
-                case BigDecimal v -> v.longValue();
+                case Number v -> v.longValue();
                 case String v -> Long.parseLong(v);
                 case null, default -> null;
             };
@@ -48,10 +44,7 @@ public class ConversionUtils {
     public static Integer toInt(Object input) {
         try {
             return switch (input) {
-                case Integer v -> v;
-                case Long v -> v.intValue();
-                case Double v -> v.intValue();
-                case BigDecimal v -> v.intValue();
+                case Number v -> v.intValue();
                 case String v -> Integer.parseInt(v);
                 case null, default -> null;
             };
@@ -61,19 +54,27 @@ public class ConversionUtils {
     }
 
     public static long safeToLong(Object input) {
-        Long result = toLong(input);
-        if (result == null) {
+        try {
+            return switch (input) {
+                case Number v -> v.longValue();
+                case String v -> Long.parseLong(v);
+                case null, default -> 0L;
+            };
+        } catch (Exception e) {
             return 0L;
         }
-        return result;
     }
 
     public static int safeToInt(Object input) {
-        Integer result = toInt(input);
-        if (result == null) {
+        try {
+            return switch (input) {
+                case Number v -> v.intValue();
+                case String v -> Integer.parseInt(v);
+                case null, default -> 0;
+            };
+        } catch (Exception e) {
             return 0;
         }
-        return result;
     }
 
 }
