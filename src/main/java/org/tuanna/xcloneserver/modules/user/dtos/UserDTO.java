@@ -29,20 +29,36 @@ public class UserDTO {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
+    private List<Long> roleIds;
+
     // USER_SEARCH_CONTACT
     public UserDTO(UUID id, String username) {
         this.id = id;
         this.username = username;
     }
 
-    public void validate() throws CustomException {
+    // USER_SEARCH
+    public UserDTO(
+            UUID id, String username, String email, String name, String status, UUID createdBy, UUID updatedBy,
+            OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.name = name;
+        this.status = status;
+        this.createdBy = createdBy;
+        this.updatedBy = updatedBy;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public void validateUpdate() throws CustomException {
         ValidationUtils.notEmpty(this.username, "Username is required");
         ValidationUtils.maxLength(this.username, 255, "Username exceeds the maximum length of 255 characters");
         ValidationUtils.notEmpty(this.email, "Email is required");
         ValidationUtils.isEmail(this.email, "Email is invalid");
         ValidationUtils.maxLength(this.email, 255, "Email exceeds the maximum length of 255 characters");
-        ValidationUtils.notEmpty(this.password, "Password is required");
-        ValidationUtils.maxLength(this.password, 255, "Password exceeds the maximum length of 255 characters");
+        ValidationUtils.maxLength(this.name, 255, "Name exceeds the maximum length of 255 characters");
         ValidationUtils.isIn(this.status, List.of(Status.ACTIVE, Status.INACTIVE, Status.PENDING), "Status is invalid");
     }
 

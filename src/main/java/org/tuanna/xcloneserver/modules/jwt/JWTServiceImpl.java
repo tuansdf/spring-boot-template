@@ -9,11 +9,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.Env;
+import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.utils.Base64Utils;
+import org.tuanna.xcloneserver.utils.UUIDUtils;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,23 +48,59 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public String createAccessJwt(JWTPayload jwtPayload) {
+    public JWTPayload createAccessJwt(UUID userId, List<String> permissions) {
         Instant now = Instant.now();
+        JWTPayload jwtPayload = new JWTPayload();
+        jwtPayload.setSubjectId(userId.toString());
+        jwtPayload.setPermissions(PermissionCode.toIndexes(permissions));
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
         jwtPayload.setType(TokenType.toIndex(TokenType.ACCESS_TOKEN));
-        return create(jwtPayload);
+        jwtPayload.setValue(create(jwtPayload));
+        return jwtPayload;
     }
 
     @Override
-    public String createRefreshToken(JWTPayload jwtPayload) {
+    public JWTPayload createRefreshJwt(UUID userId, UUID tokenId) {
         Instant now = Instant.now();
+        JWTPayload jwtPayload = new JWTPayload();
+        jwtPayload.setSubjectId(userId.toString());
+        jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtRefreshLifetime()));
         jwtPayload.setType(TokenType.toIndex(TokenType.REFRESH_TOKEN));
-        return create(jwtPayload);
+        jwtPayload.setValue(create(jwtPayload));
+        return jwtPayload;
+    }
+
+    @Override
+    public JWTPayload createResetPasswordJwt(UUID tokenId) {
+        Instant now = Instant.now();
+        JWTPayload jwtPayload = new JWTPayload();
+        jwtPayload.setSubject(UUIDUtils.generate().toString());
+        jwtPayload.setTokenId(tokenId.toString());
+        jwtPayload.setIssuedAt(now);
+        jwtPayload.setNotBefore(now);
+        jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtResetPasswordLifetime()));
+        jwtPayload.setType(TokenType.toIndex(TokenType.RESET_PASSWORD));
+        jwtPayload.setValue(create(jwtPayload));
+        return jwtPayload;
+    }
+
+    @Override
+    public JWTPayload createActivateAccountJwt(UUID tokenId) {
+        Instant now = Instant.now();
+        JWTPayload jwtPayload = new JWTPayload();
+        jwtPayload.setSubject(UUIDUtils.generate().toString());
+        jwtPayload.setTokenId(tokenId.toString());
+        jwtPayload.setIssuedAt(now);
+        jwtPayload.setNotBefore(now);
+        jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtActivateAccountLifetime()));
+        jwtPayload.setType(TokenType.toIndex(TokenType.ACTIVATE_ACCOUNT));
+        jwtPayload.setValue(create(jwtPayload));
+        return jwtPayload;
     }
 
     @Override

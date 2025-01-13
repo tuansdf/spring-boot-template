@@ -14,5 +14,12 @@ public class Env {
     private Integer jwtAccessLifetime;
     @Value("${custom.jwt-refresh-lifetime}")
     private Integer jwtRefreshLifetime;
+    @Value("${custom.jwt-reset-password-lifetime}")
+    private Integer jwtResetPasswordLifetime;
+    @Value("${custom.jwt-activate-account-lifetime}")
+    private Integer jwtActivateAccountLifetime;
+
+    @Value("${custom.email-from}")
+    private String fromEmail;
 
 }

@@ -3,32 +3,30 @@ package org.tuanna.xcloneserver.modules.authentication;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ConfigurationCode;
-import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.constants.TokenType;
-import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.exception.CustomException;
-import org.tuanna.xcloneserver.modules.authentication.dtos.AuthResponseDTO;
-import org.tuanna.xcloneserver.modules.authentication.dtos.LoginRequestDTO;
-import org.tuanna.xcloneserver.modules.authentication.dtos.RegisterRequestDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.*;
 import org.tuanna.xcloneserver.modules.configuration.ConfigurationService;
+import org.tuanna.xcloneserver.modules.email.EmailService;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.permission.PermissionService;
 import org.tuanna.xcloneserver.modules.token.TokenService;
+import org.tuanna.xcloneserver.modules.token.dtos.TokenDTO;
 import org.tuanna.xcloneserver.modules.user.UserService;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
-import org.tuanna.xcloneserver.utils.UUIDUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 @Slf4j
@@ -42,10 +40,12 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final PermissionService permissionService;
     private final TokenService tokenService;
+    private final EmailService emailService;
     private final ConfigurationService configurationService;
+    private final MessageSource messageSource;
 
     @Override
-    public AuthResponseDTO login(LoginRequestDTO requestDTO) throws CustomException {
+    public AuthDTO login(LoginRequestDTO requestDTO) throws CustomException {
         UserDTO user = userService.findOneByUsername(requestDTO.getUsername());
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -63,7 +63,7 @@ public class AuthServiceImpl implements AuthService {
 
         List<String> permissions = permissionService.findAllCodesByUserId(user.getId());
 
-        AuthResponseDTO responseDTO = createAuthResponse(user.getId(), permissions);
+        AuthDTO responseDTO = createAuthResponse(user.getId(), permissions);
         responseDTO.setUserId(user.getId());
         responseDTO.setUsername(user.getUsername());
         responseDTO.setEmail(user.getEmail());
@@ -74,11 +74,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthResponseDTO register(RegisterRequestDTO requestDTO) throws CustomException {
+    public AuthDTO register(RegisterRequestDTO requestDTO) throws CustomException {
         requestDTO.validate();
 
-        Boolean isRegisterAllowed = configurationService.findBooleanValueByCode(ConfigurationCode.IS_REGISTRATION_ALLOWED);
-        if (isRegisterAllowed != null && !isRegisterAllowed) {
+        Boolean isRegistrationAllowed = configurationService.findBooleanValueByCode(ConfigurationCode.IS_REGISTRATION_ENABLED);
+        if (isRegistrationAllowed != null && !isRegistrationAllowed) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
@@ -89,15 +89,14 @@ public class AuthServiceImpl implements AuthService {
 
         String hashedPassword = passwordEncoder.encode(requestDTO.getPassword());
         UserDTO user = new UserDTO();
-        user.setId(UUIDUtils.generateId());
         user.setUsername(requestDTO.getUsername());
         user.setEmail(requestDTO.getEmail());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
         user.setStatus(Status.ACTIVE);
-        user = userService.save(user, user.getId());
+        user = userService.saveRaw(user);
 
-        AuthResponseDTO responseDTO = createAuthResponse(user.getId(), new ArrayList<>());
+        AuthDTO responseDTO = createAuthResponse(user.getId(), new ArrayList<>());
         responseDTO.setUserId(user.getId());
         responseDTO.setUsername(user.getUsername());
         responseDTO.setEmail(user.getEmail());
@@ -106,23 +105,48 @@ public class AuthServiceImpl implements AuthService {
         return responseDTO;
     }
 
-    private AuthResponseDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
-        JWTPayload accessPayload = new JWTPayload();
-        accessPayload.setSubjectId(ConversionUtils.toString(userId));
-        if (!CollectionUtils.isEmpty(permissionCodes)) {
-            accessPayload.setPermissions(PermissionCode.toIndexes(permissionCodes));
+    @Override
+    public String forgotPassword(ForgotPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
+        requestDTO.validate();
+        String result = messageSource.getMessage("reset_password.email_sent", null, locale);
+        UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
+        if (userDTO == null) {
+            return result;
         }
-        String accessJwt = jwtService.createAccessJwt(accessPayload);
-        Token refreshToken = tokenService.createRefreshJwt(JWTPayload.builder().subjectId(ConversionUtils.toString(userId)).build());
+        TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
+        emailService.sendResetPasswordEmail(userDTO.getEmail(), userDTO.getName(), tokenDTO.getValue(), userDTO.getId(), locale);
+        return result;
+    }
+
+    @Override
+    public String resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
+        requestDTO.validate();
+        JWTPayload jwtPayload = jwtService.verify(requestDTO.getToken());
+        if (StringUtils.isEmpty(jwtPayload.getTokenId()) || !TokenType.RESET_PASSWORD.equals(TokenType.fromIndex(jwtPayload.getType()))) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        TokenDTO tokenDTO = tokenService.findOneValidatedById(ConversionUtils.toUUID(jwtPayload.getTokenId()), TokenType.RESET_PASSWORD);
+        if (tokenDTO == null) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        userService.updatePassword(tokenDTO.getOwnerId(), requestDTO.getNewPassword(), tokenDTO.getOwnerId(), locale);
+        tokenService.deactivatePastToken(tokenDTO.getOwnerId(), TokenType.RESET_PASSWORD);
+        tokenService.deactivatePastToken(tokenDTO.getOwnerId(), TokenType.REFRESH_TOKEN);
+        return messageSource.getMessage("reset_password.success", null, locale);
+    }
+
+    private AuthDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
+        JWTPayload accessJwt = jwtService.createAccessJwt(userId, permissionCodes);
+        TokenDTO refreshToken = tokenService.createRefreshToken(userId);
         String refreshJwt = refreshToken.getValue();
-        return AuthResponseDTO.builder()
-                .accessToken(accessJwt)
+        return AuthDTO.builder()
+                .accessToken(accessJwt.getValue())
                 .refreshToken(refreshJwt)
                 .build();
     }
 
     @Override
-    public AuthResponseDTO refreshAccessToken(String refreshJwt) throws CustomException {
+    public AuthDTO refreshAccessToken(String refreshJwt) throws CustomException {
         if (StringUtils.isEmpty(refreshJwt)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -130,8 +154,8 @@ public class AuthServiceImpl implements AuthService {
         if (StringUtils.isEmpty(jwtPayload.getTokenId()) || !TokenType.REFRESH_TOKEN.equals(TokenType.fromIndex(jwtPayload.getType()))) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        boolean isTokenValid = tokenService.validateToken(ConversionUtils.toUUID(jwtPayload.getTokenId()), refreshJwt, TokenType.REFRESH_TOKEN);
-        if (!isTokenValid) {
+        TokenDTO tokenDTO = tokenService.findOneValidatedById(ConversionUtils.toUUID(jwtPayload.getTokenId()), TokenType.REFRESH_TOKEN);
+        if (tokenDTO == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         UserDTO user = userService.findOneById(ConversionUtils.toUUID(jwtPayload.getSubjectId()));
@@ -142,12 +166,9 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         List<String> permissions = permissionService.findAllCodesByUserId(user.getId());
-        String accessJwt = jwtService.createAccessJwt(JWTPayload.builder()
-                .subjectId(ConversionUtils.toString(user.getId()))
-                .permissions(PermissionCode.toIndexes(permissions))
-                .build());
-        return AuthResponseDTO.builder()
-                .accessToken(accessJwt)
+        JWTPayload accessJwt = jwtService.createAccessJwt(user.getId(), permissions);
+        return AuthDTO.builder()
+                .accessToken(accessJwt.getValue())
                 .build();
     }
 

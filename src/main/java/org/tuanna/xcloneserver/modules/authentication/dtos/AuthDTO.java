@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Builder
-public class AuthResponseDTO {
+public class AuthDTO {
 
     private String accessToken;
     private String refreshToken;

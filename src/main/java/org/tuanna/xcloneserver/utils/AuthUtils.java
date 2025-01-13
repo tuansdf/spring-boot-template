@@ -1,6 +1,7 @@
 package org.tuanna.xcloneserver.utils;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -44,7 +45,10 @@ public class AuthUtils {
 
     public static boolean hasAnyPermission(List<String> permissions) {
         AuthenticationPrincipal principal = getAuthenticationPrincipal();
-        return permissions.stream().anyMatch(permissions::contains);
+        if (CollectionUtils.isEmpty(principal.getPermissions())) {
+            return false;
+        }
+        return principal.getPermissions().stream().anyMatch(permissions::contains);
     }
 
 }

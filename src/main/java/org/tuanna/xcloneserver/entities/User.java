@@ -23,7 +23,6 @@ import java.util.UUID;
                 @ColumnResult(name = "username", type = String.class),
                 @ColumnResult(name = "email", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
-                @ColumnResult(name = "password", type = String.class),
                 @ColumnResult(name = "status", type = String.class),
                 @ColumnResult(name = "created_by", type = UUID.class),
                 @ColumnResult(name = "updated_by", type = UUID.class),

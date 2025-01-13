@@ -10,6 +10,7 @@ import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.user.UserService;
+import org.tuanna.xcloneserver.modules.user.dtos.ChangePasswordRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.SearchUserRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.AuthUtils;
@@ -36,12 +37,24 @@ public class UserController {
         }
     }
 
-    @PostMapping
+    @PatchMapping("/password")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<UserDTO>> save(@RequestBody UserDTO requestDTO) {
+    public ResponseEntity<CommonResponse<UserDTO>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
         try {
             AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
-            return ResponseEntity.ok(new CommonResponse<>(userService.save(requestDTO, principal.getUserId())));
+            requestDTO.setUserId(principal.getUserId());
+            return ResponseEntity.ok(new CommonResponse<>(userService.changePassword(requestDTO, principal.getUserId())));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
+
+    @PutMapping
+    @Secured({PermissionCode.SYSTEM_ADMIN})
+    public ResponseEntity<CommonResponse<UserDTO>> updateProfile(@RequestBody UserDTO requestDTO) {
+        try {
+            AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
+            return ResponseEntity.ok(new CommonResponse<>(userService.updateProfile(requestDTO, principal.getUserId())));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

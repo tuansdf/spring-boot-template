@@ -8,9 +8,10 @@ import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.entities.Token;
+import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
-import org.tuanna.xcloneserver.utils.ConversionUtils;
+import org.tuanna.xcloneserver.modules.token.dtos.TokenDTO;
 import org.tuanna.xcloneserver.utils.DateUtils;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
 
@@ -24,51 +25,92 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class TokenServiceImpl implements TokenService {
 
+    private final CommonMapper commonMapper;
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
 
     @Override
-    public boolean validateToken(UUID id, String value, String type) {
-        if (id == null) {
-            return false;
-        }
-
-        Optional<Token> tokenOptional = tokenRepository.findById(id);
-        if (tokenOptional.isEmpty()) {
-            return false;
-        }
-
-        Token token = tokenOptional.get();
-        boolean isTypeCorrect = !StringUtils.isEmpty(token.getType()) && token.getType().equals(type);
-        boolean isValueCorrect = !StringUtils.isEmpty(token.getValue()) && token.getValue().equals(value);
-        boolean isActive = Status.ACTIVE.equals(token.getStatus());
-        boolean isExpired = token.getExpiresAt().isAfter(OffsetDateTime.now());
-        return isTypeCorrect && isValueCorrect && isActive && isExpired;
-    }
-
-    public void deactivatePastRefreshToken(UUID ownerId, UUID actionBy) {
-        OffsetDateTime now = OffsetDateTime.now();
-        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(ownerId, TokenType.REFRESH_TOKEN, now, Status.INACTIVE, now, actionBy);
+    public TokenDTO findOneById(UUID id) {
+        Optional<Token> result = tokenRepository.findById(id);
+        return result.map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
-    public Token createRefreshJwt(JWTPayload jwtPayload) {
-        UUID userId = ConversionUtils.toUUID(jwtPayload.getSubjectId());
+    public TokenDTO findOneValidatedById(UUID id, String type) {
+        if (id == null) {
+            return null;
+        }
 
+        TokenDTO token = findOneById(id);
+        if (token == null) return null;
+
+        boolean isTypeCorrect = !StringUtils.isEmpty(token.getType()) && token.getType().equals(type);
+        if (!isTypeCorrect) return null;
+
+        boolean isActive = Status.ACTIVE.equals(token.getStatus());
+        if (!isActive) return null;
+
+        boolean isExpired = OffsetDateTime.now().isAfter(token.getExpiresAt());
+        if (isExpired) return null;
+
+        return token;
+    }
+
+    @Override
+    public void deactivatePastToken(UUID ownerId, String type) {
+        OffsetDateTime now = OffsetDateTime.now();
+        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(ownerId, type, now, Status.INACTIVE, now, ownerId);
+    }
+
+    @Override
+    public TokenDTO createRefreshToken(UUID userId) {
         UUID id = UUIDUtils.generateId();
-        jwtPayload.setTokenId(ConversionUtils.toString(id));
-        String jwt = jwtService.createRefreshToken(jwtPayload);
+        JWTPayload jwtPayload = jwtService.createRefreshJwt(userId, id);
 
         Token token = new Token();
         token.setId(id);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
         token.setType(TokenType.REFRESH_TOKEN);
         token.setOwnerId(userId);
-        token.setValue(jwt);
+        token.setValue(jwtPayload.getValue());
         token.setStatus(Status.ACTIVE);
         token.setCreatedBy(userId);
         token.setUpdatedBy(userId);
-        return tokenRepository.save(token);
+        return commonMapper.toDTO(tokenRepository.save(token));
+    }
+
+    @Override
+    public TokenDTO createResetPasswordToken(UUID userId) {
+        UUID id = UUIDUtils.generateId();
+        JWTPayload jwtPayload = jwtService.createResetPasswordJwt(id);
+
+        Token token = new Token();
+        token.setId(id);
+        token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
+        token.setType(TokenType.RESET_PASSWORD);
+        token.setOwnerId(userId);
+        token.setValue(jwtPayload.getValue());
+        token.setStatus(Status.ACTIVE);
+        token.setCreatedBy(userId);
+        token.setUpdatedBy(userId);
+        return commonMapper.toDTO(tokenRepository.save(token));
+    }
+
+    @Override
+    public TokenDTO createActivateAccountToken(UUID actionBy) {
+        UUID id = UUIDUtils.generateId();
+        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id);
+
+        Token token = new Token();
+        token.setId(id);
+        token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
+        token.setType(TokenType.ACTIVATE_ACCOUNT);
+        token.setOwnerId(actionBy);
+        token.setValue(jwtPayload.getValue());
+        token.setStatus(Status.ACTIVE);
+        token.setCreatedBy(actionBy);
+        token.setUpdatedBy(actionBy);
+        return commonMapper.toDTO(tokenRepository.save(token));
     }
 
 }

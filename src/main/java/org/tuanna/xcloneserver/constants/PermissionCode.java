@@ -38,6 +38,7 @@ public class PermissionCode {
     }
 
     public static List<String> fromIndexes(List<Integer> indexes) {
+        if (CollectionUtils.isEmpty(indexes)) return new ArrayList<>();
         List<String> result = new ArrayList<>();
         if (CollectionUtils.isEmpty(indexes)) return result;
         for (Integer index : indexes) {
@@ -48,6 +49,7 @@ public class PermissionCode {
     }
 
     public static List<Integer> toIndexes(List<String> codes) {
+        if (CollectionUtils.isEmpty(codes)) return new ArrayList<>();
         List<Integer> result = new ArrayList<>();
         for (String code : codes) {
             if (StringUtils.isEmpty(code)) continue;

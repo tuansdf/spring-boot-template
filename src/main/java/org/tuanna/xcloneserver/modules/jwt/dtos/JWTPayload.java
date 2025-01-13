@@ -1,5 +1,6 @@
 package org.tuanna.xcloneserver.modules.jwt.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
@@ -39,6 +40,9 @@ public class JWTPayload {
     private String subjectId;
     @JsonProperty("per")
     private List<Integer> permissions;
+
+    @JsonIgnore
+    private String value;
 
     public Map<String, Object> toMap() {
         Map<String, Object> result = new HashMap<>();

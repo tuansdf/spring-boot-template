@@ -6,14 +6,19 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.constants.ResultSetName;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
+import org.tuanna.xcloneserver.modules.user.dtos.ChangePasswordRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.SearchUserRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
+import org.tuanna.xcloneserver.utils.AuthUtils;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
 import org.tuanna.xcloneserver.utils.SQLUtils;
 
@@ -28,26 +33,73 @@ public class UserServiceImpl implements UserService {
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDTO save(UserDTO requestDTO, UUID actionBy) throws CustomException {
-        requestDTO.validate();
-        User result = null;
-        if (requestDTO.getId() != null) {
-            Optional<User> userOptional = userRepository.findById(requestDTO.getId());
-            result = userOptional.orElse(null);
+    public UserDTO saveRaw(UserDTO requestDTO) {
+        return commonMapper.toDTO(userRepository.save(commonMapper.toEntity(requestDTO)));
+    }
+
+    @Override
+    public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID actionBy) throws CustomException {
+        Optional<User> userOptional = userRepository.findById(requestDTO.getUserId());
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        if (result == null) {
-            result = new User();
-            result.setCreatedBy(actionBy);
+        User user = userOptional.get();
+        boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword());
+        if (!isPasswordCorrect) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        result.setUsername(requestDTO.getUsername());
-        result.setEmail(requestDTO.getEmail());
-        result.setName(requestDTO.getName());
-        result.setPassword(requestDTO.getPassword());
-        result.setStatus(requestDTO.getStatus());
-        result.setUpdatedBy(actionBy);
-        return commonMapper.toDTO(userRepository.save(result));
+        user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
+        user.setUpdatedBy(actionBy);
+        return commonMapper.toDTO(userRepository.save(user));
+    }
+
+    @Override
+    public UserDTO updatePassword(UUID userId, String password, UUID actionBy, Locale locale) throws CustomException {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userOptional.get();
+        user.setPassword(passwordEncoder.encode(password));
+        user.setUpdatedBy(actionBy);
+        return commonMapper.toDTO(userRepository.save(user));
+    }
+
+    @Override
+    public UserDTO updateProfile(UserDTO requestDTO, UUID actionBy) throws CustomException {
+        requestDTO.validateUpdate();
+        Optional<User> userOptional = userRepository.findById(requestDTO.getId());
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        User user = userOptional.get();
+        if (!ConversionUtils.toString(user.getUsername()).equals(requestDTO.getUsername()) && existsByUsername(requestDTO.getUsername())) {
+            throw new CustomException(HttpStatus.CONFLICT);
+        }
+        if (!ConversionUtils.toString(user.getEmail()).equals(requestDTO.getEmail()) && existsByEmail(requestDTO.getEmail())) {
+            throw new CustomException(HttpStatus.CONFLICT);
+        }
+        user.setUsername(requestDTO.getUsername());
+        user.setEmail(requestDTO.getEmail());
+        user.setName(requestDTO.getName());
+        if (AuthUtils.hasAnyPermission(List.of(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER))) {
+            user.setStatus(requestDTO.getStatus());
+        }
+        user.setUpdatedBy(actionBy);
+        return commonMapper.toDTO(userRepository.save(user));
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 
     @Override
@@ -62,15 +114,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDTO findOneByIdOrThrow(UUID userId) throws CustomException {
+        UserDTO result = findOneById(userId);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
+    }
+
+    @Override
     public UserDTO findOneByUsername(String username) {
         Optional<User> userOptional = userRepository.findTopByUsername(username);
         return userOptional.map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
+    public UserDTO findOneByUsernameOrThrow(String username) throws CustomException {
+        UserDTO result = findOneByUsername(username);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
+    }
+
+    @Override
     public UserDTO findOneByEmail(String email) {
         Optional<User> userOptional = userRepository.findTopByEmail(email);
         return userOptional.map(commonMapper::toDTO).orElse(null);
+    }
+
+    @Override
+    public UserDTO findOneByEmailOrThrow(String email) throws CustomException {
+        UserDTO result = findOneByEmail(email);
+        if (result == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
     }
 
     @Override

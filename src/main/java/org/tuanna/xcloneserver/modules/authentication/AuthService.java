@@ -1,15 +1,19 @@
 package org.tuanna.xcloneserver.modules.authentication;
 
 import org.tuanna.xcloneserver.exception.CustomException;
-import org.tuanna.xcloneserver.modules.authentication.dtos.AuthResponseDTO;
-import org.tuanna.xcloneserver.modules.authentication.dtos.LoginRequestDTO;
-import org.tuanna.xcloneserver.modules.authentication.dtos.RegisterRequestDTO;
+import org.tuanna.xcloneserver.modules.authentication.dtos.*;
+
+import java.util.Locale;
 
 public interface AuthService {
 
-    AuthResponseDTO login(LoginRequestDTO requestDTO) throws CustomException;
+    AuthDTO login(LoginRequestDTO requestDTO) throws CustomException;
 
-    AuthResponseDTO register(RegisterRequestDTO requestDTO) throws CustomException;
+    AuthDTO register(RegisterRequestDTO requestDTO) throws CustomException;
 
-    AuthResponseDTO refreshAccessToken(String refreshJwt) throws CustomException;
+    String forgotPassword(ForgotPasswordRequestDTO requestDTO, Locale locale) throws CustomException;
+
+    String resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException;
+
+    AuthDTO refreshAccessToken(String refreshJwt) throws CustomException;
 }
