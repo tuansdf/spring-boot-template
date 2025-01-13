@@ -46,7 +46,7 @@ public interface CommonMapper {
     Email toEntity(EmailDTO v);
 
     EmailDTO toDTO(Email v);
-   
+
     EmailDTO clone(EmailDTO v);
 
 }

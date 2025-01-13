@@ -21,7 +21,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
             "left join Role r on (r.id = ur.roleId) " +
             "where ur.userId = :userId")
     List<Role> findAllByUserId(UUID userId);
-   
+
     Optional<Role> findTopByCode(String code);
 
 }
