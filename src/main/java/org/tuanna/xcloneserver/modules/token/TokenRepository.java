@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface TokenRepository extends JpaRepository<Token, UUID> {
 
     @Modifying
-    @Query(value = "update Token t set t.status = :status, t.updatedAt = :updatedAt, t.updatedBy = :updatedBy where t.ownerId = :ownerId and t.createdAt < :createdAt and t.type = :type and t.status <> :status")
-    void updateStatusByOwnerIdAndTypeAndCreatedAtBefore(UUID ownerId, String type, OffsetDateTime createdAt, String status, OffsetDateTime updatedAt, UUID updatedBy);
+    @Query(value = "update token set status = :status, updated_at = :now, updated_by = :userId where owner_id = :userId and token.created_at < :now and type = :type and status <> :status", nativeQuery = true)
+    void updateStatusByOwnerIdAndTypeAndCreatedAtBefore(UUID ownerId, String type, OffsetDateTime now, String status);
 
 }

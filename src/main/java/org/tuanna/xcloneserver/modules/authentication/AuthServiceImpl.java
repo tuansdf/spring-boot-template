@@ -122,11 +122,12 @@ public class AuthServiceImpl implements AuthService {
     public String resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
         requestDTO.validate();
         JWTPayload jwtPayload = jwtService.verify(requestDTO.getToken());
-        if (StringUtils.isEmpty(jwtPayload.getTokenId()) || !TokenType.RESET_PASSWORD.equals(TokenType.fromIndex(jwtPayload.getType()))) {
+        String tokenType = TokenType.fromIndex(jwtPayload.getType());
+        if (!TokenType.RESET_PASSWORD.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        TokenDTO tokenDTO = tokenService.findOneValidatedById(ConversionUtils.toUUID(jwtPayload.getTokenId()), TokenType.RESET_PASSWORD);
-        if (tokenDTO == null) {
+        TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
+        if (tokenDTO == null || !TokenType.RESET_PASSWORD.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         userService.updatePassword(tokenDTO.getOwnerId(), requestDTO.getNewPassword(), tokenDTO.getOwnerId(), locale);
@@ -138,10 +139,9 @@ public class AuthServiceImpl implements AuthService {
     private AuthDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
         JWTPayload accessJwt = jwtService.createAccessJwt(userId, permissionCodes);
         TokenDTO refreshToken = tokenService.createRefreshToken(userId);
-        String refreshJwt = refreshToken.getValue();
         return AuthDTO.builder()
                 .accessToken(accessJwt.getValue())
-                .refreshToken(refreshJwt)
+                .refreshToken(refreshToken.getValue())
                 .build();
     }
 
@@ -151,11 +151,12 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         JWTPayload jwtPayload = jwtService.verify(refreshJwt);
-        if (StringUtils.isEmpty(jwtPayload.getTokenId()) || !TokenType.REFRESH_TOKEN.equals(TokenType.fromIndex(jwtPayload.getType()))) {
+        String tokenType = TokenType.fromIndex(jwtPayload.getType());
+        if (!TokenType.REFRESH_TOKEN.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        TokenDTO tokenDTO = tokenService.findOneValidatedById(ConversionUtils.toUUID(jwtPayload.getTokenId()), TokenType.REFRESH_TOKEN);
-        if (tokenDTO == null) {
+        TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
+        if (tokenDTO == null || !TokenType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         UserDTO user = userService.findOneById(ConversionUtils.toUUID(jwtPayload.getSubjectId()));

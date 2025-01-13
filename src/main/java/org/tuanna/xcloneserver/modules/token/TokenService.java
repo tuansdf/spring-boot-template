@@ -8,9 +8,9 @@ public interface TokenService {
 
     TokenDTO findOneById(UUID id);
 
-    TokenDTO findOneValidatedById(UUID id, String type);
+    TokenDTO findOneActiveById(UUID id);
 
-    void deactivatePastToken(UUID ownerId, String type);
+    void deactivatePastToken(UUID userId, String type);
 
     TokenDTO createRefreshToken(UUID userId);
 

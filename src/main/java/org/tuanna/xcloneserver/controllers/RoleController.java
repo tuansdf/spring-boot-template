@@ -45,7 +45,7 @@ public class RoleController {
         }
     }
 
-    @PostMapping
+    @PutMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<RoleDTO>> save(@RequestBody RoleDTO requestDTO) {
         try {

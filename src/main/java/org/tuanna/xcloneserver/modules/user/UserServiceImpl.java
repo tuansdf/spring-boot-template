@@ -11,10 +11,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.constants.ResultSetName;
+import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
+import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.modules.user.dtos.ChangePasswordRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.SearchUserRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
@@ -34,6 +36,7 @@ public class UserServiceImpl implements UserService {
     private final EntityManager entityManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
 
     @Override
     public UserDTO saveRaw(UserDTO requestDTO) {
@@ -53,7 +56,9 @@ public class UserServiceImpl implements UserService {
         }
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         user.setUpdatedBy(actionBy);
-        return commonMapper.toDTO(userRepository.save(user));
+        user = userRepository.save(user);
+        tokenService.deactivatePastToken(user.getId(), TokenType.REFRESH_TOKEN);
+        return commonMapper.toDTO(user);
     }
 
     @Override

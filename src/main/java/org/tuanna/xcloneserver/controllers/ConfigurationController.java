@@ -45,7 +45,7 @@ public class ConfigurationController {
         }
     }
 
-    @PostMapping
+    @PutMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<ConfigurationDTO>> save(@RequestBody ConfigurationDTO requestDTO) {
         try {

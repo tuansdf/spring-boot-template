@@ -3,7 +3,6 @@ package org.tuanna.xcloneserver.modules.token;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.constants.TokenType;
@@ -36,16 +35,13 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenDTO findOneValidatedById(UUID id, String type) {
+    public TokenDTO findOneActiveById(UUID id) {
         if (id == null) {
             return null;
         }
 
         TokenDTO token = findOneById(id);
         if (token == null) return null;
-
-        boolean isTypeCorrect = !StringUtils.isEmpty(token.getType()) && token.getType().equals(type);
-        if (!isTypeCorrect) return null;
 
         boolean isActive = Status.ACTIVE.equals(token.getStatus());
         if (!isActive) return null;
@@ -57,9 +53,8 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void deactivatePastToken(UUID ownerId, String type) {
-        OffsetDateTime now = OffsetDateTime.now();
-        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(ownerId, type, now, Status.INACTIVE, now, ownerId);
+    public void deactivatePastToken(UUID userId, String type) {
+        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(userId, type, OffsetDateTime.now(), Status.INACTIVE);
     }
 
     @Override
