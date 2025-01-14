@@ -32,6 +32,18 @@ public class CommonResponse<T> {
         this.message = HttpStatus.OK.getReasonPhrase();
     }
 
+    public CommonResponse(String message) {
+        this.data = null;
+        this.status = HttpStatus.OK.value();
+        this.message = message;
+    }
+
+    public CommonResponse(HttpStatus httpStatus) {
+        this.data = null;
+        this.status = httpStatus.value();
+        this.message = httpStatus.getReasonPhrase();
+    }
+
     public CommonResponse(String message, HttpStatus status) {
         this.data = null;
         this.status = status.value();
@@ -42,12 +54,6 @@ public class CommonResponse<T> {
         this.data = null;
         this.status = status.value();
         this.message = message;
-    }
-
-    public CommonResponse(HttpStatus httpStatus) {
-        this.data = null;
-        this.status = httpStatus.value();
-        this.message = httpStatus.getReasonPhrase();
     }
 
 }

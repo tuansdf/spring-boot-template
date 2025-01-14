@@ -39,11 +39,6 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
 
     @Override
-    public UserDTO saveRaw(UserDTO requestDTO) {
-        return commonMapper.toDTO(userRepository.save(commonMapper.toEntity(requestDTO)));
-    }
-
-    @Override
     public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) throws CustomException {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
@@ -59,18 +54,6 @@ public class UserServiceImpl implements UserService {
         user = userRepository.save(user);
         tokenService.deactivatePastToken(user.getId(), TokenType.REFRESH_TOKEN);
         return commonMapper.toDTO(user);
-    }
-
-    @Override
-    public UserDTO updatePassword(UUID userId, String password, UUID actionBy, Locale locale) throws CustomException {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
-        User user = userOptional.get();
-        user.setPassword(passwordEncoder.encode(password));
-        user.setUpdatedBy(actionBy);
-        return commonMapper.toDTO(userRepository.save(user));
     }
 
     @Override

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ConfigurationCode;
 import org.tuanna.xcloneserver.constants.Status;
 import org.tuanna.xcloneserver.constants.TokenType;
+import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.authentication.dtos.*;
 import org.tuanna.xcloneserver.modules.configuration.ConfigurationService;
@@ -20,6 +21,7 @@ import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.permission.PermissionService;
 import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.modules.token.dtos.TokenDTO;
+import org.tuanna.xcloneserver.modules.user.UserRepository;
 import org.tuanna.xcloneserver.modules.user.UserService;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
@@ -43,9 +45,12 @@ public class AuthServiceImpl implements AuthService {
     private final EmailService emailService;
     private final ConfigurationService configurationService;
     private final MessageSource messageSource;
+    private final UserRepository userRepository;
 
     @Override
     public AuthDTO login(LoginRequestDTO requestDTO) throws CustomException {
+        requestDTO.validate();
+
         UserDTO userDTO = userService.findOneByUsername(requestDTO.getUsername());
         if (userDTO == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -88,13 +93,13 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String hashedPassword = passwordEncoder.encode(requestDTO.getPassword());
-        UserDTO user = new UserDTO();
+        User user = new User();
         user.setUsername(requestDTO.getUsername());
         user.setEmail(requestDTO.getEmail());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
-        user.setStatus(Status.ACTIVE);
-        user = userService.saveRaw(user);
+        user.setStatus(Status.PENDING);
+        user = userRepository.save(user);
 
         AuthDTO responseDTO = createAuthResponse(user.getId(), new ArrayList<>());
         responseDTO.setUserId(user.getId());
@@ -133,7 +138,7 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !TokenType.RESET_PASSWORD.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        userService.updatePassword(tokenDTO.getOwnerId(), requestDTO.getNewPassword(), tokenDTO.getOwnerId(), locale);
+        userRepository.updatePasswordByUserId(tokenDTO.getOwnerId(), requestDTO.getNewPassword());
         tokenService.deactivatePastToken(tokenDTO.getOwnerId(), TokenType.RESET_PASSWORD);
         tokenService.deactivatePastToken(tokenDTO.getOwnerId(), TokenType.REFRESH_TOKEN);
         return messageSource.getMessage("reset_password.success", null, locale);

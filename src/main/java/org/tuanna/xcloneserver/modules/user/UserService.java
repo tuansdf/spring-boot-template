@@ -6,16 +6,11 @@ import org.tuanna.xcloneserver.modules.user.dtos.ChangePasswordRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.SearchUserRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 
-import java.util.Locale;
 import java.util.UUID;
 
 public interface UserService {
 
-    UserDTO saveRaw(UserDTO requestDTO);
-
     UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) throws CustomException;
-
-    UserDTO updatePassword(UUID userId, String password, UUID actionBy, Locale locale) throws CustomException;
 
     UserDTO updateProfile(UserDTO requestDTO, UUID actionBy) throws CustomException;
 
