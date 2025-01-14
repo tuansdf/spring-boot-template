@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -46,15 +44,15 @@ public class JWTPayload {
 
     public Map<String, Object> toMap() {
         Map<String, Object> result = new HashMap<>();
-        if (!StringUtils.isEmpty(issuer)) result.put("iss", issuer);
-        if (!StringUtils.isEmpty(subject)) result.put("sub", subject);
+        if (issuer != null) result.put("iss", issuer);
+        if (subject != null) result.put("sub", subject);
         if (issuedAt != null) result.put("iat", issuedAt);
         if (notBefore != null) result.put("nbf", notBefore);
         if (expiresAt != null) result.put("exp", expiresAt);
         if (type != null) result.put("typ", type);
-        if (!StringUtils.isEmpty(tokenId)) result.put("tid", tokenId);
-        if (!StringUtils.isEmpty(subjectId)) result.put("sid", subjectId);
-        if (!CollectionUtils.isEmpty(permissions)) result.put("per", permissions);
+        if (tokenId != null) result.put("tid", tokenId);
+        if (subjectId != null) result.put("sid", subjectId);
+        if (permissions != null) result.put("per", permissions);
         return result;
     }
 
