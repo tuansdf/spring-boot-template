@@ -33,6 +33,22 @@ public class DateUtils {
         }
     }
 
+    public static Instant toInstant(Object input) {
+        try {
+            return switch (input) {
+                case Instant v -> v;
+                case LocalDate v -> v.atStartOfDay().toInstant(ZoneOffset.UTC);
+                case LocalDateTime v -> v.toInstant(ZoneOffset.UTC);
+                case ZonedDateTime v -> v.toInstant();
+                case Number v -> Instant.ofEpochSecond(ConversionUtils.safeToLong(v));
+                case String v -> Instant.ofEpochSecond(ConversionUtils.safeToLong(v));
+                case null, default -> null;
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static OffsetDateTime toOffsetDateTime(String input, DateTimeFormatter formatter) {
         if (StringUtils.isEmpty(input)) return null;
         try {

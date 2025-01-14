@@ -1,5 +1,7 @@
 package org.tuanna.xcloneserver.utils;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 public class ConversionUtils {
@@ -98,6 +100,18 @@ public class ConversionUtils {
             };
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public static <T> List<T> toList(Object input) {
+        try {
+            if (input instanceof List<?> v) {
+                return (List<T>) v;
+            } else {
+                return (List<T>) Collections.singletonList(input);
+            }
+        } catch (Exception e) {
+            return null;
         }
     }
 
