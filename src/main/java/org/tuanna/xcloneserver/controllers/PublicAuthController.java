@@ -14,7 +14,6 @@ import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.modules.authentication.AuthService;
 import org.tuanna.xcloneserver.modules.authentication.dtos.*;
 import org.tuanna.xcloneserver.utils.ExceptionUtils;
-import org.tuanna.xcloneserver.utils.I18nUtils;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,7 +40,7 @@ public class PublicAuthController {
             HttpServletResponse servletResponse, @RequestBody RegisterRequestDTO requestDTO) {
         try {
             authService.register(requestDTO, servletResponse.getLocale());
-            var message = I18nUtils.getMessage("auth.activate_account_email_sent", null, servletResponse.getLocale());
+            var message = messageSource.getMessage("auth.activate_account_email_sent", null, servletResponse.getLocale());
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
