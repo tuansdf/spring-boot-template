@@ -14,6 +14,7 @@ public class AuthDTO {
 
     private String accessToken;
     private String refreshToken;
+    private String token;
     private UUID userId;
     private String username;
     private String email;

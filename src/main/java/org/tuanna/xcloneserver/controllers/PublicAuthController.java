@@ -74,8 +74,20 @@ public class PublicAuthController {
     @PostMapping("/token/refresh")
     public ResponseEntity<CommonResponse<AuthDTO>> refreshAccessToken(@RequestBody AuthDTO requestDTO) {
         try {
-            var result = authService.refreshAccessToken(requestDTO.getRefreshToken());
+            var result = authService.refreshAccessToken(requestDTO.getToken());
             return ResponseEntity.ok(new CommonResponse<>(result));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
+
+    @PostMapping("/account/activate")
+    public ResponseEntity<CommonResponse<Object>> activateAccount(
+            HttpServletRequest servletRequest, @RequestBody AuthDTO requestDTO) {
+        try {
+            authService.activateAccount(requestDTO.getToken());
+            var message = messageSource.getMessage("auth.activate_account_success", null, servletRequest.getLocale());
+            return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

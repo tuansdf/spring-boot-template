@@ -28,4 +28,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "update _user set password = :password, updated_by = :userId, updated_at = now() where id = :userId", nativeQuery = true)
     void updatePasswordByUserId(UUID userId, String password);
 
+    @Modifying
+    @Query(value = "update _user set status = :status, updated_by = :userId, updated_at = now() where id = :userId", nativeQuery = true)
+    void updateStatusByUserId(UUID userId, String status);
+
 }

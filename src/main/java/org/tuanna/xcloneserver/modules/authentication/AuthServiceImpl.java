@@ -91,8 +91,8 @@ public class AuthServiceImpl implements AuthService {
 
         String hashedPassword = passwordEncoder.encode(requestDTO.getPassword());
         User user = new User();
-        user.setUsername(requestDTO.getUsername());
-        user.setEmail(requestDTO.getEmail());
+        user.setUsername(ConversionUtils.toString(requestDTO.getUsername()).trim());
+        user.setEmail(ConversionUtils.toString(requestDTO.getEmail()).trim());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
         user.setStatus(Status.PENDING);
@@ -157,7 +157,7 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !TokenType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UserDTO user = userService.findOneById(ConversionUtils.toUUID(jwtPayload.getSubjectId()));
+        UserDTO user = userService.findOneById(ConversionUtils.toUUID(tokenDTO.getOwnerId()));
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -169,6 +169,31 @@ public class AuthServiceImpl implements AuthService {
         return AuthDTO.builder()
                 .accessToken(accessJwt.getValue())
                 .build();
+    }
+
+    @Override
+    public void activateAccount(String jwt) throws CustomException {
+        if (StringUtils.isEmpty(jwt)) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        JWTPayload jwtPayload = jwtService.verify(jwt);
+        if (jwtPayload == null) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        String tokenType = TokenType.fromIndex(jwtPayload.getType());
+        if (!TokenType.ACTIVATE_ACCOUNT.equals(tokenType)) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
+        if (tokenDTO == null || !TokenType.ACTIVATE_ACCOUNT.equals(tokenDTO.getType())) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        UserDTO user = userService.findOneById(ConversionUtils.toUUID(tokenDTO.getOwnerId()));
+        if (user == null) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        userRepository.updateStatusByUserId(user.getId(), Status.ACTIVE);
+        tokenService.deactivatePastToken(user.getId(), TokenType.ACTIVATE_ACCOUNT);
     }
 
 }

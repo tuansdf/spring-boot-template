@@ -17,4 +17,6 @@ public interface AuthService {
 
     AuthDTO refreshAccessToken(String refreshJwt) throws CustomException;
 
+    void activateAccount(String jwt) throws CustomException;
+
 }
