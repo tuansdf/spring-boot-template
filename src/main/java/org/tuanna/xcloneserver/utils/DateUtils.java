@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class DateUtils {
 
@@ -21,10 +22,12 @@ public class DateUtils {
     public static OffsetDateTime toOffsetDateTime(Object input) {
         try {
             return switch (input) {
-                case Instant v -> OffsetDateTime.ofInstant(v, ZoneOffset.systemDefault());
+                case Instant v -> OffsetDateTime.ofInstant(v, ZoneOffset.UTC);
+                case Date v -> v.toInstant().atOffset(ZoneOffset.UTC);
                 case LocalDate v -> OffsetDateTime.of(v.atStartOfDay(), ZoneOffset.UTC);
                 case LocalDateTime v -> OffsetDateTime.of(v, ZoneOffset.UTC);
                 case ZonedDateTime v -> v.toOffsetDateTime();
+                case OffsetDateTime v -> v;
                 case String v -> toOffsetDateTime(v, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
                 case null, default -> null;
             };
@@ -37,9 +40,11 @@ public class DateUtils {
         try {
             return switch (input) {
                 case Instant v -> v;
+                case Date v -> v.toInstant();
                 case LocalDate v -> v.atStartOfDay().toInstant(ZoneOffset.UTC);
                 case LocalDateTime v -> v.toInstant(ZoneOffset.UTC);
                 case ZonedDateTime v -> v.toInstant();
+                case OffsetDateTime v -> v.toInstant();
                 case Number v -> Instant.ofEpochSecond(ConversionUtils.safeToLong(v));
                 case String v -> Instant.ofEpochSecond(ConversionUtils.safeToLong(v));
                 case null, default -> null;
