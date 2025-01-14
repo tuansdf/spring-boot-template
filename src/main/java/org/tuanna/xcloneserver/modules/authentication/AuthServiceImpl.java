@@ -24,7 +24,6 @@ import org.tuanna.xcloneserver.modules.user.UserService;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
 
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -36,7 +35,6 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class AuthServiceImpl implements AuthService {
 
-    private final static int DEFAULT_LOGIN_LOCKOUT_TIME = 5;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
     private final UserService userService;
@@ -124,6 +122,9 @@ public class AuthServiceImpl implements AuthService {
     public String resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
         requestDTO.validate();
         JWTPayload jwtPayload = jwtService.verify(requestDTO.getToken());
+        if (jwtPayload == null) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
         String tokenType = TokenType.fromIndex(jwtPayload.getType());
         if (!TokenType.RESET_PASSWORD.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -153,6 +154,9 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         JWTPayload jwtPayload = jwtService.verify(refreshJwt);
+        if (jwtPayload == null) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
         String tokenType = TokenType.fromIndex(jwtPayload.getType());
         if (!TokenType.REFRESH_TOKEN.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);

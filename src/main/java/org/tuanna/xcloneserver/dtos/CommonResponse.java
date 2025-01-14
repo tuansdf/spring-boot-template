@@ -20,6 +20,12 @@ public class CommonResponse<T> {
     @JsonIgnore
     private HttpStatus httpStatus;
 
+    public CommonResponse() {
+        this.data = null;
+        this.status = HttpStatus.OK.value();
+        this.message = HttpStatus.OK.getReasonPhrase();
+    }
+
     public CommonResponse(T data) {
         this.data = data;
         this.status = HttpStatus.OK.value();

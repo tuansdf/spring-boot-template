@@ -12,14 +12,14 @@ import java.util.UUID;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    @Query(value = "select r.code from UserRole ur " +
-            "left join Role r on (r.id = ur.roleId) " +
-            "where ur.userId = :userId")
+    @Query(value = "select r.code from user_role ur " +
+            "left join role r on (r.id = ur.role_id) " +
+            "where ur.user_id = :userId", nativeQuery = true)
     List<String> findAllCodesByUserId(UUID userId);
 
-    @Query(value = "select r from UserRole ur " +
-            "left join Role r on (r.id = ur.roleId) " +
-            "where ur.userId = :userId")
+    @Query(value = "select r.* from user_role ur " +
+            "left join role r on (r.id = ur.role_id) " +
+            "where ur.user_id = :userId", nativeQuery = true)
     List<Role> findAllByUserId(UUID userId);
 
     Optional<Role> findTopByCode(String code);

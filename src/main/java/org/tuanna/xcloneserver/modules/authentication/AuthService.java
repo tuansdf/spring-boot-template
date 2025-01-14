@@ -16,4 +16,5 @@ public interface AuthService {
     String resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException;
 
     AuthDTO refreshAccessToken(String refreshJwt) throws CustomException;
+
 }
