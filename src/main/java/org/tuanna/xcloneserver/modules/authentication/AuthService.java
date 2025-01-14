@@ -7,13 +7,13 @@ import java.util.Locale;
 
 public interface AuthService {
 
-    AuthDTO login(LoginRequestDTO requestDTO) throws CustomException;
+    AuthDTO login(LoginRequestDTO requestDTO, Locale locale) throws CustomException;
 
-    AuthDTO register(RegisterRequestDTO requestDTO) throws CustomException;
+    void register(RegisterRequestDTO requestDTO, Locale locale) throws CustomException;
 
-    String forgotPassword(ForgotPasswordRequestDTO requestDTO, Locale locale) throws CustomException;
+    void forgotPassword(ForgotPasswordRequestDTO requestDTO, Locale locale) throws CustomException;
 
-    String resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException;
+    void resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException;
 
     AuthDTO refreshAccessToken(String refreshJwt) throws CustomException;
 

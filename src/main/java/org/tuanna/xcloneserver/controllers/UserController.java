@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
-import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.user.UserService;
 import org.tuanna.xcloneserver.modules.user.dtos.ChangePasswordRequestDTO;
 import org.tuanna.xcloneserver.modules.user.dtos.SearchUserRequestDTO;
@@ -31,7 +30,8 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> findOne(@PathVariable UUID id) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(userService.findOneById(id)));
+            var result = userService.findOneById(id);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -41,8 +41,9 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
         try {
-            AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
-            return ResponseEntity.ok(new CommonResponse<>(userService.changePassword(requestDTO, principal.getUserId())));
+            var principal = AuthUtils.getAuthenticationPrincipal();
+            var result = userService.changePassword(requestDTO, principal.getUserId());
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -52,8 +53,9 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> updateProfile(@RequestBody UserDTO requestDTO) {
         try {
-            AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
-            return ResponseEntity.ok(new CommonResponse<>(userService.updateProfile(requestDTO, principal.getUserId())));
+            var principal = AuthUtils.getAuthenticationPrincipal();
+            var result = userService.updateProfile(requestDTO, principal.getUserId());
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -71,7 +73,7 @@ public class UserController {
             @RequestParam(required = false) OffsetDateTime createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
         try {
-            SearchUserRequestDTO requestDTO = SearchUserRequestDTO.builder()
+            var requestDTO = SearchUserRequestDTO.builder()
                     .pageNumber(pageNumber)
                     .pageSize(pageSize)
                     .username(username)
@@ -80,7 +82,8 @@ public class UserController {
                     .createdAtTo(createdAtTo)
                     .createdAtFrom(createdAtFrom)
                     .build();
-            return ResponseEntity.ok(new CommonResponse<>(userService.search(requestDTO, count)));
+            var result = userService.search(requestDTO, count);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

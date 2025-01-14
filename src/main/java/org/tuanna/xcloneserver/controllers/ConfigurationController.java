@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
-import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.configuration.ConfigurationService;
 import org.tuanna.xcloneserver.modules.configuration.dtos.ConfigurationDTO;
 import org.tuanna.xcloneserver.modules.configuration.dtos.SearchConfigurationRequestDTO;
@@ -29,7 +28,8 @@ public class ConfigurationController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(@PathVariable String code) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(configurationService.findOneByCodeOrThrow(code)));
+            var result = configurationService.findOneByCodeOrThrow(code);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -39,7 +39,8 @@ public class ConfigurationController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(configurationService.findOneByIdOrThrow(id)));
+            var result = configurationService.findOneByIdOrThrow(id);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -49,8 +50,9 @@ public class ConfigurationController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<ConfigurationDTO>> save(@RequestBody ConfigurationDTO requestDTO) {
         try {
-            AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
-            return ResponseEntity.ok(new CommonResponse<>(configurationService.save(requestDTO, principal.getUserId())));
+            var principal = AuthUtils.getAuthenticationPrincipal();
+            var result = configurationService.save(requestDTO, principal.getUserId());
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -67,7 +69,7 @@ public class ConfigurationController {
             @RequestParam(required = false) OffsetDateTime createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
         try {
-            SearchConfigurationRequestDTO requestDTO = SearchConfigurationRequestDTO.builder()
+            var requestDTO = SearchConfigurationRequestDTO.builder()
                     .pageNumber(pageNumber)
                     .pageSize(pageSize)
                     .code(code)
@@ -75,7 +77,8 @@ public class ConfigurationController {
                     .createdAtTo(createdAtTo)
                     .createdAtFrom(createdAtFrom)
                     .build();
-            return ResponseEntity.ok(new CommonResponse<>(configurationService.search(requestDTO, count)));
+            var result = configurationService.search(requestDTO, count);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

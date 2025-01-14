@@ -4,7 +4,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ import org.tuanna.xcloneserver.modules.user.UserService;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.ConversionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -44,11 +42,10 @@ public class AuthServiceImpl implements AuthService {
     private final TokenService tokenService;
     private final EmailService emailService;
     private final ConfigurationService configurationService;
-    private final MessageSource messageSource;
     private final UserRepository userRepository;
 
     @Override
-    public AuthDTO login(LoginRequestDTO requestDTO) throws CustomException {
+    public AuthDTO login(LoginRequestDTO requestDTO, Locale locale) throws CustomException {
         requestDTO.validate();
 
         UserDTO userDTO = userService.findOneByUsername(requestDTO.getUsername());
@@ -79,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthDTO register(RegisterRequestDTO requestDTO) throws CustomException {
+    public void register(RegisterRequestDTO requestDTO, Locale locale) throws CustomException {
         requestDTO.validate();
 
         Boolean isRegistrationEnabled = ConversionUtils.toBool(configurationService.findValueByCode(ConfigurationCode.IS_REGISTRATION_ENABLED));
@@ -101,30 +98,21 @@ public class AuthServiceImpl implements AuthService {
         user.setStatus(Status.PENDING);
         user = userRepository.save(user);
 
-        AuthDTO responseDTO = createAuthResponse(user.getId(), new ArrayList<>());
-        responseDTO.setUserId(user.getId());
-        responseDTO.setUsername(user.getUsername());
-        responseDTO.setEmail(user.getEmail());
-        responseDTO.setName(user.getName());
-
-        return responseDTO;
+        TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
+        emailService.sendActivateAccountEmail(user.getEmail(), user.getName(), tokenDTO.getValue(), user.getId(), locale);
     }
 
     @Override
-    public String forgotPassword(ForgotPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
+    public void forgotPassword(ForgotPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
         requestDTO.validate();
-        String result = messageSource.getMessage("reset_password.email_sent", null, locale);
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
-        if (userDTO == null) {
-            return result;
-        }
+        if (userDTO == null) return;
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
         emailService.sendResetPasswordEmail(userDTO.getEmail(), userDTO.getName(), tokenDTO.getValue(), userDTO.getId(), locale);
-        return result;
     }
 
     @Override
-    public String resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
+    public void resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
         requestDTO.validate();
         JWTPayload jwtPayload = jwtService.verify(requestDTO.getToken());
         if (jwtPayload == null) {
@@ -141,7 +129,6 @@ public class AuthServiceImpl implements AuthService {
         userRepository.updatePasswordByUserId(tokenDTO.getOwnerId(), requestDTO.getNewPassword());
         tokenService.deactivatePastToken(tokenDTO.getOwnerId(), TokenType.RESET_PASSWORD);
         tokenService.deactivatePastToken(tokenDTO.getOwnerId(), TokenType.REFRESH_TOKEN);
-        return messageSource.getMessage("reset_password.success", null, locale);
     }
 
     private AuthDTO createAuthResponse(UUID userId, List<String> permissionCodes) {

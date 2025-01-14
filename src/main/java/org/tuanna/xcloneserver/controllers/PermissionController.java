@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
-import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.permission.PermissionService;
 import org.tuanna.xcloneserver.modules.permission.dtos.PermissionDTO;
 import org.tuanna.xcloneserver.modules.permission.dtos.SearchPermissionRequestDTO;
@@ -29,7 +28,8 @@ public class PermissionController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PermissionDTO>> findOneByCode(@PathVariable String code) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.findOneByCodeOrThrow(code)));
+            var result = permissionService.findOneByCodeOrThrow(code);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -39,7 +39,8 @@ public class PermissionController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PermissionDTO>> findOne(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.findOneByIdOrThrow(id)));
+            var result = permissionService.findOneByIdOrThrow(id);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -49,8 +50,9 @@ public class PermissionController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PermissionDTO>> save(@RequestBody PermissionDTO requestDTO) {
         try {
-            AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.save(requestDTO, principal.getUserId())));
+            var principal = AuthUtils.getAuthenticationPrincipal();
+            var result = permissionService.save(requestDTO, principal.getUserId());
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -67,7 +69,7 @@ public class PermissionController {
             @RequestParam(required = false) OffsetDateTime createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
         try {
-            SearchPermissionRequestDTO requestDTO = SearchPermissionRequestDTO.builder()
+            var requestDTO = SearchPermissionRequestDTO.builder()
                     .pageNumber(pageNumber)
                     .pageSize(pageSize)
                     .code(code)
@@ -75,7 +77,8 @@ public class PermissionController {
                     .createdAtTo(createdAtTo)
                     .createdAtFrom(createdAtFrom)
                     .build();
-            return ResponseEntity.ok(new CommonResponse<>(permissionService.search(requestDTO, count)));
+            var result = permissionService.search(requestDTO, count);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

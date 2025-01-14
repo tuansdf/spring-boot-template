@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
-import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.utils.AuthUtils;
 import org.tuanna.xcloneserver.utils.ExceptionUtils;
@@ -24,7 +23,7 @@ public class AuthController {
     @PostMapping("/token/revoke")
     public ResponseEntity<CommonResponse<Object>> revokeRefreshTokens() {
         try {
-            AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
+            var principal = AuthUtils.getAuthenticationPrincipal();
             tokenService.deactivatePastToken(principal.getUserId(), TokenType.REFRESH_TOKEN);
             return ResponseEntity.ok(new CommonResponse<>());
         } catch (Exception e) {

@@ -1,8 +1,10 @@
 package org.tuanna.xcloneserver.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,40 +22,50 @@ import org.tuanna.xcloneserver.utils.ExceptionUtils;
 public class PublicAuthController {
 
     private final AuthService authService;
+    private final MessageSource messageSource;
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<AuthDTO>> login(@RequestBody LoginRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<AuthDTO>> login(
+            HttpServletResponse servletResponse, @RequestBody LoginRequestDTO requestDTO) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(authService.login(requestDTO)));
+            var result = authService.login(requestDTO, servletResponse.getLocale());
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<CommonResponse<AuthDTO>> register(@RequestBody RegisterRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> register(
+            HttpServletResponse servletResponse, @RequestBody RegisterRequestDTO requestDTO) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(authService.register(requestDTO)));
+            authService.register(requestDTO, servletResponse.getLocale());
+            var message = messageSource.getMessage("auth.activate_account_email_sent", null, servletResponse.getLocale());
+            return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<CommonResponse<String>> forgotPassword(
+    public ResponseEntity<CommonResponse<Object>> forgotPassword(
             HttpServletRequest servletRequest, @RequestBody ForgotPasswordRequestDTO requestDTO) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(authService.forgotPassword(requestDTO, servletRequest.getLocale())));
+            authService.forgotPassword(requestDTO, servletRequest.getLocale());
+            var message = messageSource.getMessage("auth.reset_password_email_sent", null, servletRequest.getLocale());
+            return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<CommonResponse<String>> resetPassword(
+    public ResponseEntity<CommonResponse<Object>> resetPassword(
             HttpServletRequest servletRequest, @RequestBody ResetPasswordRequestDTO requestDTO) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(authService.resetPassword(requestDTO, servletRequest.getLocale())));
+            authService.resetPassword(requestDTO, servletRequest.getLocale());
+            String message = messageSource.getMessage("auth.reset_password_success", null, servletRequest.getLocale());
+            return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -62,7 +74,8 @@ public class PublicAuthController {
     @PostMapping("/token/refresh")
     public ResponseEntity<CommonResponse<AuthDTO>> refreshAccessToken(@RequestBody AuthDTO requestDTO) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(authService.refreshAccessToken(requestDTO.getRefreshToken())));
+            var result = authService.refreshAccessToken(requestDTO.getRefreshToken());
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

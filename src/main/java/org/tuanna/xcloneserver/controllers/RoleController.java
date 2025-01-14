@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
-import org.tuanna.xcloneserver.modules.authentication.dtos.AuthenticationPrincipal;
 import org.tuanna.xcloneserver.modules.role.RoleService;
 import org.tuanna.xcloneserver.modules.role.dtos.RoleDTO;
 import org.tuanna.xcloneserver.modules.role.dtos.SearchRoleRequestDTO;
@@ -29,7 +28,8 @@ public class RoleController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<RoleDTO>> findOneByCode(@PathVariable String code) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(roleService.findOneByCodeOrThrow(code)));
+            var result = roleService.findOneByCodeOrThrow(code);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -39,7 +39,8 @@ public class RoleController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<RoleDTO>> findOneById(@PathVariable Long id) {
         try {
-            return ResponseEntity.ok(new CommonResponse<>(roleService.findOneByIdOrThrow(id)));
+            var result = roleService.findOneByIdOrThrow(id);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -49,8 +50,9 @@ public class RoleController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<RoleDTO>> save(@RequestBody RoleDTO requestDTO) {
         try {
-            AuthenticationPrincipal principal = AuthUtils.getAuthenticationPrincipal();
-            return ResponseEntity.ok(new CommonResponse<>(roleService.save(requestDTO, principal.getUserId())));
+            var principal = AuthUtils.getAuthenticationPrincipal();
+            var result = roleService.save(requestDTO, principal.getUserId());
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -67,7 +69,7 @@ public class RoleController {
             @RequestParam(required = false) OffsetDateTime createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
         try {
-            SearchRoleRequestDTO requestDTO = SearchRoleRequestDTO.builder()
+            var requestDTO = SearchRoleRequestDTO.builder()
                     .pageNumber(pageNumber)
                     .pageSize(pageSize)
                     .code(code)
@@ -75,7 +77,8 @@ public class RoleController {
                     .createdAtTo(createdAtTo)
                     .createdAtFrom(createdAtFrom)
                     .build();
-            return ResponseEntity.ok(new CommonResponse<>(roleService.search(requestDTO, count)));
+            var result = roleService.search(requestDTO, count);
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
