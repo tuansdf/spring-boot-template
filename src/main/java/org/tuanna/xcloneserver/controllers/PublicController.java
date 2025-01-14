@@ -20,6 +20,7 @@ import org.tuanna.xcloneserver.modules.user.UserRepository;
 import org.tuanna.xcloneserver.modules.user.dtos.UserDTO;
 import org.tuanna.xcloneserver.utils.*;
 
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +64,7 @@ public class PublicController {
     @GetMapping("/export-excel")
     public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
-        String exportPath = ".temp/excel-" + DateUtils.getEpochMicro() + ".xlsx";
+        String exportPath = ".temp/excel-" + DateUtils.toEpochMicro(null) + ".xlsx";
         ExcelUtils.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
@@ -78,7 +79,7 @@ public class PublicController {
             template.setBody(data.subList(i, Math.min(total, i + BATCH)));
             ExcelUtils.Export.processTemplate(workbook, template);
         }
-        String exportPath = ".temp/excel-" + DateUtils.getEpochMicro() + ".xlsx";
+        String exportPath = ".temp/excel-" + DateUtils.toEpochMicro(null) + ".xlsx";
         ExcelUtils.writeFile(workbook, exportPath);
         return "OK";
     }
@@ -86,7 +87,7 @@ public class PublicController {
     @GetMapping("/export-csv")
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
-        String exportPath = ".temp/csv-" + DateUtils.getEpochMicro() + ".csv";
+        String exportPath = ".temp/csv-" + DateUtils.toEpochMicro(null) + ".csv";
         CSVUtils.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
@@ -124,6 +125,25 @@ public class PublicController {
     @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
     public String testI18n(HttpServletRequest servletRequest, @RequestParam(required = false, defaultValue = "John Doe") String name) {
         return messageSource.getMessage("msg.hello", new String[]{name}, servletRequest.getLocale());
+    }
+
+    @GetMapping(value = "/rand", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String rand(HttpServletRequest servletRequest, @RequestParam(required = false, defaultValue = "John Doe") String name) {
+        long nano = DateUtils.toEpochNano(null);
+        log.info("nano {}", nano);
+        log.info("nano instant {}", DateUtils.toInstant(nano));
+        long micro = DateUtils.toEpochMicro(null);
+        log.info("micro {}", micro);
+        log.info("micro instant {}", DateUtils.toInstant(micro));
+        long milli = Instant.now().toEpochMilli();
+        log.info("milli {}", milli);
+        log.info("milli instant {}", DateUtils.toInstant(milli));
+        long second = Instant.now().getEpochSecond();
+        log.info("second {}", second);
+        log.info("second instant {}", DateUtils.toInstant(second));
+        
+        log.info("epoch instant {}", DateUtils.toInstant(9999999999L));
+        return "OK";
     }
 
 }
