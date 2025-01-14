@@ -35,7 +35,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
     List<Permission> findAllByUserId(UUID userId);
 
     Optional<Permission> findTopByCode(String code);
-   
+
     boolean existsByCode(String code);
 
 }

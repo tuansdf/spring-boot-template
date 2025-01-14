@@ -13,7 +13,7 @@ public class PaginationResponseData<T> {
 
     private int pageNumber;
     private int pageSize;
-    private int totalPages;
+    private long totalPages;
     private long totalItems;
 
     private List<T> items;
