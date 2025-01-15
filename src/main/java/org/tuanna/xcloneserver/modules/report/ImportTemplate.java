@@ -7,6 +7,6 @@ public interface ImportTemplate<T> {
 
     List<String> getHeader();
 
-    Function<List<String>, T> getRowExtractor();
+    Function<List<Object>, T> getRowExtractor();
 
 }

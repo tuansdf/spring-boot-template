@@ -62,10 +62,21 @@ public class ExcelUtils {
         }
     }
 
-    private static List<String> getRowCellValues(Row row) {
-        List<String> rowData = new ArrayList<>();
+    private static List<Object> getRowCellValues(Row row) {
+        List<Object> rowData = new ArrayList<>();
         for (Cell cell : row) {
-            rowData.add(cell.getStringCellValue());
+            CellType cellType = cell.getCellType();
+            switch (cellType) {
+                case BOOLEAN -> rowData.add(cell.getBooleanCellValue());
+                case NUMERIC -> {
+                    if (DateUtil.isCellDateFormatted(cell)) {
+                        rowData.add(cell.getLocalDateTimeCellValue());
+                    } else {
+                        rowData.add(cell.getNumericCellValue());
+                    }
+                }
+                case STRING -> rowData.add(cell.getStringCellValue());
+            }
         }
         return rowData;
     }
