@@ -24,18 +24,21 @@ import java.io.IOException;
 @Component
 public class JWTFilter extends OncePerRequestFilter {
 
+    private static final String AUTHORIZATION_START_WITH = "Bearer ";
+    private static final int TOKEN_START_AT = AUTHORIZATION_START_WITH.length();
+
     private final JWTService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
         try {
             final String header = servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
-            if (StringUtils.isEmpty(header) || !header.startsWith("Bearer ")) {
+            if (StringUtils.isEmpty(header) || !header.startsWith(AUTHORIZATION_START_WITH)) {
                 chain.doFilter(servletRequest, servletResponse);
                 return;
             }
 
-            final String jwt = header.split(" ")[1].trim();
+            final String jwt = header.substring(TOKEN_START_AT);
             JWTPayload jwtPayload = jwtService.verify(jwt);
             if (jwtPayload == null) {
                 chain.doFilter(servletRequest, servletResponse);
