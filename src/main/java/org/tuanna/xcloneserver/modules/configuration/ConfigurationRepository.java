@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ConfigurationRepository extends JpaRepository<Configuration, Long> {
-   
+
     boolean existsByCode(String code);
 
     Optional<Configuration> findTopByCode(String code);

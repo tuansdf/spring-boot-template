@@ -141,7 +141,7 @@ public class PublicController {
         long second = Instant.now().getEpochSecond();
         log.info("second {}", second);
         log.info("second instant {}", DateUtils.toInstant(second));
-        
+
         log.info("epoch instant {}", DateUtils.toInstant(9999999999L));
         return "OK";
     }
