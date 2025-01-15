@@ -11,7 +11,7 @@ import org.slf4j.MDC;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.tuanna.xcloneserver.constants.Constants;
+import org.tuanna.xcloneserver.constants.MDCKey;
 import org.tuanna.xcloneserver.constants.TokenType;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
@@ -49,11 +49,11 @@ public class JWTFilter extends OncePerRequestFilter {
 
             AuthUtils.setAuthentication(jwtPayload);
 
-            MDC.put(Constants.KEY_IN_MDC.USER_ID, jwtPayload.getSubjectId());
+            MDC.put(MDCKey.USER_ID, jwtPayload.getSubjectId());
 
             chain.doFilter(servletRequest, servletResponse);
         } finally {
-            MDC.remove(Constants.KEY_IN_MDC.USER_ID);
+            MDC.remove(MDCKey.USER_ID);
         }
     }
 
