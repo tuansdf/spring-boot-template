@@ -21,7 +21,7 @@ public class AuthUtils {
         }
         List<String> permissions = PermissionCode.fromIndexes(jwtPayload.getPermissions());
         AuthenticationPrincipal principal = AuthenticationPrincipal.builder()
-                .userId(ConversionUtils.toUUID(jwtPayload.getSubjectId()))
+                .userId(ConversionUtils.toUUID(jwtPayload.getSubject()))
                 .permissions(permissions)
                 .build();
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(

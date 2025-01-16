@@ -9,7 +9,6 @@ public class JWTPayloadKey {
     public final static String EXPIRES_AT = "exp";
     public final static String TYPE = "typ";
     public final static String TOKEN_ID = "tid";
-    public final static String SUBJECT_ID = "sid";
     public final static String PERMISSIONS = "per";
 
 }

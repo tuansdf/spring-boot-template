@@ -49,7 +49,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createAccessJwt(UUID userId, List<String> permissions) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubjectId(userId.toString());
+        jwtPayload.setSubject(userId.toString());
         jwtPayload.setPermissions(PermissionCode.toIndexes(permissions));
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
@@ -63,7 +63,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createRefreshJwt(UUID userId, UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubjectId(userId.toString());
+        jwtPayload.setSubject(userId.toString());
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);

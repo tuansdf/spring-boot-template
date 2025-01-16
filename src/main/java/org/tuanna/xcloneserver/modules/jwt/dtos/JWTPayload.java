@@ -35,8 +35,6 @@ public class JWTPayload {
     @JsonProperty(JWTPayloadKey.TOKEN_ID)
     private String tokenId;
 
-    @JsonProperty(JWTPayloadKey.SUBJECT_ID)
-    private String subjectId;
     @JsonProperty(JWTPayloadKey.PERMISSIONS)
     private List<Integer> permissions;
 
@@ -52,7 +50,6 @@ public class JWTPayload {
         if (expiresAt != null) result.put(JWTPayloadKey.EXPIRES_AT, expiresAt);
         if (type != null) result.put(JWTPayloadKey.TYPE, type);
         if (tokenId != null) result.put(JWTPayloadKey.TOKEN_ID, tokenId);
-        if (subjectId != null) result.put(JWTPayloadKey.SUBJECT_ID, subjectId);
         if (permissions != null) result.put(JWTPayloadKey.PERMISSIONS, permissions);
         return result;
     }

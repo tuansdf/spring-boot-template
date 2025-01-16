@@ -52,7 +52,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             AuthUtils.setAuthentication(jwtPayload);
 
-            MDC.put(MDCKey.USER_ID, jwtPayload.getSubjectId());
+            MDC.put(MDCKey.USER_ID, jwtPayload.getSubject());
 
             chain.doFilter(servletRequest, servletResponse);
         } finally {
