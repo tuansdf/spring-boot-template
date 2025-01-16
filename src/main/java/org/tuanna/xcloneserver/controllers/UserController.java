@@ -49,7 +49,7 @@ public class UserController {
         }
     }
 
-    @PutMapping
+    @PatchMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> updateProfile(@RequestBody UserDTO requestDTO) {
         try {
