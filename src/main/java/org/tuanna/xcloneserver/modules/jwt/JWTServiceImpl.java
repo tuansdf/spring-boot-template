@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.constants.Env;
 import org.tuanna.xcloneserver.constants.PermissionCode;
-import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.utils.Base64Utils;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
@@ -29,7 +29,7 @@ public class JWTServiceImpl implements JWTService {
     private final ObjectMapper objectMapper;
 
     @Override
-    public String create(JWTPayload jwtPayload) {
+    public JWTPayload create(JWTPayload jwtPayload) {
         Instant now = Instant.now();
         if (jwtPayload.getIssuedAt() == null) {
             jwtPayload.setIssuedAt(now);
@@ -40,9 +40,11 @@ public class JWTServiceImpl implements JWTService {
         if (jwtPayload.getExpiresAt() == null) {
             jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
         }
-        return JWT.create()
+        String value = JWT.create()
                 .withPayload(jwtPayload.toMap())
                 .sign(algorithm);
+        jwtPayload.setValue(value);
+        return jwtPayload;
     }
 
     @Override
@@ -55,7 +57,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
         jwtPayload.setType(CommonType.toIndex(CommonType.ACCESS_TOKEN));
-        jwtPayload.setValue(create(jwtPayload));
+        jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }
 
@@ -69,7 +71,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtRefreshLifetime()));
         jwtPayload.setType(CommonType.toIndex(CommonType.REFRESH_TOKEN));
-        jwtPayload.setValue(create(jwtPayload));
+        jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }
 
@@ -83,7 +85,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtResetPasswordLifetime()));
         jwtPayload.setType(CommonType.toIndex(CommonType.RESET_PASSWORD));
-        jwtPayload.setValue(create(jwtPayload));
+        jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }
 
@@ -97,14 +99,16 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtActivateAccountLifetime()));
         jwtPayload.setType(CommonType.toIndex(CommonType.ACTIVATE_ACCOUNT));
-        jwtPayload.setValue(create(jwtPayload));
+        jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }
 
     @Override
     public JWTPayload verify(String token) {
         try {
-            return objectMapper.readValue(Base64Utils.decodeUrl(jwtVerifier.verify(token).getPayload()), JWTPayload.class);
+            String jwtPayloadBase64 = jwtVerifier.verify(token).getPayload();
+            String jwtPayloadJson = Base64Utils.decodeUrl(jwtPayloadBase64);
+            return objectMapper.readValue(jwtPayloadJson, JWTPayload.class);
         } catch (Exception e) {
             log.error("verify", e);
             return null;
