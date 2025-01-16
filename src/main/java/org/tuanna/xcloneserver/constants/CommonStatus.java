@@ -1,6 +1,6 @@
 package org.tuanna.xcloneserver.constants;
 
-public class Status {
+public class CommonStatus {
 
     public final static String ACTIVE = "ACTIVE";
     public final static String INACTIVE = "INACTIVE";

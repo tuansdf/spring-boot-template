@@ -2,7 +2,7 @@ package org.tuanna.xcloneserver.modules.permission.dtos;
 
 import lombok.*;
 import org.tuanna.xcloneserver.constants.Constants;
-import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.constants.CommonStatus;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.utils.ValidationUtils;
 
@@ -31,12 +31,12 @@ public class PermissionDTO {
         ValidationUtils.startsWith(this.code, Constants.PERMISSION_STARTS_WITH, "Code must start with " + Constants.PERMISSION_STARTS_WITH);
         ValidationUtils.maxLength(this.code, 255, "Code exceeds the maximum length of 255 characters");
         ValidationUtils.maxLength(this.name, 255, "Name exceeds the maximum length of 255 characters");
-        ValidationUtils.isIn(this.status, List.of(Status.ACTIVE, Status.INACTIVE), "Status is invalid");
+        ValidationUtils.isIn(this.status, List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE), "Status is invalid");
     }
 
     public void validateUpdate() throws CustomException {
         ValidationUtils.maxLength(this.name, 255, "Name exceeds the maximum length of 255 characters");
-        ValidationUtils.isIn(this.status, List.of(Status.ACTIVE, Status.INACTIVE), "Status is invalid");
+        ValidationUtils.isIn(this.status, List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE), "Status is invalid");
     }
 
 }

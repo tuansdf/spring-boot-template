@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.Env;
-import org.tuanna.xcloneserver.constants.Status;
-import org.tuanna.xcloneserver.constants.TokenType;
+import org.tuanna.xcloneserver.constants.CommonStatus;
+import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.email.dtos.EmailDTO;
 
@@ -40,8 +40,8 @@ public class EmailServiceImpl implements EmailService {
                 .content(messageSource.getMessage("email.reset_password_content", new String[]{name, token}, locale))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
-                .status(Status.ACTIVE)
-                .type(TokenType.RESET_PASSWORD)
+                .status(CommonStatus.ACTIVE)
+                .type(CommonType.RESET_PASSWORD)
                 .build();
         return send(emailDTO);
     }
@@ -55,8 +55,8 @@ public class EmailServiceImpl implements EmailService {
                 .content(messageSource.getMessage("email.activate_account_content", new String[]{name, token}, locale))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
-                .status(Status.ACTIVE)
-                .type(TokenType.ACTIVATE_ACCOUNT)
+                .status(CommonStatus.ACTIVE)
+                .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
         return send(emailDTO);
     }

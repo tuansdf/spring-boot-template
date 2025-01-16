@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.PermissionCode;
 import org.tuanna.xcloneserver.constants.ResultSetName;
-import org.tuanna.xcloneserver.constants.TokenType;
+import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         user.setUpdatedBy(userId);
         user = userRepository.save(user);
-        tokenService.deactivatePastToken(user.getId(), TokenType.REFRESH_TOKEN);
+        tokenService.deactivatePastTokens(user.getId(), CommonType.REFRESH_TOKEN);
         return commonMapper.toDTO(user);
     }
 

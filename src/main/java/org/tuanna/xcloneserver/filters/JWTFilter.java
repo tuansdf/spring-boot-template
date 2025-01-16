@@ -12,7 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.tuanna.xcloneserver.constants.MDCKey;
-import org.tuanna.xcloneserver.constants.TokenType;
+import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.utils.AuthUtils;
@@ -45,7 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
 
-            if (!TokenType.toIndex(TokenType.ACCESS_TOKEN).equals(jwtPayload.getType())) {
+            if (!CommonType.toIndex(CommonType.ACCESS_TOKEN).equals(jwtPayload.getType())) {
                 chain.doFilter(servletRequest, servletResponse);
                 return;
             }

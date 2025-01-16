@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.constants.CommonStatus;
 import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
+import org.tuanna.xcloneserver.modules.jwt.JWTService;
+import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.modules.report.UserExportTemplate;
 import org.tuanna.xcloneserver.modules.report.UserImportTemplate;
 import org.tuanna.xcloneserver.modules.user.UserRepository;
@@ -24,6 +26,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,6 +37,7 @@ public class PublicController {
     private final CommonMapper commonMapper;
     private final UserRepository userRepository;
     private final MessageSource messageSource;
+    private final JWTService jwtService;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
@@ -51,7 +55,7 @@ public class PublicController {
             user.setEmail(ConversionUtils.toString(UUIDUtils.generateId()));
             user.setName(ConversionUtils.toString(UUIDUtils.generateId()));
             user.setPassword(ConversionUtils.toString(UUIDUtils.generateId()));
-            user.setStatus(Status.ACTIVE);
+            user.setStatus(CommonStatus.ACTIVE);
             user.setCreatedBy(UUIDUtils.generateId());
             user.setUpdatedBy(UUIDUtils.generateId());
             user.setCreatedAt(now.plusSeconds(i));
@@ -143,6 +147,16 @@ public class PublicController {
         log.info("second instant {}", DateUtils.toInstant(second));
 
         log.info("epoch instant {}", DateUtils.toInstant(9999999999L));
+        return "OK";
+    }
+
+    @GetMapping(value = "/jwt", produces = MediaType.TEXT_PLAIN_VALUE)
+    public String jwttest(@RequestParam(required = false, defaultValue = "100") Integer total) {
+        for (int i = 0; i < total; i++) {
+            UUID uuid = UUIDUtils.generateId();
+            JWTPayload jwtPayload = jwtService.createActivateAccountJwt(uuid);
+            jwtService.verify(jwtPayload.getValue());
+        }
         return "OK";
     }
 

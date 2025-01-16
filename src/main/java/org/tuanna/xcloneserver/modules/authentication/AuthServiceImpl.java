@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ConfigurationCode;
-import org.tuanna.xcloneserver.constants.Status;
-import org.tuanna.xcloneserver.constants.TokenType;
+import org.tuanna.xcloneserver.constants.CommonStatus;
+import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.entities.User;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.modules.authentication.dtos.*;
@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        boolean isActive = Status.ACTIVE.equals(userDTO.getStatus());
+        boolean isActive = CommonStatus.ACTIVE.equals(userDTO.getStatus());
         if (!isActive) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -95,7 +95,7 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(ConversionUtils.toString(requestDTO.getEmail()).trim());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
-        user.setStatus(Status.PENDING);
+        user.setStatus(CommonStatus.PENDING);
         user = userRepository.save(user);
 
         TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
@@ -118,17 +118,17 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        String tokenType = TokenType.fromIndex(jwtPayload.getType());
-        if (!TokenType.RESET_PASSWORD.equals(tokenType)) {
+        String tokenType = CommonType.fromIndex(jwtPayload.getType());
+        if (!CommonType.RESET_PASSWORD.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
-        if (tokenDTO == null || !TokenType.RESET_PASSWORD.equals(tokenDTO.getType())) {
+        if (tokenDTO == null || !CommonType.RESET_PASSWORD.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         userRepository.updatePasswordByUserId(tokenDTO.getOwnerId(), requestDTO.getNewPassword());
-        tokenService.deactivatePastToken(tokenDTO.getOwnerId(), TokenType.RESET_PASSWORD);
-        tokenService.deactivatePastToken(tokenDTO.getOwnerId(), TokenType.REFRESH_TOKEN);
+        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.RESET_PASSWORD);
+        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.REFRESH_TOKEN);
     }
 
     private AuthDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
@@ -149,19 +149,19 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        String tokenType = TokenType.fromIndex(jwtPayload.getType());
-        if (!TokenType.REFRESH_TOKEN.equals(tokenType)) {
+        String tokenType = CommonType.fromIndex(jwtPayload.getType());
+        if (!CommonType.REFRESH_TOKEN.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
-        if (tokenDTO == null || !TokenType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
+        if (tokenDTO == null || !CommonType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         UserDTO user = userService.findOneById(ConversionUtils.toUUID(tokenDTO.getOwnerId()));
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        if (!Status.ACTIVE.equals(user.getStatus())) {
+        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         List<String> permissions = permissionService.findAllCodesByUserId(user.getId());
@@ -180,20 +180,20 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        String tokenType = TokenType.fromIndex(jwtPayload.getType());
-        if (!TokenType.ACTIVATE_ACCOUNT.equals(tokenType)) {
+        String tokenType = CommonType.fromIndex(jwtPayload.getType());
+        if (!CommonType.ACTIVATE_ACCOUNT.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
-        if (tokenDTO == null || !TokenType.ACTIVATE_ACCOUNT.equals(tokenDTO.getType())) {
+        if (tokenDTO == null || !CommonType.ACTIVATE_ACCOUNT.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         UserDTO user = userService.findOneById(ConversionUtils.toUUID(tokenDTO.getOwnerId()));
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        userRepository.updateStatusByUserId(user.getId(), Status.ACTIVE);
-        tokenService.deactivatePastToken(user.getId(), TokenType.ACTIVATE_ACCOUNT);
+        userRepository.updateStatusByUserId(user.getId(), CommonStatus.ACTIVE);
+        tokenService.deactivatePastTokens(user.getId(), CommonType.ACTIVATE_ACCOUNT);
     }
 
 }

@@ -2,7 +2,7 @@ package org.tuanna.xcloneserver.modules.user.dtos;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.constants.CommonStatus;
 import org.tuanna.xcloneserver.exception.CustomException;
 import org.tuanna.xcloneserver.utils.ValidationUtils;
 
@@ -59,7 +59,7 @@ public class UserDTO {
         ValidationUtils.isEmail(this.email, "Email is invalid");
         ValidationUtils.maxLength(this.email, 255, "Email exceeds the maximum length of 255 characters");
         ValidationUtils.maxLength(this.name, 255, "Name exceeds the maximum length of 255 characters");
-        ValidationUtils.isIn(this.status, List.of(Status.ACTIVE, Status.INACTIVE, Status.PENDING), "Status is invalid");
+        ValidationUtils.isIn(this.status, List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE, CommonStatus.PENDING), "Status is invalid");
     }
 
 }

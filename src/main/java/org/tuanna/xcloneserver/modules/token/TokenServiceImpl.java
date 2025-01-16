@@ -4,8 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.tuanna.xcloneserver.constants.Status;
-import org.tuanna.xcloneserver.constants.TokenType;
+import org.tuanna.xcloneserver.constants.CommonStatus;
+import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.entities.Token;
 import org.tuanna.xcloneserver.mappers.CommonMapper;
 import org.tuanna.xcloneserver.modules.jwt.JWTService;
@@ -43,7 +43,7 @@ public class TokenServiceImpl implements TokenService {
         TokenDTO token = findOneById(id);
         if (token == null) return null;
 
-        boolean isActive = Status.ACTIVE.equals(token.getStatus());
+        boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
         if (!isActive) return null;
 
         boolean isExpired = OffsetDateTime.now().isAfter(token.getExpiresAt());
@@ -53,8 +53,8 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void deactivatePastToken(UUID userId, String type) {
-        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(userId, type, OffsetDateTime.now(), Status.INACTIVE);
+    public void deactivatePastTokens(UUID userId, String type) {
+        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(userId, type, OffsetDateTime.now(), CommonStatus.INACTIVE);
     }
 
     @Override
@@ -65,10 +65,10 @@ public class TokenServiceImpl implements TokenService {
         Token token = new Token();
         token.setId(id);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
-        token.setType(TokenType.REFRESH_TOKEN);
+        token.setType(CommonType.REFRESH_TOKEN);
         token.setOwnerId(userId);
         token.setValue(jwtPayload.getValue());
-        token.setStatus(Status.ACTIVE);
+        token.setStatus(CommonStatus.ACTIVE);
         token.setCreatedBy(userId);
         token.setUpdatedBy(userId);
         return commonMapper.toDTO(tokenRepository.save(token));
@@ -82,10 +82,10 @@ public class TokenServiceImpl implements TokenService {
         Token token = new Token();
         token.setId(id);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
-        token.setType(TokenType.RESET_PASSWORD);
+        token.setType(CommonType.RESET_PASSWORD);
         token.setOwnerId(userId);
         token.setValue(jwtPayload.getValue());
-        token.setStatus(Status.ACTIVE);
+        token.setStatus(CommonStatus.ACTIVE);
         token.setCreatedBy(userId);
         token.setUpdatedBy(userId);
         return commonMapper.toDTO(tokenRepository.save(token));
@@ -99,10 +99,10 @@ public class TokenServiceImpl implements TokenService {
         Token token = new Token();
         token.setId(id);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
-        token.setType(TokenType.ACTIVATE_ACCOUNT);
+        token.setType(CommonType.ACTIVATE_ACCOUNT);
         token.setOwnerId(actionBy);
         token.setValue(jwtPayload.getValue());
-        token.setStatus(Status.ACTIVE);
+        token.setStatus(CommonStatus.ACTIVE);
         token.setCreatedBy(actionBy);
         token.setUpdatedBy(actionBy);
         return commonMapper.toDTO(tokenRepository.save(token));

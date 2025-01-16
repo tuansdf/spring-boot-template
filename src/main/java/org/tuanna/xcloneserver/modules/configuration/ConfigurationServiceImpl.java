@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ResultSetName;
-import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.constants.CommonStatus;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.Configuration;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -54,7 +54,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
         if (StringUtils.isBlank(requestDTO.getStatus())) {
-            result.setStatus(Status.ACTIVE);
+            result.setStatus(CommonStatus.ACTIVE);
         } else {
             result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
         }
@@ -94,7 +94,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public String findValueByCode(String code) {
-        return configurationRepository.findTopValueByCodeAndStatus(code, Status.ACTIVE);
+        return configurationRepository.findTopValueByCodeAndStatus(code, CommonStatus.ACTIVE);
     }
 
     @Override

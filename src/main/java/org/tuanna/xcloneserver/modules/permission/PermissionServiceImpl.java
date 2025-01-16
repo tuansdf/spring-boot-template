@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.ResultSetName;
-import org.tuanna.xcloneserver.constants.Status;
+import org.tuanna.xcloneserver.constants.CommonStatus;
 import org.tuanna.xcloneserver.dtos.PaginationResponseData;
 import org.tuanna.xcloneserver.entities.Permission;
 import org.tuanna.xcloneserver.exception.CustomException;
@@ -53,7 +53,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
         result.setName(requestDTO.getName());
         if (StringUtils.isBlank(requestDTO.getStatus())) {
-            result.setStatus(Status.ACTIVE);
+            result.setStatus(CommonStatus.ACTIVE);
         } else {
             result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
         }

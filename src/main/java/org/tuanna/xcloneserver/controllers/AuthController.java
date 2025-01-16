@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tuanna.xcloneserver.constants.TokenType;
+import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.dtos.CommonResponse;
 import org.tuanna.xcloneserver.modules.token.TokenService;
 import org.tuanna.xcloneserver.utils.AuthUtils;
@@ -24,7 +24,7 @@ public class AuthController {
     public ResponseEntity<CommonResponse<Object>> revokeRefreshTokens() {
         try {
             var principal = AuthUtils.getAuthenticationPrincipal();
-            tokenService.deactivatePastToken(principal.getUserId(), TokenType.REFRESH_TOKEN);
+            tokenService.deactivatePastTokens(principal.getUserId(), CommonType.REFRESH_TOKEN);
             return ResponseEntity.ok(new CommonResponse<>());
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

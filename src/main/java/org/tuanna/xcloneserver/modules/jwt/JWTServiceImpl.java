@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tuanna.xcloneserver.constants.Env;
 import org.tuanna.xcloneserver.constants.PermissionCode;
-import org.tuanna.xcloneserver.constants.TokenType;
+import org.tuanna.xcloneserver.constants.CommonType;
 import org.tuanna.xcloneserver.modules.jwt.dtos.JWTPayload;
 import org.tuanna.xcloneserver.utils.Base64Utils;
 import org.tuanna.xcloneserver.utils.UUIDUtils;
@@ -54,7 +54,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
-        jwtPayload.setType(TokenType.toIndex(TokenType.ACCESS_TOKEN));
+        jwtPayload.setType(CommonType.toIndex(CommonType.ACCESS_TOKEN));
         jwtPayload.setValue(create(jwtPayload));
         return jwtPayload;
     }
@@ -68,7 +68,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtRefreshLifetime()));
-        jwtPayload.setType(TokenType.toIndex(TokenType.REFRESH_TOKEN));
+        jwtPayload.setType(CommonType.toIndex(CommonType.REFRESH_TOKEN));
         jwtPayload.setValue(create(jwtPayload));
         return jwtPayload;
     }
@@ -82,7 +82,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtResetPasswordLifetime()));
-        jwtPayload.setType(TokenType.toIndex(TokenType.RESET_PASSWORD));
+        jwtPayload.setType(CommonType.toIndex(CommonType.RESET_PASSWORD));
         jwtPayload.setValue(create(jwtPayload));
         return jwtPayload;
     }
@@ -96,7 +96,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtActivateAccountLifetime()));
-        jwtPayload.setType(TokenType.toIndex(TokenType.ACTIVATE_ACCOUNT));
+        jwtPayload.setType(CommonType.toIndex(CommonType.ACTIVATE_ACCOUNT));
         jwtPayload.setValue(create(jwtPayload));
         return jwtPayload;
     }

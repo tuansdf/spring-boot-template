@@ -71,25 +71,6 @@ public class DateUtils {
         return toInstant(input, ZoneOffset.UTC);
     }
 
-    public static Instant toInstantSecond(Object input, ZoneOffset offset) {
-        if (offset == null) {
-            offset = ZoneOffset.UTC;
-        }
-        try {
-            return switch (input) {
-                case Number v -> Instant.ofEpochSecond(ConversionUtils.safeToLong(v));
-                case String v -> Instant.ofEpochSecond(ConversionUtils.safeToLong(v));
-                case null, default -> toInstant(input, offset);
-            };
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static Instant toInstantSecond(Object input) {
-        return toInstantSecond(input, ZoneOffset.UTC);
-    }
-
     public static OffsetDateTime toOffsetDateTime(String input, DateTimeFormatter formatter) {
         if (StringUtils.isEmpty(input)) return null;
         try {
