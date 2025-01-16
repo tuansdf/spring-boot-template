@@ -77,7 +77,7 @@ public class PublicController {
         UserExportTemplate template = new UserExportTemplate();
         for (int i = 0; i < total; i += BATCH) {
             template.setBody(data.subList(i, Math.min(total, i + BATCH)));
-            ExcelUtils.Export.processTemplate(workbook, template);
+            ExcelUtils.Export.processTemplate(template, workbook);
         }
         String exportPath = ".temp/excel-" + DateUtils.toEpochMicro(null) + ".xlsx";
         ExcelUtils.writeFile(workbook, exportPath);

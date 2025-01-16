@@ -6,6 +6,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.web.multipart.MultipartFile;
 import org.tuanna.xcloneserver.modules.report.ExportTemplate;
 import org.tuanna.xcloneserver.modules.report.ImportTemplate;
 
@@ -60,7 +61,7 @@ public class CSVUtils {
     }
 
     public static class Import {
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, String inputPath) {
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, Reader reader) {
             List<T> result = new ArrayList<>();
 
             if (template == null || CollectionUtils.isEmpty(template.getHeader())) return result;
@@ -68,9 +69,7 @@ public class CSVUtils {
             var header = template.getHeader();
             var rowExtractor = template.getRowExtractor();
 
-            try (FileReader reader = new FileReader(Paths.get(inputPath).toFile());
-                 CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().build())) {
-
+            try (CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().build())) {
                 List<String> csvHeader = csvParser.getHeaderNames();
                 if (csvHeader.size() != header.size()) return result;
                 for (int i = 0; i < csvHeader.size(); i++) {
@@ -85,6 +84,34 @@ public class CSVUtils {
             }
 
             return result;
+        }
+
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, String filePath) {
+            try (FileReader reader = new FileReader(Paths.get(filePath).toFile())) {
+                return processTemplate(template, reader);
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+                return new ArrayList<>();
+            }
+        }
+
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, byte[] bytes) {
+            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                return processTemplate(template, reader);
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+                return new ArrayList<>();
+            }
+        }
+
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, MultipartFile file) {
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+                return processTemplate(template, reader);
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+                return new ArrayList<>();
+            }
         }
     }
 

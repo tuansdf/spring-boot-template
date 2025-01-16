@@ -6,13 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
 import org.tuanna.xcloneserver.modules.report.ExportTemplate;
 import org.tuanna.xcloneserver.modules.report.ImportTemplate;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.nio.file.Paths;
 import java.sql.Time;
 import java.time.*;
@@ -148,9 +146,10 @@ public class ExcelUtils {
     }
 
     public static class Export {
-        public static <T> void processTemplate(Workbook workbook, ExportTemplate<T> template) {
+        public static <T> void processTemplate(ExportTemplate<T> template, Workbook workbook) {
             try {
-                if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) || CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor(false) == null)
+                if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) ||
+                        CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor(false) == null)
                     return;
 
                 Sheet sheet = getSheet(workbook);
@@ -176,7 +175,7 @@ public class ExcelUtils {
         public static <T> Workbook processTemplate(ExportTemplate<T> template) {
             try {
                 Workbook workbook = new SXSSFWorkbook();
-                processTemplate(workbook, template);
+                processTemplate(template, workbook);
                 return workbook;
             } catch (Exception e) {
                 log.error("processTemplate", e);
@@ -203,39 +202,64 @@ public class ExcelUtils {
     }
 
     public static class Import {
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, String inputPath) {
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, Workbook workbook) {
             List<T> result = new ArrayList<>();
 
-            if (template == null || CollectionUtils.isEmpty(template.getHeader()) || StringUtils.isEmpty(inputPath))
+            if (template == null || CollectionUtils.isEmpty(template.getHeader()))
                 return result;
 
             var header = template.getHeader();
             var rowExtractor = template.getRowExtractor();
 
             try {
-                try (FileInputStream inputStream = new FileInputStream(Paths.get(inputPath).toFile());
-                     Workbook workbook = new XSSFWorkbook(inputStream)) {
+                Sheet sheet = workbook.getSheetAt(0);
 
-                    Sheet sheet = workbook.getSheetAt(0);
+                if (sheet.getLastRowNum() == 0) return result;
 
-                    if (sheet.getLastRowNum() == 0) return result;
+                Row headerRow = sheet.getRow(0);
+                if (headerRow.getLastCellNum() != header.size()) return result;
+                for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+                    if (!header.get(i).equals(headerRow.getCell(i).getStringCellValue())) return result;
+                }
 
-                    Row headerRow = sheet.getRow(0);
-                    if (headerRow.getLastCellNum() != header.size()) return result;
-                    for (int i = 0; i < headerRow.getLastCellNum(); i++) {
-                        if (!header.get(i).equals(headerRow.getCell(i).getStringCellValue())) return result;
-                    }
-
-                    for (int i = 1; i < sheet.getLastRowNum(); i++) {
-                        Row row = sheet.getRow(i);
-                        result.add(rowExtractor.apply(getRowCellValues(row)));
-                    }
+                for (int i = 1; i < sheet.getLastRowNum(); i++) {
+                    Row row = sheet.getRow(i);
+                    result.add(rowExtractor.apply(getRowCellValues(row)));
                 }
             } catch (Exception e) {
                 log.error("processTemplate", e);
             }
 
             return result;
+        }
+
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, String filePath) {
+            try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile());
+                 Workbook workbook = new XSSFWorkbook(inputStream)) {
+                return processTemplate(template, workbook);
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+                return new ArrayList<>();
+            }
+        }
+
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, byte[] bytes) {
+            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+                 Workbook workbook = new XSSFWorkbook(inputStream)) {
+                return processTemplate(template, workbook);
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+                return new ArrayList<>();
+            }
+        }
+
+        public static <T> List<T> processTemplate(ImportTemplate<T> template, MultipartFile file) {
+            try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+                return processTemplate(template, workbook);
+            } catch (Exception e) {
+                log.error("processTemplate", e);
+                return new ArrayList<>();
+            }
         }
     }
 
