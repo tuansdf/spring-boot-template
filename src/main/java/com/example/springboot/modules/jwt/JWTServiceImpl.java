@@ -79,7 +79,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createResetPasswordJwt(UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(UUIDUtils.generate().toString());
+        jwtPayload.setSubject(UUIDUtils.generateId().toString());
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
@@ -93,7 +93,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createActivateAccountJwt(UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(UUIDUtils.generate().toString());
+        jwtPayload.setSubject(UUIDUtils.generateId().toString());
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
