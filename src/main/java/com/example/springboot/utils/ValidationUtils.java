@@ -4,6 +4,7 @@ import com.example.springboot.exception.CustomException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.commons.validator.routines.RegexValidator;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
@@ -53,6 +54,12 @@ public class ValidationUtils {
 
     public static void isEmail(String input, String message) throws CustomException {
         if (input != null && !EmailValidator.getInstance().isValid(input)) {
+            throw new CustomException(message, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public static void isPattern(String input, String pattern, String message) throws CustomException {
+        if (input != null && !(new RegexValidator(pattern).isValid(input))) {
             throw new CustomException(message, HttpStatus.BAD_REQUEST);
         }
     }
