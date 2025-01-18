@@ -107,7 +107,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload verify(String token) {
         try {
             String jwtPayloadBase64 = jwtVerifier.verify(token).getPayload();
-            String jwtPayloadJson = Base64Utils.decodeUrl(jwtPayloadBase64);
+            String jwtPayloadJson = Base64Utils.urlDecode(jwtPayloadBase64);
             return objectMapper.readValue(jwtPayloadJson, JWTPayload.class);
         } catch (Exception e) {
             log.error("verify", e);
