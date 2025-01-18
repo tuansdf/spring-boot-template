@@ -106,7 +106,7 @@ public class AuthServiceImpl implements AuthService {
     public void forgotPassword(ForgotPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
         requestDTO.validate();
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
-        if (userDTO == null) return;
+        if (userDTO == null || CommonStatus.ACTIVE.equals(userDTO.getStatus())) return;
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
         emailService.sendResetPasswordEmail(userDTO.getEmail(), userDTO.getName(), tokenDTO.getValue(), userDTO.getId(), locale);
     }
