@@ -5,10 +5,10 @@ import com.example.springboot.constants.CommonType;
 import com.example.springboot.constants.Env;
 import com.example.springboot.mappers.CommonMapper;
 import com.example.springboot.modules.email.dtos.EmailDTO;
+import com.example.springboot.utils.I18nUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -22,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final Env env;
     private final CommonMapper commonMapper;
-    private final MessageSource messageSource;
+    private final I18nUtils i18nUtils;
     private final EmailRepository emailRepository;
 
     @Override
@@ -36,8 +36,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
-                .subject(messageSource.getMessage("email.reset_password_subject", null, locale))
-                .content(messageSource.getMessage("email.reset_password_content", new String[]{name, token}, locale))
+                .subject(i18nUtils.getMessage("email.reset_password_subject", locale))
+                .content(i18nUtils.getMessage("email.reset_password_content", locale, new String[]{name, token}))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
                 .status(CommonStatus.ACTIVE)
@@ -51,8 +51,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
-                .subject(messageSource.getMessage("email.activate_account_subject", null, locale))
-                .content(messageSource.getMessage("email.activate_account_content", new String[]{name, token}, locale))
+                .subject(i18nUtils.getMessage("email.activate_account_subject", locale))
+                .content(i18nUtils.getMessage("email.activate_account_content", locale, new String[]{name, token}))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
                 .status(CommonStatus.ACTIVE)

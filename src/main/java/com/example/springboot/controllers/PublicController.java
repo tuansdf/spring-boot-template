@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.springframework.context.MessageSource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +33,7 @@ public class PublicController {
 
     private final CommonMapper commonMapper;
     private final UserRepository userRepository;
-    private final MessageSource messageSource;
+    private final I18nUtils i18nUtils;
     private final JWTService jwtService;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -126,7 +125,7 @@ public class PublicController {
 
     @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
     public String testI18n(HttpServletRequest servletRequest, @RequestParam(required = false, defaultValue = "John Doe") String name) {
-        return messageSource.getMessage("msg.hello", new String[]{name}, servletRequest.getLocale());
+        return i18nUtils.getMessage("msg.hello", servletRequest.getLocale(), new String[]{name});
     }
 
     @GetMapping(value = "/rand", produces = MediaType.TEXT_PLAIN_VALUE)
