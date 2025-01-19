@@ -26,7 +26,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.UUID;
 
 @Slf4j
@@ -45,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 
     @Override
-    public AuthDTO login(LoginRequestDTO requestDTO, Locale locale) throws CustomException {
+    public AuthDTO login(LoginRequestDTO requestDTO) throws CustomException {
         requestDTO.validate();
 
         UserDTO userDTO = userService.findOneByUsername(requestDTO.getUsername());
@@ -76,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void register(RegisterRequestDTO requestDTO, Locale locale) throws CustomException {
+    public void register(RegisterRequestDTO requestDTO) throws CustomException {
         requestDTO.validate();
 
         Boolean isRegistrationEnabled = ConversionUtils.toBool(configurationService.findValueByCode(ConfigurationCode.IS_REGISTRATION_ENABLED));
@@ -99,20 +98,20 @@ public class AuthServiceImpl implements AuthService {
         user = userRepository.save(user);
 
         TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
-        emailService.sendActivateAccountEmail(user.getEmail(), user.getName(), tokenDTO.getValue(), user.getId(), locale);
+        emailService.sendActivateAccountEmail(user.getEmail(), user.getName(), tokenDTO.getValue());
     }
 
     @Override
-    public void forgotPassword(ForgotPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
+    public void forgotPassword(ForgotPasswordRequestDTO requestDTO) throws CustomException {
         requestDTO.validate();
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
         if (userDTO == null || CommonStatus.ACTIVE.equals(userDTO.getStatus())) return;
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
-        emailService.sendResetPasswordEmail(userDTO.getEmail(), userDTO.getName(), tokenDTO.getValue(), userDTO.getId(), locale);
+        emailService.sendResetPasswordEmail(userDTO.getEmail(), userDTO.getName(), tokenDTO.getValue());
     }
 
     @Override
-    public void resetPassword(ResetPasswordRequestDTO requestDTO, Locale locale) throws CustomException {
+    public void resetPassword(ResetPasswordRequestDTO requestDTO) throws CustomException {
         requestDTO.validate();
         JWTPayload jwtPayload = jwtService.verify(requestDTO.getToken());
         if (jwtPayload == null) {

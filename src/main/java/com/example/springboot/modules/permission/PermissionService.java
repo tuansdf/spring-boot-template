@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface PermissionService {
 
-    PermissionDTO save(PermissionDTO permissionDTO, UUID actionBy) throws CustomException;
+    PermissionDTO save(PermissionDTO permissionDTO) throws CustomException;
 
     PermissionDTO findOneById(Long id);
 

@@ -6,7 +6,6 @@ import com.example.springboot.modules.authentication.dtos.*;
 import com.example.springboot.utils.ExceptionUtils;
 import com.example.springboot.utils.I18nUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,10 +24,9 @@ public class PublicAuthController {
     private final I18nUtils i18nUtils;
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<AuthDTO>> login(
-            HttpServletResponse servletResponse, @RequestBody LoginRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<AuthDTO>> login(@RequestBody LoginRequestDTO requestDTO) {
         try {
-            var result = authService.login(requestDTO, servletResponse.getLocale());
+            var result = authService.login(requestDTO);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -36,11 +34,10 @@ public class PublicAuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<CommonResponse<Object>> register(
-            HttpServletResponse servletResponse, @RequestBody RegisterRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequestDTO requestDTO) {
         try {
-            authService.register(requestDTO, servletResponse.getLocale());
-            var message = i18nUtils.getMessage("auth.activate_account_email_sent", servletResponse.getLocale());
+            authService.register(requestDTO);
+            var message = i18nUtils.getMessage("auth.activate_account_email_sent");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -48,11 +45,10 @@ public class PublicAuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<CommonResponse<Object>> forgotPassword(
-            HttpServletRequest servletRequest, @RequestBody ForgotPasswordRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> forgotPassword(@RequestBody ForgotPasswordRequestDTO requestDTO) {
         try {
-            authService.forgotPassword(requestDTO, servletRequest.getLocale());
-            var message = i18nUtils.getMessage("auth.reset_password_email_sent", servletRequest.getLocale());
+            authService.forgotPassword(requestDTO);
+            var message = i18nUtils.getMessage("auth.reset_password_email_sent");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -60,11 +56,10 @@ public class PublicAuthController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<CommonResponse<Object>> resetPassword(
-            HttpServletRequest servletRequest, @RequestBody ResetPasswordRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequestDTO requestDTO) {
         try {
-            authService.resetPassword(requestDTO, servletRequest.getLocale());
-            var message = i18nUtils.getMessage("auth.reset_password_success", servletRequest.getLocale());
+            authService.resetPassword(requestDTO);
+            var message = i18nUtils.getMessage("auth.reset_password_success");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

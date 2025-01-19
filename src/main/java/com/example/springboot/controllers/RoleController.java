@@ -6,7 +6,6 @@ import com.example.springboot.dtos.PaginationResponseData;
 import com.example.springboot.modules.role.RoleService;
 import com.example.springboot.modules.role.dtos.RoleDTO;
 import com.example.springboot.modules.role.dtos.SearchRoleRequestDTO;
-import com.example.springboot.utils.AuthUtils;
 import com.example.springboot.utils.ExceptionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,8 +49,7 @@ public class RoleController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<RoleDTO>> save(@RequestBody RoleDTO requestDTO) {
         try {
-            var principal = AuthUtils.getAuthenticationPrincipal();
-            var result = roleService.save(requestDTO, principal.getUserId());
+            var result = roleService.save(requestDTO);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

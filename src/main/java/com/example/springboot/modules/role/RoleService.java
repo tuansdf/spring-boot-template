@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface RoleService {
 
-    RoleDTO save(RoleDTO permissionDTO, UUID actionBy) throws CustomException;
+    RoleDTO save(RoleDTO roleDTO) throws CustomException;
 
     RoleDTO findOneById(Long id);
 

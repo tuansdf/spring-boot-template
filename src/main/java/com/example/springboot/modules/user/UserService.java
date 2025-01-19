@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) throws CustomException;
 
-    UserDTO updateProfile(UserDTO requestDTO, UUID actionBy) throws CustomException;
+    UserDTO updateProfile(UserDTO requestDTO) throws CustomException;
 
     boolean existsByUsername(String username);
 

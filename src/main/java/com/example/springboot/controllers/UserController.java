@@ -1,5 +1,6 @@
 package com.example.springboot.controllers;
 
+import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.PermissionCode;
 import com.example.springboot.dtos.CommonResponse;
 import com.example.springboot.dtos.PaginationResponseData;
@@ -7,7 +8,7 @@ import com.example.springboot.modules.user.UserService;
 import com.example.springboot.modules.user.dtos.ChangePasswordRequestDTO;
 import com.example.springboot.modules.user.dtos.SearchUserRequestDTO;
 import com.example.springboot.modules.user.dtos.UserDTO;
-import com.example.springboot.utils.AuthUtils;
+import com.example.springboot.utils.ConversionUtils;
 import com.example.springboot.utils.ExceptionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +42,8 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
         try {
-            var principal = AuthUtils.getAuthenticationPrincipal();
-            var result = userService.changePassword(requestDTO, principal.getUserId());
+            UUID userId = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
+            var result = userService.changePassword(requestDTO, userId);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -53,8 +54,7 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> updateProfile(@RequestBody UserDTO requestDTO) {
         try {
-            var principal = AuthUtils.getAuthenticationPrincipal();
-            var result = userService.updateProfile(requestDTO, principal.getUserId());
+            var result = userService.updateProfile(requestDTO);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

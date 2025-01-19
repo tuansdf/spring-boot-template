@@ -1,5 +1,6 @@
 package com.example.springboot.modules.role;
 
+import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.CommonStatus;
 import com.example.springboot.constants.ResultSetName;
 import com.example.springboot.dtos.PaginationResponseData;
@@ -32,7 +33,8 @@ public class RoleServiceImpl implements RoleService {
     private final EntityManager entityManager;
 
     @Override
-    public RoleDTO save(RoleDTO requestDTO, UUID actionBy) throws CustomException {
+    public RoleDTO save(RoleDTO requestDTO) throws CustomException {
+        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
         Role result = null;
         if (requestDTO.getId() != null) {
             Optional<Role> roleOptional = roleRepository.findById(requestDTO.getId());
