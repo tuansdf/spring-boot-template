@@ -16,6 +16,7 @@ import com.example.springboot.modules.token.dtos.TokenDTO;
 import com.example.springboot.modules.user.UserRepository;
 import com.example.springboot.modules.user.UserService;
 import com.example.springboot.modules.user.dtos.UserDTO;
+import com.example.springboot.utils.CommonUtils;
 import com.example.springboot.utils.ConversionUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -98,7 +99,7 @@ public class AuthServiceImpl implements AuthService {
         user = userRepository.save(user);
 
         TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
-        emailService.sendActivateAccountEmail(user.getEmail(), user.getName(), tokenDTO.getValue());
+        emailService.sendActivateAccountEmail(user.getEmail(), CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail()), tokenDTO.getValue(), user.getId());
     }
 
     @Override
@@ -107,7 +108,7 @@ public class AuthServiceImpl implements AuthService {
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
         if (userDTO == null || CommonStatus.ACTIVE.equals(userDTO.getStatus())) return;
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
-        emailService.sendResetPasswordEmail(userDTO.getEmail(), userDTO.getName(), tokenDTO.getValue());
+        emailService.sendResetPasswordEmail(userDTO.getEmail(), CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail()), tokenDTO.getValue(), userDTO.getId());
     }
 
     @Override

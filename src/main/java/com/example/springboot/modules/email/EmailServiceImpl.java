@@ -4,17 +4,19 @@ import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.CommonStatus;
 import com.example.springboot.constants.CommonType;
 import com.example.springboot.constants.Env;
+import com.example.springboot.constants.RedisKey;
 import com.example.springboot.entities.Email;
 import com.example.springboot.mappers.CommonMapper;
 import com.example.springboot.modules.email.dtos.EmailDTO;
-import com.example.springboot.modules.email.dtos.ExecuteSendEmailStreamRequest;
-import com.example.springboot.stream.ExecuteSendEmailStreamListener;
+import com.example.springboot.modules.email.dtos.SendEmailStreamRequest;
 import com.example.springboot.utils.ConversionUtils;
 import com.example.springboot.utils.I18nUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.connection.stream.ObjectRecord;
+import org.springframework.data.redis.connection.stream.StreamRecords;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -30,18 +32,20 @@ public class EmailServiceImpl implements EmailService {
     private final CommonMapper commonMapper;
     private final I18nUtils i18nUtils;
     private final EmailRepository emailRepository;
-//    private final RedisTemplate<String, Object> redisTemplate;
+    private final StringRedisTemplate redisTemplate;
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    protected EmailDTO save(EmailDTO emailDTO) {
+        return commonMapper.toDTO(emailRepository.save(commonMapper.toEntity(emailDTO)));
+    }
 
     @Override
     public EmailDTO send(EmailDTO emailDTO) {
+        emailDTO.setId(null);
         emailDTO.setStatus(CommonStatus.PENDING);
-        EmailDTO result = commonMapper.toDTO(emailRepository.save(commonMapper.toEntity(emailDTO)));
+        EmailDTO result = save(emailDTO);
 
-//        ExecuteSendEmailStreamRequest request = ExecuteSendEmailStreamRequest.builder()
-//                .requestContext(RequestContextHolder.get())
-//                .emailId(emailDTO.getId())
-//                .build();
-//        ExecuteSendEmailStreamListener.add(redisTemplate, request);
+        streamSend(result.getId());
 
         return result;
     }
@@ -54,11 +58,12 @@ public class EmailServiceImpl implements EmailService {
         Email email = emailOptional.get();
         if (!CommonStatus.PENDING.equals(email.getStatus())) return;
         email.setStatus(CommonStatus.DONE);
+        emailRepository.save(email);
+        log.info("Email ".concat(ConversionUtils.toString(email.getId())).concat(" sent"));
     }
 
     @Override
-    public EmailDTO sendResetPasswordEmail(String email, String name, String token) {
-        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
+    public EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID actionBy) {
         EmailDTO emailDTO = EmailDTO.builder()
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
@@ -72,8 +77,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public EmailDTO sendActivateAccountEmail(String email, String name, String token) {
-        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
+    public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID actionBy) {
         EmailDTO emailDTO = EmailDTO.builder()
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
@@ -84,6 +88,17 @@ public class EmailServiceImpl implements EmailService {
                 .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
         return send(emailDTO);
+    }
+
+    private void streamSend(UUID emailId) {
+        SendEmailStreamRequest request = SendEmailStreamRequest.builder()
+                .requestContext(RequestContextHolder.get())
+                .emailId(emailId)
+                .build();
+        ObjectRecord<String, SendEmailStreamRequest> data = StreamRecords.newRecord()
+                .ofObject(request)
+                .withStreamKey(RedisKey.SEND_EMAIL_STREAM);
+        redisTemplate.opsForStream().add(data);
     }
 
 }
