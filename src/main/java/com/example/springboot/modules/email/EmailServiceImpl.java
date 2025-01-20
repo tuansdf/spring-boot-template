@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
@@ -24,11 +25,21 @@ public class EmailServiceImpl implements EmailService {
     private final CommonMapper commonMapper;
     private final MessageSource messageSource;
     private final EmailRepository emailRepository;
+    private final ReactiveRedisTemplate<String, Object> redisTemplate;
 
     @Override
     public EmailDTO send(EmailDTO emailDTO) {
+        emailDTO.setStatus(CommonStatus.PENDING);
+        EmailDTO result = commonMapper.toDTO(emailRepository.save(commonMapper.toEntity(emailDTO)));
+//        ExecuteSendEmailStreamRequest request = ExecuteSendEmailStreamRequest.builder()
+//                        .requestContext(RequestContextHolder.get())
+//        ExecuteSendEmailStreamListener.add(redisTemplate, result);
+        return result;
+    }
+
+    @Override
+    public void executeSend(UUID emailId) {
         // TODO: send email
-        return commonMapper.toDTO(emailRepository.save(commonMapper.toEntity(emailDTO)));
     }
 
     @Override
@@ -40,7 +51,6 @@ public class EmailServiceImpl implements EmailService {
                 .content(messageSource.getMessage("email.reset_password_content", new String[]{name, token}, locale))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
-                .status(CommonStatus.ACTIVE)
                 .type(CommonType.RESET_PASSWORD)
                 .build();
         return send(emailDTO);
@@ -55,7 +65,6 @@ public class EmailServiceImpl implements EmailService {
                 .content(messageSource.getMessage("email.activate_account_content", new String[]{name, token}, locale))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
-                .status(CommonStatus.ACTIVE)
                 .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
         return send(emailDTO);
