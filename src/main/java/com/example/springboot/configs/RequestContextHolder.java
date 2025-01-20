@@ -20,6 +20,7 @@ public class RequestContextHolder {
 
     public static void set(RequestContext input) {
         context.set(input);
+        syncMDC();
     }
 
     public static void clear() {

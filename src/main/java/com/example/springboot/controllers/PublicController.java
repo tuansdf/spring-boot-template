@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +38,7 @@ public class PublicController {
     private final UserRepository userRepository;
     private final I18nUtils i18nUtils;
     private final JWTService jwtService;
-    private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
@@ -208,9 +208,9 @@ public class PublicController {
     @GetMapping(value = "/redis", produces = MediaType.TEXT_PLAIN_VALUE)
     public String redis() {
         try {
-            reactiveRedisTemplate.opsForValue().set("allo", UUIDUtils.generateId().toString()).block();
+            redisTemplate.opsForValue().set("allo", UUIDUtils.generateId().toString());
 
-            log.info("redis: {}", reactiveRedisTemplate.opsForValue().get("allo").block());
+            log.info("redis: {}", redisTemplate.opsForValue().get("allo"));
         } catch (Exception e) {
             log.error("", e);
         }

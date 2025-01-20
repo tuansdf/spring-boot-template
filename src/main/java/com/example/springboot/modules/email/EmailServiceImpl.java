@@ -4,16 +4,20 @@ import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.CommonStatus;
 import com.example.springboot.constants.CommonType;
 import com.example.springboot.constants.Env;
+import com.example.springboot.entities.Email;
 import com.example.springboot.mappers.CommonMapper;
 import com.example.springboot.modules.email.dtos.EmailDTO;
+import com.example.springboot.modules.email.dtos.ExecuteSendEmailStreamRequest;
+import com.example.springboot.stream.ExecuteSendEmailStreamListener;
 import com.example.springboot.utils.ConversionUtils;
 import com.example.springboot.utils.I18nUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -26,21 +30,30 @@ public class EmailServiceImpl implements EmailService {
     private final CommonMapper commonMapper;
     private final I18nUtils i18nUtils;
     private final EmailRepository emailRepository;
-    private final ReactiveRedisTemplate<String, Object> redisTemplate;
+//    private final RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public EmailDTO send(EmailDTO emailDTO) {
         emailDTO.setStatus(CommonStatus.PENDING);
         EmailDTO result = commonMapper.toDTO(emailRepository.save(commonMapper.toEntity(emailDTO)));
+
 //        ExecuteSendEmailStreamRequest request = ExecuteSendEmailStreamRequest.builder()
-//                        .requestContext(RequestContextHolder.get())
-//        ExecuteSendEmailStreamListener.add(redisTemplate, result);
+//                .requestContext(RequestContextHolder.get())
+//                .emailId(emailDTO.getId())
+//                .build();
+//        ExecuteSendEmailStreamListener.add(redisTemplate, request);
+
         return result;
     }
 
     @Override
     public void executeSend(UUID emailId) {
         // TODO: send email
+        Optional<Email> emailOptional = emailRepository.findById(emailId);
+        if (emailOptional.isEmpty()) return;
+        Email email = emailOptional.get();
+        if (!CommonStatus.PENDING.equals(email.getStatus())) return;
+        email.setStatus(CommonStatus.DONE);
     }
 
     @Override
