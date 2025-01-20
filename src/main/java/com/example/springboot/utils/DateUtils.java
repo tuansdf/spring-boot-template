@@ -94,6 +94,7 @@ public class DateUtils {
     }
 
     public static class Formatter {
+        public static final DateTimeFormatter ID = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
         public static final DateTimeFormatter DATE_TIME_BE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
     }
 

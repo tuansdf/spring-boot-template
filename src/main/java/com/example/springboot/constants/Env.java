@@ -22,4 +22,9 @@ public class Env {
     @Value("${custom.email-from}")
     private String fromEmail;
 
+    @Value("${spring.data.redis.host}")
+    private String redisHost;
+    @Value("${spring.data.redis.port}")
+    private Integer redisPort;
+
 }
