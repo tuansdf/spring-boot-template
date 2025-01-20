@@ -1,5 +1,6 @@
 package com.example.springboot.modules.configuration;
 
+import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.CommonStatus;
 import com.example.springboot.constants.ResultSetName;
 import com.example.springboot.dtos.PaginationResponseData;
@@ -32,7 +33,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private final ConfigurationRepository configurationRepository;
 
     @Override
-    public ConfigurationDTO save(ConfigurationDTO requestDTO, UUID actionBy) throws CustomException {
+    public ConfigurationDTO save(ConfigurationDTO requestDTO) throws CustomException {
+        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
         Configuration result = null;
         if (requestDTO.getId() != null) {
             Optional<Configuration> configurationOptional = configurationRepository.findById(requestDTO.getId());

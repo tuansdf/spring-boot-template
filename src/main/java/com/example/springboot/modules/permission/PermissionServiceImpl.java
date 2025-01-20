@@ -1,5 +1,6 @@
 package com.example.springboot.modules.permission;
 
+import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.CommonStatus;
 import com.example.springboot.constants.ResultSetName;
 import com.example.springboot.dtos.PaginationResponseData;
@@ -32,7 +33,8 @@ public class PermissionServiceImpl implements PermissionService {
     private final EntityManager entityManager;
 
     @Override
-    public PermissionDTO save(PermissionDTO requestDTO, UUID actionBy) throws CustomException {
+    public PermissionDTO save(PermissionDTO requestDTO) throws CustomException {
+        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
         Permission result = null;
         if (requestDTO.getId() != null) {
             Optional<Permission> permissionOptional = permissionRepository.findById(requestDTO.getId());

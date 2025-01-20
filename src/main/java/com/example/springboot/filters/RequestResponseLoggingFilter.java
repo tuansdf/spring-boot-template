@@ -1,12 +1,12 @@
 package com.example.springboot.filters;
 
-import com.example.springboot.constants.MDCKey;
+import com.example.springboot.configs.RequestContextHolder;
+import com.example.springboot.constants.RequestConstants;
 import com.example.springboot.utils.UUIDUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -23,13 +23,16 @@ public class RequestResponseLoggingFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         try {
-            MDC.put(MDCKey.REQUEST_ID, UUIDUtils.generateId().toString());
+            RequestContextHolder.get().setRequestId(UUIDUtils.generateId().toString());
+            RequestContextHolder.get().setLocale(httpServletRequest.getLocale());
+            RequestContextHolder.get().setTenantId(httpServletRequest.getHeader(RequestConstants.Header.X_TENANT_ID));
+            RequestContextHolder.syncMDC();
 
             log.info("ENTER method={} path={} query={}", httpServletRequest.getMethod(), httpServletRequest.getServletPath(), httpServletRequest.getQueryString());
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             log.info("EXIT status={}", httpServletResponse.getStatus());
-            MDC.clear();
+            RequestContextHolder.clear();
         }
     }
 

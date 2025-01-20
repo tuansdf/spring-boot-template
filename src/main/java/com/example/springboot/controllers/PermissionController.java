@@ -6,7 +6,6 @@ import com.example.springboot.dtos.PaginationResponseData;
 import com.example.springboot.modules.permission.PermissionService;
 import com.example.springboot.modules.permission.dtos.PermissionDTO;
 import com.example.springboot.modules.permission.dtos.SearchPermissionRequestDTO;
-import com.example.springboot.utils.AuthUtils;
 import com.example.springboot.utils.ExceptionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,8 +49,7 @@ public class PermissionController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PermissionDTO>> save(@RequestBody PermissionDTO requestDTO) {
         try {
-            var principal = AuthUtils.getAuthenticationPrincipal();
-            var result = permissionService.save(requestDTO, principal.getUserId());
+            var result = permissionService.save(requestDTO);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

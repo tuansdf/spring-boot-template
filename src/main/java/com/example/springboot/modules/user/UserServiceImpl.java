@@ -1,5 +1,6 @@
 package com.example.springboot.modules.user;
 
+import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.CommonType;
 import com.example.springboot.constants.PermissionCode;
 import com.example.springboot.constants.ResultSetName;
@@ -57,7 +58,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateProfile(UserDTO requestDTO, UUID actionBy) throws CustomException {
+    public UserDTO updateProfile(UserDTO requestDTO) throws CustomException {
+        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
         requestDTO.validateUpdate();
         Optional<User> userOptional = userRepository.findById(requestDTO.getId());
         if (userOptional.isEmpty()) {

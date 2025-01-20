@@ -1,5 +1,6 @@
 package com.example.springboot.modules.configuration.dtos;
 
+import com.example.springboot.constants.CommonRegex;
 import com.example.springboot.constants.CommonStatus;
 import com.example.springboot.exception.CustomException;
 import com.example.springboot.utils.ValidationUtils;
@@ -29,6 +30,7 @@ public class ConfigurationDTO {
     public void validateCreate() throws CustomException {
         ValidationUtils.notEmpty(this.code, "Code is required");
         ValidationUtils.maxLength(this.code, 255, "Code exceeds the maximum length of 255 characters");
+        ValidationUtils.isPattern(this.code, CommonRegex.CODE, "Code is invalid");
         ValidationUtils.maxLength(this.value, 255, "Value exceeds the maximum length of 255 characters");
         ValidationUtils.maxLength(this.description, 255, "Description exceeds the maximum length of 255 characters");
         ValidationUtils.isIn(this.status, List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE), "Status is invalid");

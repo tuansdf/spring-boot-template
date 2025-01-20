@@ -21,7 +21,7 @@ public class Base64Utils {
         }
     }
 
-    public static String encodeUrl(String input) {
+    public static String urlEncode(String input) {
         try {
             return urlEncoder.encodeToString(input.getBytes());
         } catch (Exception e) {
@@ -41,7 +41,7 @@ public class Base64Utils {
         }
     }
 
-    public static String decodeUrl(String input) {
+    public static String urlDecode(String input) {
         try {
             byte[] result = urlDecoder.decode(input.getBytes());
             if (result == null) return "";

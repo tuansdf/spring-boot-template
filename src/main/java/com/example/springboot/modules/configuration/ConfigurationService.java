@@ -5,11 +5,9 @@ import com.example.springboot.exception.CustomException;
 import com.example.springboot.modules.configuration.dtos.ConfigurationDTO;
 import com.example.springboot.modules.configuration.dtos.SearchConfigurationRequestDTO;
 
-import java.util.UUID;
-
 public interface ConfigurationService {
 
-    ConfigurationDTO save(ConfigurationDTO requestDTO, UUID actionBy) throws CustomException;
+    ConfigurationDTO save(ConfigurationDTO requestDTO) throws CustomException;
 
     ConfigurationDTO findOneById(Long id);
 

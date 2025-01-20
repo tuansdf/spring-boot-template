@@ -92,7 +92,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenDTO createActivateAccountToken(UUID actionBy) {
+    public TokenDTO createActivateAccountToken(UUID userId) {
         UUID id = UUIDUtils.generateId();
         JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id);
 
@@ -100,11 +100,11 @@ public class TokenServiceImpl implements TokenService {
         token.setId(id);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
         token.setType(CommonType.ACTIVATE_ACCOUNT);
-        token.setOwnerId(actionBy);
+        token.setOwnerId(userId);
         token.setValue(jwtPayload.getValue());
         token.setStatus(CommonStatus.ACTIVE);
-        token.setCreatedBy(actionBy);
-        token.setUpdatedBy(actionBy);
+        token.setCreatedBy(userId);
+        token.setUpdatedBy(userId);
         return commonMapper.toDTO(tokenRepository.save(token));
     }
 
