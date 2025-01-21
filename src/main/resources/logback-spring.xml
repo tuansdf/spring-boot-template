@@ -7,7 +7,7 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} [%thread] %-5level %logger{36} - requestId=%X{requestId} - userId=%X{userId} - %replace(%msg){'[\r\n]+', ''} %replace(%ex){'[\r\n]+', ''}%n</pattern>
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} %-5level [%thread] %logger{36} - requestId=%mdc{requestId} userId=%mdc{userId} - %replace(%msg){'[\r\n]+', ''}%replace(%ex){'[\r\n]+', ''}%n</pattern>
         </encoder>
     </appender>
 
@@ -33,4 +33,8 @@
         <appender-ref ref="ASYNC_CONSOLE"/>
 <!--        <appender-ref ref="ASYNC_FILE"/>-->
     </root>
+
+    <logger name="org.hibernate.SQL" level="debug" additivity="false">
+        <appender-ref ref="ASYNC_CONSOLE"/>
+    </logger>
 </configuration>

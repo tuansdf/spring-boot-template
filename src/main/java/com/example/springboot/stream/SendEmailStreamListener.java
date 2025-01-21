@@ -23,13 +23,16 @@ public class SendEmailStreamListener implements StreamListener<String, ObjectRec
     public void onMessage(ObjectRecord<String, SendEmailStreamRequest> message) {
         try {
             RequestContextHolder.set(message.getValue().getRequestContext());
-            log.info("Start SendEmailStreamListener");
+            log.info("XSTART");
+
             emailService.executeSend(message.getValue().getEmailId());
         } catch (Exception e) {
-            log.error("SendEmailStreamListener", e);
+            log.error("XERROR", e);
         } finally {
-            log.info("End SendEmailStreamListener");
             redisTemplate.opsForStream().acknowledge(RedisKey.SEND_EMAIL_STREAM, message);
+            redisTemplate.opsForStream().delete(RedisKey.SEND_EMAIL_STREAM, message.getId());
+
+            log.info("XEND");
             RequestContextHolder.clear();
         }
     }
