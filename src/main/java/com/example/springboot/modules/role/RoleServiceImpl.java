@@ -5,12 +5,13 @@ import com.example.springboot.constants.CommonStatus;
 import com.example.springboot.constants.ResultSetName;
 import com.example.springboot.dtos.PaginationResponseData;
 import com.example.springboot.entities.Role;
+import com.example.springboot.entities.UserRole;
 import com.example.springboot.exception.CustomException;
 import com.example.springboot.mappers.CommonMapper;
 import com.example.springboot.modules.role.dtos.RoleDTO;
 import com.example.springboot.modules.role.dtos.SearchRoleRequestDTO;
 import com.example.springboot.utils.ConversionUtils;
-import com.example.springboot.utils.SQLUtils;
+import com.example.springboot.utils.SQLBuilder;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,7 @@ public class RoleServiceImpl implements RoleService {
 
     private final CommonMapper commonMapper;
     private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
     private final EntityManager entityManager;
 
     @Override
@@ -62,6 +64,16 @@ public class RoleServiceImpl implements RoleService {
         }
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(roleRepository.save(result));
+    }
+
+    @Override
+    public void addToUser(UUID userId, Set<Long> roleIds) {
+        userRoleRepository.deleteAllByUserId(userId);
+        List<UserRole> userRoles = new ArrayList<>();
+        for (Long roleId : roleIds) {
+            userRoles.add(new UserRole(userId, roleId));
+        }
+        userRoleRepository.saveAll(userRoles);
     }
 
     @Override
@@ -122,7 +134,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     private PaginationResponseData<RoleDTO> executeSearch(SearchRoleRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<RoleDTO> result = SQLUtils.getPaginationResponseData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationResponseData<RoleDTO> result = SQLBuilder.getPaginationResponseData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -149,17 +161,17 @@ public class RoleServiceImpl implements RoleService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
-            builder.append(SQLUtils.getPaginationString(result.getPageNumber(), result.getPageSize()));
+            builder.append(SQLBuilder.getPaginationString(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLUtils.setParams(query, params);
+            SQLBuilder.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLUtils.getTotalPages(count, result.getPageSize()));
+            result.setTotalPages(SQLBuilder.getTotalPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.ROLE_SEARCH);
-            SQLUtils.setParams(query, params);
+            SQLBuilder.setParams(query, params);
             List<RoleDTO> items = query.getResultList();
             result.setItems(items);
         }

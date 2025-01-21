@@ -6,7 +6,7 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.util.Map;
 
-public class SQLUtils {
+public class SQLBuilder {
 
     public static final int DEFAULT_PAGE_NUMBER = 1;
     public static final int DEFAULT_PAGE_SIZE = 10;
@@ -21,7 +21,7 @@ public class SQLUtils {
         return PaginationResponseData.<T>builder().pageNumber(pageNumber).pageSize(pageSize).build();
     }
 
-    public static String getPaginationString(Integer pageNumber, Integer pageSize) {
+    public static String getPaginationString(int pageNumber, int pageSize) {
         return " limit " + pageSize + " offset " + ((pageNumber - 1) * pageSize);
     }
 

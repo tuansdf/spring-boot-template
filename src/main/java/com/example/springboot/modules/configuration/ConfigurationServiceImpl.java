@@ -10,7 +10,7 @@ import com.example.springboot.mappers.CommonMapper;
 import com.example.springboot.modules.configuration.dtos.ConfigurationDTO;
 import com.example.springboot.modules.configuration.dtos.SearchConfigurationRequestDTO;
 import com.example.springboot.utils.ConversionUtils;
-import com.example.springboot.utils.SQLUtils;
+import com.example.springboot.utils.SQLBuilder;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -109,7 +109,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private PaginationResponseData<ConfigurationDTO> executeSearch(SearchConfigurationRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<ConfigurationDTO> result = SQLUtils.getPaginationResponseData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationResponseData<ConfigurationDTO> result = SQLBuilder.getPaginationResponseData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -136,17 +136,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
-            builder.append(SQLUtils.getPaginationString(result.getPageNumber(), result.getPageSize()));
+            builder.append(SQLBuilder.getPaginationString(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLUtils.setParams(query, params);
+            SQLBuilder.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLUtils.getTotalPages(count, result.getPageSize()));
+            result.setTotalPages(SQLBuilder.getTotalPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.CONFIGURATION_SEARCH);
-            SQLUtils.setParams(query, params);
+            SQLBuilder.setParams(query, params);
             List<ConfigurationDTO> items = query.getResultList();
             result.setItems(items);
         }

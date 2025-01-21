@@ -14,7 +14,7 @@ import com.example.springboot.modules.user.dtos.SearchUserRequestDTO;
 import com.example.springboot.modules.user.dtos.UserDTO;
 import com.example.springboot.utils.AuthUtils;
 import com.example.springboot.utils.ConversionUtils;
-import com.example.springboot.utils.SQLUtils;
+import com.example.springboot.utils.SQLBuilder;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -152,15 +152,45 @@ public class UserServiceImpl implements UserService {
     }
 
     private PaginationResponseData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<UserDTO> result = SQLUtils.getPaginationResponseData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationResponseData<UserDTO> result = SQLBuilder.getPaginationResponseData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select u.*, string_agg(distinct(r.code), ',') as roles, string_agg(distinct(p.code), ',') as permissions ");
+            builder.append(" select u.*, ");
+            builder.append(" string_agg(distinct(r.code), ',') as roles, ");
+            builder.append(" string_agg(distinct(p.code), ',') as permissions ");
         }
         builder.append(" from _user u ");
+        builder.append(" inner join ( ");
+        {
+            builder.append(" select u.id ");
+            builder.append(" from _user u ");
+            builder.append(" where 1=1 ");
+            if (!StringUtils.isEmpty(requestDTO.getUsername())) {
+                builder.append(" and u.username = :username ");
+                params.put("username", StringUtils.stripStart(requestDTO.getUsername(), "%").concat("%"));
+            }
+            if (!StringUtils.isEmpty(requestDTO.getEmail())) {
+                builder.append(" and u.email like :email ");
+                params.put("email", StringUtils.stripStart(requestDTO.getEmail(), "%").concat("%"));
+            }
+            if (!StringUtils.isEmpty(requestDTO.getStatus())) {
+                builder.append(" and u.status = :status ");
+                params.put("status", requestDTO.getStatus());
+            }
+            if (requestDTO.getCreatedAtFrom() != null) {
+                builder.append(" and u.created_at >= :createdAtFrom ");
+                params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+            }
+            if (requestDTO.getCreatedAtTo() != null) {
+                builder.append(" and u.created_at <= :createdAtTo ");
+                params.put("createdAtTo", requestDTO.getCreatedAtTo());
+            }
+            builder.append(SQLBuilder.getPaginationString(result.getPageNumber(), result.getPageSize()));
+        }
+        builder.append(" ) as filter on (filter.id = u.id) ");
         if (!isCount) {
             builder.append(" left join user_role ur on (ur.user_id = u.id) ");
             builder.append(" left join role r on (r.id = ur.role_id) ");
@@ -168,39 +198,18 @@ public class UserServiceImpl implements UserService {
             builder.append(" left join permission p on (p.id = rp.permission_id) ");
         }
         builder.append(" where 1=1 ");
-        if (!StringUtils.isEmpty(requestDTO.getUsername())) {
-            builder.append(" and u.username = :username ");
-            params.put("username", StringUtils.stripStart(requestDTO.getUsername(), "%").concat("%"));
-        }
-        if (!StringUtils.isEmpty(requestDTO.getEmail())) {
-            builder.append(" and u.email like :email ");
-            params.put("email", StringUtils.stripStart(requestDTO.getEmail(), "%").concat("%"));
-        }
-        if (!StringUtils.isEmpty(requestDTO.getStatus())) {
-            builder.append(" and u.status = :status ");
-            params.put("status", requestDTO.getStatus());
-        }
-        if (requestDTO.getCreatedAtFrom() != null) {
-            builder.append(" and u.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
-        }
-        if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and u.created_at <= :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo());
-        }
         if (!isCount) {
             builder.append(" group by u.id ");
-            builder.append(SQLUtils.getPaginationString(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLUtils.setParams(query, params);
+            SQLBuilder.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLUtils.getTotalPages(count, result.getPageSize()));
+            result.setTotalPages(SQLBuilder.getTotalPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.USER_SEARCH);
-            SQLUtils.setParams(query, params);
+            SQLBuilder.setParams(query, params);
             List<UserDTO> items = query.getResultList();
             result.setItems(items);
         }

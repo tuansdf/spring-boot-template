@@ -7,6 +7,7 @@ import com.example.springboot.modules.jwt.JWTService;
 import com.example.springboot.modules.jwt.dtos.JWTPayload;
 import com.example.springboot.modules.report.UserExportTemplate;
 import com.example.springboot.modules.report.UserImportTemplate;
+import com.example.springboot.modules.role.RoleService;
 import com.example.springboot.modules.user.UserRepository;
 import com.example.springboot.modules.user.dtos.UserDTO;
 import com.example.springboot.utils.*;
@@ -24,9 +25,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,6 +38,7 @@ public class PublicController {
     private final I18nUtils i18nUtils;
     private final JWTService jwtService;
     private final StringRedisTemplate redisTemplate;
+    private final RoleService roleService;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
@@ -122,8 +122,13 @@ public class PublicController {
     @GetMapping("/generate-users")
     public String generateUsers(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
-        List<User> entities = data.stream().map(commonMapper::toEntity).toList();
-        userRepository.saveAll(entities);
+        List<User> users = data.stream().map(commonMapper::toEntity).toList();
+        users = userRepository.saveAll(users);
+        Set<Long> roleIds = new HashSet<>();
+        roleIds.add(1L);
+        for (User user : users) {
+            roleService.addToUser(user.getId(), roleIds);
+        }
         return "OK";
     }
 
