@@ -188,7 +188,9 @@ public class UserServiceImpl implements UserService {
                 builder.append(" and u.created_at <= :createdAtTo ");
                 params.put("createdAtTo", requestDTO.getCreatedAtTo());
             }
-            builder.append(SQLBuilder.getPaginationString(result.getPageNumber(), result.getPageSize()));
+            if (!isCount) {
+                builder.append(SQLBuilder.getPaginationString(result.getPageNumber(), result.getPageSize()));
+            }
         }
         builder.append(" ) as filter on (filter.id = u.id) ");
         if (!isCount) {
