@@ -2,7 +2,7 @@ package com.example.springboot.modules.authentication.dtos;
 
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -19,6 +19,6 @@ public class AuthDTO {
     private String username;
     private String email;
     private String name;
-    private List<String> permissions;
+    private Set<String> permissions;
 
 }

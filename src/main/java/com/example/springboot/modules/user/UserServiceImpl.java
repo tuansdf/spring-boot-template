@@ -158,17 +158,23 @@ public class UserServiceImpl implements UserService {
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select u.* ");
+            builder.append(" select u.*, string_agg(distinct(r.code), ',') as roles, string_agg(distinct(p.code), ',') as permissions ");
         }
         builder.append(" from _user u ");
+        if (!isCount) {
+            builder.append(" left join user_role ur on (ur.user_id = u.id) ");
+            builder.append(" left join role r on (r.id = ur.role_id) ");
+            builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
+            builder.append(" left join permission p on (p.id = rp.permission_id) ");
+        }
         builder.append(" where 1=1 ");
         if (!StringUtils.isEmpty(requestDTO.getUsername())) {
             builder.append(" and u.username = :username ");
-            params.put("username", requestDTO.getUsername().concat("%"));
+            params.put("username", StringUtils.stripStart(requestDTO.getUsername(), "%").concat("%"));
         }
         if (!StringUtils.isEmpty(requestDTO.getEmail())) {
             builder.append(" and u.email like :email ");
-            params.put("email", requestDTO.getEmail().concat("%"));
+            params.put("email", StringUtils.stripStart(requestDTO.getEmail(), "%").concat("%"));
         }
         if (!StringUtils.isEmpty(requestDTO.getStatus())) {
             builder.append(" and u.status = :status ");
@@ -183,6 +189,7 @@ public class UserServiceImpl implements UserService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
+            builder.append(" group by u.id ");
             builder.append(SQLUtils.getPaginationString(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {

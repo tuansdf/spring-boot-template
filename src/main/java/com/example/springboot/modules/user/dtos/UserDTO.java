@@ -5,9 +5,13 @@ import com.example.springboot.exception.CustomException;
 import com.example.springboot.utils.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -29,27 +33,44 @@ public class UserDTO {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
-    private List<Long> roleIds;
+    private Set<String> roleCodes;
+    private Set<String> permissionCodes;
 
     // USER_SEARCH_CONTACT
     public UserDTO(UUID id, String username) {
-        this.id = id;
-        this.username = username;
+        setId(id);
+        setUsername(username);
     }
 
     // USER_SEARCH
     public UserDTO(
             UUID id, String username, String email, String name, String status, UUID createdBy, UUID updatedBy,
-            OffsetDateTime createdAt, OffsetDateTime updatedAt) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.name = name;
-        this.status = status;
-        this.createdBy = createdBy;
-        this.updatedBy = updatedBy;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+            OffsetDateTime createdAt, OffsetDateTime updatedAt, String roles, String permissions) {
+        setId(id);
+        setUsername(username);
+        setEmail(email);
+        setName(name);
+        setStatus(status);
+        setCreatedBy(createdBy);
+        setUpdatedBy(updatedBy);
+        setCreatedAt(createdAt);
+        setUpdatedAt(updatedAt);
+        setRoleCodes(roles);
+        setPermissionCodes(permissions);
+    }
+
+    public void setRoleCodes(String roles) {
+        if (StringUtils.isNotBlank(roles)) {
+            this.roleCodes = new HashSet<>();
+            CollectionUtils.addAll(this.roleCodes, roles.split(","));
+        }
+    }
+
+    public void setPermissionCodes(String permissions) {
+        if (StringUtils.isNotBlank(permissions)) {
+            this.permissionCodes = new HashSet<>();
+            CollectionUtils.addAll(this.permissionCodes, permissions.split(","));
+        }
     }
 
     public void validateUpdate() throws CustomException {

@@ -28,6 +28,8 @@ import java.util.UUID;
                 @ColumnResult(name = "updated_by", type = UUID.class),
                 @ColumnResult(name = "created_at", type = OffsetDateTime.class),
                 @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
+                @ColumnResult(name = "roles", type = String.class),
+                @ColumnResult(name = "permissions", type = String.class),
         })
 })
 @SqlResultSetMapping(name = ResultSetName.USER_SEARCH_CONTACT, classes = {

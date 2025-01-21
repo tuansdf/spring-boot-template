@@ -1,7 +1,6 @@
 package com.example.springboot.constants;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -37,9 +36,8 @@ public class PermissionCode {
         return stringToIndex.get(input);
     }
 
-    public static List<String> fromIndexes(List<Integer> indexes) {
-        if (CollectionUtils.isEmpty(indexes)) return new ArrayList<>();
-        List<String> result = new ArrayList<>();
+    public static Set<String> fromIndexes(List<Integer> indexes) {
+        Set<String> result = new HashSet<>();
         if (CollectionUtils.isEmpty(indexes)) return result;
         for (Integer index : indexes) {
             String code = fromIndex(index);
@@ -48,11 +46,30 @@ public class PermissionCode {
         return result;
     }
 
-    public static List<Integer> toIndexes(List<String> codes) {
-        if (CollectionUtils.isEmpty(codes)) return new ArrayList<>();
-        List<Integer> result = new ArrayList<>();
+    public static Set<String> fromIndexes(Set<Integer> indexes) {
+        Set<String> result = new HashSet<>();
+        if (CollectionUtils.isEmpty(indexes)) return result;
+        for (Integer index : indexes) {
+            String code = fromIndex(index);
+            if (code != null) result.add(code);
+        }
+        return result;
+    }
+
+    public static Set<Integer> toIndexes(List<String> codes) {
+        Set<Integer> result = new HashSet<>();
+        if (CollectionUtils.isEmpty(codes)) return result;
         for (String code : codes) {
-            if (StringUtils.isEmpty(code)) continue;
+            Integer index = toIndex(code);
+            if (index != null) result.add(index);
+        }
+        return result;
+    }
+
+    public static Set<Integer> toIndexes(Set<String> codes) {
+        Set<Integer> result = new HashSet<>();
+        if (CollectionUtils.isEmpty(codes)) return result;
+        for (String code : codes) {
             Integer index = toIndex(code);
             if (index != null) result.add(index);
         }

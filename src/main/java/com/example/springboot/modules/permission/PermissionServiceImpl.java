@@ -94,19 +94,19 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public List<String> findAllCodesByRoleId(Long roleId) {
-        List<String> result = permissionRepository.findAllCodesByRoleId(roleId);
+    public Set<String> findAllCodesByRoleId(Long roleId) {
+        Set<String> result = permissionRepository.findAllCodesByRoleId(roleId);
         if (result == null) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return result;
     }
 
     @Override
-    public List<String> findAllCodesByUserId(UUID userId) {
-        List<String> result = permissionRepository.findAllCodesByUserId(userId);
+    public Set<String> findAllCodesByUserId(UUID userId) {
+        Set<String> result = permissionRepository.findAllCodesByUserId(userId);
         if (result == null) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return result;
     }

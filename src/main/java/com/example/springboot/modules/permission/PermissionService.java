@@ -6,6 +6,7 @@ import com.example.springboot.modules.permission.dtos.PermissionDTO;
 import com.example.springboot.modules.permission.dtos.SearchPermissionRequestDTO;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public interface PermissionService {
@@ -20,9 +21,9 @@ public interface PermissionService {
 
     PermissionDTO findOneByCodeOrThrow(String code) throws CustomException;
 
-    List<String> findAllCodesByRoleId(Long roleId);
+    Set<String> findAllCodesByRoleId(Long roleId);
 
-    List<String> findAllCodesByUserId(UUID userId);
+    Set<String> findAllCodesByUserId(UUID userId);
 
     List<PermissionDTO> findAllByRoleId(Long roleId);
 

@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -53,7 +53,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        List<String> permissions = PermissionCode.fromIndexes(jwtPayload.getPermissions());
+        Set<String> permissions = PermissionCode.fromIndexes(jwtPayload.getPermissions());
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 jwtPayload.getSubject(),
                 null,

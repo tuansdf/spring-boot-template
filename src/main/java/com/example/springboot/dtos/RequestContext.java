@@ -2,8 +2,8 @@ package com.example.springboot.dtos;
 
 import lombok.*;
 
-import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,6 +16,6 @@ public class RequestContext {
     private String requestId;
     private Locale locale;
     private String userId;
-    private List<String> permissions;
+    private Set<String> permissions;
 
 }

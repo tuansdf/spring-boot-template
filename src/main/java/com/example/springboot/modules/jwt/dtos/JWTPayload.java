@@ -8,8 +8,8 @@ import lombok.*;
 
 import java.time.Instant;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -36,7 +36,7 @@ public class JWTPayload {
     private String tokenId;
 
     @JsonProperty(JWTPayloadKey.PERMISSIONS)
-    private List<Integer> permissions;
+    private Set<Integer> permissions;
 
     @JsonIgnore
     private String value;
@@ -50,7 +50,7 @@ public class JWTPayload {
         if (issuer != null) result.put(JWTPayloadKey.ISSUER, issuer);
         if (type != null) result.put(JWTPayloadKey.TYPE, type);
         if (tokenId != null) result.put(JWTPayloadKey.TOKEN_ID, tokenId);
-        if (permissions != null) result.put(JWTPayloadKey.PERMISSIONS, permissions);
+        if (permissions != null) result.put(JWTPayloadKey.PERMISSIONS, permissions.stream().toList());
         return result;
     }
 
