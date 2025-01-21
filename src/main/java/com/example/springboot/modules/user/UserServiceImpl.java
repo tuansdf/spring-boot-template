@@ -168,15 +168,15 @@ public class UserServiceImpl implements UserService {
             builder.append(" select u.id ");
             builder.append(" from _user u ");
             builder.append(" where 1=1 ");
-            if (!StringUtils.isEmpty(requestDTO.getUsername())) {
+            if (StringUtils.isNotBlank(requestDTO.getUsername())) {
                 builder.append(" and u.username = :username ");
                 params.put("username", StringUtils.stripStart(requestDTO.getUsername(), "%").concat("%"));
             }
-            if (!StringUtils.isEmpty(requestDTO.getEmail())) {
+            if (StringUtils.isNotBlank(requestDTO.getEmail())) {
                 builder.append(" and u.email like :email ");
                 params.put("email", StringUtils.stripStart(requestDTO.getEmail(), "%").concat("%"));
             }
-            if (!StringUtils.isEmpty(requestDTO.getStatus())) {
+            if (StringUtils.isNotBlank(requestDTO.getStatus())) {
                 builder.append(" and u.status = :status ");
                 params.put("status", requestDTO.getStatus());
             }

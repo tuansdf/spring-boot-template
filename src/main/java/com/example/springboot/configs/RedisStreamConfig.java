@@ -2,7 +2,9 @@ package com.example.springboot.configs;
 
 import com.example.springboot.constants.RedisKey;
 import com.example.springboot.modules.email.dtos.SendEmailStreamRequest;
+import com.example.springboot.modules.notification.dtos.SendNotificationStreamRequest;
 import com.example.springboot.stream.SendEmailStreamListener;
+import com.example.springboot.stream.SendNotificationStreamListener;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +24,13 @@ import java.time.Duration;
 public class RedisStreamConfig {
 
     @Bean
-    public Subscription subscription(RedisConnectionFactory redisConnectionFactory, SendEmailStreamListener sendEmailStreamListener) {
-        return createSubscription(new CreateSubscriptionRequest<>(redisConnectionFactory, sendEmailStreamListener, SendEmailStreamRequest.class, RedisKey.SEND_EMAIL_STREAM));
+    public Subscription sendEmail(RedisConnectionFactory redisConnectionFactory, SendEmailStreamListener listener) {
+        return createSubscription(new CreateSubscriptionRequest<>(redisConnectionFactory, listener, SendEmailStreamRequest.class, RedisKey.SEND_EMAIL_STREAM));
+    }
+
+    @Bean
+    public Subscription sendNotification(RedisConnectionFactory redisConnectionFactory, SendNotificationStreamListener listener) {
+        return createSubscription(new CreateSubscriptionRequest<>(redisConnectionFactory, listener, SendNotificationStreamRequest.class, RedisKey.SEND_NOTIFICATION_STREAM));
     }
 
     private <T> Subscription createSubscription(CreateSubscriptionRequest<T> request) {

@@ -10,6 +10,7 @@ import com.example.springboot.modules.configuration.ConfigurationService;
 import com.example.springboot.modules.email.EmailService;
 import com.example.springboot.modules.jwt.JWTService;
 import com.example.springboot.modules.jwt.dtos.JWTPayload;
+import com.example.springboot.modules.notification.NotificationService;
 import com.example.springboot.modules.permission.PermissionService;
 import com.example.springboot.modules.token.TokenService;
 import com.example.springboot.modules.token.dtos.TokenDTO;
@@ -26,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private final ConfigurationService configurationService;
     private final UserRepository userRepository;
     private final AuthValidator authValidator;
+    private final NotificationService notificationService;
 
     @Override
     public AuthDTO login(LoginRequestDTO requestDTO) throws CustomException {
@@ -99,7 +102,7 @@ public class AuthServiceImpl implements AuthService {
         user.setStatus(CommonStatus.PENDING);
         user = userRepository.save(user);
 
-        TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
+        TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId(), false);
         emailService.sendActivateAccountEmail(user.getEmail(), CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail()), tokenDTO.getValue(), user.getId());
     }
 
@@ -143,7 +146,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthDTO refreshAccessToken(String refreshJwt) throws CustomException {
-        if (StringUtils.isEmpty(refreshJwt)) {
+        if (StringUtils.isBlank(refreshJwt)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         JWTPayload jwtPayload = jwtService.verify(refreshJwt);
@@ -174,7 +177,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void activateAccount(String jwt) throws CustomException {
-        if (StringUtils.isEmpty(jwt)) {
+        if (StringUtils.isBlank(jwt)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         JWTPayload jwtPayload = jwtService.verify(jwt);
@@ -182,19 +185,19 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         String tokenType = CommonType.fromIndex(jwtPayload.getType());
-        if (!CommonType.ACTIVATE_ACCOUNT.equals(tokenType)) {
+        List<String> validTypes = List.of(CommonType.ACTIVATE_ACCOUNT, CommonType.REACTIVATE_ACCOUNT);
+        if (!validTypes.contains(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
-        if (tokenDTO == null || !CommonType.ACTIVATE_ACCOUNT.equals(tokenDTO.getType())) {
+        if (tokenDTO == null || !validTypes.contains(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UserDTO user = userService.findOneById(ConversionUtils.toUUID(tokenDTO.getOwnerId()));
-        if (user == null) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        userRepository.updateStatusByUserId(tokenDTO.getOwnerId(), CommonStatus.ACTIVE);
+        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), tokenType);
+        if (CommonType.ACTIVATE_ACCOUNT.equals(tokenType)) {
+            notificationService.sendNewComerNotification(tokenDTO.getOwnerId());
         }
-        userRepository.updateStatusByUserId(user.getId(), CommonStatus.ACTIVE);
-        tokenService.deactivatePastTokens(user.getId(), CommonType.ACTIVATE_ACCOUNT);
     }
 
 }

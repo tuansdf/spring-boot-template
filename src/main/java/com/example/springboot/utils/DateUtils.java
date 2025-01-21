@@ -72,7 +72,7 @@ public class DateUtils {
     }
 
     public static OffsetDateTime toOffsetDateTime(String input, DateTimeFormatter formatter) {
-        if (StringUtils.isEmpty(input)) return null;
+        if (StringUtils.isBlank(input)) return null;
         try {
             return OffsetDateTime.parse(input, formatter);
         } catch (Exception e) {
@@ -80,7 +80,7 @@ public class DateUtils {
         }
     }
 
-    public static String toString(OffsetDateTime dateTime, DateTimeFormatter formatter) {
+    public static String format(OffsetDateTime dateTime, DateTimeFormatter formatter) {
         if (dateTime == null || formatter == null) return "";
         try {
             return formatter.format(dateTime);

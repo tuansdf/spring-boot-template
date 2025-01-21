@@ -17,7 +17,13 @@ public class PermissionCode {
 
     static {
         // WARN: Order matters. Be careful when rearranging in production
-        List<String> codes = List.of(SYSTEM_ADMIN, READ_USER, CREATE_USER, UPDATE_USER, DELETE_USER);
+        List<String> codes = List.of(
+                SYSTEM_ADMIN,
+                READ_USER,
+                CREATE_USER,
+                UPDATE_USER,
+                DELETE_USER
+        );
         Map<String, Integer> tempStringToIndex = new HashMap<>();
         Map<Integer, String> tempIndexToString = new HashMap<>();
         for (int i = 0; i < codes.size(); i++) {

@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class Env {
 
+    @Value("${custom.app-name}")
+    private String applicationName;
+
     @Value("${custom.jwt-secret}")
     private String jwtSecret;
     @Value("${custom.jwt-access-lifetime}")

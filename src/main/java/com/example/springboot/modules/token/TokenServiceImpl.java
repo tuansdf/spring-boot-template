@@ -92,9 +92,9 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenDTO createActivateAccountToken(UUID userId) {
+    public TokenDTO createActivateAccountToken(UUID userId, boolean isReactivate) {
         UUID id = UUIDHelper.generateId();
-        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id);
+        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id, isReactivate);
 
         Token token = new Token();
         token.setId(id);

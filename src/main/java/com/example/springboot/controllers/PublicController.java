@@ -160,7 +160,7 @@ public class PublicController {
     public String jwttest(@RequestParam(required = false, defaultValue = "100") Integer total) {
         for (int i = 0; i < total; i++) {
             UUID uuid = UUIDHelper.generateId();
-            JWTPayload jwtPayload = jwtService.createActivateAccountJwt(uuid);
+            JWTPayload jwtPayload = jwtService.createActivateAccountJwt(uuid, false);
             jwtService.verify(jwtPayload.getValue());
         }
         return "OK";

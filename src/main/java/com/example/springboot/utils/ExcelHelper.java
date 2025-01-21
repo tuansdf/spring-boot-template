@@ -27,7 +27,7 @@ public class ExcelHelper {
 
     public static void writeFile(Workbook workbook, String outputPath) {
         try {
-            if (workbook == null || StringUtils.isEmpty(outputPath)) return;
+            if (workbook == null || StringUtils.isBlank(outputPath)) return;
             try (FileOutputStream outputStream = new FileOutputStream(outputPath);
                  BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
                 workbook.write(bufferedOutputStream);

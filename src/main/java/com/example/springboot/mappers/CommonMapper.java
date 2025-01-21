@@ -3,6 +3,7 @@ package com.example.springboot.mappers;
 import com.example.springboot.entities.*;
 import com.example.springboot.modules.configuration.dtos.ConfigurationDTO;
 import com.example.springboot.modules.email.dtos.EmailDTO;
+import com.example.springboot.modules.notification.dtos.NotificationDTO;
 import com.example.springboot.modules.permission.dtos.PermissionDTO;
 import com.example.springboot.modules.role.dtos.RoleDTO;
 import com.example.springboot.modules.token.dtos.TokenDTO;
@@ -48,5 +49,11 @@ public interface CommonMapper {
     EmailDTO toDTO(Email v);
 
     EmailDTO clone(EmailDTO v);
+
+    Notification toEntity(NotificationDTO v);
+
+    NotificationDTO toDTO(Notification v);
+
+    NotificationDTO clone(NotificationDTO v);
 
 }

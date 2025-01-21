@@ -62,6 +62,17 @@ public class EmailServiceImpl implements EmailService {
         log.info("Email ".concat(ConversionUtils.toString(email.getId())).concat(" sent"));
     }
 
+    private void streamSend(UUID emailId) {
+        SendEmailStreamRequest request = SendEmailStreamRequest.builder()
+                .requestContext(RequestContextHolder.get())
+                .emailId(emailId)
+                .build();
+        ObjectRecord<String, SendEmailStreamRequest> data = StreamRecords.newRecord()
+                .ofObject(request)
+                .withStreamKey(RedisKey.SEND_EMAIL_STREAM);
+        redisTemplate.opsForStream().add(data);
+    }
+
     @Override
     public EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID actionBy) {
         EmailDTO emailDTO = EmailDTO.builder()
@@ -88,17 +99,6 @@ public class EmailServiceImpl implements EmailService {
                 .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
         return send(emailDTO);
-    }
-
-    private void streamSend(UUID emailId) {
-        SendEmailStreamRequest request = SendEmailStreamRequest.builder()
-                .requestContext(RequestContextHolder.get())
-                .emailId(emailId)
-                .build();
-        ObjectRecord<String, SendEmailStreamRequest> data = StreamRecords.newRecord()
-                .ofObject(request)
-                .withStreamKey(RedisKey.SEND_EMAIL_STREAM);
-        redisTemplate.opsForStream().add(data);
     }
 
 }

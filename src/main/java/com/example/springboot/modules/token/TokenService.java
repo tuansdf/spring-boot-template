@@ -16,6 +16,6 @@ public interface TokenService {
 
     TokenDTO createResetPasswordToken(UUID userId);
 
-    TokenDTO createActivateAccountToken(UUID actionBy);
+    TokenDTO createActivateAccountToken(UUID userId, boolean isReactivate);
 
 }

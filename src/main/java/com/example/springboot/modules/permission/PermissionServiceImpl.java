@@ -150,11 +150,11 @@ public class PermissionServiceImpl implements PermissionService {
         }
         builder.append(" from permission p ");
         builder.append(" where 1=1 ");
-        if (!StringUtils.isEmpty(requestDTO.getCode())) {
+        if (StringUtils.isNotBlank(requestDTO.getCode())) {
             builder.append(" and p.code = :code ");
             params.put("code", requestDTO.getCode());
         }
-        if (!StringUtils.isEmpty(requestDTO.getStatus())) {
+        if (StringUtils.isNotBlank(requestDTO.getStatus())) {
             builder.append(" and p.status = :status ");
             params.put("status", requestDTO.getStatus());
         }

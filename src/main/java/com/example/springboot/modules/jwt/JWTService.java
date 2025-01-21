@@ -15,7 +15,7 @@ public interface JWTService {
 
     JWTPayload createResetPasswordJwt(UUID tokenId);
 
-    JWTPayload createActivateAccountJwt(UUID tokenId);
+    JWTPayload createActivateAccountJwt(UUID tokenId, boolean isReactivate);
 
     JWTPayload verify(String token);
 

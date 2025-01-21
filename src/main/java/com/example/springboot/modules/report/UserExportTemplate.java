@@ -28,8 +28,8 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
             user.getStatus(),
             ConversionUtils.toString(user.getCreatedBy()),
             ConversionUtils.toString(user.getUpdatedBy()),
-            DateUtils.toString(user.getCreatedAt(), DateUtils.Formatter.DATE_TIME_BE),
-            DateUtils.toString(user.getUpdatedAt(), DateUtils.Formatter.DATE_TIME_BE));
+            DateUtils.format(user.getCreatedAt(), DateUtils.Formatter.DATE_TIME_BE),
+            DateUtils.format(user.getUpdatedAt(), DateUtils.Formatter.DATE_TIME_BE));
     private static final Function<UserDTO, List<Object>> ROW_DATA_EXTRACTOR = user -> Arrays.asList(
             user.getId(),
             user.getUsername(),

@@ -11,13 +11,20 @@ public class CommonType {
     public final static String REFRESH_TOKEN = "REFRESH_TOKEN";
     public final static String RESET_PASSWORD = "RESET_PASSWORD";
     public final static String ACTIVATE_ACCOUNT = "ACTIVATE_ACCOUNT";
+    public final static String REACTIVATE_ACCOUNT = "REACTIVATE_ACCOUNT";
 
     private static final Map<String, Integer> stringToIndex;
     private static final Map<Integer, String> indexToString;
 
     static {
         // WARN: Order matters. Be careful when rearranging in production
-        List<String> codes = List.of(ACCESS_TOKEN, REFRESH_TOKEN, RESET_PASSWORD, ACTIVATE_ACCOUNT);
+        List<String> codes = List.of(
+                ACCESS_TOKEN,
+                REFRESH_TOKEN,
+                RESET_PASSWORD,
+                ACTIVATE_ACCOUNT,
+                REACTIVATE_ACCOUNT
+        );
         Map<String, Integer> tempStringToIndex = new HashMap<>();
         Map<Integer, String> tempIndexToString = new HashMap<>();
         for (int i = 0; i < codes.size(); i++) {

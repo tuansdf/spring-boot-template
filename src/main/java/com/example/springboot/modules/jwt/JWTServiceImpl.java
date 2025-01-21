@@ -8,7 +8,6 @@ import com.example.springboot.constants.Env;
 import com.example.springboot.constants.PermissionCode;
 import com.example.springboot.modules.jwt.dtos.JWTPayload;
 import com.example.springboot.utils.Base64Helper;
-import com.example.springboot.utils.UUIDHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +78,6 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createResetPasswordJwt(UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(UUIDHelper.generateId().toString());
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
@@ -90,15 +88,14 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public JWTPayload createActivateAccountJwt(UUID tokenId) {
+    public JWTPayload createActivateAccountJwt(UUID tokenId, boolean isReactivate) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(UUIDHelper.generateId().toString());
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtActivateAccountLifetime()));
-        jwtPayload.setType(CommonType.toIndex(CommonType.ACTIVATE_ACCOUNT));
+        jwtPayload.setType(CommonType.toIndex(isReactivate ? CommonType.REACTIVATE_ACCOUNT : CommonType.ACTIVATE_ACCOUNT));
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }
