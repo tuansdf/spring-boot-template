@@ -31,6 +31,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final CommonMapper commonMapper;
     private final PermissionRepository permissionRepository;
     private final EntityManager entityManager;
+    private final PermissionValidator permissionValidator;
 
     @Override
     public PermissionDTO save(PermissionDTO requestDTO) throws CustomException {
@@ -39,12 +40,12 @@ public class PermissionServiceImpl implements PermissionService {
         if (requestDTO.getId() != null) {
             Optional<Permission> permissionOptional = permissionRepository.findById(requestDTO.getId());
             if (permissionOptional.isPresent()) {
-                requestDTO.validateUpdate();
+                permissionValidator.validateUpdate(requestDTO);
                 result = permissionOptional.get();
             }
         }
         if (result == null) {
-            requestDTO.validateCreate();
+            permissionValidator.validateCreate(requestDTO);
             String code = ConversionUtils.toCode(requestDTO.getCode());
             if (permissionRepository.existsByCode(code)) {
                 throw new CustomException(HttpStatus.CONFLICT);

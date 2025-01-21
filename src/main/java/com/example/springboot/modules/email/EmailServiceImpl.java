@@ -10,7 +10,7 @@ import com.example.springboot.mappers.CommonMapper;
 import com.example.springboot.modules.email.dtos.EmailDTO;
 import com.example.springboot.modules.email.dtos.SendEmailStreamRequest;
 import com.example.springboot.utils.ConversionUtils;
-import com.example.springboot.utils.I18nUtils;
+import com.example.springboot.utils.I18nHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class EmailServiceImpl implements EmailService {
 
     private final Env env;
     private final CommonMapper commonMapper;
-    private final I18nUtils i18nUtils;
+    private final I18nHelper i18nHelper;
     private final EmailRepository emailRepository;
     private final StringRedisTemplate redisTemplate;
 
@@ -67,8 +67,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
-                .subject(i18nUtils.getMessage("email.reset_password_subject"))
-                .content(i18nUtils.getMessage("email.reset_password_content", new String[]{name, token}))
+                .subject(i18nHelper.getMessage("email.reset_password_subject"))
+                .content(i18nHelper.getMessage("email.reset_password_content", name, token))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
                 .type(CommonType.RESET_PASSWORD)
@@ -81,8 +81,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
-                .subject(i18nUtils.getMessage("email.activate_account_subject"))
-                .content(i18nUtils.getMessage("email.activate_account_content", new String[]{name, token}))
+                .subject(i18nHelper.getMessage("email.activate_account_subject"))
+                .content(i18nHelper.getMessage("email.activate_account_content", name, token))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
                 .type(CommonType.ACTIVATE_ACCOUNT)

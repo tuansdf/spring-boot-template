@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Base64;
 
 @Slf4j
-public class Base64Utils {
+public class Base64Helper {
 
     private static final Base64.Encoder encoder = Base64.getEncoder();
     private static final Base64.Decoder decoder = Base64.getDecoder();

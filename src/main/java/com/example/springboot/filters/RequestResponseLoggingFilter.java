@@ -2,7 +2,7 @@ package com.example.springboot.filters;
 
 import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.RequestConstants;
-import com.example.springboot.utils.UUIDUtils;
+import com.example.springboot.utils.UUIDHelper;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +23,7 @@ public class RequestResponseLoggingFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         try {
-            RequestContextHolder.get().setRequestId(UUIDUtils.generateId().toString());
+            RequestContextHolder.get().setRequestId(UUIDHelper.generateId().toString());
             RequestContextHolder.get().setLocale(httpServletRequest.getLocale());
             RequestContextHolder.get().setTenantId(httpServletRequest.getHeader(RequestConstants.Header.X_TENANT_ID));
             RequestContextHolder.syncMDC();

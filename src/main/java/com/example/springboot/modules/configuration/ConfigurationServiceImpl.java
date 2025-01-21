@@ -31,6 +31,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final ConfigurationRepository configurationRepository;
+    private final ConfigurationValidator configurationValidator;
 
     @Override
     public ConfigurationDTO save(ConfigurationDTO requestDTO) throws CustomException {
@@ -39,12 +40,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         if (requestDTO.getId() != null) {
             Optional<Configuration> configurationOptional = configurationRepository.findById(requestDTO.getId());
             if (configurationOptional.isPresent()) {
-                requestDTO.validateUpdate();
+                configurationValidator.validateUpdate(requestDTO);
                 result = configurationOptional.get();
             }
         }
         if (result == null) {
-            requestDTO.validateCreate();
+            configurationValidator.validateCreate(requestDTO);
             String code = ConversionUtils.toCode(requestDTO.getCode());
             if (configurationRepository.existsByCode(code)) {
                 throw new CustomException(HttpStatus.CONFLICT);

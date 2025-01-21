@@ -35,7 +35,7 @@ public class PublicController {
 
     private final CommonMapper commonMapper;
     private final UserRepository userRepository;
-    private final I18nUtils i18nUtils;
+    private final I18nHelper i18nHelper;
     private final JWTService jwtService;
     private final StringRedisTemplate redisTemplate;
     private final RoleService roleService;
@@ -51,14 +51,14 @@ public class PublicController {
 
         for (int i = 0; i < total; i++) {
             UserDTO user = new UserDTO();
-            user.setId(UUIDUtils.generateId());
-            user.setUsername(ConversionUtils.toString(UUIDUtils.generateId()));
-            user.setEmail(ConversionUtils.toString(UUIDUtils.generateId()));
-            user.setName(ConversionUtils.toString(UUIDUtils.generateId()));
-            user.setPassword(ConversionUtils.toString(UUIDUtils.generateId()));
+            user.setId(UUIDHelper.generateId());
+            user.setUsername(ConversionUtils.toString(UUIDHelper.generateId()));
+            user.setEmail(ConversionUtils.toString(UUIDHelper.generateId()));
+            user.setName(ConversionUtils.toString(UUIDHelper.generateId()));
+            user.setPassword(ConversionUtils.toString(UUIDHelper.generateId()));
             user.setStatus(CommonStatus.ACTIVE);
-            user.setCreatedBy(UUIDUtils.generateId());
-            user.setUpdatedBy(UUIDUtils.generateId());
+            user.setCreatedBy(UUIDHelper.generateId());
+            user.setUpdatedBy(UUIDHelper.generateId());
             user.setCreatedAt(now.plusSeconds(i));
             user.setUpdatedAt(now.plusMinutes(i));
             data.add(user);
@@ -70,7 +70,7 @@ public class PublicController {
     public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/excel-" + DateUtils.toEpochMicro(null) + ".xlsx";
-        ExcelUtils.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
+        ExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
 
@@ -82,10 +82,10 @@ public class PublicController {
         UserExportTemplate template = new UserExportTemplate();
         for (int i = 0; i < total; i += BATCH) {
             template.setBody(data.subList(i, Math.min(total, i + BATCH)));
-            ExcelUtils.Export.processTemplate(template, workbook);
+            ExcelHelper.Export.processTemplate(template, workbook);
         }
         String exportPath = ".temp/excel-" + DateUtils.toEpochMicro(null) + ".xlsx";
-        ExcelUtils.writeFile(workbook, exportPath);
+        ExcelHelper.writeFile(workbook, exportPath);
         return "OK";
     }
 
@@ -93,20 +93,20 @@ public class PublicController {
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.toEpochMicro(null) + ".csv";
-        CSVUtils.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
+        CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
 
     @GetMapping("/import-excel")
     public String importExcel(@RequestParam String inputPath) {
-        var items = ExcelUtils.Import.processTemplate(new UserImportTemplate(), inputPath);
+        var items = ExcelHelper.Import.processTemplate(new UserImportTemplate(), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
 
     @GetMapping("/import-csv")
     public String importCsv(@RequestParam String inputPath) {
-        var items = CSVUtils.Import.processTemplate(new UserImportTemplate(), inputPath);
+        var items = CSVHelper.Import.processTemplate(new UserImportTemplate(), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
@@ -134,7 +134,7 @@ public class PublicController {
 
     @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
     public String testI18n(HttpServletRequest servletRequest, @RequestParam(required = false, defaultValue = "John Doe") String name) {
-        return i18nUtils.getMessage("msg.hello", servletRequest.getLocale(), new String[]{name});
+        return i18nHelper.getMessage("msg.hello", servletRequest.getLocale(), name);
     }
 
     @GetMapping(value = "/rand", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -159,7 +159,7 @@ public class PublicController {
     @GetMapping(value = "/jwt", produces = MediaType.TEXT_PLAIN_VALUE)
     public String jwttest(@RequestParam(required = false, defaultValue = "100") Integer total) {
         for (int i = 0; i < total; i++) {
-            UUID uuid = UUIDUtils.generateId();
+            UUID uuid = UUIDHelper.generateId();
             JWTPayload jwtPayload = jwtService.createActivateAccountJwt(uuid);
             jwtService.verify(jwtPayload.getValue());
         }
@@ -170,7 +170,7 @@ public class PublicController {
     public String importExcelUsage(@RequestParam(name = "file", required = false) MultipartFile file) {
         try {
             log.info("{} {}", file.getInputStream().readAllBytes().length, file.getSize());
-            List<UserDTO> userDTOS = ExcelUtils.Import.processTemplate(new UserImportTemplate(), file);
+            List<UserDTO> userDTOS = ExcelHelper.Import.processTemplate(new UserImportTemplate(), file);
             file.getInputStream().close();
             log.info("{} {}", file.getInputStream().readAllBytes().length, file.getSize());
             Thread.sleep(3000);
@@ -197,11 +197,11 @@ public class PublicController {
                 OffsetDateTime.now().format(DateUtils.Formatter.ID);
                 LocalDateTime.now().format(DateUtils.Formatter.ID);
                 DateUtils.toEpochMicro(null);
-                UUIDUtils.generate();
-                UUIDUtils.generateId();
+                UUIDHelper.generate();
+                UUIDHelper.generateId();
                 UUID.randomUUID();
-                UUIDUtils.generate().toString();
-                UUIDUtils.generateId().toString();
+                UUIDHelper.generate().toString();
+                UUIDHelper.generateId().toString();
                 UUID.randomUUID().toString();
             }
         } catch (Exception e) {
@@ -213,7 +213,7 @@ public class PublicController {
     @GetMapping(value = "/redis", produces = MediaType.TEXT_PLAIN_VALUE)
     public String redis() {
         try {
-            redisTemplate.opsForValue().set("allo", UUIDUtils.generateId().toString());
+            redisTemplate.opsForValue().set("allo", UUIDHelper.generateId().toString());
 
             log.info("redis: {}", redisTemplate.opsForValue().get("allo"));
         } catch (Exception e) {

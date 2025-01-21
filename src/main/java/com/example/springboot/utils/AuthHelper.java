@@ -8,7 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.List;
 
 @Slf4j
-public class AuthUtils {
+public class AuthHelper {
 
     public static boolean hasAnyPermission(List<String> permissions) {
         RequestContext context = RequestContextHolder.get();

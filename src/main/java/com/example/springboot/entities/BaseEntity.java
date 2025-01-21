@@ -1,6 +1,6 @@
 package com.example.springboot.entities;
 
-import com.example.springboot.utils.UUIDUtils;
+import com.example.springboot.utils.UUIDHelper;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,7 +34,7 @@ public class BaseEntity implements Serializable {
         createdAt = now;
         updatedAt = now;
         if (id == null) {
-            id = UUIDUtils.generateId();
+            id = UUIDHelper.generateId();
         }
     }
 

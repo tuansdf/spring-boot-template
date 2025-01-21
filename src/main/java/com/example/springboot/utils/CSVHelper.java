@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class CSVUtils {
+public class CSVHelper {
 
     public static class Export {
         public static <T> void processTemplate(ExportTemplate<T> template, Writer writer) {

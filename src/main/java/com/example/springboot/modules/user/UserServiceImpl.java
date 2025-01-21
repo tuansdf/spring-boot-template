@@ -12,7 +12,7 @@ import com.example.springboot.modules.token.TokenService;
 import com.example.springboot.modules.user.dtos.ChangePasswordRequestDTO;
 import com.example.springboot.modules.user.dtos.SearchUserRequestDTO;
 import com.example.springboot.modules.user.dtos.UserDTO;
-import com.example.springboot.utils.AuthUtils;
+import com.example.springboot.utils.AuthHelper;
 import com.example.springboot.utils.ConversionUtils;
 import com.example.springboot.utils.SQLBuilder;
 import jakarta.persistence.EntityManager;
@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
         user.setUsername(requestDTO.getUsername());
         user.setEmail(requestDTO.getEmail());
         user.setName(requestDTO.getName());
-        if (AuthUtils.hasAnyPermission(List.of(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER))) {
+        if (AuthHelper.hasAnyPermission(List.of(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER))) {
             user.setStatus(requestDTO.getStatus());
         }
         user.setUpdatedBy(actionBy);

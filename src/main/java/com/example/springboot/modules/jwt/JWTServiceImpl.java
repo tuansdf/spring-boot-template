@@ -7,8 +7,8 @@ import com.example.springboot.constants.CommonType;
 import com.example.springboot.constants.Env;
 import com.example.springboot.constants.PermissionCode;
 import com.example.springboot.modules.jwt.dtos.JWTPayload;
-import com.example.springboot.utils.Base64Utils;
-import com.example.springboot.utils.UUIDUtils;
+import com.example.springboot.utils.Base64Helper;
+import com.example.springboot.utils.UUIDHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +79,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createResetPasswordJwt(UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(UUIDUtils.generateId().toString());
+        jwtPayload.setSubject(UUIDHelper.generateId().toString());
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
@@ -93,7 +93,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createActivateAccountJwt(UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(UUIDUtils.generateId().toString());
+        jwtPayload.setSubject(UUIDHelper.generateId().toString());
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
@@ -107,7 +107,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload verify(String token) {
         try {
             String jwtPayloadBase64 = jwtVerifier.verify(token).getPayload();
-            String jwtPayloadJson = Base64Utils.urlDecode(jwtPayloadBase64);
+            String jwtPayloadJson = Base64Helper.urlDecode(jwtPayloadBase64);
             return objectMapper.readValue(jwtPayloadJson, JWTPayload.class);
         } catch (Exception e) {
             log.error("verify", e);

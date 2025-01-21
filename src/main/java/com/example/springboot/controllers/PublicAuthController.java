@@ -4,7 +4,7 @@ import com.example.springboot.dtos.CommonResponse;
 import com.example.springboot.modules.authentication.AuthService;
 import com.example.springboot.modules.authentication.dtos.*;
 import com.example.springboot.utils.ExceptionUtils;
-import com.example.springboot.utils.I18nUtils;
+import com.example.springboot.utils.I18nHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicAuthController {
 
     private final AuthService authService;
-    private final I18nUtils i18nUtils;
+    private final I18nHelper i18nHelper;
 
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<AuthDTO>> login(@RequestBody LoginRequestDTO requestDTO) {
@@ -37,7 +37,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequestDTO requestDTO) {
         try {
             authService.register(requestDTO);
-            var message = i18nUtils.getMessage("auth.activate_account_email_sent");
+            var message = i18nHelper.getMessage("auth.activate_account_email_sent");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -48,7 +48,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> forgotPassword(@RequestBody ForgotPasswordRequestDTO requestDTO) {
         try {
             authService.forgotPassword(requestDTO);
-            var message = i18nUtils.getMessage("auth.reset_password_email_sent");
+            var message = i18nHelper.getMessage("auth.reset_password_email_sent");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -59,7 +59,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequestDTO requestDTO) {
         try {
             authService.resetPassword(requestDTO);
-            var message = i18nUtils.getMessage("auth.reset_password_success");
+            var message = i18nHelper.getMessage("auth.reset_password_success");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -81,7 +81,7 @@ public class PublicAuthController {
             HttpServletRequest servletRequest, @RequestBody AuthDTO requestDTO) {
         try {
             authService.activateAccount(requestDTO.getToken());
-            var message = i18nUtils.getMessage("auth.activate_account_success", servletRequest.getLocale());
+            var message = i18nHelper.getMessage("auth.activate_account_success", servletRequest.getLocale());
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

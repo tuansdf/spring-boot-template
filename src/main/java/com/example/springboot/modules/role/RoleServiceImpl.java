@@ -33,6 +33,7 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final EntityManager entityManager;
+    private final RoleValidator roleValidator;
 
     @Override
     public RoleDTO save(RoleDTO requestDTO) throws CustomException {
@@ -41,12 +42,12 @@ public class RoleServiceImpl implements RoleService {
         if (requestDTO.getId() != null) {
             Optional<Role> roleOptional = roleRepository.findById(requestDTO.getId());
             if (roleOptional.isPresent()) {
-                requestDTO.validateUpdate();
+                roleValidator.validateUpdate(requestDTO);
                 result = roleOptional.get();
             }
         }
         if (result == null) {
-            requestDTO.validateCreate();
+            roleValidator.validateCreate(requestDTO);
             String code = ConversionUtils.toCode(requestDTO.getCode());
             if (roleRepository.existsByCode(code)) {
                 throw new CustomException(HttpStatus.CONFLICT);

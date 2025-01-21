@@ -43,10 +43,11 @@ public class AuthServiceImpl implements AuthService {
     private final EmailService emailService;
     private final ConfigurationService configurationService;
     private final UserRepository userRepository;
+    private final AuthValidator authValidator;
 
     @Override
     public AuthDTO login(LoginRequestDTO requestDTO) throws CustomException {
-        requestDTO.validate();
+        authValidator.validateLogin(requestDTO);
 
         UserDTO userDTO = userService.findOneByUsername(requestDTO.getUsername());
         if (userDTO == null) {
@@ -77,7 +78,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void register(RegisterRequestDTO requestDTO) throws CustomException {
-        requestDTO.validate();
+        authValidator.validateRegister(requestDTO);
 
         Boolean isRegistrationEnabled = ConversionUtils.toBool(configurationService.findValueByCode(ConfigurationCode.IS_REGISTRATION_ENABLED));
         if (isRegistrationEnabled != null && !isRegistrationEnabled) {
@@ -104,7 +105,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void forgotPassword(ForgotPasswordRequestDTO requestDTO) throws CustomException {
-        requestDTO.validate();
+        authValidator.validateForgotPassword(requestDTO);
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
         if (userDTO == null || CommonStatus.ACTIVE.equals(userDTO.getStatus())) return;
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
@@ -113,7 +114,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordRequestDTO requestDTO) throws CustomException {
-        requestDTO.validate();
+        authValidator.validateResetPassword(requestDTO);
         JWTPayload jwtPayload = jwtService.verify(requestDTO.getToken());
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);

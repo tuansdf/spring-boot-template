@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @Slf4j
-public class ExcelUtils {
+public class ExcelHelper {
 
     private static final String DEFAULT_SHEET = "Sheet1";
     private static final int DEFAULT_HEADER_ROW = 0;

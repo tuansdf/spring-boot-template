@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 public class SendEmailStreamRequest implements Serializable {
 
-    RequestContext requestContext;
-    UUID emailId;
+    private RequestContext requestContext;
+    private UUID emailId;
 
 }

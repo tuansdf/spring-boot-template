@@ -29,10 +29,13 @@ public class SendEmailStreamListener implements StreamListener<String, ObjectRec
         } catch (Exception e) {
             log.error("XERROR", e);
         } finally {
-            redisTemplate.opsForStream().acknowledge(RedisKey.SEND_EMAIL_STREAM, message);
-            redisTemplate.opsForStream().delete(RedisKey.SEND_EMAIL_STREAM, message.getId());
+            try {
+                redisTemplate.opsForStream().acknowledge(RedisKey.SEND_EMAIL_STREAM, message);
+                redisTemplate.opsForStream().delete(RedisKey.SEND_EMAIL_STREAM, message.getId());
 
-            log.info("XEND");
+                log.info("XEND");
+            } catch (Exception ignore) {
+            }
             RequestContextHolder.clear();
         }
     }

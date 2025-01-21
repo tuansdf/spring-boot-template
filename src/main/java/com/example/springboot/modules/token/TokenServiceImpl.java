@@ -8,7 +8,7 @@ import com.example.springboot.modules.jwt.JWTService;
 import com.example.springboot.modules.jwt.dtos.JWTPayload;
 import com.example.springboot.modules.token.dtos.TokenDTO;
 import com.example.springboot.utils.DateUtils;
-import com.example.springboot.utils.UUIDUtils;
+import com.example.springboot.utils.UUIDHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO createRefreshToken(UUID userId) {
-        UUID id = UUIDUtils.generateId();
+        UUID id = UUIDHelper.generateId();
         JWTPayload jwtPayload = jwtService.createRefreshJwt(userId, id);
 
         Token token = new Token();
@@ -76,7 +76,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO createResetPasswordToken(UUID userId) {
-        UUID id = UUIDUtils.generateId();
+        UUID id = UUIDHelper.generateId();
         JWTPayload jwtPayload = jwtService.createResetPasswordJwt(id);
 
         Token token = new Token();
@@ -93,7 +93,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO createActivateAccountToken(UUID userId) {
-        UUID id = UUIDUtils.generateId();
+        UUID id = UUIDHelper.generateId();
         JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id);
 
         Token token = new Token();
