@@ -1,8 +1,11 @@
 package com.example.springboot.controllers;
 
 import com.example.springboot.constants.CommonStatus;
+import com.example.springboot.dtos.CommonResponse;
 import com.example.springboot.entities.User;
 import com.example.springboot.mappers.CommonMapper;
+import com.example.springboot.modules.configuration.ConfigurationService;
+import com.example.springboot.modules.configuration.dtos.ConfigurationDTO;
 import com.example.springboot.modules.jwt.JWTService;
 import com.example.springboot.modules.jwt.dtos.JWTPayload;
 import com.example.springboot.modules.report.UserExportTemplate;
@@ -18,6 +21,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +43,7 @@ public class PublicController {
     private final JWTService jwtService;
     private final StringRedisTemplate redisTemplate;
     private final RoleService roleService;
+    private final ConfigurationService configurationService;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
@@ -220,6 +225,16 @@ public class PublicController {
             log.error("", e);
         }
         return "OK";
+    }
+
+    @GetMapping("/code/{code}")
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(@PathVariable String code) {
+        try {
+            var result = configurationService.findOneByCodeOrThrow(code);
+            return ResponseEntity.ok(new CommonResponse<>(result));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
     }
 
 }

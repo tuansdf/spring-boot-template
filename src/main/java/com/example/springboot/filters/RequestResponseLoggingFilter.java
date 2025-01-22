@@ -31,7 +31,7 @@ public class RequestResponseLoggingFilter implements Filter {
             log.info("ENTER method={} path={} query={}", httpServletRequest.getMethod(), httpServletRequest.getServletPath(), httpServletRequest.getQueryString());
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
-            log.info("EXIT status={}", httpServletResponse.getStatus());
+            log.info("EXIT  status={}", httpServletResponse.getStatus());
             RequestContextHolder.clear();
         }
     }
