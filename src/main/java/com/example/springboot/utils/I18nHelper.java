@@ -34,7 +34,7 @@ public class I18nHelper {
         if (ArrayUtils.isNotEmpty(args)) {
             for (int i = 0; i < args.length; i++) {
                 if (args[i] != null && args[i] instanceof String v) {
-                    args[i] = getMessage(v);
+                    args[i] = getMessage(v, locale);
                 }
             }
         }

@@ -5,7 +5,6 @@ import com.example.springboot.modules.authentication.AuthService;
 import com.example.springboot.modules.authentication.dtos.*;
 import com.example.springboot.utils.ExceptionUtils;
 import com.example.springboot.utils.I18nHelper;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -77,11 +76,10 @@ public class PublicAuthController {
     }
 
     @PostMapping("/account/activate")
-    public ResponseEntity<CommonResponse<Object>> activateAccount(
-            HttpServletRequest servletRequest, @RequestBody AuthDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> activateAccount(@RequestBody AuthDTO requestDTO) {
         try {
             authService.activateAccount(requestDTO.getToken());
-            var message = i18nHelper.getMessage("auth.activate_account_success", servletRequest.getLocale());
+            var message = i18nHelper.getMessage("auth.activate_account_success");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
