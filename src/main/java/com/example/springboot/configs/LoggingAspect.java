@@ -1,5 +1,7 @@
 package com.example.springboot.configs;
 
+import com.example.springboot.utils.ConversionUtils;
+import com.example.springboot.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -16,16 +18,18 @@ public class LoggingAspect {
         String methodName = joinPoint.getSignature().toShortString();
         Object[] methodArgs = joinPoint.getArgs();
 
-        log.info("ENTER method: {} with arguments: {}", methodName, methodArgs);
+        String key = ConversionUtils.toString(DateUtils.toEpochMicro(null));
+
+        log.info("{} ENTER method: {} with arguments: {}", key, methodName, methodArgs);
 
         Object result = null;
         try {
             result = joinPoint.proceed();
         } catch (Throwable e) {
-            log.error("Exception in method: {} with message: {}", methodName, e.getMessage());
+            log.error("{} Exception in method: {} with message: {}", key, methodName, e.getMessage());
             throw e;
         } finally {
-            log.info("EXIT  method: {} with result: {}", methodName, result);
+            log.info("{} EXIT  method: {} with result: {}", key, methodName, result);
         }
 
         return result;

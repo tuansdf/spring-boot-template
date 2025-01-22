@@ -25,7 +25,6 @@ public class ExceptionUtils {
     }
 
     public static <T> ResponseEntity<CommonResponse<T>> toResponseEntity(Exception e) {
-        log.error("", e);
         CommonResponse<T> response = toResponse(e);
         return new ResponseEntity<>(response, response.getHttpStatus());
     }

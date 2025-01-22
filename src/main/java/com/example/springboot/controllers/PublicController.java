@@ -202,6 +202,7 @@ public class PublicController {
                 OffsetDateTime.now().format(DateUtils.Formatter.ID);
                 LocalDateTime.now().format(DateUtils.Formatter.ID);
                 DateUtils.toEpochMicro(null);
+                ConversionUtils.toString(DateUtils.toEpochMicro(null));
                 UUIDHelper.generate();
                 UUIDHelper.generateId();
                 UUID.randomUUID();
