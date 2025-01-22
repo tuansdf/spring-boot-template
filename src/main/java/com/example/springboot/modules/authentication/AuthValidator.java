@@ -22,14 +22,14 @@ public class AuthValidator {
         ValidationUtils.notEmpty(requestDTO.getEmail(), i18nHelper.getMessageX("form.error.missing", "field.email"));
         ValidationUtils.maxLength(requestDTO.getEmail(), 255, i18nHelper.getMessageX("form.error.over_max_length", 255));
         ValidationUtils.notEmpty(requestDTO.getPassword(), i18nHelper.getMessageX("form.error.missing", "field.password"));
-        ValidationUtils.betweenLength(requestDTO.getPassword(), 12, 255, i18nHelper.getMessageX("form.error.between_length", "field.password", 12, 255));
+        ValidationUtils.betweenLength(requestDTO.getPassword(), 12, 255, i18nHelper.getMessageX("form.error.not_between_length", "field.password", 12, 255));
     }
 
     public void validateLogin(LoginRequestDTO requestDTO) throws CustomException {
         ValidationUtils.notEmpty(requestDTO.getUsername(), i18nHelper.getMessageX("form.error.missing", "field.username"));
         ValidationUtils.maxLength(requestDTO.getUsername(), 255, i18nHelper.getMessageX("form.error.over_max_length", "field.username"));
         ValidationUtils.notEmpty(requestDTO.getPassword(), i18nHelper.getMessageX("form.error.missing", "field.password"));
-        ValidationUtils.betweenLength(requestDTO.getPassword(), 12, 255, i18nHelper.getMessageX("form.error.between_length", "field.password", 12, 255));
+        ValidationUtils.betweenLength(requestDTO.getPassword(), 12, 255, i18nHelper.getMessageX("form.error.not_between_length", "field.password", 12, 255));
     }
 
     public void validateForgotPassword(ForgotPasswordRequestDTO requestDTO) throws CustomException {
@@ -41,7 +41,7 @@ public class AuthValidator {
     public void validateResetPassword(ResetPasswordRequestDTO requestDTO) throws CustomException {
         ValidationUtils.notEmpty(requestDTO.getToken(), i18nHelper.getMessageX("form.error.missing", "field.token"));
         ValidationUtils.notEmpty(requestDTO.getNewPassword(), i18nHelper.getMessageX("form.error.missing", "field.password"));
-        ValidationUtils.betweenLength(requestDTO.getNewPassword(), 12, 255, i18nHelper.getMessageX("form.error.between_length", "field.password"));
+        ValidationUtils.betweenLength(requestDTO.getNewPassword(), 12, 255, i18nHelper.getMessageX("form.error.not_between_length", "field.password"));
     }
 
 }
