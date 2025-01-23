@@ -8,6 +8,17 @@ import java.util.Date;
 
 public class DateUtils {
 
+    public static long toEpochMilli(Instant instant) {
+        if (instant == null) {
+            instant = Instant.now();
+        }
+        return instant.toEpochMilli();
+    }
+
+    public static long toEpochMilli() {
+        return toEpochMilli(null);
+    }
+
     public static long toEpochMicro(Instant instant) {
         if (instant == null) {
             instant = Instant.now();

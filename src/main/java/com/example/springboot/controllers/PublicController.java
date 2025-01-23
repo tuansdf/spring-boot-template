@@ -209,9 +209,10 @@ public class PublicController {
                 RandomUtils.generateUUID().toString();
                 RandomUtils.generateTimeBasedUUID().toString();
                 UUID.randomUUID().toString();
-                RandomUtils.generateInsecuredString(16);
-                RandomUtils.generateString(16);
-                RandomUtils.generateOTP(16);
+                RandomUtils.Insecure.generateString(16);
+                RandomUtils.Secure.generateString(16);
+                RandomUtils.Insecure.generateOTP(16);
+                RandomUtils.Secure.generateOTP(16);
             }
         } catch (Exception e) {
             log.error("", e);
@@ -244,9 +245,10 @@ public class PublicController {
     @GetMapping("/rand")
     public Object testRand() {
         Map<String, Object> result = new HashMap<>();
-        result.put("INRAN", RandomUtils.generateInsecuredString(16));
-        result.put("RAN", RandomUtils.generateString(16));
-        result.put("OTP", RandomUtils.generateOTP(6));
+        result.put("INRAN", RandomUtils.Insecure.generateString(16));
+        result.put("RAN", RandomUtils.Secure.generateString(16));
+        result.put("INOTP", RandomUtils.Insecure.generateOTP(6));
+        result.put("OTP", RandomUtils.Secure.generateOTP(6));
         result.put("UUID", RandomUtils.generateUUID());
         result.put("TUUID", RandomUtils.generateTimeBasedUUID());
         return result;

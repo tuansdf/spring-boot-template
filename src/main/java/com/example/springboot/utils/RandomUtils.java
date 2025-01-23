@@ -15,7 +15,7 @@ public class RandomUtils {
 
     private static final TimeBasedEpochRandomGenerator timeBasedEpochRandomGenerator = Generators.timeBasedEpochRandomGenerator();
     private static final RandomBasedGenerator randomBasedGenerator = Generators.randomBasedGenerator();
-    private static final Random random = new Random();
+    private static final Random insecureRandom = new Random();
     private static final SecureRandom secureRandom = new SecureRandom();
 
     public static UUID generateUUID() {
@@ -26,7 +26,10 @@ public class RandomUtils {
         return timeBasedEpochRandomGenerator.generate();
     }
 
-    private static String executeGenerateString(Random random, int length) {
+    private static String generateString(Random random, int length) {
+        if (random == null) {
+            random = secureRandom;
+        }
         int byteLength = ConversionUtils.safeToInt(Math.ceil(length * 0.75)); // increase size because of base64
         byte[] randomBytes = new byte[byteLength];
         random.nextBytes(randomBytes);
@@ -37,17 +40,32 @@ public class RandomUtils {
         return result;
     }
 
-    public static String generateString(int length) {
-        return executeGenerateString(secureRandom, length);
-    }
-
-    public static String generateInsecuredString(int length) {
-        return executeGenerateString(random, length);
-    }
-
-    public static String generateOTP(int length) {
-        int rand = secureRandom.nextInt(ConversionUtils.safeToInt(Math.pow(10, length)));
+    private static String generateOTP(Random random, int length) {
+        if (random == null) {
+            random = secureRandom;
+        }
+        int rand = random.nextInt(ConversionUtils.safeToInt(Math.pow(10, length)));
         return StringUtils.leftPad(ConversionUtils.toString(rand), length, "0");
+    }
+
+    public static class Secure {
+        public static String generateOTP(int length) {
+            return RandomUtils.generateOTP(secureRandom, length);
+        }
+
+        public static String generateString(int length) {
+            return RandomUtils.generateString(secureRandom, length);
+        }
+    }
+
+    public static class Insecure {
+        public static String generateOTP(int length) {
+            return RandomUtils.generateOTP(insecureRandom, length);
+        }
+
+        public static String generateString(int length) {
+            return RandomUtils.generateString(insecureRandom, length);
+        }
     }
 
 }

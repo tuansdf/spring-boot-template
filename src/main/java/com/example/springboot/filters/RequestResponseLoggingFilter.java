@@ -23,7 +23,7 @@ public class RequestResponseLoggingFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         try {
-            RequestContextHolder.get().setRequestId(RandomUtils.generateInsecuredString(16));
+            RequestContextHolder.get().setRequestId(RandomUtils.Insecure.generateString(16));
             RequestContextHolder.get().setLocale(httpServletRequest.getLocale());
             RequestContextHolder.get().setTenantId(httpServletRequest.getHeader(HTTPHeader.X_TENANT_ID));
             RequestContextHolder.syncMDC();
