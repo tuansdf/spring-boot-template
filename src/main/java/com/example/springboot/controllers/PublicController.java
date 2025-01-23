@@ -74,7 +74,7 @@ public class PublicController {
     @GetMapping("/export-excel")
     public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
-        String exportPath = ".temp/excel-" + DateUtils.toEpochMicro(null) + ".xlsx";
+        String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
         ExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
@@ -89,7 +89,7 @@ public class PublicController {
             template.setBody(data.subList(i, Math.min(total, i + BATCH)));
             ExcelHelper.Export.processTemplate(template, workbook);
         }
-        String exportPath = ".temp/excel-" + DateUtils.toEpochMicro(null) + ".xlsx";
+        String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
         ExcelHelper.writeFile(workbook, exportPath);
         return "OK";
     }
@@ -97,7 +97,7 @@ public class PublicController {
     @GetMapping("/export-csv")
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
-        String exportPath = ".temp/csv-" + DateUtils.toEpochMicro(null) + ".csv";
+        String exportPath = ".temp/csv-" + DateUtils.toEpochMicro() + ".csv";
         CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
@@ -147,7 +147,7 @@ public class PublicController {
         long nano = DateUtils.toEpochNano(null);
         log.info("nano {}", nano);
         log.info("nano instant {}", DateUtils.toInstant(nano));
-        long micro = DateUtils.toEpochMicro(null);
+        long micro = DateUtils.toEpochMicro();
         log.info("micro {}", micro);
         log.info("micro instant {}", DateUtils.toInstant(micro));
         long milli = Instant.now().toEpochMilli();
@@ -201,8 +201,8 @@ public class PublicController {
                 ZonedDateTime.now().format(DateUtils.Formatter.ID);
                 OffsetDateTime.now().format(DateUtils.Formatter.ID);
                 LocalDateTime.now().format(DateUtils.Formatter.ID);
-                DateUtils.toEpochMicro(null);
-                ConversionUtils.toString(DateUtils.toEpochMicro(null));
+                DateUtils.toEpochMicro();
+                ConversionUtils.toString(DateUtils.toEpochMicro());
                 UUIDHelper.generate();
                 UUIDHelper.generateId();
                 UUID.randomUUID();

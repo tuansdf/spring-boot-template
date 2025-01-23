@@ -18,7 +18,7 @@ public class LoggingAspect {
         String methodName = joinPoint.getSignature().toShortString();
         Object[] methodArgs = joinPoint.getArgs();
 
-        long start = DateUtils.toEpochMicro(null);
+        long start = DateUtils.toEpochMicro();
         String key = ConversionUtils.toString(start);
 
         log.info("{} ENTER method: {} with arguments: {}", key, methodName, methodArgs);
@@ -30,7 +30,7 @@ public class LoggingAspect {
             log.error("{} Exception in method: {} with message: {}", key, methodName, e.getMessage());
             throw e;
         } finally {
-            long exTime = DateUtils.toEpochMicro(null) - start;
+            long exTime = DateUtils.toEpochMicro() - start;
             log.info("{} EXIT  method: {} after {} µs with result: {}", key, methodName, exTime, result);
         }
 

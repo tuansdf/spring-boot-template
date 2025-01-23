@@ -15,11 +15,19 @@ public class DateUtils {
         return instant.getEpochSecond() * 1_000_000L + (instant.getNano() / 1000);
     }
 
+    public static long toEpochMicro() {
+        return toEpochMicro(null);
+    }
+
     public static long toEpochNano(Instant instant) {
         if (instant == null) {
             instant = Instant.now();
         }
         return instant.getEpochSecond() * 1_000_000_000L + instant.getNano();
+    }
+
+    public static long toEpochNano() {
+        return toEpochNano(null);
     }
 
     public static OffsetDateTime toOffsetDateTime(Object input, ZoneOffset offset) {
