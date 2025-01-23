@@ -56,14 +56,14 @@ public class PublicController {
 
         for (int i = 0; i < total; i++) {
             UserDTO user = new UserDTO();
-            user.setId(UUIDHelper.generateId());
-            user.setUsername(ConversionUtils.toString(UUIDHelper.generateId()));
-            user.setEmail(ConversionUtils.toString(UUIDHelper.generateId()));
-            user.setName(ConversionUtils.toString(UUIDHelper.generateId()));
-            user.setPassword(ConversionUtils.toString(UUIDHelper.generateId()));
+            user.setId(RandomUtils.generateTimeBasedUUID());
+            user.setUsername(ConversionUtils.toString(RandomUtils.generateTimeBasedUUID()));
+            user.setEmail(ConversionUtils.toString(RandomUtils.generateTimeBasedUUID()));
+            user.setName(ConversionUtils.toString(RandomUtils.generateTimeBasedUUID()));
+            user.setPassword(ConversionUtils.toString(RandomUtils.generateTimeBasedUUID()));
             user.setStatus(CommonStatus.ACTIVE);
-            user.setCreatedBy(UUIDHelper.generateId());
-            user.setUpdatedBy(UUIDHelper.generateId());
+            user.setCreatedBy(RandomUtils.generateTimeBasedUUID());
+            user.setUpdatedBy(RandomUtils.generateTimeBasedUUID());
             user.setCreatedAt(now.plusSeconds(i));
             user.setUpdatedAt(now.plusMinutes(i));
             data.add(user);
@@ -164,7 +164,7 @@ public class PublicController {
     @GetMapping(value = "/jwt", produces = MediaType.TEXT_PLAIN_VALUE)
     public String jwttest(@RequestParam(required = false, defaultValue = "100") Integer total) {
         for (int i = 0; i < total; i++) {
-            UUID uuid = UUIDHelper.generateId();
+            UUID uuid = RandomUtils.generateTimeBasedUUID();
             JWTPayload jwtPayload = jwtService.createActivateAccountJwt(uuid, false);
             jwtService.verify(jwtPayload.getValue());
         }
@@ -203,12 +203,15 @@ public class PublicController {
                 LocalDateTime.now().format(DateUtils.Formatter.ID);
                 DateUtils.toEpochMicro();
                 ConversionUtils.toString(DateUtils.toEpochMicro());
-                UUIDHelper.generate();
-                UUIDHelper.generateId();
+                RandomUtils.generateUUID();
+                RandomUtils.generateTimeBasedUUID();
                 UUID.randomUUID();
-                UUIDHelper.generate().toString();
-                UUIDHelper.generateId().toString();
+                RandomUtils.generateUUID().toString();
+                RandomUtils.generateTimeBasedUUID().toString();
                 UUID.randomUUID().toString();
+                RandomUtils.generateInsecuredString(16);
+                RandomUtils.generateString(16);
+                RandomUtils.generateOTP(16);
             }
         } catch (Exception e) {
             log.error("", e);
@@ -219,7 +222,7 @@ public class PublicController {
     @GetMapping(value = "/redis", produces = MediaType.TEXT_PLAIN_VALUE)
     public String redis() {
         try {
-            redisTemplate.opsForValue().set("allo", UUIDHelper.generateId().toString());
+            redisTemplate.opsForValue().set("allo", RandomUtils.generateTimeBasedUUID().toString());
 
             log.info("redis: {}", redisTemplate.opsForValue().get("allo"));
         } catch (Exception e) {
@@ -236,6 +239,17 @@ public class PublicController {
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
+    }
+
+    @GetMapping("/rand")
+    public Object testRand() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("INRAN", RandomUtils.generateInsecuredString(16));
+        result.put("RAN", RandomUtils.generateString(16));
+        result.put("OTP", RandomUtils.generateOTP(6));
+        result.put("UUID", RandomUtils.generateUUID());
+        result.put("TUUID", RandomUtils.generateTimeBasedUUID());
+        return result;
     }
 
 }
