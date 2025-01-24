@@ -2,12 +2,12 @@ package com.example.springboot.utils;
 
 import com.example.springboot.modules.report.ExportTemplate;
 import com.example.springboot.modules.report.ImportTemplate;
+import com.github.pjfanning.xlsx.StreamingReader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -202,6 +202,9 @@ public class ExcelHelper {
     }
 
     public static class Import {
+        public static final int BUFFER_SIZE = 4096;
+        public static final int ROW_CACHE_SIZE = 100;
+
         public static <T> List<T> processTemplate(ImportTemplate<T> template, Workbook workbook) {
             List<T> result = new ArrayList<>();
 
@@ -216,15 +219,18 @@ public class ExcelHelper {
 
                 if (sheet.getLastRowNum() == 0) return result;
 
-                Row headerRow = sheet.getRow(0);
-                if (headerRow.getLastCellNum() != header.size()) return result;
-                for (int i = 0; i < headerRow.getLastCellNum(); i++) {
-                    if (!header.get(i).equals(headerRow.getCell(i).getStringCellValue())) return result;
-                }
+                int rowIdx = 0;
+                for (Row row : sheet) {
+                    if (rowIdx == 0) {
+                        if (row.getLastCellNum() != header.size()) return result;
+                        for (int colIdx = 0; colIdx < row.getLastCellNum(); colIdx++) {
+                            if (!header.get(colIdx).equals(row.getCell(colIdx).getStringCellValue())) return result;
+                        }
+                    } else {
+                        result.add(rowExtractor.apply(getRowCellValues(row)));
+                    }
 
-                for (int i = 1; i < sheet.getLastRowNum(); i++) {
-                    Row row = sheet.getRow(i);
-                    result.add(rowExtractor.apply(getRowCellValues(row)));
+                    rowIdx++;
                 }
             } catch (Exception e) {
                 log.error("processTemplate", e);
@@ -235,7 +241,7 @@ public class ExcelHelper {
 
         public static <T> List<T> processTemplate(ImportTemplate<T> template, String filePath) {
             try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile());
-                 Workbook workbook = new XSSFWorkbook(inputStream)) {
+                 Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
                 return processTemplate(template, workbook);
             } catch (Exception e) {
                 log.error("processTemplate", e);
@@ -245,7 +251,7 @@ public class ExcelHelper {
 
         public static <T> List<T> processTemplate(ImportTemplate<T> template, byte[] bytes) {
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-                 Workbook workbook = new XSSFWorkbook(inputStream)) {
+                 Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
                 return processTemplate(template, workbook);
             } catch (Exception e) {
                 log.error("processTemplate", e);
@@ -254,7 +260,7 @@ public class ExcelHelper {
         }
 
         public static <T> List<T> processTemplate(ImportTemplate<T> template, MultipartFile file) {
-            try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+            try (Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(file.getInputStream())) {
                 return processTemplate(template, workbook);
             } catch (Exception e) {
                 log.error("processTemplate", e);
