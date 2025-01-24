@@ -66,10 +66,10 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
         User user = userOptional.get();
-        if (!ConversionUtils.toString(user.getUsername()).equals(requestDTO.getUsername()) && existsByUsername(requestDTO.getUsername())) {
+        if (!ConversionUtils.safeToString(user.getUsername()).equals(requestDTO.getUsername()) && existsByUsername(requestDTO.getUsername())) {
             throw new CustomException(HttpStatus.CONFLICT);
         }
-        if (!ConversionUtils.toString(user.getEmail()).equals(requestDTO.getEmail()) && existsByEmail(requestDTO.getEmail())) {
+        if (!ConversionUtils.safeToString(user.getEmail()).equals(requestDTO.getEmail()) && existsByEmail(requestDTO.getEmail())) {
             throw new CustomException(HttpStatus.CONFLICT);
         }
         user.setUsername(requestDTO.getUsername());

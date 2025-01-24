@@ -58,7 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (!CommonStatus.PENDING.equals(notification.getStatus())) return;
         notification.setStatus(CommonStatus.DONE);
         notificationRepository.save(notification);
-        log.info("Notification ".concat(ConversionUtils.toString(notification.getId())).concat(" sent"));
+        log.info("Notification ".concat(ConversionUtils.safeToString(notification.getId())).concat(" sent"));
     }
 
     private void streamSend(UUID notificationId) {

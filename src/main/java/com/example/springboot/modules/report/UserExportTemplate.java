@@ -21,13 +21,13 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
 
     private static final List<String> HEADER = List.of("ID", "Username", "Email", "Name", "Status", "Created By", "Updated By", "Created At", "Updated At");
     private static final Function<UserDTO, List<Object>> ROW_DATA_EXTRACTOR_FORMATTED = user -> Arrays.asList(
-            ConversionUtils.toString(user.getId()),
+            ConversionUtils.safeToString(user.getId()),
             user.getUsername(),
             user.getEmail(),
             user.getName(),
             user.getStatus(),
-            ConversionUtils.toString(user.getCreatedBy()),
-            ConversionUtils.toString(user.getUpdatedBy()),
+            ConversionUtils.safeToString(user.getCreatedBy()),
+            ConversionUtils.safeToString(user.getUpdatedBy()),
             DateUtils.format(user.getCreatedAt(), DateUtils.Formatter.DATE_TIME_BE),
             DateUtils.format(user.getUpdatedAt(), DateUtils.Formatter.DATE_TIME_BE));
     private static final Function<UserDTO, List<Object>> ROW_DATA_EXTRACTOR = user -> Arrays.asList(

@@ -30,8 +30,8 @@ public class RequestContextHolder {
 
     public static void syncMDC() {
         RequestContext context = get();
-        MDC.put(MDCKey.USER_ID, ConversionUtils.toString(context.getUserId()));
-        MDC.put(MDCKey.REQUEST_ID, ConversionUtils.toString(context.getRequestId()));
+        MDC.put(MDCKey.USER_ID, ConversionUtils.safeToString(context.getUserId()));
+        MDC.put(MDCKey.REQUEST_ID, ConversionUtils.safeToString(context.getRequestId()));
     }
 
 }

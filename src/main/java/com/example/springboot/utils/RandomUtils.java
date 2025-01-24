@@ -43,7 +43,7 @@ public class RandomUtils {
             random = secureRandom;
         }
         int rand = random.nextInt(ConversionUtils.safeToInt(Math.pow(10, length)));
-        return StringUtils.leftPad(ConversionUtils.toString(rand), length, "0");
+        return StringUtils.leftPad(ConversionUtils.safeToString(rand), length, "0");
     }
 
     public static class Secure {

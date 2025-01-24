@@ -5,6 +5,15 @@ import java.util.UUID;
 public class ConversionUtils {
 
     public static String toString(Object input) {
+        if (input == null) return null;
+        try {
+            return input.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String safeToString(Object input) {
         if (input == null) return "";
         try {
             return input.toString();
@@ -14,7 +23,7 @@ public class ConversionUtils {
     }
 
     public static String toCode(Object input) {
-        return toString(input).trim().toUpperCase();
+        return safeToString(input).trim().toUpperCase();
     }
 
     public static UUID toUUID(Object input) {
@@ -41,18 +50,6 @@ public class ConversionUtils {
         }
     }
 
-    public static Integer toInt(Object input) {
-        try {
-            return switch (input) {
-                case Number v -> v.intValue();
-                case String v -> Integer.parseInt(v);
-                case null, default -> null;
-            };
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public static long safeToLong(Object input) {
         try {
             return switch (input) {
@@ -62,6 +59,18 @@ public class ConversionUtils {
             };
         } catch (Exception e) {
             return 0L;
+        }
+    }
+
+    public static Integer toInt(Object input) {
+        try {
+            return switch (input) {
+                case Number v -> v.intValue();
+                case String v -> Integer.parseInt(v);
+                case null, default -> null;
+            };
+        } catch (Exception e) {
+            return null;
         }
     }
 

@@ -20,7 +20,7 @@ public class LoggingAspect {
         Object[] methodArgs = joinPoint.getArgs();
 
         long start = DateUtils.toEpochMilli();
-        String key = ConversionUtils.toString(start).concat("_").concat(RandomUtils.Insecure.generateString(8));
+        String key = ConversionUtils.safeToString(start).concat("_").concat(RandomUtils.Insecure.generateString(8));
 
         log.info("{} ENTER method: {} with arguments: {}", key, methodName, methodArgs);
 

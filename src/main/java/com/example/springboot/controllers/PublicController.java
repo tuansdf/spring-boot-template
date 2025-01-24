@@ -55,10 +55,10 @@ public class PublicController {
         for (int i = 0; i < total; i++) {
             UserDTO user = new UserDTO();
             user.setId(RandomUtils.Insecure.generateTimeBasedUUID());
-            user.setUsername(ConversionUtils.toString(RandomUtils.Insecure.generateTimeBasedUUID()));
-            user.setEmail(ConversionUtils.toString(RandomUtils.Insecure.generateTimeBasedUUID()));
-            user.setName(ConversionUtils.toString(RandomUtils.Insecure.generateTimeBasedUUID()));
-            user.setPassword(ConversionUtils.toString(RandomUtils.Insecure.generateTimeBasedUUID()));
+            user.setUsername(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
+            user.setEmail(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
+            user.setName(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
+            user.setPassword(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
             user.setStatus(CommonStatus.ACTIVE);
             user.setCreatedBy(RandomUtils.Insecure.generateTimeBasedUUID());
             user.setUpdatedBy(RandomUtils.Insecure.generateTimeBasedUUID());

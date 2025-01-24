@@ -59,7 +59,7 @@ public class EmailServiceImpl implements EmailService {
         if (!CommonStatus.PENDING.equals(email.getStatus())) return;
         email.setStatus(CommonStatus.DONE);
         emailRepository.save(email);
-        log.info("Email ".concat(ConversionUtils.toString(email.getId())).concat(" sent"));
+        log.info("Email ".concat(ConversionUtils.safeToString(email.getId())).concat(" sent"));
     }
 
     private void streamSend(UUID emailId) {
