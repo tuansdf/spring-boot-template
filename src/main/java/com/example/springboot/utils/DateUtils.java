@@ -47,22 +47,45 @@ public class DateUtils {
         }
         try {
             return switch (input) {
-                case Instant v -> OffsetDateTime.ofInstant(v, offset);
-                case Date v -> v.toInstant().atOffset(offset);
-                case LocalDate v -> OffsetDateTime.of(v.atStartOfDay(), offset);
-                case LocalDateTime v -> OffsetDateTime.of(v, offset);
-                case ZonedDateTime v -> v.toOffsetDateTime();
+                case null -> null;
                 case OffsetDateTime v -> v;
                 case String v -> toOffsetDateTime(v, DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-                case null, default -> null;
+                default -> {
+                    Instant result = toInstant(input, offset);
+                    if (result == null) yield null;
+                    yield OffsetDateTime.ofInstant(result, offset);
+                }
             };
         } catch (Exception e) {
             return null;
         }
     }
 
+    public static Date toDate(Object input, ZoneOffset offset) {
+        if (offset == null) {
+            offset = ZoneOffset.UTC;
+        }
+        try {
+            return switch (input) {
+                case null -> null;
+                case Date v -> v;
+                default -> {
+                    Instant result = toInstant(input, offset);
+                    if (result == null) yield null;
+                    yield Date.from(result);
+                }
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Date toDate(Object input) {
+        return toDate(input, null);
+    }
+
     public static OffsetDateTime toOffsetDateTime(Object input) {
-        return toOffsetDateTime(input, ZoneOffset.UTC);
+        return toOffsetDateTime(input, null);
     }
 
     public static Instant toInstant(Object input, ZoneOffset offset) {
@@ -87,7 +110,7 @@ public class DateUtils {
     }
 
     public static Instant toInstant(Object input) {
-        return toInstant(input, ZoneOffset.UTC);
+        return toInstant(input, null);
     }
 
     public static OffsetDateTime toOffsetDateTime(String input, DateTimeFormatter formatter) {

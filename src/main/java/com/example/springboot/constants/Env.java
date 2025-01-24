@@ -10,6 +10,8 @@ public class Env {
 
     @Value("${custom.app-name}")
     private String applicationName;
+    @Value("${custom.app-version}")
+    private String applicationVersion;
 
     @Value("${custom.jwt-secret}")
     private String jwtSecret;

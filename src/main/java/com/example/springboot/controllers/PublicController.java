@@ -73,7 +73,7 @@ public class PublicController {
     public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
-        ExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
+        FastExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
         return "OK";
     }
 
