@@ -2,6 +2,7 @@ package com.example.springboot.modules.report;
 
 import com.example.springboot.modules.user.dtos.UserDTO;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.function.Function;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserExportTemplate implements ExportTemplate<UserDTO> {
 
     private static final List<String> HEADER = List.of("ID", "Username", "Email", "Name", "Status", "Created By", "Updated By", "Created At", "Updated At");
@@ -27,10 +29,11 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
             user.getUpdatedAt());
 
     private List<UserDTO> body;
+    private boolean writeHeader = true;
 
     @Override
     public List<String> getHeader() {
-        return HEADER;
+        return writeHeader ? HEADER : null;
     }
 
     @Override

@@ -36,7 +36,7 @@ public class RoleServiceImpl implements RoleService {
     private final RoleValidator roleValidator;
 
     @Override
-    public RoleDTO save(RoleDTO requestDTO) throws CustomException {
+    public RoleDTO save(RoleDTO requestDTO) {
         UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
         Role result = null;
         if (requestDTO.getId() != null) {
@@ -84,7 +84,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO findOneByIdOrThrow(Long id) throws CustomException {
+    public RoleDTO findOneByIdOrThrow(Long id) {
         RoleDTO result = findOneById(id);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -99,7 +99,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO findOneByCodeOrThrow(String code) throws CustomException {
+    public RoleDTO findOneByCodeOrThrow(String code) {
         RoleDTO result = findOneByCode(code);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -126,9 +126,9 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public PaginationResponseData<RoleDTO> search(SearchRoleRequestDTO requestDTO, boolean isCountOnly) {
+    public PaginationResponseData<RoleDTO> search(SearchRoleRequestDTO requestDTO, boolean isCount) {
         PaginationResponseData<RoleDTO> result = executeSearch(requestDTO, true);
-        if (!isCountOnly && result.getTotalItems() > 0) {
+        if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
         }
         return result;

@@ -5,6 +5,7 @@ import com.example.springboot.modules.report.ExportTemplate;
 import com.example.springboot.modules.report.ImportTemplate;
 import com.github.pjfanning.xlsx.StreamingReader;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -71,6 +72,7 @@ public class ExcelHelper {
     }
 
     private static <T> void setRowCellValue(Row row, List<T> objects) {
+        if (CollectionUtils.isEmpty(objects)) return;
         for (int i = 0; i < objects.size(); i++) {
             setCellValue(getCell(row, i), objects.get(i));
         }
@@ -126,7 +128,9 @@ public class ExcelHelper {
         public static <T> void processTemplate(ExportTemplate<T> template, Workbook workbook) {
             try {
                 Sheet sheet = getSheet(workbook);
-                setRowCellValue(getRow(sheet, sheet.getLastRowNum() + 1), template.getHeader());
+                if (CollectionUtils.isNotEmpty(template.getHeader())) {
+                    setRowCellValue(getRow(sheet, sheet.getLastRowNum() + 1), template.getHeader());
+                }
 
                 var body = template.getBody();
                 var rowDataExtractor = template.getRowExtractor();

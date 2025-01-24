@@ -73,7 +73,7 @@ public class UserDTO {
         }
     }
 
-    public void validateUpdate() throws CustomException {
+    public void validateUpdate() {
         ValidationUtils.notEmpty(this.username, "Username is required");
         ValidationUtils.maxLength(this.username, 255, "Username exceeds the maximum length of 255 characters");
         ValidationUtils.notEmpty(this.email, "Email is required");

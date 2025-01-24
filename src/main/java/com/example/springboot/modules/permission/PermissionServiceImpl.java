@@ -34,7 +34,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final PermissionValidator permissionValidator;
 
     @Override
-    public PermissionDTO save(PermissionDTO requestDTO) throws CustomException {
+    public PermissionDTO save(PermissionDTO requestDTO) {
         UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
         Permission result = null;
         if (requestDTO.getId() != null) {
@@ -71,7 +71,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public PermissionDTO findOneByIdOrThrow(Long id) throws CustomException {
+    public PermissionDTO findOneByIdOrThrow(Long id) {
         PermissionDTO result = findOneById(id);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -86,7 +86,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public PermissionDTO findOneByCodeOrThrow(String code) throws CustomException {
+    public PermissionDTO findOneByCodeOrThrow(String code) {
         PermissionDTO result = findOneByCode(code);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -131,9 +131,9 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCountOnly) {
+    public PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount) {
         PaginationResponseData<PermissionDTO> result = executeSearch(requestDTO, true);
-        if (!isCountOnly && result.getTotalItems() > 0) {
+        if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
         }
         return result;

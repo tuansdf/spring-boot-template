@@ -7,18 +7,18 @@ import com.example.springboot.modules.configuration.dtos.SearchConfigurationRequ
 
 public interface ConfigurationService {
 
-    ConfigurationDTO save(ConfigurationDTO requestDTO) throws CustomException;
+    ConfigurationDTO save(ConfigurationDTO requestDTO);
 
     ConfigurationDTO findOneById(Long id);
 
-    ConfigurationDTO findOneByIdOrThrow(Long id) throws CustomException;
+    ConfigurationDTO findOneByIdOrThrow(Long id);
 
     ConfigurationDTO findOneByCode(String code);
 
-    ConfigurationDTO findOneByCodeOrThrow(String code) throws CustomException;
+    ConfigurationDTO findOneByCodeOrThrow(String code);
 
     String findValueByCode(String code);
 
-    PaginationResponseData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCountOnly);
+    PaginationResponseData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCount);
 
 }

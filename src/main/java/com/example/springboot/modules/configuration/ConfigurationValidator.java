@@ -18,7 +18,7 @@ public class ConfigurationValidator {
     private final static List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
     private final I18nHelper i18nHelper;
 
-    public void validateCreate(ConfigurationDTO requestDTO) throws CustomException {
+    public void validateCreate(ConfigurationDTO requestDTO) {
         ValidationUtils.notEmpty(requestDTO.getCode(), i18nHelper.getMessageX("form.error.missing", "field.code"));
         ValidationUtils.maxLength(requestDTO.getCode(), 255, i18nHelper.getMessageX("form.error.over_max_length", "field.code", 255));
         ValidationUtils.isPattern(requestDTO.getCode(), CommonRegex.CODE, i18nHelper.getMessageX("form.error.invalid", "field.code"));
@@ -27,7 +27,7 @@ public class ConfigurationValidator {
         ValidationUtils.isIn(requestDTO.getStatus(), validStatus, i18nHelper.getMessageX("form.error.invalid", "field.status"));
     }
 
-    public void validateUpdate(ConfigurationDTO requestDTO) throws CustomException {
+    public void validateUpdate(ConfigurationDTO requestDTO) {
         ValidationUtils.maxLength(requestDTO.getValue(), 255, i18nHelper.getMessageX("form.error.over_max_length", "field.value"));
         ValidationUtils.maxLength(requestDTO.getDescription(), 255, i18nHelper.getMessageX("form.error.over_max_length", "field.description"));
         ValidationUtils.isIn(requestDTO.getStatus(), validStatus, i18nHelper.getMessageX("form.error.invalid", "field.status"));

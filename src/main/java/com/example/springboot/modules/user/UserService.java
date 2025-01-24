@@ -10,9 +10,9 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) throws CustomException;
+    UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId);
 
-    UserDTO updateProfile(UserDTO requestDTO) throws CustomException;
+    UserDTO updateProfile(UserDTO requestDTO);
 
     boolean existsByUsername(String username);
 
@@ -22,16 +22,16 @@ public interface UserService {
 
     UserDTO findOneById(UUID userId);
 
-    UserDTO findOneByIdOrThrow(UUID userId) throws CustomException;
+    UserDTO findOneByIdOrThrow(UUID userId);
 
     UserDTO findOneByUsername(String username);
 
-    UserDTO findOneByUsernameOrThrow(String username) throws CustomException;
+    UserDTO findOneByUsernameOrThrow(String username);
 
     UserDTO findOneByEmail(String email);
 
-    UserDTO findOneByEmailOrThrow(String email) throws CustomException;
+    UserDTO findOneByEmailOrThrow(String email);
 
-    PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCountOnly);
+    PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount);
 
 }

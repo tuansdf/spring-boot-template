@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
 
     @Override
-    public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) throws CustomException {
+    public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateProfile(UserDTO requestDTO) throws CustomException {
+    public UserDTO updateProfile(UserDTO requestDTO) {
         UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
         requestDTO.validateUpdate();
         Optional<User> userOptional = userRepository.findById(requestDTO.getId());
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findOneByIdOrThrow(UUID userId) throws CustomException {
+    public UserDTO findOneByIdOrThrow(UUID userId) {
         UserDTO result = findOneById(userId);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findOneByUsernameOrThrow(String username) throws CustomException {
+    public UserDTO findOneByUsernameOrThrow(String username) {
         UserDTO result = findOneByUsername(username);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -134,7 +134,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findOneByEmailOrThrow(String email) throws CustomException {
+    public UserDTO findOneByEmailOrThrow(String email) {
         UserDTO result = findOneByEmail(email);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -143,9 +143,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCountOnly) {
+    public PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount) {
         PaginationResponseData<UserDTO> result = executeSearch(requestDTO, true);
-        if (!isCountOnly && result.getTotalItems() > 0) {
+        if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
         }
         return result;
@@ -159,8 +159,10 @@ public class UserServiceImpl implements UserService {
             builder.append(" select count(*) ");
         } else {
             builder.append(" select u.*, ");
-            builder.append(" string_agg(distinct(r.code), ',') as roles, ");
-            builder.append(" string_agg(distinct(p.code), ',') as permissions ");
+//            builder.append(" string_agg(distinct(r.code), ',') as roles, ");
+//            builder.append(" string_agg(distinct(p.code), ',') as permissions ");
+            builder.append(" null as roles, ");
+            builder.append(" null as permissions ");
         }
         builder.append(" from _user u ");
         builder.append(" inner join ( ");
@@ -193,12 +195,12 @@ public class UserServiceImpl implements UserService {
             }
         }
         builder.append(" ) as filter on (filter.id = u.id) ");
-        if (!isCount) {
-            builder.append(" left join user_role ur on (ur.user_id = u.id) ");
-            builder.append(" left join role r on (r.id = ur.role_id) ");
-            builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
-            builder.append(" left join permission p on (p.id = rp.permission_id) ");
-        }
+//        if (!isCount) {
+//            builder.append(" left join user_role ur on (ur.user_id = u.id) ");
+//            builder.append(" left join role r on (r.id = ur.role_id) ");
+//            builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
+//            builder.append(" left join permission p on (p.id = rp.permission_id) ");
+//        }
         builder.append(" where 1=1 ");
         if (!isCount) {
             builder.append(" group by u.id ");

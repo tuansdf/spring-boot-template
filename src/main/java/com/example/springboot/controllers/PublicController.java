@@ -12,6 +12,8 @@ import com.example.springboot.modules.report.UserExportTemplate;
 import com.example.springboot.modules.report.UserImportTemplate;
 import com.example.springboot.modules.role.RoleService;
 import com.example.springboot.modules.user.UserRepository;
+import com.example.springboot.modules.user.UserService;
+import com.example.springboot.modules.user.dtos.SearchUserRequestDTO;
 import com.example.springboot.modules.user.dtos.UserDTO;
 import com.example.springboot.utils.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.lang.ref.ReferenceQueue;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -42,6 +46,7 @@ public class PublicController {
     private final StringRedisTemplate redisTemplate;
     private final RoleService roleService;
     private final ConfigurationService configurationService;
+    private final UserService userService;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
@@ -71,24 +76,42 @@ public class PublicController {
 
     @GetMapping("/export-excel")
     public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
-        List<UserDTO> data = createData(total);
+//        List<UserDTO> data = createData(total);
+        var requestDTO = SearchUserRequestDTO.builder()
+                .pageNumber(1)
+                .pageSize(1000000)
+                .build();
+        var result = userService.search(requestDTO, false);
+        var data = result.getItems();
         String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
-        FastExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
+        ExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
         return "OK";
     }
 
     @GetMapping("/export-excel-batch")
-    public String exportExcelBatch(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+    public String exportExcelBatch(@RequestParam(required = false, defaultValue = "1000") Long total) {
         int BATCH = 1000;
-        List<UserDTO> data = createData(total);
-        Workbook workbook = new SXSSFWorkbook();
-        UserExportTemplate template = new UserExportTemplate();
-        for (int i = 0; i < total; i += BATCH) {
-            template.setBody(data.subList(i, Math.min(total, i + BATCH)));
-            ExcelHelper.Export.processTemplate(template, workbook);
+        var requestDTO = SearchUserRequestDTO.builder()
+                .pageNumber(1)
+                .pageSize(BATCH)
+                .build();
+        var result = userService.search(requestDTO, true);
+        total = result.getTotalItems();
+        try (Workbook workbook = new SXSSFWorkbook()) {
+            UserExportTemplate template = new UserExportTemplate();
+            template.setWriteHeader(true);
+            for (int i = 0; i < total; i += BATCH) {
+                result = userService.search(requestDTO, false);
+                template.setBody(result.getItems());
+                ExcelHelper.Export.processTemplate(template, workbook);
+                template.setWriteHeader(false);
+                requestDTO.setPageNumber(requestDTO.getPageNumber() + 1);
+            }
+            String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
+            ExcelHelper.writeFile(workbook, exportPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
-        ExcelHelper.writeFile(workbook, exportPath);
         return "OK";
     }
 
@@ -96,7 +119,7 @@ public class PublicController {
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.toEpochMicro() + ".csv";
-        CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data), exportPath);
+        CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
         return "OK";
     }
 

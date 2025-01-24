@@ -27,7 +27,7 @@ public class ConfigurationDTO {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
-    public void validateCreate() throws CustomException {
+    public void validateCreate() {
         ValidationUtils.notEmpty(this.code, "Code is required");
         ValidationUtils.maxLength(this.code, 255, "Code exceeds the maximum length of 255 characters");
         ValidationUtils.isPattern(this.code, CommonRegex.CODE, "Code is invalid");
@@ -36,7 +36,7 @@ public class ConfigurationDTO {
         ValidationUtils.isIn(this.status, List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE), "Status is invalid");
     }
 
-    public void validateUpdate() throws CustomException {
+    public void validateUpdate() {
         ValidationUtils.maxLength(this.value, 255, "Name exceeds the maximum length of 255 characters");
         ValidationUtils.maxLength(this.description, 255, "Description exceeds the maximum length of 255 characters");
         ValidationUtils.isIn(this.status, List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE), "Status is invalid");

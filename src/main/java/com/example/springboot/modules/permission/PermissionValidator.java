@@ -19,7 +19,7 @@ public class PermissionValidator {
     private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
     private final I18nHelper i18nHelper;
 
-    public void validateCreate(PermissionDTO requestDTO) throws CustomException {
+    public void validateCreate(PermissionDTO requestDTO) {
         ValidationUtils.notEmpty(requestDTO.getCode(), i18nHelper.getMessageX("form.error.missing", "field.code"));
         ValidationUtils.startsWith(requestDTO.getCode(), Constants.PERMISSION_STARTS_WITH, i18nHelper.getMessageX("form.error.not_start_with", "field.code", Constants.PERMISSION_STARTS_WITH));
         ValidationUtils.maxLength(requestDTO.getCode(), 255, i18nHelper.getMessageX("form.error.over_max_length", "field.code", 255));
@@ -28,7 +28,7 @@ public class PermissionValidator {
         ValidationUtils.isIn(requestDTO.getStatus(), validStatus, i18nHelper.getMessageX("form.error.invalid", "field.status"));
     }
 
-    public void validateUpdate(PermissionDTO requestDTO) throws CustomException {
+    public void validateUpdate(PermissionDTO requestDTO) {
         ValidationUtils.maxLength(requestDTO.getName(), 255, i18nHelper.getMessageX("form.error.over_max_length", "field.name", 255));
         ValidationUtils.isIn(requestDTO.getStatus(), validStatus, i18nHelper.getMessageX("form.error.invalid", "field.status"));
     }

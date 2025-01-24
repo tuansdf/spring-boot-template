@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     private final NotificationService notificationService;
 
     @Override
-    public AuthDTO login(LoginRequestDTO requestDTO) throws CustomException {
+    public AuthDTO login(LoginRequestDTO requestDTO) {
         authValidator.validateLogin(requestDTO);
 
         UserDTO userDTO = userService.findOneByUsername(requestDTO.getUsername());
@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void register(RegisterRequestDTO requestDTO) throws CustomException {
+    public void register(RegisterRequestDTO requestDTO) {
         authValidator.validateRegister(requestDTO);
 
         Boolean isRegistrationEnabled = ConversionUtils.toBool(configurationService.findValueByCode(ConfigurationCode.IS_REGISTRATION_ENABLED));
@@ -107,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void forgotPassword(ForgotPasswordRequestDTO requestDTO) throws CustomException {
+    public void forgotPassword(ForgotPasswordRequestDTO requestDTO) {
         authValidator.validateForgotPassword(requestDTO);
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
         if (userDTO == null || CommonStatus.ACTIVE.equals(userDTO.getStatus())) return;
@@ -116,7 +116,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void resetPassword(ResetPasswordRequestDTO requestDTO) throws CustomException {
+    public void resetPassword(ResetPasswordRequestDTO requestDTO) {
         authValidator.validateResetPassword(requestDTO);
         JWTPayload jwtPayload = jwtService.verify(requestDTO.getToken());
         if (jwtPayload == null) {
@@ -145,7 +145,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthDTO refreshAccessToken(String refreshJwt) throws CustomException {
+    public AuthDTO refreshAccessToken(String refreshJwt) {
         if (StringUtils.isBlank(refreshJwt)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -176,7 +176,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void activateAccount(String jwt) throws CustomException {
+    public void activateAccount(String jwt) {
         if (StringUtils.isBlank(jwt)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }

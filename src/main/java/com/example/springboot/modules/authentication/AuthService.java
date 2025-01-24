@@ -5,16 +5,16 @@ import com.example.springboot.modules.authentication.dtos.*;
 
 public interface AuthService {
 
-    AuthDTO login(LoginRequestDTO requestDTO) throws CustomException;
+    AuthDTO login(LoginRequestDTO requestDTO);
 
-    void register(RegisterRequestDTO requestDTO) throws CustomException;
+    void register(RegisterRequestDTO requestDTO);
 
-    void forgotPassword(ForgotPasswordRequestDTO requestDTO) throws CustomException;
+    void forgotPassword(ForgotPasswordRequestDTO requestDTO);
 
-    void resetPassword(ResetPasswordRequestDTO requestDTO) throws CustomException;
+    void resetPassword(ResetPasswordRequestDTO requestDTO);
 
-    AuthDTO refreshAccessToken(String refreshJwt) throws CustomException;
+    AuthDTO refreshAccessToken(String refreshJwt);
 
-    void activateAccount(String jwt) throws CustomException;
+    void activateAccount(String jwt);
 
 }

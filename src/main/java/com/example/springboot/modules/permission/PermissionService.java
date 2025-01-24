@@ -11,15 +11,15 @@ import java.util.UUID;
 
 public interface PermissionService {
 
-    PermissionDTO save(PermissionDTO permissionDTO) throws CustomException;
+    PermissionDTO save(PermissionDTO permissionDTO);
 
     PermissionDTO findOneById(Long id);
 
-    PermissionDTO findOneByIdOrThrow(Long id) throws CustomException;
+    PermissionDTO findOneByIdOrThrow(Long id);
 
     PermissionDTO findOneByCode(String code);
 
-    PermissionDTO findOneByCodeOrThrow(String code) throws CustomException;
+    PermissionDTO findOneByCodeOrThrow(String code);
 
     Set<String> findAllCodesByRoleId(Long roleId);
 
@@ -29,6 +29,6 @@ public interface PermissionService {
 
     List<PermissionDTO> findAllByUserId(UUID userId);
 
-    PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCountOnly);
+    PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount);
 
 }

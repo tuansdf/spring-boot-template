@@ -34,7 +34,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private final ConfigurationValidator configurationValidator;
 
     @Override
-    public ConfigurationDTO save(ConfigurationDTO requestDTO) throws CustomException {
+    public ConfigurationDTO save(ConfigurationDTO requestDTO) {
         UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
         Configuration result = null;
         if (requestDTO.getId() != null) {
@@ -72,7 +72,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public ConfigurationDTO findOneByIdOrThrow(Long id) throws CustomException {
+    public ConfigurationDTO findOneByIdOrThrow(Long id) {
         ConfigurationDTO result = findOneById(id);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -87,7 +87,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public ConfigurationDTO findOneByCodeOrThrow(String code) throws CustomException {
+    public ConfigurationDTO findOneByCodeOrThrow(String code) {
         ConfigurationDTO result = findOneByCode(code);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -101,9 +101,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public PaginationResponseData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCountOnly) {
+    public PaginationResponseData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCount) {
         PaginationResponseData<ConfigurationDTO> result = executeSearch(requestDTO, true);
-        if (!isCountOnly && result.getTotalItems() > 0) {
+        if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
         }
         return result;
