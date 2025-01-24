@@ -56,6 +56,7 @@ dependencies {
     }
     implementation 'com.github.pjfanning:excel-streaming-reader:5.0.3'
     implementation 'org.dhatim:fastexcel:0.18.4'
+    implementation 'org.dhatim:fastexcel-reader:0.18.4'
 
     compileOnly 'org.projectlombok:lombok'
     implementation 'org.mapstruct:mapstruct:1.6.3'

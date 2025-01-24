@@ -13,10 +13,12 @@ import java.util.UUID;
 @Slf4j
 public class RandomUtils {
 
-    private static final TimeBasedEpochRandomGenerator timeBasedEpochRandomGenerator = Generators.timeBasedEpochRandomGenerator();
-    private static final RandomBasedGenerator randomBasedGenerator = Generators.randomBasedGenerator();
     private static final Random insecureRandom = new Random();
     private static final SecureRandom secureRandom = new SecureRandom();
+    private static final TimeBasedEpochRandomGenerator timeBasedEpochRandomGenerator = Generators.timeBasedEpochRandomGenerator();
+    private static final TimeBasedEpochRandomGenerator insecureTimeBasedEpochRandomGenerator = Generators.timeBasedEpochRandomGenerator(insecureRandom);
+    private static final RandomBasedGenerator randomBasedGenerator = Generators.randomBasedGenerator();
+    private static final RandomBasedGenerator insecureRandomBasedGenerator = Generators.randomBasedGenerator(insecureRandom);
 
     public static UUID generateUUID() {
         return randomBasedGenerator.generate();
@@ -59,6 +61,14 @@ public class RandomUtils {
     }
 
     public static class Insecure {
+        public static UUID generateUUID() {
+            return insecureRandomBasedGenerator.generate();
+        }
+
+        public static UUID generateTimeBasedUUID() {
+            return insecureTimeBasedEpochRandomGenerator.generate();
+        }
+
         public static String generateOTP(int length) {
             return RandomUtils.generateOTP(insecureRandom, length);
         }

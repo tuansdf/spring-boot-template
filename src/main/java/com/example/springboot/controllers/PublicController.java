@@ -56,14 +56,14 @@ public class PublicController {
 
         for (int i = 0; i < total; i++) {
             UserDTO user = new UserDTO();
-            user.setId(RandomUtils.generateTimeBasedUUID());
-            user.setUsername(ConversionUtils.toString(RandomUtils.generateTimeBasedUUID()));
-            user.setEmail(ConversionUtils.toString(RandomUtils.generateTimeBasedUUID()));
-            user.setName(ConversionUtils.toString(RandomUtils.generateTimeBasedUUID()));
-            user.setPassword(ConversionUtils.toString(RandomUtils.generateTimeBasedUUID()));
+            user.setId(RandomUtils.Insecure.generateTimeBasedUUID());
+            user.setUsername(ConversionUtils.toString(RandomUtils.Insecure.generateTimeBasedUUID()));
+            user.setEmail(ConversionUtils.toString(RandomUtils.Insecure.generateTimeBasedUUID()));
+            user.setName(ConversionUtils.toString(RandomUtils.Insecure.generateTimeBasedUUID()));
+            user.setPassword(ConversionUtils.toString(RandomUtils.Insecure.generateTimeBasedUUID()));
             user.setStatus(CommonStatus.ACTIVE);
-            user.setCreatedBy(RandomUtils.generateTimeBasedUUID());
-            user.setUpdatedBy(RandomUtils.generateTimeBasedUUID());
+            user.setCreatedBy(RandomUtils.Insecure.generateTimeBasedUUID());
+            user.setUpdatedBy(RandomUtils.Insecure.generateTimeBasedUUID());
             user.setCreatedAt(now.plusSeconds(i));
             user.setUpdatedAt(now.plusMinutes(i));
             data.add(user);
@@ -104,7 +104,7 @@ public class PublicController {
 
     @GetMapping("/import-excel")
     public String importExcel(@RequestParam String inputPath) {
-        var items = ExcelHelper.Import.processTemplate(new UserImportTemplate(), inputPath);
+        var items = FastExcelHelper.Import.processTemplate(new UserImportTemplate(), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
