@@ -15,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.sql.Time;
-import java.time.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -33,18 +30,11 @@ public class FastExcelHelper {
     private static final String DEFAULT_APPLICATION_VERSION = "1.0";
 
     private static void setCellValue(Worksheet worksheet, int row, int col, Object value) {
-        if (worksheet == null || value == null) return;
+        if (worksheet == null || value == null || row < 0 || col < 0) return;
         switch (value) {
             case String v -> worksheet.value(row, col, v);
             case Number v -> worksheet.value(row, col, v);
             case Boolean v -> worksheet.value(row, col, v);
-            case Time v -> worksheet.value(row, col, v.toString());
-            case Date v -> worksheet.value(row, col, v);
-            case LocalTime v -> worksheet.value(row, col, v.toString());
-            case LocalDate v -> worksheet.value(row, col, v);
-            case LocalDateTime v -> worksheet.value(row, col, v);
-            case ZonedDateTime v -> worksheet.value(row, col, v);
-            case OffsetDateTime v -> worksheet.value(row, col, v.toLocalDateTime());
             default -> worksheet.value(row, col, value.toString());
         }
     }
@@ -66,7 +56,7 @@ public class FastExcelHelper {
     public static class Export {
         public static <T> void processTemplate(ExportTemplate<T> template, OutputStream outputStream) {
             if (template == null || outputStream == null || CollectionUtils.isEmpty(template.getHeader()) ||
-                    CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor(true) == null)
+                    CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor() == null)
                 return;
 
             try (Workbook workbook = new Workbook(outputStream, DEFAULT_APPLICATION_NAME, DEFAULT_APPLICATION_VERSION)) {
@@ -75,7 +65,7 @@ public class FastExcelHelper {
                 setRowCellValue(worksheet, DEFAULT_HEADER_ROW, template.getHeader());
 
                 var body = template.getBody();
-                var rowDataExtractor = template.getRowDataExtractor(true);
+                var rowDataExtractor = template.getRowDataExtractor();
                 for (int i = 0; i < body.size(); i++) {
                     T item = body.get(i);
                     setRowCellValue(worksheet, DEFAULT_BODY_ROW + i, rowDataExtractor.apply(item));

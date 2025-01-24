@@ -12,10 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Paths;
-import java.sql.Time;
-import java.time.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -66,13 +63,7 @@ public class ExcelHelper {
             CellType cellType = cell.getCellType();
             switch (cellType) {
                 case BOOLEAN -> rowData.add(cell.getBooleanCellValue());
-                case NUMERIC -> {
-                    if (DateUtil.isCellDateFormatted(cell)) {
-                        rowData.add(cell.getLocalDateTimeCellValue());
-                    } else {
-                        rowData.add(cell.getNumericCellValue());
-                    }
-                }
+                case NUMERIC -> rowData.add(cell.getNumericCellValue());
                 case STRING -> rowData.add(cell.getStringCellValue());
             }
         }
@@ -85,16 +76,6 @@ public class ExcelHelper {
         }
     }
 
-    private static <T> void setRowCellValue(Row row, List<T> objects, List<CellStyle> styles) {
-        for (int i = 0; i < objects.size(); i++) {
-            if (objects.get(i) == null) continue;
-            Cell cell = getCell(row, i);
-            setCellValue(cell, objects.get(i));
-            if (styles == null || styles.get(i) == null) continue;
-            cell.setCellStyle(styles.get(i));
-        }
-    }
-
     private static <T> void setRowCellValue(Row row, T[] objects) {
         for (int i = 0; i < objects.length; i++) {
             setCellValue(getCell(row, i), ConversionUtils.safeToString(objects[i]));
@@ -102,21 +83,13 @@ public class ExcelHelper {
     }
 
     private static void setCellValue(Cell cell, Object value) {
-        if (cell == null) return;
+        if (cell == null || value == null) return;
         switch (value) {
-            case null -> cell.setCellValue("");
             case String v -> cell.setCellValue(v);
             case Double v -> cell.setCellValue(v);
             case Integer v -> cell.setCellValue(v);
             case Long v -> cell.setCellValue(v);
             case Boolean v -> cell.setCellValue(v);
-            case Time v -> cell.setCellValue(v);
-            case Date v -> cell.setCellValue(v);
-            case LocalTime v -> cell.setCellValue(v.toString());
-            case LocalDate v -> cell.setCellValue(v);
-            case LocalDateTime v -> cell.setCellValue(v);
-            case ZonedDateTime v -> cell.setCellValue(v.toLocalDateTime());
-            case OffsetDateTime v -> cell.setCellValue(v.toLocalDateTime());
             default -> cell.setCellValue(value.toString());
         }
     }
@@ -149,7 +122,7 @@ public class ExcelHelper {
         public static <T> void processTemplate(ExportTemplate<T> template, Workbook workbook) {
             try {
                 if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) ||
-                        CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor(false) == null)
+                        CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor() == null)
                     return;
 
                 Sheet sheet = getSheet(workbook);
@@ -157,15 +130,13 @@ public class ExcelHelper {
                     setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), template.getHeader());
                 }
 
-                List<CellStyle> styles = template.getColStyles(workbook);
-
                 var body = template.getBody();
-                var rowDataExtractor = template.getRowDataExtractor(false);
+                var rowDataExtractor = template.getRowDataExtractor();
                 int fromRow = sheet.getLastRowNum() + 1;
                 for (int i = 0; i < body.size(); i++) {
                     T item = body.get(i);
                     Row row = getRow(sheet, fromRow + i);
-                    setRowCellValue(row, rowDataExtractor.apply(item), styles);
+                    setRowCellValue(row, rowDataExtractor.apply(item));
                 }
             } catch (Exception e) {
                 log.error("processTemplate", e);

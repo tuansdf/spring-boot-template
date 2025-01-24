@@ -22,12 +22,12 @@ public class CSVHelper {
     public static class Export {
         public static <T> void processTemplate(ExportTemplate<T> template, Writer writer) {
             if (template == null || writer == null || CollectionUtils.isEmpty(template.getHeader()) ||
-                    CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor(true) == null)
+                    CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor() == null)
                 return;
 
             var header = template.getHeader();
             var body = template.getBody();
-            var rowDataExtractor = template.getRowDataExtractor(true);
+            var rowDataExtractor = template.getRowDataExtractor();
 
             try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.builder().setHeader(header.toArray(new String[0])).build())) {
                 for (T data : body) {
