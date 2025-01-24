@@ -34,7 +34,7 @@ public class CSVHelper {
                     csvPrinter.printRecord(rowDataExtractor.apply(data));
                 }
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
             }
         }
 
@@ -80,7 +80,7 @@ public class CSVHelper {
                     result.add(rowExtractor.apply(record.stream().map(x -> (Object) x).toList()));
                 }
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
             }
 
             return result;
@@ -90,7 +90,7 @@ public class CSVHelper {
             try (FileReader reader = new FileReader(Paths.get(filePath).toFile())) {
                 return processTemplate(template, reader);
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }
@@ -100,7 +100,7 @@ public class CSVHelper {
                  BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                 return processTemplate(template, reader);
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }
@@ -109,7 +109,7 @@ public class CSVHelper {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
                 return processTemplate(template, reader);
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }

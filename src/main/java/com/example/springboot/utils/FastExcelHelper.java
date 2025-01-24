@@ -71,7 +71,7 @@ public class FastExcelHelper {
                     setRowCellValue(worksheet, DEFAULT_BODY_ROW + i, rowDataExtractor.apply(item));
                 }
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
             }
         }
 
@@ -136,7 +136,7 @@ public class FastExcelHelper {
             try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile())) {
                 return processTemplate(template, inputStream);
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }
@@ -145,7 +145,7 @@ public class FastExcelHelper {
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
                 return processTemplate(template, inputStream);
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }
@@ -154,7 +154,7 @@ public class FastExcelHelper {
             try {
                 return processTemplate(template, file.getInputStream());
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }

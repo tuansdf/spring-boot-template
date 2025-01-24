@@ -139,7 +139,7 @@ public class ExcelHelper {
                     setRowCellValue(row, rowDataExtractor.apply(item));
                 }
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
             }
         }
 
@@ -149,7 +149,7 @@ public class ExcelHelper {
                 processTemplate(template, workbook);
                 return workbook;
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return null;
             }
         }
@@ -204,7 +204,7 @@ public class ExcelHelper {
                     rowIdx++;
                 }
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
             }
 
             return result;
@@ -215,7 +215,7 @@ public class ExcelHelper {
                  Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
                 return processTemplate(template, workbook);
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }
@@ -225,7 +225,7 @@ public class ExcelHelper {
                  Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
                 return processTemplate(template, workbook);
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }
@@ -234,7 +234,7 @@ public class ExcelHelper {
             try (Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(file.getInputStream())) {
                 return processTemplate(template, workbook);
             } catch (Exception e) {
-                log.error("processTemplate", e);
+                log.error("processTemplate ", e);
                 return new ArrayList<>();
             }
         }
