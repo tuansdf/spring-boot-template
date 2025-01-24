@@ -1,10 +1,10 @@
 package com.example.springboot.utils;
 
+import com.example.springboot.exception.CustomException;
 import com.example.springboot.modules.report.ExportTemplate;
 import com.example.springboot.modules.report.ImportTemplate;
 import com.github.pjfanning.xlsx.StreamingReader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -82,6 +82,10 @@ public class ExcelHelper {
         }
     }
 
+    private static void setCellValue(Sheet sheet, int row, int col, Object value) {
+        setCellValue(getCell(getRow(sheet, row), col), value);
+    }
+
     private static void setCellValue(Cell cell, Object value) {
         if (cell == null || value == null) return;
         switch (value) {
@@ -121,17 +125,11 @@ public class ExcelHelper {
     public static class Export {
         public static <T> void processTemplate(ExportTemplate<T> template, Workbook workbook) {
             try {
-                if (template == null || workbook == null || CollectionUtils.isEmpty(template.getHeader()) ||
-                        CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor() == null)
-                    return;
-
                 Sheet sheet = getSheet(workbook);
-                if (sheet.getLastRowNum() < 0) {
-                    setRowCellValue(getRow(sheet, DEFAULT_HEADER_ROW), template.getHeader());
-                }
+                setRowCellValue(getRow(sheet, sheet.getLastRowNum() + 1), template.getHeader());
 
                 var body = template.getBody();
-                var rowDataExtractor = template.getRowDataExtractor();
+                var rowDataExtractor = template.getRowExtractor();
                 int fromRow = sheet.getLastRowNum() + 1;
                 for (int i = 0; i < body.size(); i++) {
                     T item = body.get(i);
@@ -178,24 +176,22 @@ public class ExcelHelper {
 
         public static <T> List<T> processTemplate(ImportTemplate<T> template, Workbook workbook) {
             List<T> result = new ArrayList<>();
-
-            if (template == null || CollectionUtils.isEmpty(template.getHeader()))
-                return result;
-
-            var header = template.getHeader();
-            var rowExtractor = template.getRowExtractor();
-
             try {
-                Sheet sheet = workbook.getSheetAt(0);
+                var header = template.getHeader();
+                var rowExtractor = template.getRowExtractor();
 
-                if (sheet.getLastRowNum() == 0) return result;
+                Sheet sheet = workbook.getSheetAt(0);
 
                 int rowIdx = 0;
                 for (Row row : sheet) {
                     if (rowIdx == 0) {
-                        if (row.getLastCellNum() != header.size()) return result;
+                        if (row.getLastCellNum() != header.size()) {
+                            throw new CustomException("Invalid template");
+                        }
                         for (int colIdx = 0; colIdx < row.getLastCellNum(); colIdx++) {
-                            if (!header.get(colIdx).equals(row.getCell(colIdx).getStringCellValue())) return result;
+                            if (!header.get(colIdx).equals(row.getCell(colIdx).getStringCellValue())) {
+                                throw new CustomException("Invalid template");
+                            }
                         }
                     } else {
                         result.add(rowExtractor.apply(getRowCellValues(row)));

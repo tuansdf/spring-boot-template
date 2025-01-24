@@ -39,7 +39,7 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
     }
 
     @Override
-    public Function<UserDTO, List<Object>> getRowDataExtractor() {
+    public Function<UserDTO, List<Object>> getRowExtractor() {
         return ROW_DATA_EXTRACTOR;
     }
 

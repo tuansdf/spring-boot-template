@@ -29,7 +29,7 @@ public class FastExcelHelper {
     private static final String DEFAULT_APPLICATION_NAME = "Application";
     private static final String DEFAULT_APPLICATION_VERSION = "1.0";
 
-    private static void setCellValue(Worksheet worksheet, int row, int col, Object value) {
+    public static void setCellValue(Worksheet worksheet, int row, int col, Object value) {
         if (worksheet == null || value == null || row < 0 || col < 0) return;
         switch (value) {
             case String v -> worksheet.value(row, col, v);
@@ -39,13 +39,13 @@ public class FastExcelHelper {
         }
     }
 
-    private static <T> void setRowCellValue(Worksheet worksheet, int row, List<T> objects) {
+    public static <T> void setRowCellValue(Worksheet worksheet, int row, List<T> objects) {
         for (int i = 0; i < objects.size(); i++) {
             setCellValue(worksheet, row, i, objects.get(i));
         }
     }
 
-    private static List<Object> getRowCellValues(Row row) {
+    public static List<Object> getRowCellValues(Row row) {
         List<Object> rowData = new ArrayList<>();
         for (Cell cell : row) {
             rowData.add(cell.getValue());
@@ -56,16 +56,15 @@ public class FastExcelHelper {
     public static class Export {
         public static <T> void processTemplate(ExportTemplate<T> template, OutputStream outputStream) {
             if (template == null || outputStream == null || CollectionUtils.isEmpty(template.getHeader()) ||
-                    CollectionUtils.isEmpty(template.getBody()) || template.getRowDataExtractor() == null)
+                    CollectionUtils.isEmpty(template.getBody()) || template.getRowExtractor() == null)
                 return;
 
-            try (Workbook workbook = new Workbook(outputStream, DEFAULT_APPLICATION_NAME, DEFAULT_APPLICATION_VERSION)) {
-                Worksheet worksheet = workbook.newWorksheet(DEFAULT_SHEET);
-
+            try (Workbook workbook = new Workbook(outputStream, DEFAULT_APPLICATION_NAME, null);
+                 Worksheet worksheet = workbook.newWorksheet(DEFAULT_SHEET)) {
                 setRowCellValue(worksheet, DEFAULT_HEADER_ROW, template.getHeader());
 
                 var body = template.getBody();
-                var rowDataExtractor = template.getRowDataExtractor();
+                var rowDataExtractor = template.getRowExtractor();
                 for (int i = 0; i < body.size(); i++) {
                     T item = body.get(i);
                     setRowCellValue(worksheet, DEFAULT_BODY_ROW + i, rowDataExtractor.apply(item));
@@ -76,10 +75,12 @@ public class FastExcelHelper {
         }
 
         public static <T> void processTemplateWriteFile(ExportTemplate<T> template, String outputPath) {
-            try {
-                FileUtils.writeFile(processTemplateToBytes(template), outputPath);
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                 FileOutputStream fileOutputStream = new FileOutputStream(outputPath)) {
+                processTemplate(template, outputStream);
+                outputStream.writeTo(fileOutputStream);
             } catch (Exception e) {
-                log.error("processTemplateWriteFile", e);
+                log.error("processTemplateWriteFile ", e);
             }
         }
 
@@ -88,7 +89,7 @@ public class FastExcelHelper {
                 processTemplate(template, outputStream);
                 return outputStream.toByteArray();
             } catch (Exception e) {
-                log.error("processTemplateToBytes", e);
+                log.error("processTemplateToBytes ", e);
                 return new byte[0];
             }
         }

@@ -9,6 +9,6 @@ public interface ExportTemplate<T> {
 
     List<T> getBody();
 
-    Function<T, List<Object>> getRowDataExtractor();
+    Function<T, List<Object>> getRowExtractor();
 
 }
