@@ -29,11 +29,11 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
             user.getUpdatedAt());
 
     private List<UserDTO> body;
-    private boolean writeHeader = true;
+    private boolean skipHeader = false;
 
     @Override
     public List<String> getHeader() {
-        return writeHeader ? HEADER : null;
+        return HEADER;
     }
 
     @Override
@@ -44,6 +44,11 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
     @Override
     public Function<UserDTO, List<Object>> getRowExtractor() {
         return ROW_DATA_EXTRACTOR;
+    }
+
+    @Override
+    public boolean getSkipHeader() {
+        return skipHeader;
     }
 
 }

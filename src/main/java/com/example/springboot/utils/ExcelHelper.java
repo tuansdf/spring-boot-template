@@ -128,7 +128,7 @@ public class ExcelHelper {
         public static <T> void processTemplate(ExportTemplate<T> template, Workbook workbook) {
             try {
                 Sheet sheet = getSheet(workbook);
-                if (CollectionUtils.isNotEmpty(template.getHeader())) {
+                if (!template.getSkipHeader() && CollectionUtils.isNotEmpty(template.getHeader())) {
                     setRowCellValue(getRow(sheet, sheet.getLastRowNum() + 1), template.getHeader());
                 }
 

@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.lang.ref.ReferenceQueue;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -99,12 +98,12 @@ public class PublicController {
         total = result.getTotalItems();
         try (Workbook workbook = new SXSSFWorkbook()) {
             UserExportTemplate template = new UserExportTemplate();
-            template.setWriteHeader(true);
+            template.setSkipHeader(false);
             for (int i = 0; i < total; i += BATCH) {
                 result = userService.search(requestDTO, false);
                 template.setBody(result.getItems());
                 ExcelHelper.Export.processTemplate(template, workbook);
-                template.setWriteHeader(false);
+                template.setSkipHeader(true);
                 requestDTO.setPageNumber(requestDTO.getPageNumber() + 1);
             }
             String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";

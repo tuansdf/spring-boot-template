@@ -11,4 +11,6 @@ public interface ExportTemplate<T> {
 
     Function<T, List<Object>> getRowExtractor();
 
+    boolean getSkipHeader();
+
 }
