@@ -4,6 +4,7 @@ import com.fasterxml.uuid.Generators;
 import com.fasterxml.uuid.impl.RandomBasedGenerator;
 import com.fasterxml.uuid.impl.TimeBasedEpochRandomGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.StringUtils;
 
 import java.security.SecureRandom;
@@ -15,31 +16,26 @@ public class RandomUtils {
 
     private static final Random insecureRandom = new Random();
     private static final SecureRandom secureRandom = new SecureRandom();
-    private static final TimeBasedEpochRandomGenerator timeBasedEpochRandomGenerator = Generators.timeBasedEpochRandomGenerator();
-    private static final TimeBasedEpochRandomGenerator insecureTimeBasedEpochRandomGenerator = Generators.timeBasedEpochRandomGenerator(insecureRandom);
-    private static final RandomBasedGenerator randomBasedGenerator = Generators.randomBasedGenerator();
-    private static final RandomBasedGenerator insecureRandomBasedGenerator = Generators.randomBasedGenerator(insecureRandom);
+    private static final TimeBasedEpochRandomGenerator secureTimeBasedUUIDGenerator = Generators.timeBasedEpochRandomGenerator(secureRandom);
+    private static final TimeBasedEpochRandomGenerator insecureTimeBasedUUIDGenerator = Generators.timeBasedEpochRandomGenerator(insecureRandom);
+    private static final RandomBasedGenerator secureUUIDGenerator = Generators.randomBasedGenerator(secureRandom);
+    private static final RandomBasedGenerator insecureUUIDGenerator = Generators.randomBasedGenerator(insecureRandom);
 
     public static UUID generateUUID() {
-        return randomBasedGenerator.generate();
+        return secureUUIDGenerator.generate();
     }
 
     public static UUID generateTimeBasedUUID() {
-        return timeBasedEpochRandomGenerator.generate();
+        return secureTimeBasedUUIDGenerator.generate();
     }
 
     private static String generateString(Random random, int length) {
         if (random == null) {
             random = secureRandom;
         }
-        int byteLength = ConversionUtils.safeToInt(Math.ceil(length * 0.75)); // increase size because of base64
-        byte[] randomBytes = new byte[byteLength];
+        byte[] randomBytes = new byte[length];
         random.nextBytes(randomBytes);
-        String result = Base64Helper.urlEncode(randomBytes);
-        if (result.length() > length) {
-            result = result.substring(0, length);
-        }
-        return result;
+        return Hex.encodeHexString(randomBytes);
     }
 
     private static String generateOTP(Random random, int length) {
@@ -62,11 +58,11 @@ public class RandomUtils {
 
     public static class Insecure {
         public static UUID generateUUID() {
-            return insecureRandomBasedGenerator.generate();
+            return insecureUUIDGenerator.generate();
         }
 
         public static UUID generateTimeBasedUUID() {
-            return insecureTimeBasedEpochRandomGenerator.generate();
+            return insecureTimeBasedUUIDGenerator.generate();
         }
 
         public static String generateOTP(int length) {

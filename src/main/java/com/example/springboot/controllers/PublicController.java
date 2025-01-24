@@ -26,9 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 @Slf4j
@@ -190,25 +188,27 @@ public class PublicController {
     public String bench() {
         try {
             for (int i = 0; i < 1_000_000; i++) {
-                ZonedDateTime.now();
-                OffsetDateTime.now();
-                LocalDateTime.now();
-                Instant.now();
-                ZonedDateTime.now().toString();
-                OffsetDateTime.now().toString();
-                LocalDateTime.now().toString();
-                Instant.now().toString();
-                ZonedDateTime.now().format(DateUtils.Formatter.ID);
-                OffsetDateTime.now().format(DateUtils.Formatter.ID);
-                LocalDateTime.now().format(DateUtils.Formatter.ID);
-                DateUtils.toEpochMicro();
-                ConversionUtils.toString(DateUtils.toEpochMicro());
+//                ZonedDateTime.now();
+//                OffsetDateTime.now();
+//                LocalDateTime.now();
+//                Instant.now();
+//                ZonedDateTime.now().toString();
+//                OffsetDateTime.now().toString();
+//                LocalDateTime.now().toString();
+//                Instant.now().toString();
+//                ZonedDateTime.now().format(DateUtils.Formatter.ID);
+//                OffsetDateTime.now().format(DateUtils.Formatter.ID);
+//                LocalDateTime.now().format(DateUtils.Formatter.ID);
+//                DateUtils.toEpochMicro();
+//                ConversionUtils.toString(DateUtils.toEpochMicro());
+//                RandomUtils.generateUUID();
+//                RandomUtils.generateTimeBasedUUID();
+//                UUID.randomUUID();
+//                RandomUtils.generateUUID().toString();
+//                RandomUtils.generateTimeBasedUUID().toString();
+//                UUID.randomUUID().toString();
                 RandomUtils.generateUUID();
-                RandomUtils.generateTimeBasedUUID();
-                UUID.randomUUID();
-                RandomUtils.generateUUID().toString();
-                RandomUtils.generateTimeBasedUUID().toString();
-                UUID.randomUUID().toString();
+                RandomUtils.Insecure.generateUUID();
                 RandomUtils.Insecure.generateString(16);
                 RandomUtils.Secure.generateString(16);
                 RandomUtils.Insecure.generateOTP(16);
@@ -250,7 +250,9 @@ public class PublicController {
         result.put("INOTP", RandomUtils.Insecure.generateOTP(6));
         result.put("OTP", RandomUtils.Secure.generateOTP(6));
         result.put("UUID", RandomUtils.generateUUID());
+        result.put("IUUID", RandomUtils.Insecure.generateUUID());
         result.put("TUUID", RandomUtils.generateTimeBasedUUID());
+        result.put("ITUUID", RandomUtils.Insecure.generateTimeBasedUUID());
         return result;
     }
 
