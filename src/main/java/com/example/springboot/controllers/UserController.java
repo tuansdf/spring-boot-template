@@ -8,7 +8,6 @@ import com.example.springboot.modules.user.UserService;
 import com.example.springboot.modules.user.dtos.ChangePasswordRequestDTO;
 import com.example.springboot.modules.user.dtos.SearchUserRequestDTO;
 import com.example.springboot.modules.user.dtos.UserDTO;
-import com.example.springboot.utils.ConversionUtils;
 import com.example.springboot.utils.ExceptionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +41,7 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
         try {
-            UUID userId = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
+            UUID userId = RequestContextHolder.get().getUserId();
             var result = userService.changePassword(requestDTO, userId);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {

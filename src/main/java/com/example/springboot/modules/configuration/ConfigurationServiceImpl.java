@@ -35,7 +35,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ConfigurationDTO save(ConfigurationDTO requestDTO) {
-        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
+        UUID actionBy = RequestContextHolder.get().getUserId();
         Configuration result = null;
         if (requestDTO.getId() != null) {
             Optional<Configuration> configurationOptional = configurationRepository.findById(requestDTO.getId());

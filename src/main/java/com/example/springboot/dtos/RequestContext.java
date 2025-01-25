@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +16,7 @@ public class RequestContext {
     private String tenantId;
     private String requestId;
     private Locale locale;
-    private String userId;
+    private UUID userId;
     private Set<String> permissions;
 
 }

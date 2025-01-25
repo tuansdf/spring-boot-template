@@ -48,6 +48,8 @@ public class User extends BaseEntity {
     private String password;
     @Column(name = "otp_secret", columnDefinition = "text")
     private String otpSecret;
+    @Column(name = "otp_enabled", columnDefinition = "text")
+    private Boolean otpEnabled;
     @Column(name = "name", columnDefinition = "text")
     private String name;
     @Column(name = "status", columnDefinition = "text")

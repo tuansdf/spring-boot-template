@@ -60,7 +60,7 @@ public class JWTFilter extends OncePerRequestFilter {
                 permissions.stream().map(SimpleGrantedAuthority::new).toList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        RequestContextHolder.get().setUserId(ConversionUtils.safeToString(jwtPayload.getSubject()));
+        RequestContextHolder.get().setUserId(ConversionUtils.toUUID(jwtPayload.getSubject()));
         RequestContextHolder.get().setPermissions(permissions);
         RequestContextHolder.syncMDC();
 

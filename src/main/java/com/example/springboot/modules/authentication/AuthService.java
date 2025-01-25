@@ -16,4 +16,10 @@ public interface AuthService {
 
     void activateAccount(String jwt);
 
+    AuthDTO enableOtp();
+
+    void confirmOtp(AuthDTO requestDTO);
+
+    void disableOtp(AuthDTO requestDTO);
+
 }

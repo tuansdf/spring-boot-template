@@ -35,7 +35,7 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PermissionDTO save(PermissionDTO requestDTO) {
-        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
+        UUID actionBy = RequestContextHolder.get().getUserId();
         Permission result = null;
         if (requestDTO.getId() != null) {
             Optional<Permission> permissionOptional = permissionRepository.findById(requestDTO.getId());

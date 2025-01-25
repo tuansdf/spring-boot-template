@@ -32,4 +32,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "update _user set status = :status, updated_by = :userId, updated_at = now() where id = :userId", nativeQuery = true)
     void updateStatusByUserId(UUID userId, String status);
 
+    @Query(value = "select u.status from _user u where u.id = :userId limit 1", nativeQuery = true)
+    String findTopStatusByUserId(UUID userId);
+
 }

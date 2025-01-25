@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateProfile(UserDTO requestDTO) {
-        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
+        UUID actionBy = RequestContextHolder.get().getUserId();
         requestDTO.validateUpdate();
         Optional<User> userOptional = userRepository.findById(requestDTO.getId());
         if (userOptional.isEmpty()) {
@@ -140,6 +140,11 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
         return result;
+    }
+
+    @Override
+    public String findStatusByUserId(UUID userId) {
+        return userRepository.findTopStatusByUserId(userId);
     }
 
     @Override

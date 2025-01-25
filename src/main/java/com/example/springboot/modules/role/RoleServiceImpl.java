@@ -37,7 +37,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO save(RoleDTO requestDTO) {
-        UUID actionBy = ConversionUtils.toUUID(RequestContextHolder.get().getUserId());
+        UUID actionBy = RequestContextHolder.get().getUserId();
         Role result = null;
         if (requestDTO.getId() != null) {
             Optional<Role> roleOptional = roleRepository.findById(requestDTO.getId());

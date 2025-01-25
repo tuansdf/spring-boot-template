@@ -1,5 +1,6 @@
 package com.example.springboot.modules.authentication;
 
+import com.example.springboot.configs.RequestContextHolder;
 import com.example.springboot.constants.CommonStatus;
 import com.example.springboot.constants.CommonType;
 import com.example.springboot.constants.ConfigurationCode;
@@ -29,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -63,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        if (StringUtils.isNotBlank(userDTO.getOtpSecret())) {
+        if (ConversionUtils.safeToBool(userDTO.getOtpEnabled()) && StringUtils.isNotBlank(userDTO.getOtpSecret())) {
             if (StringUtils.isBlank(requestDTO.getOtp())) {
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
             }
@@ -141,7 +143,16 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !CommonType.RESET_PASSWORD.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        userRepository.updatePasswordByUserId(tokenDTO.getOwnerId(), requestDTO.getNewPassword());
+        Optional<User> userOptional = userRepository.findById(tokenDTO.getOwnerId());
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userOptional.get();
+        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
+        userRepository.save(user);
         tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.RESET_PASSWORD);
         tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.REFRESH_TOKEN);
     }
@@ -172,15 +183,11 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !CommonType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UserDTO user = userService.findOneById(ConversionUtils.toUUID(tokenDTO.getOwnerId()));
-        if (user == null) {
+        if (!CommonStatus.ACTIVE.equals(userService.findStatusByUserId(tokenDTO.getOwnerId()))) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED);
-        }
-        Set<String> permissions = permissionService.findAllCodesByUserId(user.getId());
-        JWTPayload accessJwt = jwtService.createAccessJwt(user.getId(), permissions);
+        Set<String> permissions = permissionService.findAllCodesByUserId(tokenDTO.getOwnerId());
+        JWTPayload accessJwt = jwtService.createAccessJwt(tokenDTO.getOwnerId(), permissions);
         return AuthDTO.builder()
                 .accessToken(accessJwt.getValue())
                 .build();
@@ -204,11 +211,75 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !validTypes.contains(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
+        UserDTO userDTO = userService.findOneById(ConversionUtils.toUUID(tokenDTO.getOwnerId()));
+        if (userDTO == null) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        if (CommonStatus.ACTIVE.equals(userDTO.getStatus())) {
+            return;
+        }
         userRepository.updateStatusByUserId(tokenDTO.getOwnerId(), CommonStatus.ACTIVE);
         tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), tokenType);
         if (CommonType.ACTIVATE_ACCOUNT.equals(tokenType)) {
             notificationService.sendNewComerNotification(tokenDTO.getOwnerId());
         }
+    }
+
+    @Override
+    public AuthDTO enableOtp() {
+        Optional<User> userOptional = userRepository.findById(RequestContextHolder.get().getUserId());
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userOptional.get();
+        if (!CommonStatus.ACTIVE.equals(user.getStatus()) || ConversionUtils.safeToBool(user.getOtpEnabled())) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        String secret = TOTPHelper.generateSecret();
+        user.setOtpSecret(secret);
+        user.setOtpEnabled(false);
+        userRepository.save(user);
+        return AuthDTO.builder().secret(secret).build();
+    }
+
+    @Override
+    public void confirmOtp(AuthDTO requestDTO) {
+        Optional<User> userOptional = userRepository.findById(RequestContextHolder.get().getUserId());
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userOptional.get();
+        if (!CommonStatus.ACTIVE.equals(user.getStatus()) || ConversionUtils.safeToBool(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtp(), user.getOtpSecret());
+        if (!isOtpCorrect) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        user.setOtpEnabled(true);
+        userRepository.save(user);
+    }
+
+    @Override
+    public void disableOtp(AuthDTO requestDTO) {
+        Optional<User> userOptional = userRepository.findById(RequestContextHolder.get().getUserId());
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        User user = userOptional.get();
+        if (!CommonStatus.ACTIVE.equals(user.getStatus()) || !ConversionUtils.safeToBool(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtp(), user.getOtpSecret());
+        if (!isOtpCorrect) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getPassword(), user.getPassword());
+        if (!isPasswordCorrect) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        user.setOtpEnabled(false);
+        userRepository.save(user);
     }
 
 }
