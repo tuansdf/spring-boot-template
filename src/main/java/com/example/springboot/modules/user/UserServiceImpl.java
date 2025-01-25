@@ -164,8 +164,8 @@ public class UserServiceImpl implements UserService {
             builder.append(" select count(*) ");
         } else {
             builder.append(" select u.*, ");
-//            builder.append(" string_agg(distinct(r.code), ',') as roles, ");
-//            builder.append(" string_agg(distinct(p.code), ',') as permissions ");
+            builder.append(" string_agg(distinct(r.code), ',') as roles, ");
+            builder.append(" string_agg(distinct(p.code), ',') as permissions ");
             builder.append(" null as roles, ");
             builder.append(" null as permissions ");
         }
@@ -200,12 +200,12 @@ public class UserServiceImpl implements UserService {
             }
         }
         builder.append(" ) as filter on (filter.id = u.id) ");
-//        if (!isCount) {
-//            builder.append(" left join user_role ur on (ur.user_id = u.id) ");
-//            builder.append(" left join role r on (r.id = ur.role_id) ");
-//            builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
-//            builder.append(" left join permission p on (p.id = rp.permission_id) ");
-//        }
+        if (!isCount) {
+            builder.append(" left join user_role ur on (ur.user_id = u.id) ");
+            builder.append(" left join role r on (r.id = ur.role_id) ");
+            builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
+            builder.append(" left join permission p on (p.id = rp.permission_id) ");
+        }
         builder.append(" where 1=1 ");
         if (!isCount) {
             builder.append(" group by u.id ");
