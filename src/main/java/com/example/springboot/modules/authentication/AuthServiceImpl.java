@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        if (ConversionUtils.safeToBool(userDTO.getOtpEnabled()) && StringUtils.isNotBlank(userDTO.getOtpSecret())) {
+        if (ConversionUtils.safeToBool(userDTO.getOtpEnabled())) {
             if (StringUtils.isBlank(requestDTO.getOtp())) {
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
             }
