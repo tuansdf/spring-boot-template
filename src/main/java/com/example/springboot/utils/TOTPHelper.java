@@ -1,14 +1,12 @@
 package com.example.springboot.utils;
 
 import com.atlassian.onetime.core.TOTP;
-import com.atlassian.onetime.core.TOTPGenerator;
 import com.atlassian.onetime.model.TOTPSecret;
 import com.atlassian.onetime.service.DefaultTOTPService;
 import com.atlassian.onetime.service.RandomSecretProvider;
 
 public class TOTPHelper {
 
-    private static final TOTPGenerator totpGenerator = new TOTPGenerator();
     private static final RandomSecretProvider randomSecretProvider = new RandomSecretProvider();
     private static final DefaultTOTPService totpService = new DefaultTOTPService();
 
