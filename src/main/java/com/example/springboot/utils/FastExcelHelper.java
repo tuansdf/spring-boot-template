@@ -39,6 +39,20 @@ public class FastExcelHelper {
         }
     }
 
+    public static Object getCellValue(Cell cell) {
+        if (cell == null) return null;
+        try {
+            return switch (cell.getType()) {
+                case NUMBER -> cell.asNumber();
+                case BOOLEAN -> cell.asBoolean();
+                case STRING -> cell.asString();
+                default -> null;
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static <T> void setRowCellValue(Worksheet worksheet, int row, List<T> objects) {
         for (int i = 0; i < objects.size(); i++) {
             setCellValue(worksheet, row, i, objects.get(i));
@@ -46,9 +60,9 @@ public class FastExcelHelper {
     }
 
     public static Object getCellValue(Row row, int col) {
+        if (row == null) return null;
         try {
-            if (row == null) return null;
-            return row.getCell(col).getValue();
+            return getCellValue(row.getCell(col));
         } catch (Exception e) {
             return null;
         }

@@ -7,7 +7,10 @@ import com.github.pjfanning.xlsx.StreamingReader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,14 +64,32 @@ public class ExcelHelper {
     private static List<Object> getRowCellValues(Row row) {
         List<Object> rowData = new ArrayList<>();
         for (Cell cell : row) {
-            CellType cellType = cell.getCellType();
-            switch (cellType) {
-                case BOOLEAN -> rowData.add(cell.getBooleanCellValue());
-                case NUMERIC -> rowData.add(cell.getNumericCellValue());
-                case STRING -> rowData.add(cell.getStringCellValue());
-            }
+            rowData.add(getCellValue(cell));
         }
         return rowData;
+    }
+
+    private static Object getCellValue(Cell cell) {
+        if (cell == null) return null;
+        try {
+            return switch (cell.getCellType()) {
+                case BOOLEAN -> cell.getBooleanCellValue();
+                case NUMERIC -> cell.getNumericCellValue();
+                case STRING -> cell.getStringCellValue();
+                default -> null;
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Object getCellValue(Row row, int col) {
+        try {
+            if (row == null) return null;
+            return getCellValue(row.getCell(col));
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private static <T> void setRowCellValue(Row row, List<T> objects) {
@@ -122,15 +143,6 @@ public class ExcelHelper {
             result = row.createCell(i);
         }
         return result;
-    }
-
-    public static String getStringCellValue(Row row, int i) {
-        try {
-            if (row == null) return null;
-            return row.getCell(i).getStringCellValue();
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public static class Export {
@@ -203,7 +215,7 @@ public class ExcelHelper {
                             throw new InvalidImportTemplateException();
                         }
                         for (int colIdx = 0; colIdx < rowSize; colIdx++) {
-                            if (!header.get(colIdx).equals(getStringCellValue(row, colIdx))) {
+                            if (!header.get(colIdx).equals(getCellValue(row, colIdx))) {
                                 throw new InvalidImportTemplateException();
                             }
                         }
