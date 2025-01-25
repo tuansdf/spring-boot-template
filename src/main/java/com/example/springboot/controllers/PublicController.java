@@ -124,14 +124,22 @@ public class PublicController {
 
     @GetMapping("/import-excel")
     public String importExcel(@RequestParam String inputPath) {
-        var items = FastExcelHelper.Import.processTemplate(new UserImportTemplate(), inputPath);
+        final int BATCH = 1000;
+        List<UserDTO> items = new ArrayList<>();
+        ExcelHelper.Import.processTemplate(new UserImportTemplate(x -> {
+            if (items.size() >= BATCH) {
+                items.clear();
+            }
+            items.add(x);
+        }), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
 
     @GetMapping("/import-csv")
     public String importCsv(@RequestParam String inputPath) {
-        var items = CSVHelper.Import.processTemplate(new UserImportTemplate(), inputPath);
+        List<UserDTO> items = new ArrayList<>();
+        CSVHelper.Import.processTemplate(new UserImportTemplate(items::add), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
@@ -191,20 +199,19 @@ public class PublicController {
         return "OK";
     }
 
-    @PostMapping(value = "/import-excel-usage", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String importExcelUsage(@RequestParam(name = "file", required = false) MultipartFile file) {
-        try {
-            log.info("{} {}", file.getInputStream().readAllBytes().length, file.getSize());
-            List<UserDTO> userDTOS = ExcelHelper.Import.processTemplate(new UserImportTemplate(), file);
-            file.getInputStream().close();
-            log.info("{} {}", file.getInputStream().readAllBytes().length, file.getSize());
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            log.error("sleep", e);
-        }
-
-        return "OK";
-    }
+//    @PostMapping(value = "/import-excel-usage", produces = MediaType.TEXT_PLAIN_VALUE)
+//    public String importExcelUsage(@RequestParam(name = "file", required = false) MultipartFile file) {
+//        try {
+//            log.info("{} {}", file.getInputStream().readAllBytes().length, file.getSize());
+//            List<UserDTO> userDTOS = ExcelHelper.Import.processTemplate(new UserImportTemplate(), file);
+//            file.getInputStream().close();
+//            log.info("{} {}", file.getInputStream().readAllBytes().length, file.getSize());
+//            Thread.sleep(3000);
+//        } catch (Exception e) {
+//            log.error("sleep", e);
+//        }
+//        return "OK";
+//    }
 
     @GetMapping(value = "/bench", produces = MediaType.TEXT_PLAIN_VALUE)
     public String bench() {

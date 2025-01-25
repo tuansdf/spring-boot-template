@@ -4,6 +4,9 @@ import jakarta.persistence.Tuple;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CommonUtils {
 
     public static <T> T getValue(Tuple tuple, String name, Class<T> tClass) {
@@ -29,6 +32,20 @@ public class CommonUtils {
             if (value != null) return value;
         }
         return null;
+    }
+
+    public static <T> List<T> rightPad(List<T> list, int size, T padValue) {
+        if (list == null) {
+            list = new ArrayList<>();
+        }
+        while (list.size() < size) {
+            list.add(padValue);
+        }
+        return list;
+    }
+
+    public static <T> List<T> rightPad(List<T> list, int size) {
+        return rightPad(list, size, null);
     }
 
 }

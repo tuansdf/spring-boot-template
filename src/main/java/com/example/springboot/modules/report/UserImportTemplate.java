@@ -3,16 +3,23 @@ package com.example.springboot.modules.report;
 import com.example.springboot.modules.user.dtos.UserDTO;
 import com.example.springboot.utils.ConversionUtils;
 import com.example.springboot.utils.DateUtils;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
-@Slf4j
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class UserImportTemplate implements ImportTemplate<UserDTO> {
 
-    private static final List<String> HEADER = List.of("ID", "Username", "Email", "Name", "Status", "Created By", "Updated By", "Created At", "Updated At");
-    private static final Function<List<Object>, UserDTO> ROW_EXTRACTOR = row -> {
+    private static final List<String> header = List.of("ID", "Username", "Email", "Name", "Status", "Created By", "Updated By", "Created At", "Updated At");
+    private static final Function<List<Object>, UserDTO> rowPreProcessor = row -> {
         UserDTO result = new UserDTO();
         result.setId(ConversionUtils.toUUID(row.get(0)));
         result.setUsername(ConversionUtils.safeToString(row.get(1)));
@@ -26,14 +33,21 @@ public class UserImportTemplate implements ImportTemplate<UserDTO> {
         return result;
     };
 
+    private Consumer<UserDTO> rowProcessor;
+
     @Override
     public List<String> getHeader() {
-        return HEADER;
+        return header;
     }
 
     @Override
-    public Function<List<Object>, UserDTO> getRowExtractor() {
-        return ROW_EXTRACTOR;
+    public Function<List<Object>, UserDTO> getRowPreProcessor() {
+        return rowPreProcessor;
+    }
+
+    @Override
+    public Consumer<UserDTO> getRowProcessor() {
+        return rowProcessor;
     }
 
 }

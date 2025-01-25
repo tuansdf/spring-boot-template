@@ -1,5 +1,6 @@
 package com.example.springboot.utils;
 
+import com.example.springboot.exception.InvalidImportTemplateException;
 import com.example.springboot.modules.report.ExportTemplate;
 import com.example.springboot.modules.report.ImportTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -28,10 +28,11 @@ public class CSVHelper {
             var header = template.getHeader();
             var body = template.getBody();
             var rowDataExtractor = template.getRowExtractor();
+            var rowSize = header.size();
 
             try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.builder().setHeader(header.toArray(new String[0])).build())) {
                 for (T data : body) {
-                    csvPrinter.printRecord(rowDataExtractor.apply(data));
+                    csvPrinter.printRecord(CommonUtils.rightPad(rowDataExtractor.apply(data), rowSize));
                 }
             } catch (Exception e) {
                 log.error("processTemplate ", e);
@@ -61,56 +62,57 @@ public class CSVHelper {
     }
 
     public static class Import {
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, Reader reader) {
-            List<T> result = new ArrayList<>();
-
-            if (template == null || CollectionUtils.isEmpty(template.getHeader())) return result;
-
+        public static <T> void processTemplate(ImportTemplate<T> template, Reader reader) {
             var header = template.getHeader();
-            var rowExtractor = template.getRowExtractor();
+            var rowPreProcessor = template.getRowPreProcessor();
+            var rowProcessor = template.getRowProcessor();
+            var rowSize = header.size();
 
             try (CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().build())) {
                 List<String> csvHeader = csvParser.getHeaderNames();
-                if (csvHeader.size() != header.size()) return result;
-                for (int i = 0; i < csvHeader.size(); i++) {
-                    if (!csvHeader.get(i).equals(header.get(i))) return result;
+                if (csvHeader.size() != rowSize) {
+                    throw new InvalidImportTemplateException();
+                }
+
+                for (int i = 0; i < rowSize; i++) {
+                    if (!csvHeader.get(i).equals(header.get(i))) {
+                        throw new InvalidImportTemplateException();
+                    }
                 }
 
                 for (CSVRecord record : csvParser) {
-                    result.add(rowExtractor.apply(record.stream().map(x -> (Object) x).toList()));
+                    var item = rowPreProcessor.apply(CommonUtils.rightPad(record.stream().map(x -> (Object) x).toList(), rowSize));
+                    if (rowProcessor != null) {
+                        rowProcessor.accept(item);
+                    }
                 }
             } catch (Exception e) {
                 log.error("processTemplate ", e);
             }
-
-            return result;
         }
 
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, String filePath) {
+        public static <T> void processTemplate(ImportTemplate<T> template, String filePath) {
             try (FileReader reader = new FileReader(Paths.get(filePath).toFile())) {
-                return processTemplate(template, reader);
+                processTemplate(template, reader);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
-                return new ArrayList<>();
             }
         }
 
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, byte[] bytes) {
+        public static <T> void processTemplate(ImportTemplate<T> template, byte[] bytes) {
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
                  BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return processTemplate(template, reader);
+                processTemplate(template, reader);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
-                return new ArrayList<>();
             }
         }
 
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, MultipartFile file) {
+        public static <T> void processTemplate(ImportTemplate<T> template, MultipartFile file) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
-                return processTemplate(template, reader);
+                processTemplate(template, reader);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
-                return new ArrayList<>();
             }
         }
     }

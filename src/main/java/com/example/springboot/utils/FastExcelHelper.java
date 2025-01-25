@@ -1,6 +1,6 @@
 package com.example.springboot.utils;
 
-import com.example.springboot.exception.CustomException;
+import com.example.springboot.exception.InvalidImportTemplateException;
 import com.example.springboot.modules.report.ExportTemplate;
 import com.example.springboot.modules.report.ImportTemplate;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +42,15 @@ public class FastExcelHelper {
     public static <T> void setRowCellValue(Worksheet worksheet, int row, List<T> objects) {
         for (int i = 0; i < objects.size(); i++) {
             setCellValue(worksheet, row, i, objects.get(i));
+        }
+    }
+
+    public static Object getCellValue(Row row, int col) {
+        try {
+            if (row == null) return null;
+            return row.getCell(col).getValue();
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -96,14 +105,11 @@ public class FastExcelHelper {
     }
 
     public static class Import {
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, InputStream inputStream) {
-            List<T> result = new ArrayList<>();
-
-            if (template == null || CollectionUtils.isEmpty(template.getHeader()))
-                return result;
-
+        public static <T> void processTemplate(ImportTemplate<T> template, InputStream inputStream) {
             var header = template.getHeader();
-            var rowExtractor = template.getRowExtractor();
+            var rowPreProcessor = template.getRowPreProcessor();
+            var rowProcessor = template.getRowProcessor();
+            var rowSize = header.size();
 
             try (ReadableWorkbook workbook = new ReadableWorkbook(inputStream)) {
                 Sheet sheet = workbook.getFirstSheet();
@@ -111,16 +117,19 @@ public class FastExcelHelper {
                 try (Stream<Row> rows = sheet.openStream()) {
                     rows.forEach(row -> {
                         if (rowIdx.get() == 0) {
-                            if (row.getCellCount() != header.size()) {
-                                throw new CustomException("Invalid template");
+                            if (row.getCellCount() != rowSize) {
+                                throw new InvalidImportTemplateException();
                             }
-                            for (int colIdx = 0; colIdx < row.getCellCount(); colIdx++) {
-                                if (!header.get(colIdx).equals(row.getCell(colIdx).getValue())) {
-                                    throw new CustomException("Invalid template");
+                            for (int colIdx = 0; colIdx < rowSize; colIdx++) {
+                                if (!header.get(colIdx).equals(getCellValue(row, colIdx))) {
+                                    throw new InvalidImportTemplateException();
                                 }
                             }
                         } else {
-                            result.add(rowExtractor.apply(getRowCellValues(row)));
+                            var item = rowPreProcessor.apply(CommonUtils.rightPad(getRowCellValues(row), rowSize));
+                            if (rowProcessor != null) {
+                                rowProcessor.accept(item);
+                            }
                         }
 
                         rowIdx.incrementAndGet();
@@ -129,34 +138,29 @@ public class FastExcelHelper {
             } catch (Exception e) {
                 log.error("processTemplate ", e);
             }
-
-            return result;
         }
 
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, String filePath) {
+        public static <T> void processTemplate(ImportTemplate<T> template, String filePath) {
             try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile())) {
-                return processTemplate(template, inputStream);
+                processTemplate(template, inputStream);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
-                return new ArrayList<>();
             }
         }
 
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, byte[] bytes) {
+        public static <T> void processTemplate(ImportTemplate<T> template, byte[] bytes) {
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
-                return processTemplate(template, inputStream);
+                processTemplate(template, inputStream);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
-                return new ArrayList<>();
             }
         }
 
-        public static <T> List<T> processTemplate(ImportTemplate<T> template, MultipartFile file) {
+        public static <T> void processTemplate(ImportTemplate<T> template, MultipartFile file) {
             try {
-                return processTemplate(template, file.getInputStream());
+                processTemplate(template, file.getInputStream());
             } catch (Exception e) {
                 log.error("processTemplate ", e);
-                return new ArrayList<>();
             }
         }
     }
