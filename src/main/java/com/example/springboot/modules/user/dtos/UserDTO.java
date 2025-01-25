@@ -26,6 +26,8 @@ public class UserDTO {
     private String name;
     @JsonIgnore
     private String password;
+    @JsonIgnore
+    private String otpSecret;
     private String status;
     private UUID createdBy;
     private UUID updatedBy;

@@ -25,7 +25,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -283,6 +282,11 @@ public class PublicController {
         result.put("TUUID", RandomUtils.generateTimeBasedUUID());
         result.put("ITUUID", RandomUtils.Insecure.generateTimeBasedUUID());
         return result;
+    }
+
+    @GetMapping(value = "/totp", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object totp() {
+        return TOTPHelper.generateSecret();
     }
 
 }

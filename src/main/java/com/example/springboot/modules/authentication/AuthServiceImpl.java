@@ -19,6 +19,7 @@ import com.example.springboot.modules.user.UserService;
 import com.example.springboot.modules.user.dtos.UserDTO;
 import com.example.springboot.utils.CommonUtils;
 import com.example.springboot.utils.ConversionUtils;
+import com.example.springboot.utils.TOTPHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,16 @@ public class AuthServiceImpl implements AuthService {
         boolean isActive = CommonStatus.ACTIVE.equals(userDTO.getStatus());
         if (!isActive) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+
+        if (StringUtils.isNotBlank(userDTO.getOtpSecret())) {
+            if (StringUtils.isBlank(requestDTO.getOtp())) {
+                throw new CustomException(HttpStatus.UNAUTHORIZED);
+            }
+            boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtp(), userDTO.getOtpSecret());
+            if (!isOtpCorrect) {
+                throw new CustomException(HttpStatus.UNAUTHORIZED);
+            }
         }
 
         boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getPassword(), userDTO.getPassword());
