@@ -28,7 +28,6 @@ public class UserDTO {
     private String password;
     @JsonIgnore
     private String otpSecret;
-    @JsonIgnore
     private Boolean otpEnabled;
     private String status;
     private UUID createdBy;
