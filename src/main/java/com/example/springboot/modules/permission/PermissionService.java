@@ -1,7 +1,6 @@
 package com.example.springboot.modules.permission;
 
 import com.example.springboot.dtos.PaginationResponseData;
-import com.example.springboot.exception.CustomException;
 import com.example.springboot.modules.permission.dtos.PermissionDTO;
 import com.example.springboot.modules.permission.dtos.SearchPermissionRequestDTO;
 

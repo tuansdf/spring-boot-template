@@ -1,7 +1,6 @@
 package com.example.springboot.modules.configuration;
 
 import com.example.springboot.dtos.PaginationResponseData;
-import com.example.springboot.exception.CustomException;
 import com.example.springboot.modules.configuration.dtos.ConfigurationDTO;
 import com.example.springboot.modules.configuration.dtos.SearchConfigurationRequestDTO;
 

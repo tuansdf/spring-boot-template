@@ -190,11 +190,11 @@ public class ExcelHelper {
                 for (Row row : sheet) {
                     if (rowIdx == 0) {
                         if (row.getLastCellNum() != header.size()) {
-                            throw new CustomException("Invalid template");
+                            throw new CustomException(I18nHelper.getMessage("report.error.invalid_template"));
                         }
                         for (int colIdx = 0; colIdx < row.getLastCellNum(); colIdx++) {
                             if (!header.get(colIdx).equals(row.getCell(colIdx).getStringCellValue())) {
-                                throw new CustomException("Invalid template");
+                                throw new CustomException(I18nHelper.getMessage("report.error.invalid_template"));
                             }
                         }
                     } else {

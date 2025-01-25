@@ -30,7 +30,6 @@ public class EmailServiceImpl implements EmailService {
 
     private final Env env;
     private final CommonMapper commonMapper;
-    private final I18nHelper i18nHelper;
     private final EmailRepository emailRepository;
     private final StringRedisTemplate redisTemplate;
 
@@ -78,8 +77,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
-                .subject(i18nHelper.getMessage("email.reset_password_subject"))
-                .content(i18nHelper.getMessage("email.reset_password_content", name, token))
+                .subject(I18nHelper.getMessage("email.reset_password_subject"))
+                .content(I18nHelper.getMessage("email.reset_password_content", name, token))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
                 .type(CommonType.RESET_PASSWORD)
@@ -92,8 +91,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
-                .subject(i18nHelper.getMessage("email.activate_account_subject"))
-                .content(i18nHelper.getMessage("email.activate_account_content", name, token))
+                .subject(I18nHelper.getMessage("email.activate_account_subject"))
+                .content(I18nHelper.getMessage("email.activate_account_content", name, token))
                 .createdBy(actionBy)
                 .updatedBy(actionBy)
                 .type(CommonType.ACTIVATE_ACCOUNT)

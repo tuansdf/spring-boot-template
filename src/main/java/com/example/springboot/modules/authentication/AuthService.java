@@ -1,6 +1,5 @@
 package com.example.springboot.modules.authentication;
 
-import com.example.springboot.exception.CustomException;
 import com.example.springboot.modules.authentication.dtos.*;
 
 public interface AuthService {

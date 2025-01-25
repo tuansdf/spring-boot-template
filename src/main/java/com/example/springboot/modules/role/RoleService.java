@@ -1,7 +1,6 @@
 package com.example.springboot.modules.role;
 
 import com.example.springboot.dtos.PaginationResponseData;
-import com.example.springboot.exception.CustomException;
 import com.example.springboot.modules.role.dtos.RoleDTO;
 import com.example.springboot.modules.role.dtos.SearchRoleRequestDTO;
 

@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicAuthController {
 
     private final AuthService authService;
-    private final I18nHelper i18nHelper;
 
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<AuthDTO>> login(@RequestBody LoginRequestDTO requestDTO) {
@@ -36,7 +35,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequestDTO requestDTO) {
         try {
             authService.register(requestDTO);
-            var message = i18nHelper.getMessage("auth.activate_account_email_sent");
+            var message = I18nHelper.getMessage("auth.activate_account_email_sent");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -47,7 +46,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> forgotPassword(@RequestBody ForgotPasswordRequestDTO requestDTO) {
         try {
             authService.forgotPassword(requestDTO);
-            var message = i18nHelper.getMessage("auth.reset_password_email_sent");
+            var message = I18nHelper.getMessage("auth.reset_password_email_sent");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -58,7 +57,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequestDTO requestDTO) {
         try {
             authService.resetPassword(requestDTO);
-            var message = i18nHelper.getMessage("auth.reset_password_success");
+            var message = I18nHelper.getMessage("auth.reset_password_success");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -79,7 +78,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> activateAccount(@RequestBody AuthDTO requestDTO) {
         try {
             authService.activateAccount(requestDTO.getToken());
-            var message = i18nHelper.getMessage("auth.activate_account_success");
+            var message = I18nHelper.getMessage("auth.activate_account_success");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

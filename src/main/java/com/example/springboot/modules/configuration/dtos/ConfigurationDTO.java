@@ -2,7 +2,6 @@ package com.example.springboot.modules.configuration.dtos;
 
 import com.example.springboot.constants.CommonRegex;
 import com.example.springboot.constants.CommonStatus;
-import com.example.springboot.exception.CustomException;
 import com.example.springboot.utils.ValidationUtils;
 import lombok.*;
 

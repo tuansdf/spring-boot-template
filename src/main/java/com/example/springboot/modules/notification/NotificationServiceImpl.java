@@ -29,7 +29,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final Env env;
     private final CommonMapper commonMapper;
-    private final I18nHelper i18nHelper;
     private final NotificationRepository notificationRepository;
     private final StringRedisTemplate redisTemplate;
 
@@ -75,8 +74,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO sendNewComerNotification(UUID actionBy) {
         NotificationDTO notificationDTO = NotificationDTO.builder()
-                .title(i18nHelper.getMessage("notification.new_comer_title", env.getApplicationVersion()))
-                .content(i18nHelper.getMessage("notification.new_comer_content"))
+                .title(I18nHelper.getMessage("notification.new_comer_title", env.getApplicationVersion()))
+                .content(I18nHelper.getMessage("notification.new_comer_content"))
                 .userId(actionBy)
                 .status(CommonStatus.PENDING)
                 .build();

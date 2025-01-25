@@ -1,7 +1,6 @@
 package com.example.springboot.modules.user.dtos;
 
 import com.example.springboot.constants.CommonStatus;
-import com.example.springboot.exception.CustomException;
 import com.example.springboot.utils.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;

@@ -1,7 +1,6 @@
 package com.example.springboot.modules.user;
 
 import com.example.springboot.dtos.PaginationResponseData;
-import com.example.springboot.exception.CustomException;
 import com.example.springboot.modules.user.dtos.ChangePasswordRequestDTO;
 import com.example.springboot.modules.user.dtos.SearchUserRequestDTO;
 import com.example.springboot.modules.user.dtos.UserDTO;

@@ -40,7 +40,6 @@ public class PublicController {
 
     private final CommonMapper commonMapper;
     private final UserRepository userRepository;
-    private final I18nHelper i18nHelper;
     private final JWTService jwtService;
     private final StringRedisTemplate redisTemplate;
     private final RoleService roleService;
@@ -74,16 +73,17 @@ public class PublicController {
     }
 
     @GetMapping("/export-excel")
-    public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
-//        List<UserDTO> data = createData(total);
-        var requestDTO = SearchUserRequestDTO.builder()
-                .pageNumber(1)
-                .pageSize(1000000)
-                .build();
-        var result = userService.search(requestDTO, false);
-        var data = result.getItems();
+    public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) throws IOException {
+        List<UserDTO> data = createData(total);
+//        var requestDTO = SearchUserRequestDTO.builder()
+//                .pageNumber(1)
+//                .pageSize(1000000)
+//                .build();
+//        var result = userService.search(requestDTO, false);
+//        var data = result.getItems();
         String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
-        ExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
+        var workbook = ExcelHelper.Export.processTemplate(new UserExportTemplate(data, true));
+        workbook.close();
         return "OK";
     }
 
@@ -117,8 +117,8 @@ public class PublicController {
     @GetMapping("/export-csv")
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
-        String exportPath = ".temp/csv-" + DateUtils.toEpochMicro() + ".csv";
-        CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
+//        String exportPath = ".temp/csv-" + DateUtils.toEpochMicro() + ".csv";
+//        CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
         return "OK";
     }
 
@@ -159,7 +159,7 @@ public class PublicController {
 
     @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
     public String testI18n(HttpServletRequest servletRequest, @RequestParam(required = false, defaultValue = "John Doe") String name) {
-        return i18nHelper.getMessage("msg.hello", servletRequest.getLocale(), name);
+        return I18nHelper.getMessage("msg.hello", servletRequest.getLocale(), name);
     }
 
     @GetMapping(value = "/rand", produces = MediaType.TEXT_PLAIN_VALUE)
