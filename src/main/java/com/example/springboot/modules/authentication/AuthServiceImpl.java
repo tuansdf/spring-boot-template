@@ -278,6 +278,7 @@ public class AuthServiceImpl implements AuthService {
         if (!isPasswordCorrect) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
+        user.setOtpSecret(null);
         user.setOtpEnabled(false);
         userRepository.save(user);
     }
