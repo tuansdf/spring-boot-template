@@ -191,7 +191,7 @@ public class PublicController {
     @GetMapping(value = "/jwt", produces = MediaType.TEXT_PLAIN_VALUE)
     public String jwttest(@RequestParam(required = false, defaultValue = "100") Integer total) {
         for (int i = 0; i < total; i++) {
-            UUID uuid = RandomUtils.generateTimeBasedUUID();
+            UUID uuid = RandomUtils.Secure.generateTimeBasedUUID();
             JWTPayload jwtPayload = jwtService.createActivateAccountJwt(uuid, false);
             jwtService.verify(jwtPayload.getValue());
         }
@@ -235,7 +235,7 @@ public class PublicController {
 //                RandomUtils.generateUUID().toString();
 //                RandomUtils.generateTimeBasedUUID().toString();
 //                UUID.randomUUID().toString();
-                RandomUtils.generateUUID();
+                RandomUtils.Secure.generateUUID();
                 RandomUtils.Insecure.generateUUID();
                 RandomUtils.Insecure.generateString(16);
                 RandomUtils.Secure.generateString(16);
@@ -251,7 +251,7 @@ public class PublicController {
     @GetMapping(value = "/redis", produces = MediaType.TEXT_PLAIN_VALUE)
     public String redis() {
         try {
-            redisTemplate.opsForValue().set("allo", RandomUtils.generateTimeBasedUUID().toString());
+            redisTemplate.opsForValue().set("allo", RandomUtils.Secure.generateTimeBasedUUID().toString());
 
             log.info("redis: {}", redisTemplate.opsForValue().get("allo"));
         } catch (Exception e) {
@@ -277,9 +277,9 @@ public class PublicController {
         result.put("RAN", RandomUtils.Secure.generateString(16));
         result.put("INOTP", RandomUtils.Insecure.generateOTP(6));
         result.put("OTP", RandomUtils.Secure.generateOTP(6));
-        result.put("UUID", RandomUtils.generateUUID());
+        result.put("UUID", RandomUtils.Secure.generateUUID());
         result.put("IUUID", RandomUtils.Insecure.generateUUID());
-        result.put("TUUID", RandomUtils.generateTimeBasedUUID());
+        result.put("TUUID", RandomUtils.Secure.generateTimeBasedUUID());
         result.put("ITUUID", RandomUtils.Insecure.generateTimeBasedUUID());
         return result;
     }

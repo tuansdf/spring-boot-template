@@ -34,7 +34,7 @@ public class BaseEntity implements Serializable {
         createdAt = now;
         updatedAt = now;
         if (id == null) {
-            id = RandomUtils.generateTimeBasedUUID();
+            id = RandomUtils.Secure.generateTimeBasedUUID();
         }
     }
 

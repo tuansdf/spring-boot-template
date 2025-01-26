@@ -21,14 +21,6 @@ public class RandomUtils {
     private static final RandomBasedGenerator secureUUIDGenerator = Generators.randomBasedGenerator(secureRandom);
     private static final RandomBasedGenerator insecureUUIDGenerator = Generators.randomBasedGenerator(insecureRandom);
 
-    public static UUID generateUUID() {
-        return secureUUIDGenerator.generate();
-    }
-
-    public static UUID generateTimeBasedUUID() {
-        return secureTimeBasedUUIDGenerator.generate();
-    }
-
     private static String generateString(Random random, int length) {
         if (random == null) {
             random = secureRandom;
@@ -47,6 +39,14 @@ public class RandomUtils {
     }
 
     public static class Secure {
+        public static UUID generateUUID() {
+            return secureUUIDGenerator.generate();
+        }
+
+        public static UUID generateTimeBasedUUID() {
+            return secureTimeBasedUUIDGenerator.generate();
+        }
+
         public static String generateOTP(int length) {
             return RandomUtils.generateOTP(secureRandom, length);
         }
