@@ -18,8 +18,6 @@ public class TokenDTO {
     private String type;
     private OffsetDateTime expiresAt;
     private String status;
-    private UUID createdBy;
-    private UUID updatedBy;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
