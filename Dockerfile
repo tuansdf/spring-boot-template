@@ -8,7 +8,7 @@ RUN ./gradlew clean build --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /app/build/libs/springboot.jar springboot.jar
+COPY --from=build /app/build/libs/demo.jar demo.jar
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app/springboot.jar"]
+ENTRYPOINT ["java", "-jar", "/app/demo.jar"]
