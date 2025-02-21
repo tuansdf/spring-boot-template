@@ -55,7 +55,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
-        jwtPayload.setType(CommonType.toIndex(CommonType.ACCESS_TOKEN));
+        jwtPayload.setType(CommonType.ACCESS_TOKEN);
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }
@@ -69,7 +69,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtRefreshLifetime()));
-        jwtPayload.setType(CommonType.toIndex(CommonType.REFRESH_TOKEN));
+        jwtPayload.setType(CommonType.REFRESH_TOKEN);
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }
@@ -82,7 +82,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtResetPasswordLifetime()));
-        jwtPayload.setType(CommonType.toIndex(CommonType.RESET_PASSWORD));
+        jwtPayload.setType(CommonType.RESET_PASSWORD);
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }
@@ -95,7 +95,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtActivateAccountLifetime()));
-        jwtPayload.setType(CommonType.toIndex(isReactivate ? CommonType.REACTIVATE_ACCOUNT : CommonType.ACTIVATE_ACCOUNT));
+        jwtPayload.setType(isReactivate ? CommonType.REACTIVATE_ACCOUNT : CommonType.ACTIVATE_ACCOUNT);
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
     }

@@ -17,9 +17,9 @@ public class NotificationDTO {
     private String title;
     private String content;
     private String data;
-    private Integer retryCount;
-    private String type;
     private String topic;
+    private Integer retryCount;
+    private Integer type;
     private Integer status;
     private UUID createdBy;
     private UUID updatedBy;

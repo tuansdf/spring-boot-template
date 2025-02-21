@@ -21,8 +21,8 @@ public class Token extends BaseEntity {
     private UUID ownerId;
     @Column(name = "expires_at")
     private OffsetDateTime expiresAt;
-    @Column(name = "type", columnDefinition = "text")
-    private String type;
+    @Column(name = "type")
+    private Integer type;
     @Column(name = "status")
     private Integer status;
 

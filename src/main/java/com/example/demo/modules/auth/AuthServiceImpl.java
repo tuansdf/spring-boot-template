@@ -135,11 +135,12 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        String tokenType = CommonType.fromIndex(jwtPayload.getType());
+        Integer tokenType = jwtPayload.getType();
         if (!CommonType.RESET_PASSWORD.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
+        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getTokenId());
+        TokenDTO tokenDTO = tokenService.findOneActiveById(tokenId);
         if (tokenDTO == null || !CommonType.RESET_PASSWORD.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -175,11 +176,12 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        String tokenType = CommonType.fromIndex(jwtPayload.getType());
+        Integer tokenType = jwtPayload.getType();
         if (!CommonType.REFRESH_TOKEN.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
+        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getTokenId());
+        TokenDTO tokenDTO = tokenService.findOneActiveById(tokenId);
         if (tokenDTO == null || !CommonType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -202,12 +204,13 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        String tokenType = CommonType.fromIndex(jwtPayload.getType());
-        List<String> validTypes = List.of(CommonType.ACTIVATE_ACCOUNT, CommonType.REACTIVATE_ACCOUNT);
+        Integer tokenType = jwtPayload.getType();
+        List<Integer> validTypes = List.of(CommonType.ACTIVATE_ACCOUNT, CommonType.REACTIVATE_ACCOUNT);
         if (!validTypes.contains(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        TokenDTO tokenDTO = tokenService.findOneActiveById(ConversionUtils.toUUID(jwtPayload.getTokenId()));
+        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getTokenId());
+        TokenDTO tokenDTO = tokenService.findOneActiveById(tokenId);
         if (tokenDTO == null || !validTypes.contains(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }

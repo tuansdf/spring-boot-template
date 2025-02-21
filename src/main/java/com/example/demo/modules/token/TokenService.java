@@ -10,7 +10,7 @@ public interface TokenService {
 
     TokenDTO findOneActiveById(UUID id);
 
-    void deactivatePastTokens(UUID userId, String type);
+    void deactivatePastTokens(UUID userId, Integer type);
 
     TokenDTO createRefreshToken(UUID userId);
 

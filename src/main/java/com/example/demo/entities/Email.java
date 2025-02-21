@@ -26,8 +26,8 @@ public class Email extends BaseEntity {
     private String subject;
     @Column(name = "content", columnDefinition = "text")
     private String content;
-    @Column(name = "type", columnDefinition = "text")
-    private String type;
+    @Column(name = "type")
+    private Integer type;
     @Column(name = "retry_count")
     private Integer retryCount;
     @Column(name = "status")

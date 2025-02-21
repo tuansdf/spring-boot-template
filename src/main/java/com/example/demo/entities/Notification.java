@@ -26,10 +26,10 @@ public class Notification extends BaseEntity {
     private String data;
     @Column(name = "retry_count")
     private Integer retryCount;
-    @Column(name = "type", columnDefinition = "text")
-    private String type;
     @Column(name = "topic", columnDefinition = "text")
     private String topic;
+    @Column(name = "type")
+    private Integer type;
     @Column(name = "status")
     private Integer status;
     @Column(name = "created_by", updatable = false)

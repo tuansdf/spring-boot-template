@@ -48,7 +48,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (!CommonType.toIndex(CommonType.ACCESS_TOKEN).equals(jwtPayload.getType())) {
+        if (!CommonType.ACCESS_TOKEN.equals(jwtPayload.getType())) {
             chain.doFilter(servletRequest, servletResponse);
             return;
         }

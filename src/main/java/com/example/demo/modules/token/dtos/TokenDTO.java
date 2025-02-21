@@ -15,9 +15,9 @@ public class TokenDTO {
     private UUID id;
     private UUID ownerId;
     private String value;
-    private String type;
-    private OffsetDateTime expiresAt;
+    private Integer type;
     private Integer status;
+    private OffsetDateTime expiresAt;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 

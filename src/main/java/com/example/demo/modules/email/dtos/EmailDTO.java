@@ -18,7 +18,7 @@ public class EmailDTO {
     private String ccEmail;
     private String subject;
     private String content;
-    private String type;
+    private Integer type;
     private Integer retryCount;
     private Integer status;
     private UUID createdBy;
