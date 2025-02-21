@@ -232,14 +232,17 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (!CommonStatus.ACTIVE.equals(user.getStatus()) || ConversionUtils.safeToBool(user.getOtpEnabled())) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
+            throw new CustomException(HttpStatus.FORBIDDEN);
+        }
+        if (ConversionUtils.safeToBool(user.getOtpEnabled())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         String secret = TOTPHelper.generateSecret();
         user.setOtpSecret(secret);
         user.setOtpEnabled(false);
         userRepository.save(user);
-        return AuthDTO.builder().secret(secret).build();
+        return AuthDTO.builder().otpSecret(secret).build();
     }
 
     @Override
@@ -249,10 +252,13 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (!CommonStatus.ACTIVE.equals(user.getStatus()) || ConversionUtils.safeToBool(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
+        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
+            throw new CustomException(HttpStatus.FORBIDDEN);
+        }
+        if (ConversionUtils.safeToBool(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtp(), user.getOtpSecret());
+        boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), user.getOtpSecret());
         if (!isOtpCorrect) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -267,10 +273,13 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (!CommonStatus.ACTIVE.equals(user.getStatus()) || !ConversionUtils.safeToBool(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
+        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
+            throw new CustomException(HttpStatus.FORBIDDEN);
+        }
+        if (!ConversionUtils.safeToBool(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtp(), user.getOtpSecret());
+        boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), user.getOtpSecret());
         if (!isOtpCorrect) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
