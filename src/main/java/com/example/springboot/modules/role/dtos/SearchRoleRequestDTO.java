@@ -11,8 +11,8 @@ import java.time.OffsetDateTime;
 @Builder
 public class SearchRoleRequestDTO {
 
-    private Integer pageNumber;
-    private Integer pageSize;
+    private Long pageNumber;
+    private Long pageSize;
     private String code;
     private String status;
     private OffsetDateTime createdAtFrom;

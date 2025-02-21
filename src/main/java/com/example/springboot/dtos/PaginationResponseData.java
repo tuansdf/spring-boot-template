@@ -11,8 +11,8 @@ import java.util.List;
 @Builder
 public class PaginationResponseData<T> {
 
-    private int pageNumber;
-    private int pageSize;
+    private long pageNumber;
+    private long pageSize;
     private long totalPages;
     private long totalItems;
 

@@ -59,8 +59,8 @@ public class ConfigurationController {
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PaginationResponseData<ConfigurationDTO>>> search(
-            @RequestParam(required = false) Integer pageNumber,
-            @RequestParam(required = false) Integer pageSize,
+            @RequestParam(required = false) Long pageNumber,
+            @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) OffsetDateTime createdAtFrom,

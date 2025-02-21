@@ -11,8 +11,8 @@ import java.time.OffsetDateTime;
 @Builder
 public class SearchUserRequestDTO {
 
-    private Integer pageNumber;
-    private Integer pageSize;
+    private Long pageNumber;
+    private Long pageSize;
     private String username;
     private String email;
     private String status;

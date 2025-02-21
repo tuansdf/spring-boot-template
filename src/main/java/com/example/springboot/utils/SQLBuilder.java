@@ -8,10 +8,10 @@ import java.util.Map;
 
 public class SQLBuilder {
 
-    public static final int DEFAULT_PAGE_NUMBER = 1;
-    public static final int DEFAULT_PAGE_SIZE = 10;
+    public static final long DEFAULT_PAGE_NUMBER = 1;
+    public static final long DEFAULT_PAGE_SIZE = 10;
 
-    public static <T> PaginationResponseData<T> getPaginationResponseData(Integer pageNumber, Integer pageSize) {
+    public static <T> PaginationResponseData<T> getPaginationResponseData(Long pageNumber, Long pageSize) {
         if (pageSize == null || pageSize <= 0) {
             pageSize = DEFAULT_PAGE_SIZE;
         }
@@ -21,7 +21,7 @@ public class SQLBuilder {
         return PaginationResponseData.<T>builder().pageNumber(pageNumber).pageSize(pageSize).build();
     }
 
-    public static String getPaginationString(int pageNumber, int pageSize) {
+    public static String getPaginationString(long pageNumber, long pageSize) {
         return " limit " + pageSize + " offset " + ((pageNumber - 1) * pageSize);
     }
 
@@ -33,7 +33,7 @@ public class SQLBuilder {
         }
     }
 
-    public static long getTotalPages(long totalItems, int pageSize) {
+    public static long getTotalPages(long totalItems, long pageSize) {
         return ConversionUtils.safeToLong(totalItems / pageSize + (totalItems % pageSize > 0 ? 1 : 0));
     }
 

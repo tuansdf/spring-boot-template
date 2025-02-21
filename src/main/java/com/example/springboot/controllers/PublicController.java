@@ -88,9 +88,9 @@ public class PublicController {
 
     @GetMapping("/export-excel-batch")
     public String exportExcelBatch(@RequestParam(required = false, defaultValue = "1000") Long total) {
-        int BATCH = 1000;
+        long BATCH = 1000L;
         var requestDTO = SearchUserRequestDTO.builder()
-                .pageNumber(1)
+                .pageNumber(1L)
                 .pageSize(BATCH)
                 .build();
         var result = userService.search(requestDTO, true);
