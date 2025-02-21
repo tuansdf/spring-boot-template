@@ -64,14 +64,14 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
+        token.setOwnerId(userId);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
         token.setType(CommonType.REFRESH_TOKEN);
-        token.setOwnerId(userId);
-        token.setValue(jwtPayload.getValue());
         token.setStatus(CommonStatus.ACTIVE);
-        token.setCreatedBy(userId);
-        token.setUpdatedBy(userId);
-        return commonMapper.toDTO(tokenRepository.save(token));
+
+        TokenDTO result = commonMapper.toDTO(tokenRepository.save(token));
+        result.setValue(jwtPayload.getValue());
+        return result;
     }
 
     @Override
@@ -81,14 +81,14 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
+        token.setOwnerId(userId);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
         token.setType(CommonType.RESET_PASSWORD);
-        token.setOwnerId(userId);
-        token.setValue(jwtPayload.getValue());
         token.setStatus(CommonStatus.ACTIVE);
-        token.setCreatedBy(userId);
-        token.setUpdatedBy(userId);
-        return commonMapper.toDTO(tokenRepository.save(token));
+
+        TokenDTO result = commonMapper.toDTO(tokenRepository.save(token));
+        result.setValue(jwtPayload.getValue());
+        return result;
     }
 
     @Override
@@ -98,14 +98,14 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
+        token.setOwnerId(userId);
         token.setExpiresAt(DateUtils.toOffsetDateTime(jwtPayload.getExpiresAt()));
         token.setType(CommonType.ACTIVATE_ACCOUNT);
-        token.setOwnerId(userId);
-        token.setValue(jwtPayload.getValue());
         token.setStatus(CommonStatus.ACTIVE);
-        token.setCreatedBy(userId);
-        token.setUpdatedBy(userId);
-        return commonMapper.toDTO(tokenRepository.save(token));
+
+        TokenDTO result = commonMapper.toDTO(tokenRepository.save(token));
+        result.setValue(jwtPayload.getValue());
+        return result;
     }
 
 }

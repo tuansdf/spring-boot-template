@@ -16,7 +16,7 @@ import java.util.UUID;
 @Table(name = "notification")
 public class Notification extends BaseEntity {
 
-    @Column(name = "user_id", columnDefinition = "uuid")
+    @Column(name = "user_id")
     private UUID userId;
     @Column(name = "title", columnDefinition = "text")
     private String title;
@@ -32,9 +32,9 @@ public class Notification extends BaseEntity {
     private String topic;
     @Column(name = "status", columnDefinition = "text")
     private String status;
-    @Column(name = "created_by", columnDefinition = "uuid", updatable = false)
+    @Column(name = "created_by", updatable = false)
     private UUID createdBy;
-    @Column(name = "updated_by", columnDefinition = "uuid")
+    @Column(name = "updated_by")
     private UUID updatedBy;
 
 }

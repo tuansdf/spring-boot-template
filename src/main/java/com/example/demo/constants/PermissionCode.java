@@ -12,8 +12,8 @@ public class PermissionCode {
     public static final String UPDATE_USER = "ROLE_P_UPDATE_USER";
     public static final String DELETE_USER = "ROLE_P_DELETE_USER";
 
-    private static final Map<String, Integer> stringToIndex;
-    private static final Map<Integer, String> indexToString;
+    private static final Map<String, Integer> STRING_TO_INDEX;
+    private static final Map<Integer, String> INDEX_TO_STRING;
 
     static {
         // WARN: Order matters. Be careful when rearranging in production
@@ -30,16 +30,16 @@ public class PermissionCode {
             tempStringToIndex.put(codes.get(i), i + 1);
             tempIndexToString.put(i + 1, codes.get(i));
         }
-        stringToIndex = Collections.unmodifiableMap(tempStringToIndex);
-        indexToString = Collections.unmodifiableMap(tempIndexToString);
+        STRING_TO_INDEX = Collections.unmodifiableMap(tempStringToIndex);
+        INDEX_TO_STRING = Collections.unmodifiableMap(tempIndexToString);
     }
 
     public static String fromIndex(Integer input) {
-        return indexToString.get(input);
+        return INDEX_TO_STRING.get(input);
     }
 
     public static Integer toIndex(String input) {
-        return stringToIndex.get(input);
+        return STRING_TO_INDEX.get(input);
     }
 
     public static Set<String> fromIndexes(List<Integer> indexes) {

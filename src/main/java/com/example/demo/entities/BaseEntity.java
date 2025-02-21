@@ -21,7 +21,7 @@ import java.util.UUID;
 public class BaseEntity implements Serializable {
 
     @Id
-    @Column(name = "id", columnDefinition = "uuid")
+    @Column(name = "id")
     private UUID id;
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;

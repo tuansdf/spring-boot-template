@@ -16,7 +16,7 @@ import java.util.UUID;
 @Table(name = "user_role")
 public class UserRole extends BaseEntity {
 
-    @Column(name = "user_id", columnDefinition = "uuid")
+    @Column(name = "user_id")
     private UUID userId;
     @Column(name = "role_id", columnDefinition = "bigint")
     private Long roleId;
