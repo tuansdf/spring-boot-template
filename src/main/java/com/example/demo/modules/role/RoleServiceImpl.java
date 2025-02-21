@@ -68,23 +68,23 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void addToUser(UUID userId, Set<Long> roleIds) {
+    public void addToUser(UUID userId, Set<UUID> roleIds) {
         userRoleRepository.deleteAllByUserId(userId);
         List<UserRole> userRoles = new ArrayList<>();
-        for (Long roleId : roleIds) {
+        for (UUID roleId : roleIds) {
             userRoles.add(new UserRole(userId, roleId));
         }
         userRoleRepository.saveAll(userRoles);
     }
 
     @Override
-    public RoleDTO findOneById(Long id) {
+    public RoleDTO findOneById(UUID id) {
         Optional<Role> result = roleRepository.findById(id);
         return result.map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
-    public RoleDTO findOneByIdOrThrow(Long id) {
+    public RoleDTO findOneByIdOrThrow(UUID id) {
         RoleDTO result = findOneById(id);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);

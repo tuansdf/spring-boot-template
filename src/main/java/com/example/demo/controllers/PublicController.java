@@ -155,8 +155,8 @@ public class PublicController {
         List<UserDTO> data = createData(total);
         List<User> users = data.stream().map(commonMapper::toEntity).toList();
         users = userRepository.saveAll(users);
-        Set<Long> roleIds = new HashSet<>();
-        roleIds.add(1L);
+        Set<UUID> roleIds = new HashSet<>();
+        roleIds.add(RandomUtils.Secure.generateTimeBasedUUID());
         for (User user : users) {
             roleService.addToUser(user.getId(), roleIds);
         }

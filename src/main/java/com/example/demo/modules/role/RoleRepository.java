@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface RoleRepository extends JpaRepository<Role, Long> {
+public interface RoleRepository extends JpaRepository<Role, UUID> {
 
     @Query(value = "select r.code from user_role ur " +
             "inner join role r on (r.id = ur.role_id) " +

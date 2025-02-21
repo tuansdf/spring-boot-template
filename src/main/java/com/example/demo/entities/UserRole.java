@@ -18,7 +18,7 @@ public class UserRole extends BaseEntity {
 
     @Column(name = "user_id")
     private UUID userId;
-    @Column(name = "role_id", columnDefinition = "bigint")
-    private Long roleId;
+    @Column(name = "role_id")
+    private UUID roleId;
 
 }

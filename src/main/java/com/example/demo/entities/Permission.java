@@ -17,7 +17,7 @@ import java.util.UUID;
 @Table(name = "permission")
 @SqlResultSetMapping(name = ResultSetName.PERMISSION_SEARCH, classes = {
         @ConstructorResult(targetClass = PermissionDTO.class, columns = {
-                @ColumnResult(name = "id", type = Long.class),
+                @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "code", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
                 @ColumnResult(name = "status", type = String.class),
@@ -27,7 +27,7 @@ import java.util.UUID;
                 @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
         })
 })
-public class Permission extends BaseResourceEntity {
+public class Permission extends BaseEntity {
 
     @Column(name = "code", columnDefinition = "text", unique = true, updatable = false)
     private String code;

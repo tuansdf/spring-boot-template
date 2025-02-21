@@ -65,13 +65,13 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public PermissionDTO findOneById(Long id) {
+    public PermissionDTO findOneById(UUID id) {
         Optional<Permission> result = permissionRepository.findById(id);
         return result.map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
-    public PermissionDTO findOneByIdOrThrow(Long id) {
+    public PermissionDTO findOneByIdOrThrow(UUID id) {
         PermissionDTO result = findOneById(id);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -95,7 +95,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public Set<String> findAllCodesByRoleId(Long roleId) {
+    public Set<String> findAllCodesByRoleId(UUID roleId) {
         Set<String> result = permissionRepository.findAllCodesByRoleId(roleId);
         if (result == null) {
             return new HashSet<>();
@@ -113,7 +113,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public List<PermissionDTO> findAllByRoleId(Long roleId) {
+    public List<PermissionDTO> findAllByRoleId(UUID roleId) {
         List<Permission> result = permissionRepository.findAllByRoleId(roleId);
         if (result == null) {
             return new ArrayList<>();

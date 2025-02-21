@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -12,11 +14,11 @@ import lombok.*;
 @ToString
 @Entity
 @Table(name = "role_permission")
-public class RolePermission extends BaseResourceEntity {
+public class RolePermission extends BaseEntity {
 
     @Column(name = "role_id")
-    private Long roleId;
+    private UUID roleId;
     @Column(name = "permission_id")
-    private Long permissionId;
+    private UUID permissionId;
 
 }

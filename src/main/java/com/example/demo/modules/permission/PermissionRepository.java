@@ -11,12 +11,12 @@ import java.util.Set;
 import java.util.UUID;
 
 @Repository
-public interface PermissionRepository extends JpaRepository<Permission, Long> {
+public interface PermissionRepository extends JpaRepository<Permission, UUID> {
 
     @Query(value = "select p.code from role_permission rp " +
             "inner join permission p on (p.id = rp.permission_id) " +
             "where rp.role_id = :roleId", nativeQuery = true)
-    Set<String> findAllCodesByRoleId(Long roleId);
+    Set<String> findAllCodesByRoleId(UUID roleId);
 
     @Query(value = "select p.code from user_role ur " +
             "inner join role_permission rp on (rp.role_id = ur.role_id) " +
@@ -27,7 +27,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
     @Query(value = "select p.* from role_permission rp " +
             "inner join permission p on (p.id = rp.permission_id) " +
             "where rp.role_id = :roleId", nativeQuery = true)
-    List<Permission> findAllByRoleId(Long roleId);
+    List<Permission> findAllByRoleId(UUID roleId);
 
     @Query(value = "select p.* from user_role ur " +
             "inner join role_permission rp on (rp.role_id = ur.role_id) " +

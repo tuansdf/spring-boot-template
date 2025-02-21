@@ -12,11 +12,11 @@ public interface RoleService {
 
     RoleDTO save(RoleDTO roleDTO);
 
-    void addToUser(UUID userId, Set<Long> roleIds);
+    void addToUser(UUID userId, Set<UUID> roleIds);
 
-    RoleDTO findOneById(Long id);
+    RoleDTO findOneById(UUID id);
 
-    RoleDTO findOneByIdOrThrow(Long id);
+    RoleDTO findOneByIdOrThrow(UUID id);
 
     RoleDTO findOneByCode(String code);
 

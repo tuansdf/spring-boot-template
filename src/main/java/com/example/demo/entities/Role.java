@@ -17,7 +17,7 @@ import java.util.UUID;
 @Table(name = "role")
 @SqlResultSetMapping(name = ResultSetName.ROLE_SEARCH, classes = {
         @ConstructorResult(targetClass = RoleDTO.class, columns = {
-                @ColumnResult(name = "id", type = Long.class),
+                @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "code", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
                 @ColumnResult(name = "description", type = String.class),
@@ -28,7 +28,7 @@ import java.util.UUID;
                 @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
         })
 })
-public class Role extends BaseResourceEntity {
+public class Role extends BaseEntity {
 
     @Column(name = "code", columnDefinition = "text", unique = true, updatable = false)
     private String code;

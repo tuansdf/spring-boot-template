@@ -12,19 +12,19 @@ public interface PermissionService {
 
     PermissionDTO save(PermissionDTO permissionDTO);
 
-    PermissionDTO findOneById(Long id);
+    PermissionDTO findOneById(UUID id);
 
-    PermissionDTO findOneByIdOrThrow(Long id);
+    PermissionDTO findOneByIdOrThrow(UUID id);
 
     PermissionDTO findOneByCode(String code);
 
     PermissionDTO findOneByCodeOrThrow(String code);
 
-    Set<String> findAllCodesByRoleId(Long roleId);
+    Set<String> findAllCodesByRoleId(UUID roleId);
 
     Set<String> findAllCodesByUserId(UUID userId);
 
-    List<PermissionDTO> findAllByRoleId(Long roleId);
+    List<PermissionDTO> findAllByRoleId(UUID roleId);
 
     List<PermissionDTO> findAllByUserId(UUID userId);
 

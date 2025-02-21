@@ -14,6 +14,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class RoleController {
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<RoleDTO>> findOneById(@PathVariable Long id) {
+    public ResponseEntity<CommonResponse<RoleDTO>> findOneById(@PathVariable UUID id) {
         try {
             var result = roleService.findOneByIdOrThrow(id);
             return ResponseEntity.ok(new CommonResponse<>(result));
