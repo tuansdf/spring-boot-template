@@ -4,13 +4,15 @@ import com.example.demo.dtos.PaginationResponseData;
 import com.example.demo.modules.configuration.dtos.ConfigurationDTO;
 import com.example.demo.modules.configuration.dtos.SearchConfigurationRequestDTO;
 
+import java.util.UUID;
+
 public interface ConfigurationService {
 
     ConfigurationDTO save(ConfigurationDTO requestDTO);
 
-    ConfigurationDTO findOneById(Long id);
+    ConfigurationDTO findOneById(UUID id);
 
-    ConfigurationDTO findOneByIdOrThrow(Long id);
+    ConfigurationDTO findOneByIdOrThrow(UUID id);
 
     ConfigurationDTO findOneByCode(String code);
 

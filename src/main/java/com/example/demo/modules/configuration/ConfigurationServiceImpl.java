@@ -66,13 +66,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public ConfigurationDTO findOneById(Long id) {
+    public ConfigurationDTO findOneById(UUID id) {
         Optional<Configuration> configurationOptional = configurationRepository.findById(id);
         return commonMapper.toDTO(configurationOptional.orElse(null));
     }
 
     @Override
-    public ConfigurationDTO findOneByIdOrThrow(Long id) {
+    public ConfigurationDTO findOneByIdOrThrow(UUID id) {
         ConfigurationDTO result = findOneById(id);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
