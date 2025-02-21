@@ -1,9 +1,9 @@
-package com.example.demo.modules.authentication;
+package com.example.demo.modules.auth;
 
-import com.example.demo.modules.authentication.dtos.ForgotPasswordRequestDTO;
-import com.example.demo.modules.authentication.dtos.LoginRequestDTO;
-import com.example.demo.modules.authentication.dtos.RegisterRequestDTO;
-import com.example.demo.modules.authentication.dtos.ResetPasswordRequestDTO;
+import com.example.demo.modules.auth.dtos.ForgotPasswordRequestDTO;
+import com.example.demo.modules.auth.dtos.LoginRequestDTO;
+import com.example.demo.modules.auth.dtos.RegisterRequestDTO;
+import com.example.demo.modules.auth.dtos.ResetPasswordRequestDTO;
 import com.example.demo.utils.I18nHelper;
 import com.example.demo.utils.ValidationUtils;
 import lombok.RequiredArgsConstructor;

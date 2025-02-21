@@ -1,4 +1,4 @@
-package com.example.demo.modules.authentication.dtos;
+package com.example.demo.modules.auth.dtos;
 
 import lombok.*;
 

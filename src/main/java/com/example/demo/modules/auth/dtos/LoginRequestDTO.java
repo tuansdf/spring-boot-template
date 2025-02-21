@@ -1,4 +1,4 @@
-package com.example.demo.modules.authentication.dtos;
+package com.example.demo.modules.auth.dtos;
 
 import lombok.*;
 
@@ -7,11 +7,10 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 @Builder
-public class RegisterRequestDTO {
+public class LoginRequestDTO {
 
     private String username;
-    private String email;
     private String password;
-    private String name;
+    private String otp;
 
 }

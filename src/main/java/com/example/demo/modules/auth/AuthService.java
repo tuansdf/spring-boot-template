@@ -1,6 +1,6 @@
-package com.example.demo.modules.authentication;
+package com.example.demo.modules.auth;
 
-import com.example.demo.modules.authentication.dtos.*;
+import com.example.demo.modules.auth.dtos.*;
 
 public interface AuthService {
 

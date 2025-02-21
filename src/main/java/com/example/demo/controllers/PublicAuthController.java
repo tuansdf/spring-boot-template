@@ -1,8 +1,8 @@
 package com.example.demo.controllers;
 
 import com.example.demo.dtos.CommonResponse;
-import com.example.demo.modules.authentication.AuthService;
-import com.example.demo.modules.authentication.dtos.*;
+import com.example.demo.modules.auth.AuthService;
+import com.example.demo.modules.auth.dtos.*;
 import com.example.demo.utils.ExceptionUtils;
 import com.example.demo.utils.I18nHelper;
 import lombok.RequiredArgsConstructor;

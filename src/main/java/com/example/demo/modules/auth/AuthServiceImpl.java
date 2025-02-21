@@ -1,4 +1,4 @@
-package com.example.demo.modules.authentication;
+package com.example.demo.modules.auth;
 
 import com.example.demo.configs.RequestContextHolder;
 import com.example.demo.constants.CommonStatus;
@@ -6,7 +6,7 @@ import com.example.demo.constants.CommonType;
 import com.example.demo.constants.ConfigurationCode;
 import com.example.demo.entities.User;
 import com.example.demo.exception.CustomException;
-import com.example.demo.modules.authentication.dtos.*;
+import com.example.demo.modules.auth.dtos.*;
 import com.example.demo.modules.configuration.ConfigurationService;
 import com.example.demo.modules.email.EmailService;
 import com.example.demo.modules.jwt.JWTService;
