@@ -23,7 +23,7 @@ public class Token extends BaseEntity {
     private OffsetDateTime expiresAt;
     @Column(name = "type", columnDefinition = "text")
     private String type;
-    @Column(name = "status", columnDefinition = "text")
-    private String status;
+    @Column(name = "status")
+    private Integer status;
 
 }

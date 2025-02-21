@@ -58,11 +58,10 @@ public class RoleServiceImpl implements RoleService {
         }
         result.setName(requestDTO.getName());
         result.setDescription(requestDTO.getDescription());
-        if (StringUtils.isBlank(requestDTO.getStatus())) {
-            result.setStatus(CommonStatus.ACTIVE);
-        } else {
-            result.setStatus(ConversionUtils.toCode(requestDTO.getStatus()));
+        if (requestDTO.getStatus() == null) {
+            requestDTO.setStatus(CommonStatus.ACTIVE);
         }
+        result.setStatus(requestDTO.getStatus());
         result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(roleRepository.save(result));
     }

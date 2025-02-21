@@ -20,7 +20,7 @@ public class EmailDTO {
     private String content;
     private String type;
     private Integer retryCount;
-    private String status;
+    private Integer status;
     private UUID createdBy;
     private UUID updatedBy;
     private OffsetDateTime createdAt;

@@ -25,7 +25,7 @@ public class UserImportTemplate implements ImportTemplate<UserDTO> {
         result.setUsername(ConversionUtils.safeToString(row.get(1)));
         result.setEmail(ConversionUtils.safeToString(row.get(2)));
         result.setName(ConversionUtils.safeToString(row.get(3)));
-        result.setStatus(ConversionUtils.safeToString(row.get(4)));
+        result.setStatus(ConversionUtils.toInt(row.get(4)));
         result.setCreatedBy(ConversionUtils.toUUID(row.get(5)));
         result.setUpdatedBy(ConversionUtils.toUUID(row.get(6)));
         result.setCreatedAt(DateUtils.toOffsetDateTime(row.get(7)));

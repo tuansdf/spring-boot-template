@@ -2,9 +2,9 @@ package com.example.demo.constants;
 
 public class CommonStatus {
 
-    public final static String ACTIVE = "ACTIVE";
-    public final static String INACTIVE = "INACTIVE";
-    public final static String PENDING = "PENDING";
-    public final static String DONE = "DONE";
+    public final static Integer ACTIVE = 1;
+    public final static Integer INACTIVE = 2;
+    public final static Integer PENDING = 3;
+    public final static Integer DONE = 4;
 
 }

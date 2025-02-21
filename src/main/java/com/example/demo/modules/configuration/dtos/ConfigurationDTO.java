@@ -16,7 +16,7 @@ public class ConfigurationDTO {
     private String code;
     private String value;
     private String description;
-    private String status;
+    private Integer status;
     private UUID createdBy;
     private UUID updatedBy;
     private OffsetDateTime createdAt;

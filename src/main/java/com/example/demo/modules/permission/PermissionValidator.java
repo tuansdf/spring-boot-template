@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class PermissionValidator {
 
-    private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
+    private static final List<Integer> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
 
     public void validateCreate(PermissionDTO requestDTO) {
         ValidationUtils.notEmpty(requestDTO.getCode(), I18nHelper.getMessageX("form.error.missing", "field.code"));

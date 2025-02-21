@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class ConfigurationValidator {
 
-    private final static List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
+    private final static List<Integer> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
 
     public void validateCreate(ConfigurationDTO requestDTO) {
         ValidationUtils.notEmpty(requestDTO.getCode(), I18nHelper.getMessageX("form.error.missing", "field.code"));

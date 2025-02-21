@@ -29,7 +29,7 @@ public class UserDTO {
     @JsonIgnore
     private String otpSecret;
     private Boolean otpEnabled;
-    private String status;
+    private Integer status;
     private UUID createdBy;
     private UUID updatedBy;
     private OffsetDateTime createdAt;
@@ -46,7 +46,7 @@ public class UserDTO {
 
     // USER_SEARCH
     public UserDTO(
-            UUID id, String username, String email, String name, String status, UUID createdBy, UUID updatedBy,
+            UUID id, String username, String email, String name, Integer status, UUID createdBy, UUID updatedBy,
             OffsetDateTime createdAt, OffsetDateTime updatedAt, String roles, String permissions) {
         setId(id);
         setUsername(username);

@@ -34,7 +34,7 @@ public class Permission extends BaseEntity {
     @Column(name = "name", columnDefinition = "text")
     private String name;
     @Column(name = "status", columnDefinition = "text")
-    private String status;
+    private Integer status;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
     @Column(name = "updated_by")

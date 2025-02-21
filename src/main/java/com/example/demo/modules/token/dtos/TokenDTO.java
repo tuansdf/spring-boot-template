@@ -17,7 +17,7 @@ public class TokenDTO {
     private String value;
     private String type;
     private OffsetDateTime expiresAt;
-    private String status;
+    private Integer status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 

@@ -30,8 +30,8 @@ public class Email extends BaseEntity {
     private String type;
     @Column(name = "retry_count")
     private Integer retryCount;
-    @Column(name = "status", columnDefinition = "text")
-    private String status;
+    @Column(name = "status")
+    private Integer status;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
     @Column(name = "updated_by")

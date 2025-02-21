@@ -20,7 +20,7 @@ public class NotificationDTO {
     private Integer retryCount;
     private String type;
     private String topic;
-    private String status;
+    private Integer status;
     private UUID createdBy;
     private UUID updatedBy;
     private OffsetDateTime createdAt;

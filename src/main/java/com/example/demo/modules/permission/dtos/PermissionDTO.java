@@ -15,7 +15,7 @@ public class PermissionDTO {
     private UUID id;
     private String code;
     private String name;
-    private String status;
+    private Integer status;
     private UUID createdBy;
     private UUID updatedBy;
     private OffsetDateTime createdAt;
