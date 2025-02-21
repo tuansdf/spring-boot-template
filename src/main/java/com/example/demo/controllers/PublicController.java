@@ -81,8 +81,7 @@ public class PublicController {
 //        var result = userService.search(requestDTO, false);
 //        var data = result.getItems();
         String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
-        var workbook = ExcelHelper.Export.processTemplate(new UserExportTemplate(data, true));
-        workbook.close();
+        FastExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
         return "OK";
     }
 

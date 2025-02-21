@@ -98,10 +98,9 @@ public class FastExcelHelper {
         }
 
         public static <T> void processTemplateWriteFile(ExportTemplate<T> template, String outputPath) {
-            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                 FileOutputStream fileOutputStream = new FileOutputStream(outputPath)) {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(outputPath);
+                 BufferedOutputStream outputStream = new BufferedOutputStream(fileOutputStream)) {
                 processTemplate(template, outputStream);
-                outputStream.writeTo(fileOutputStream);
             } catch (Exception e) {
                 log.error("processTemplateWriteFile ", e);
             }
