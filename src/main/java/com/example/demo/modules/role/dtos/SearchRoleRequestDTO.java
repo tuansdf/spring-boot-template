@@ -14,7 +14,7 @@ public class SearchRoleRequestDTO {
     private Long pageNumber;
     private Long pageSize;
     private String code;
-    private String status;
+    private Integer status;
     private OffsetDateTime createdAtFrom;
     private OffsetDateTime createdAtTo;
 

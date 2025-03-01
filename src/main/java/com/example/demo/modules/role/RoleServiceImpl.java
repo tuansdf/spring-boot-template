@@ -148,7 +148,7 @@ public class RoleServiceImpl implements RoleService {
             builder.append(" and r.code = :code ");
             params.put("code", requestDTO.getCode());
         }
-        if (StringUtils.isNotBlank(requestDTO.getStatus())) {
+        if (requestDTO.getStatus() != null) {
             builder.append(" and r.status = :status ");
             params.put("status", requestDTO.getStatus());
         }

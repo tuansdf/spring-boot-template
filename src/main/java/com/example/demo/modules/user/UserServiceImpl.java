@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
                 builder.append(" and u.email like :email ");
                 params.put("email", StringUtils.stripStart(requestDTO.getEmail(), "%").concat("%"));
             }
-            if (StringUtils.isNotBlank(requestDTO.getStatus())) {
+            if (requestDTO.getStatus() != null) {
                 builder.append(" and u.status = :status ");
                 params.put("status", requestDTO.getStatus());
             }

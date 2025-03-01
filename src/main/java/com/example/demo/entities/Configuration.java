@@ -21,7 +21,7 @@ import java.util.UUID;
                 @ColumnResult(name = "code", type = String.class),
                 @ColumnResult(name = "value", type = String.class),
                 @ColumnResult(name = "description", type = String.class),
-                @ColumnResult(name = "status", type = String.class),
+                @ColumnResult(name = "status", type = Integer.class),
                 @ColumnResult(name = "created_by", type = UUID.class),
                 @ColumnResult(name = "updated_by", type = UUID.class),
                 @ColumnResult(name = "created_at", type = OffsetDateTime.class),

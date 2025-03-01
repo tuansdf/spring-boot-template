@@ -20,7 +20,7 @@ import java.util.UUID;
                 @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "code", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
-                @ColumnResult(name = "status", type = String.class),
+                @ColumnResult(name = "status", type = Integer.class),
                 @ColumnResult(name = "created_by", type = UUID.class),
                 @ColumnResult(name = "updated_by", type = UUID.class),
                 @ColumnResult(name = "created_at", type = OffsetDateTime.class),
@@ -33,7 +33,7 @@ public class Permission extends BaseEntity {
     private String code;
     @Column(name = "name", columnDefinition = "text")
     private String name;
-    @Column(name = "status", columnDefinition = "text")
+    @Column(name = "status")
     private Integer status;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
