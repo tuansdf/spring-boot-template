@@ -129,7 +129,7 @@ public class PublicController {
         if (fast) {
             FastExcelHelper.Import.processTemplate(new UserImportTemplate(x -> {
                 items.add(x);
-            }), inputPath);           
+            }), inputPath);
         } else {
             ExcelHelper.Import.processTemplate(new UserImportTemplate(x -> {
                 items.add(x);
@@ -291,6 +291,18 @@ public class PublicController {
     @GetMapping(value = "/totp", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object totp() {
         return TOTPHelper.generateSecret();
+    }
+
+    @GetMapping(value = "/image/compress", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object image(
+            @RequestParam String inputPath,
+            @RequestParam(required = false) Integer width,
+            @RequestParam(required = false) Integer height,
+            @RequestParam(required = false) String format,
+            @RequestParam(required = false) Float quality) throws IOException {
+        ImageHelper.compressImageWriteFile(inputPath, ".temp/compressed-" + DateUtils.toEpochMilli() + ".jpg",
+                ImageHelper.Options.builder().width(width).height(height).quality(quality).format(format).build());
+        return "OK";
     }
 
 }

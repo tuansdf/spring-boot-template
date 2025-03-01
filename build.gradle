@@ -59,6 +59,7 @@ dependencies {
     implementation 'org.dhatim:fastexcel:0.18.4'
     implementation 'org.dhatim:fastexcel-reader:0.18.4'
     implementation 'com.atlassian:onetime:2.1.2'
+    implementation 'net.coobird:thumbnailator:0.4.20'
 
     compileOnly 'org.projectlombok:lombok'
     implementation 'org.mapstruct:mapstruct:1.6.3'
