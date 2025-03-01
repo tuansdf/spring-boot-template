@@ -21,7 +21,7 @@ public class RandomUtils {
     private static final RandomBasedGenerator secureUUIDGenerator = Generators.randomBasedGenerator(secureRandom);
     private static final RandomBasedGenerator insecureUUIDGenerator = Generators.randomBasedGenerator(insecureRandom);
 
-    private static String generateString(Random random, int length) {
+    private static String generateHexString(Random random, int length) {
         if (random == null) {
             random = secureRandom;
         }
@@ -51,8 +51,8 @@ public class RandomUtils {
             return RandomUtils.generateOTP(secureRandom, length);
         }
 
-        public static String generateString(int length) {
-            return RandomUtils.generateString(secureRandom, length);
+        public static String generateHexString(int length) {
+            return RandomUtils.generateHexString(secureRandom, length);
         }
     }
 
@@ -69,8 +69,8 @@ public class RandomUtils {
             return RandomUtils.generateOTP(insecureRandom, length);
         }
 
-        public static String generateString(int length) {
-            return RandomUtils.generateString(insecureRandom, length);
+        public static String generateHexString(int length) {
+            return RandomUtils.generateHexString(insecureRandom, length);
         }
     }
 

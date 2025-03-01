@@ -72,7 +72,8 @@ public class PublicController {
     }
 
     @GetMapping("/export-excel")
-    public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) throws IOException {
+    public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total,
+                              @RequestParam(required = false, defaultValue = "false") Boolean fast) throws IOException {
         List<UserDTO> data = createData(total);
 //        var requestDTO = SearchUserRequestDTO.builder()
 //                .pageNumber(1)
@@ -81,7 +82,11 @@ public class PublicController {
 //        var result = userService.search(requestDTO, false);
 //        var data = result.getItems();
         String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
-        FastExcelHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
+        if (fast) {
+            FastExcelHelper.Export.processTemplateWriteFile(UserExportTemplate.builder().body(data).skipHeader(false).build(), exportPath);
+        } else {
+            ExcelHelper.Export.processTemplateWriteFile(UserExportTemplate.builder().body(data).skipHeader(false).build(), exportPath);
+        }
         return "OK";
     }
 
@@ -92,16 +97,12 @@ public class PublicController {
                 .pageNumber(1L)
                 .pageSize(BATCH)
                 .build();
-        var result = userService.search(requestDTO, true);
-        total = result.getTotalItems();
+        total = userService.search(requestDTO, true).getTotalItems();
         try (Workbook workbook = new SXSSFWorkbook()) {
-            UserExportTemplate template = new UserExportTemplate();
-            template.setSkipHeader(false);
             for (int i = 0; i < total; i += BATCH) {
-                result = userService.search(requestDTO, false);
-                template.setBody(result.getItems());
+                var result = userService.search(requestDTO, false);
+                UserExportTemplate template = UserExportTemplate.builder().body(result.getItems()).skipHeader(i > 0).build();
                 ExcelHelper.Export.processTemplate(template, workbook);
-                template.setSkipHeader(true);
                 requestDTO.setPageNumber(requestDTO.getPageNumber() + 1);
             }
             String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
@@ -115,21 +116,25 @@ public class PublicController {
     @GetMapping("/export-csv")
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
-//        String exportPath = ".temp/csv-" + DateUtils.toEpochMicro() + ".csv";
-//        CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
+        String exportPath = ".temp/csv-" + DateUtils.toEpochMicro() + ".csv";
+        CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
         return "OK";
     }
 
     @GetMapping("/import-excel")
-    public String importExcel(@RequestParam String inputPath) {
+    public String importExcel(@RequestParam String inputPath,
+                              @RequestParam(required = false, defaultValue = "false") Boolean fast) {
         final int BATCH = 1000;
         List<UserDTO> items = new ArrayList<>();
-        ExcelHelper.Import.processTemplate(new UserImportTemplate(x -> {
-            if (items.size() >= BATCH) {
-                items.clear();
-            }
-            items.add(x);
-        }), inputPath);
+        if (fast) {
+            FastExcelHelper.Import.processTemplate(new UserImportTemplate(x -> {
+                items.add(x);
+            }), inputPath);           
+        } else {
+            ExcelHelper.Import.processTemplate(new UserImportTemplate(x -> {
+                items.add(x);
+            }), inputPath);
+        }
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
@@ -236,8 +241,8 @@ public class PublicController {
 //                UUID.randomUUID().toString();
                 RandomUtils.Secure.generateUUID();
                 RandomUtils.Insecure.generateUUID();
-                RandomUtils.Insecure.generateString(16);
-                RandomUtils.Secure.generateString(16);
+                RandomUtils.Insecure.generateHexString(16);
+                RandomUtils.Secure.generateHexString(16);
                 RandomUtils.Insecure.generateOTP(16);
                 RandomUtils.Secure.generateOTP(16);
             }
@@ -272,8 +277,8 @@ public class PublicController {
     @GetMapping("/rand")
     public Object testRand() {
         Map<String, Object> result = new HashMap<>();
-        result.put("INRAN", RandomUtils.Insecure.generateString(16));
-        result.put("RAN", RandomUtils.Secure.generateString(16));
+        result.put("INRAN", RandomUtils.Insecure.generateHexString(16));
+        result.put("RAN", RandomUtils.Secure.generateHexString(16));
         result.put("INOTP", RandomUtils.Insecure.generateOTP(6));
         result.put("OTP", RandomUtils.Secure.generateOTP(6));
         result.put("UUID", RandomUtils.Secure.generateUUID());

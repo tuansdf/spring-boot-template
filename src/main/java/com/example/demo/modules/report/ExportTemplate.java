@@ -1,7 +1,7 @@
 package com.example.demo.modules.report;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 public interface ExportTemplate<T> {
 
@@ -9,8 +9,6 @@ public interface ExportTemplate<T> {
 
     List<T> getBody();
 
-    Function<T, List<Object>> getRowExtractor();
-
-    boolean getSkipHeader();
+    BiFunction<T, Integer, List<Object>> getRowExtractor();
 
 }

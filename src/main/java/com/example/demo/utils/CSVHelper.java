@@ -4,7 +4,6 @@ import com.example.demo.exception.InvalidImportTemplateException;
 import com.example.demo.modules.report.ExportTemplate;
 import com.example.demo.modules.report.ImportTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
@@ -19,20 +18,21 @@ import java.util.List;
 @Slf4j
 public class CSVHelper {
 
+    private static final int DEFAULT_BODY_ROW = 1;
+
     public static class Export {
         public static <T> void processTemplate(ExportTemplate<T> template, Writer writer) {
-            if (template == null || writer == null || CollectionUtils.isEmpty(template.getHeader()) ||
-                    CollectionUtils.isEmpty(template.getBody()) || template.getRowExtractor() == null)
-                return;
-
             var header = template.getHeader();
             var body = template.getBody();
             var rowDataExtractor = template.getRowExtractor();
             var rowSize = header.size();
 
             try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.builder().setHeader(header.toArray(new String[0])).build())) {
+                int i = 0;
                 for (T data : body) {
-                    csvPrinter.printRecord(CommonUtils.rightPad(rowDataExtractor.apply(data), rowSize));
+                    int rowNum = DEFAULT_BODY_ROW + i;
+                    csvPrinter.printRecord(CommonUtils.rightPad(rowDataExtractor.apply(data, rowNum), rowSize));
+                    i++;
                 }
             } catch (Exception e) {
                 log.error("processTemplate ", e);

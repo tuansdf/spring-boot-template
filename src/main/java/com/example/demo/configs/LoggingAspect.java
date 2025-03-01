@@ -1,6 +1,5 @@
 package com.example.demo.configs;
 
-import com.example.demo.utils.ConversionUtils;
 import com.example.demo.utils.DateUtils;
 import com.example.demo.utils.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,7 @@ public class LoggingAspect {
         Object[] methodArgs = joinPoint.getArgs();
 
         long start = DateUtils.toEpochMilli();
-        String key = ConversionUtils.safeToString(start).concat("_").concat(RandomUtils.Insecure.generateString(8));
+        String key = RandomUtils.Insecure.generateTimeBasedUUID().toString();
 
         log.info("{} ENTER method: {} with arguments: {}", key, methodName, methodArgs);
 

@@ -149,17 +149,19 @@ public class ExcelHelper {
         public static <T> void processTemplate(ExportTemplate<T> template, Workbook workbook) {
             try {
                 Sheet sheet = getSheet(workbook);
-                if (!template.getSkipHeader() && CollectionUtils.isNotEmpty(template.getHeader())) {
+                if (template.getHeader() != null) {
                     setRowCellValue(getRow(sheet, sheet.getLastRowNum() + 1), template.getHeader());
                 }
 
                 var body = template.getBody();
                 var rowDataExtractor = template.getRowExtractor();
                 int fromRow = sheet.getLastRowNum() + 1;
-                for (int i = 0; i < body.size(); i++) {
-                    T item = body.get(i);
-                    Row row = getRow(sheet, fromRow + i);
-                    setRowCellValue(row, rowDataExtractor.apply(item));
+                int i = 0;
+                for (T item : body) {
+                    int rowNum = fromRow + i;
+                    Row row = getRow(sheet, rowNum);
+                    setRowCellValue(row, rowDataExtractor.apply(item, rowNum));
+                    i++;
                 }
             } catch (Exception e) {
                 log.error("processTemplate ", e);
