@@ -15,7 +15,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "token")
-public class Token extends BaseEntity {
+public class Token extends AbstractEntity {
 
     @Column(name = "owner_id")
     private UUID ownerId;

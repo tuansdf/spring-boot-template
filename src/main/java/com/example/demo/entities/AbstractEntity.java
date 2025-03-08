@@ -2,23 +2,17 @@ package com.example.demo.entities;
 
 import com.example.demo.utils.RandomUtils;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+@Getter
+@Setter
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-public class BaseEntity implements Serializable {
+public abstract class AbstractEntity implements Serializable {
 
     @Id
     @Column(name = "id")

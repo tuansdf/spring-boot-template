@@ -14,7 +14,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "notification")
-public class Notification extends BaseEntity {
+public class Notification extends AbstractEntity {
 
     @Column(name = "user_id")
     private UUID userId;

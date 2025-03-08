@@ -28,7 +28,7 @@ import java.util.UUID;
                 @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
         })
 })
-public class Configuration extends BaseEntity {
+public class Configuration extends AbstractEntity {
 
     @Column(name = "code", columnDefinition = "text", unique = true, updatable = false)
     private String code;

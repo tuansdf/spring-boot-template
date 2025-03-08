@@ -3,10 +3,7 @@ package com.example.demo.entities;
 import com.example.demo.constants.ResultSetName;
 import com.example.demo.modules.user.dtos.UserDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -15,6 +12,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "_user")
 @SqlResultSetMapping(name = ResultSetName.USER_SEARCH, classes = {
@@ -38,7 +36,7 @@ import java.util.UUID;
                 @ColumnResult(name = "username", type = String.class),
         })
 })
-public class User extends BaseEntity {
+public class User extends AbstractEntity {
 
     @Column(name = "username", columnDefinition = "text", unique = true)
     private String username;

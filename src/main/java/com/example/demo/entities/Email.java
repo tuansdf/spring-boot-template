@@ -14,7 +14,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "email")
-public class Email extends BaseEntity {
+public class Email extends AbstractEntity {
 
     @Column(name = "from_email", columnDefinition = "text")
     private String fromEmail;
