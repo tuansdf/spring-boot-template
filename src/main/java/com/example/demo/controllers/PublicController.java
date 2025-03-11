@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.OffsetDateTime;
 import java.util.*;
 
 @Slf4j
@@ -52,7 +51,7 @@ public class PublicController {
 
     private List<UserDTO> createData(int total) {
         List<UserDTO> data = new ArrayList<>();
-        OffsetDateTime now = OffsetDateTime.now();
+        Instant now = Instant.now();
 
         for (int i = 0; i < total; i++) {
             UserDTO user = new UserDTO();
@@ -62,10 +61,8 @@ public class PublicController {
             user.setName(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
             user.setPassword(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
             user.setStatus(CommonStatus.ACTIVE);
-            user.setCreatedBy(RandomUtils.Insecure.generateTimeBasedUUID());
-            user.setUpdatedBy(RandomUtils.Insecure.generateTimeBasedUUID());
             user.setCreatedAt(now.plusSeconds(i));
-            user.setUpdatedAt(now.plusMinutes(i));
+            user.setUpdatedAt(now.plusSeconds(i * 60L));
             data.add(user);
         }
         return data;

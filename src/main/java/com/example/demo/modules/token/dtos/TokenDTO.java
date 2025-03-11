@@ -2,7 +2,7 @@ package com.example.demo.modules.token.dtos;
 
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -17,8 +17,8 @@ public class TokenDTO {
     private String value;
     private Integer type;
     private Integer status;
-    private OffsetDateTime expiresAt;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private Instant expiresAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
 }

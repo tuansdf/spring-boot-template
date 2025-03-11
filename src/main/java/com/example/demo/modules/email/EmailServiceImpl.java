@@ -79,8 +79,6 @@ public class EmailServiceImpl implements EmailService {
                 .toEmail(email)
                 .subject(I18nHelper.getMessage("email.reset_password_subject"))
                 .content(I18nHelper.getMessage("email.reset_password_content", name, token))
-                .createdBy(actionBy)
-                .updatedBy(actionBy)
                 .type(CommonType.RESET_PASSWORD)
                 .build();
         return send(emailDTO);
@@ -93,8 +91,6 @@ public class EmailServiceImpl implements EmailService {
                 .toEmail(email)
                 .subject(I18nHelper.getMessage("email.activate_account_subject"))
                 .content(I18nHelper.getMessage("email.activate_account_content", name, token))
-                .createdBy(actionBy)
-                .updatedBy(actionBy)
                 .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
         return send(emailDTO);

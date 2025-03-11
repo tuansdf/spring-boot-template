@@ -2,7 +2,7 @@ package com.example.demo.modules.user.dtos;
 
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +16,7 @@ public class SearchUserRequestDTO {
     private String username;
     private String email;
     private Integer status;
-    private OffsetDateTime createdAtFrom;
-    private OffsetDateTime createdAtTo;
+    private Instant createdAtFrom;
+    private Instant createdAtTo;
 
 }

@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -68,8 +68,8 @@ public class UserController {
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) Integer status,
-            @RequestParam(required = false) OffsetDateTime createdAtFrom,
-            @RequestParam(required = false) OffsetDateTime createdAtTo,
+            @RequestParam(required = false) Instant createdAtFrom,
+            @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
         try {
             var requestDTO = SearchUserRequestDTO.builder()

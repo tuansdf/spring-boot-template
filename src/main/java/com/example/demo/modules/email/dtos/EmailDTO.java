@@ -2,7 +2,7 @@ package com.example.demo.modules.email.dtos;
 
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
@@ -21,9 +21,7 @@ public class EmailDTO {
     private Integer type;
     private Integer retryCount;
     private Integer status;
-    private UUID createdBy;
-    private UUID updatedBy;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
 }

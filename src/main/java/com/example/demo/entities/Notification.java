@@ -14,7 +14,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "notification")
-public class Notification extends AbstractEntity {
+public class Notification extends BaseEntity {
 
     @Column(name = "user_id")
     private UUID userId;
@@ -32,9 +32,5 @@ public class Notification extends AbstractEntity {
     private Integer type;
     @Column(name = "status")
     private Integer status;
-    @Column(name = "created_by", updatable = false)
-    private UUID createdBy;
-    @Column(name = "updated_by")
-    private UUID updatedBy;
 
 }

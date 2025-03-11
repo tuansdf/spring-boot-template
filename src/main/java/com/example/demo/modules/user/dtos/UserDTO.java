@@ -7,7 +7,7 @@ import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,10 +30,8 @@ public class UserDTO {
     private String otpSecret;
     private Boolean otpEnabled;
     private Integer status;
-    private UUID createdBy;
-    private UUID updatedBy;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     private Set<String> roleCodes;
     private Set<String> permissionCodes;
@@ -45,16 +43,13 @@ public class UserDTO {
     }
 
     // USER_SEARCH
-    public UserDTO(
-            UUID id, String username, String email, String name, Integer status, UUID createdBy, UUID updatedBy,
-            OffsetDateTime createdAt, OffsetDateTime updatedAt, String roles, String permissions) {
+    public UserDTO(UUID id, String username, String email, String name, Integer status,
+                   Instant createdAt, Instant updatedAt, String roles, String permissions) {
         setId(id);
         setUsername(username);
         setEmail(email);
         setName(name);
         setStatus(status);
-        setCreatedBy(createdBy);
-        setUpdatedBy(updatedBy);
         setCreatedAt(createdAt);
         setUpdatedAt(updatedAt);
         setRoleCodes(roles);

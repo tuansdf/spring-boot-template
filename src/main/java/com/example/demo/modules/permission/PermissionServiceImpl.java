@@ -52,14 +52,12 @@ public class PermissionServiceImpl implements PermissionService {
             }
             result = new Permission();
             result.setCode(code);
-            result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
         if (requestDTO.getStatus() == null) {
             requestDTO.setStatus(CommonStatus.ACTIVE);
         }
         result.setStatus(requestDTO.getStatus());
-        result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(permissionRepository.save(result));
     }
 

@@ -2,7 +2,7 @@ package com.example.demo.modules.configuration.dtos;
 
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +15,7 @@ public class SearchConfigurationRequestDTO {
     private Long pageSize;
     private String code;
     private Integer status;
-    private OffsetDateTime createdAtFrom;
-    private OffsetDateTime createdAtTo;
+    private Instant createdAtFrom;
+    private Instant createdAtTo;
 
 }

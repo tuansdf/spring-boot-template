@@ -5,7 +5,7 @@ import com.example.demo.modules.user.dtos.UserDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -22,10 +22,8 @@ import java.util.UUID;
                 @ColumnResult(name = "email", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
                 @ColumnResult(name = "status", type = Integer.class),
-                @ColumnResult(name = "created_by", type = UUID.class),
-                @ColumnResult(name = "updated_by", type = UUID.class),
-                @ColumnResult(name = "created_at", type = OffsetDateTime.class),
-                @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
+                @ColumnResult(name = "created_at", type = Instant.class),
+                @ColumnResult(name = "updated_at", type = Instant.class),
                 @ColumnResult(name = "roles", type = String.class),
                 @ColumnResult(name = "permissions", type = String.class),
         })
@@ -36,7 +34,7 @@ import java.util.UUID;
                 @ColumnResult(name = "username", type = String.class),
         })
 })
-public class User extends AbstractEntity {
+public class User extends BaseEntity {
 
     @Column(name = "username", columnDefinition = "text", unique = true)
     private String username;
@@ -52,9 +50,5 @@ public class User extends AbstractEntity {
     private String name;
     @Column(name = "status")
     private Integer status;
-    @Column(name = "created_by", updatable = false)
-    private UUID createdBy;
-    @Column(name = "updated_by")
-    private UUID updatedBy;
 
 }

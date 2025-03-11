@@ -54,7 +54,6 @@ public class RoleServiceImpl implements RoleService {
             }
             result = new Role();
             result.setCode(code);
-            result.setCreatedBy(actionBy);
         }
         result.setName(requestDTO.getName());
         result.setDescription(requestDTO.getDescription());
@@ -62,7 +61,6 @@ public class RoleServiceImpl implements RoleService {
             requestDTO.setStatus(CommonStatus.ACTIVE);
         }
         result.setStatus(requestDTO.getStatus());
-        result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(roleRepository.save(result));
     }
 

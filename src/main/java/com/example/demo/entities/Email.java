@@ -5,8 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import java.util.UUID;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -14,7 +12,7 @@ import java.util.UUID;
 @ToString
 @Entity
 @Table(name = "email")
-public class Email extends AbstractEntity {
+public class Email extends BaseEntity {
 
     @Column(name = "from_email", columnDefinition = "text")
     private String fromEmail;
@@ -32,9 +30,5 @@ public class Email extends AbstractEntity {
     private Integer retryCount;
     @Column(name = "status")
     private Integer status;
-    @Column(name = "created_by", updatable = false)
-    private UUID createdBy;
-    @Column(name = "updated_by")
-    private UUID updatedBy;
 
 }

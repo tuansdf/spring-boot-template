@@ -5,7 +5,7 @@ import com.example.demo.modules.configuration.dtos.ConfigurationDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -22,13 +22,11 @@ import java.util.UUID;
                 @ColumnResult(name = "value", type = String.class),
                 @ColumnResult(name = "description", type = String.class),
                 @ColumnResult(name = "status", type = Integer.class),
-                @ColumnResult(name = "created_by", type = UUID.class),
-                @ColumnResult(name = "updated_by", type = UUID.class),
-                @ColumnResult(name = "created_at", type = OffsetDateTime.class),
-                @ColumnResult(name = "updated_at", type = OffsetDateTime.class),
+                @ColumnResult(name = "created_at", type = Instant.class),
+                @ColumnResult(name = "updated_at", type = Instant.class),
         })
 })
-public class Configuration extends AbstractEntity {
+public class Configuration extends BaseEntity {
 
     @Column(name = "code", columnDefinition = "text", unique = true, updatable = false)
     private String code;
@@ -38,9 +36,5 @@ public class Configuration extends AbstractEntity {
     private String description;
     @Column(name = "status")
     private Integer status;
-    @Column(name = "created_by", updatable = false)
-    private UUID createdBy;
-    @Column(name = "updated_by")
-    private UUID updatedBy;
 
 }

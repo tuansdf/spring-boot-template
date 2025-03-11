@@ -52,7 +52,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
             result = new Configuration();
             result.setCode(code);
-            result.setCreatedBy(actionBy);
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
@@ -60,7 +59,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             requestDTO.setStatus(CommonStatus.ACTIVE);
         }
         result.setStatus(requestDTO.getStatus());
-        result.setUpdatedBy(actionBy);
         return commonMapper.toDTO(configurationRepository.save(result));
     }
 
