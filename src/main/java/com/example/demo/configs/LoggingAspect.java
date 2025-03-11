@@ -1,6 +1,5 @@
 package com.example.demo.configs;
 
-import com.example.demo.utils.DateUtils;
 import com.example.demo.utils.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -18,7 +17,7 @@ public class LoggingAspect {
         String methodName = joinPoint.getSignature().toShortString();
         Object[] methodArgs = joinPoint.getArgs();
 
-        long start = DateUtils.toEpochMilli();
+        long start = System.currentTimeMillis();
         String key = RandomUtils.Insecure.generateTimeBasedUUID().toString();
 
         log.info("{} ENTER method: {} with arguments: {}", key, methodName, methodArgs);
@@ -30,7 +29,7 @@ public class LoggingAspect {
             log.error("{} Exception in method: {} with message: {}", key, methodName, e.getMessage());
             throw e;
         } finally {
-            long exTime = DateUtils.toEpochMilli() - start;
+            long exTime = System.currentTimeMillis() - start;
             log.info("{} EXIT  method: {} after {} ms with result: {}", key, methodName, exTime, result);
         }
 

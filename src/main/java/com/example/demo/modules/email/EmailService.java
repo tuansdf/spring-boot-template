@@ -10,8 +10,8 @@ public interface EmailService {
 
     void executeSend(UUID emailId);
 
-    EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID actionBy);
+    EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID userId);
 
-    EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID actionBy);
+    EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId);
 
 }

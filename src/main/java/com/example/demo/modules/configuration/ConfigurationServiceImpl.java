@@ -1,6 +1,5 @@
 package com.example.demo.modules.configuration;
 
-import com.example.demo.configs.RequestContextHolder;
 import com.example.demo.constants.CommonStatus;
 import com.example.demo.constants.ResultSetName;
 import com.example.demo.dtos.PaginationResponseData;
@@ -35,7 +34,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ConfigurationDTO save(ConfigurationDTO requestDTO) {
-        UUID actionBy = RequestContextHolder.get().getUserId();
         Configuration result = null;
         if (requestDTO.getId() != null) {
             Optional<Configuration> configurationOptional = configurationRepository.findById(requestDTO.getId());

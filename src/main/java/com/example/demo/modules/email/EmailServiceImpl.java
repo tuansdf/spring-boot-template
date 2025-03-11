@@ -73,8 +73,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID actionBy) {
+    public EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID userId) {
         EmailDTO emailDTO = EmailDTO.builder()
+                .userId(userId)
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
                 .subject(I18nHelper.getMessage("email.reset_password_subject"))
@@ -85,8 +86,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID actionBy) {
+    public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
         EmailDTO emailDTO = EmailDTO.builder()
+                .userId(userId)
                 .fromEmail(env.getFromEmail())
                 .toEmail(email)
                 .subject(I18nHelper.getMessage("email.activate_account_subject"))

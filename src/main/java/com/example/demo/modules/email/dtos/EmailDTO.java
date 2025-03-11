@@ -13,6 +13,7 @@ import java.util.UUID;
 public class EmailDTO {
 
     private UUID id;
+    private UUID userId;
     private String fromEmail;
     private String toEmail;
     private String ccEmail;

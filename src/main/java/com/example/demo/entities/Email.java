@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
+import java.util.UUID;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -14,6 +16,8 @@ import lombok.*;
 @Table(name = "email")
 public class Email extends BaseEntity {
 
+    @Column(name = "user_id")
+    private UUID userId;
     @Column(name = "from_email", columnDefinition = "text")
     private String fromEmail;
     @Column(name = "to_email", columnDefinition = "text")

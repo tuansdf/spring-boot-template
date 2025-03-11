@@ -25,11 +25,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
 
     @Modifying
-    @Query(value = "update _user set password = :password, updated_by = :userId, updated_at = now() where id = :userId", nativeQuery = true)
+    @Query(value = "update _user set password = :password, updated_at = now() where id = :userId", nativeQuery = true)
     void updatePasswordByUserId(UUID userId, String password);
 
     @Modifying
-    @Query(value = "update _user set status = :status, updated_by = :userId, updated_at = now() where id = :userId", nativeQuery = true)
+    @Query(value = "update _user set status = :status, updated_at = now() where id = :userId", nativeQuery = true)
     void updateStatusByUserId(UUID userId, Integer status);
 
     @Query(value = "select u.status from _user u where u.id = :userId limit 1", nativeQuery = true)

@@ -78,7 +78,7 @@ public class PublicController {
 //                .build();
 //        var result = userService.search(requestDTO, false);
 //        var data = result.getItems();
-        String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
+        String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
         if (fast) {
             FastExcelHelper.Export.processTemplateWriteFile(UserExportTemplate.builder().body(data).skipHeader(false).build(), exportPath);
         } else {
@@ -102,7 +102,7 @@ public class PublicController {
                 ExcelHelper.Export.processTemplate(template, workbook);
                 requestDTO.setPageNumber(requestDTO.getPageNumber() + 1);
             }
-            String exportPath = ".temp/excel-" + DateUtils.toEpochMicro() + ".xlsx";
+            String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
             ExcelHelper.writeFile(workbook, exportPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -113,7 +113,7 @@ public class PublicController {
     @GetMapping("/export-csv")
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
-        String exportPath = ".temp/csv-" + DateUtils.toEpochMicro() + ".csv";
+        String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
         CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
         return "OK";
     }
@@ -172,10 +172,10 @@ public class PublicController {
 
     @GetMapping(value = "/rand", produces = MediaType.TEXT_PLAIN_VALUE)
     public String rand(HttpServletRequest servletRequest, @RequestParam(required = false, defaultValue = "John Doe") String name) {
-        long nano = DateUtils.toEpochNano(null);
+        long nano = DateUtils.toEpochNanos(null);
         log.info("nano {}", nano);
         log.info("nano instant {}", DateUtils.toInstant(nano));
-        long micro = DateUtils.toEpochMicro();
+        long micro = DateUtils.currentEpochMicros();
         log.info("micro {}", micro);
         log.info("micro instant {}", DateUtils.toInstant(micro));
         long milli = Instant.now().toEpochMilli();
@@ -297,7 +297,7 @@ public class PublicController {
             @RequestParam(required = false) Integer height,
             @RequestParam(required = false) String format,
             @RequestParam(required = false) Float quality) throws IOException {
-        ImageHelper.compressImageWriteFile(inputPath, ".temp/compressed-" + DateUtils.toEpochMilli() + ".jpg",
+        ImageHelper.compressImageWriteFile(inputPath, ".temp/compressed-" + DateUtils.currentEpochMillis() + ".jpg",
                 ImageHelper.Options.builder().width(width).height(height).quality(quality).format(format).build());
         return "OK";
     }

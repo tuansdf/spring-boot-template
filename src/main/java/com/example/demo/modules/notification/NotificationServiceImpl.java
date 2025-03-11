@@ -72,11 +72,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public NotificationDTO sendNewComerNotification(UUID actionBy) {
+    public NotificationDTO sendNewComerNotification(UUID userId) {
         NotificationDTO notificationDTO = NotificationDTO.builder()
                 .title(I18nHelper.getMessage("notification.new_comer_title", env.getApplicationVersion()))
                 .content(I18nHelper.getMessage("notification.new_comer_content"))
-                .userId(actionBy)
+                .userId(userId)
                 .status(CommonStatus.PENDING)
                 .build();
         return send(notificationDTO);

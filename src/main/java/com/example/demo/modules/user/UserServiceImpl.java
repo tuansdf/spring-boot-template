@@ -1,6 +1,5 @@
 package com.example.demo.modules.user;
 
-import com.example.demo.configs.RequestContextHolder;
 import com.example.demo.constants.CommonType;
 import com.example.demo.constants.PermissionCode;
 import com.example.demo.constants.ResultSetName;
@@ -51,7 +50,6 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
-        user.setUpdatedBy(userId);
         user = userRepository.save(user);
         tokenService.deactivatePastTokens(user.getId(), CommonType.REFRESH_TOKEN);
         return commonMapper.toDTO(user);
@@ -59,7 +57,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateProfile(UserDTO requestDTO) {
-        UUID actionBy = RequestContextHolder.get().getUserId();
         requestDTO.validateUpdate();
         Optional<User> userOptional = userRepository.findById(requestDTO.getId());
         if (userOptional.isEmpty()) {
@@ -78,7 +75,6 @@ public class UserServiceImpl implements UserService {
         if (AuthHelper.hasAnyPermission(List.of(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER))) {
             user.setStatus(requestDTO.getStatus());
         }
-        user.setUpdatedBy(actionBy);
         return commonMapper.toDTO(userRepository.save(user));
     }
 

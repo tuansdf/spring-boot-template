@@ -1,6 +1,5 @@
 package com.example.demo.modules.permission;
 
-import com.example.demo.configs.RequestContextHolder;
 import com.example.demo.constants.CommonStatus;
 import com.example.demo.constants.ResultSetName;
 import com.example.demo.dtos.PaginationResponseData;
@@ -35,7 +34,6 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PermissionDTO save(PermissionDTO requestDTO) {
-        UUID actionBy = RequestContextHolder.get().getUserId();
         Permission result = null;
         if (requestDTO.getId() != null) {
             Optional<Permission> permissionOptional = permissionRepository.findById(requestDTO.getId());

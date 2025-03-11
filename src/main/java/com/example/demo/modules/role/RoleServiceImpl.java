@@ -1,6 +1,5 @@
 package com.example.demo.modules.role;
 
-import com.example.demo.configs.RequestContextHolder;
 import com.example.demo.constants.CommonStatus;
 import com.example.demo.constants.ResultSetName;
 import com.example.demo.dtos.PaginationResponseData;
@@ -37,7 +36,6 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO save(RoleDTO requestDTO) {
-        UUID actionBy = RequestContextHolder.get().getUserId();
         Role result = null;
         if (requestDTO.getId() != null) {
             Optional<Role> roleOptional = roleRepository.findById(requestDTO.getId());

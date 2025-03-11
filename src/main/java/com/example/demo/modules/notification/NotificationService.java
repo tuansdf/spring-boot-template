@@ -10,5 +10,5 @@ public interface NotificationService {
 
     void executeSend(UUID notificationId);
 
-    NotificationDTO sendNewComerNotification(UUID actionBy);
+    NotificationDTO sendNewComerNotification(UUID userId);
 }

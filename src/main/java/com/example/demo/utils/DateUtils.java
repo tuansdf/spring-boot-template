@@ -8,37 +8,37 @@ import java.util.Date;
 
 public class DateUtils {
 
-    public static long toEpochMilli(Instant instant) {
+    public static long toEpochMillis(Instant instant) {
         if (instant == null) {
             instant = Instant.now();
         }
         return instant.toEpochMilli();
     }
 
-    public static long toEpochMilli() {
-        return toEpochMilli(null);
+    public static long currentEpochMillis() {
+        return toEpochMillis(null);
     }
 
-    public static long toEpochMicro(Instant instant) {
+    public static long toEpochMicros(Instant instant) {
         if (instant == null) {
             instant = Instant.now();
         }
         return instant.getEpochSecond() * 1_000_000L + (instant.getNano() / 1000);
     }
 
-    public static long toEpochMicro() {
-        return toEpochMicro(null);
+    public static long currentEpochMicros() {
+        return toEpochMicros(null);
     }
 
-    public static long toEpochNano(Instant instant) {
+    public static long toEpochNanos(Instant instant) {
         if (instant == null) {
             instant = Instant.now();
         }
         return instant.getEpochSecond() * 1_000_000_000L + instant.getNano();
     }
 
-    public static long toEpochNano() {
-        return toEpochNano(null);
+    public static long currentEpochNanos() {
+        return toEpochNanos(null);
     }
 
     public static OffsetDateTime toOffsetDateTime(Object input, ZoneOffset offset) {
