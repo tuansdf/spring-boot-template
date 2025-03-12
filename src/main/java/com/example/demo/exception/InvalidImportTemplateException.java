@@ -1,6 +1,6 @@
 package com.example.demo.exception;
 
-import com.example.demo.utils.I18nHelper;
+import com.example.demo.util.I18nHelper;
 import org.springframework.http.HttpStatus;
 
 public class InvalidImportTemplateException extends CustomException {

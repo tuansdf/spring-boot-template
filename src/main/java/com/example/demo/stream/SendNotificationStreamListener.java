@@ -1,9 +1,9 @@
 package com.example.demo.stream;
 
-import com.example.demo.configs.RequestContextHolder;
-import com.example.demo.constants.RedisKey;
-import com.example.demo.modules.notification.NotificationService;
-import com.example.demo.modules.notification.dtos.SendNotificationStreamRequest;
+import com.example.demo.config.RequestContextHolder;
+import com.example.demo.constant.RedisKey;
+import com.example.demo.module.notification.NotificationService;
+import com.example.demo.module.notification.dto.SendNotificationStreamRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.ObjectRecord;

@@ -1,7 +1,7 @@
 package com.example.demo.exception;
 
-import com.example.demo.dtos.CommonResponse;
-import com.example.demo.utils.ExceptionUtils;
+import com.example.demo.dto.CommonResponse;
+import com.example.demo.util.ExceptionUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
