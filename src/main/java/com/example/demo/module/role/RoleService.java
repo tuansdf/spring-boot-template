@@ -1,6 +1,6 @@
 package com.example.demo.module.role;
 
-import com.example.demo.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationResponseData;
 import com.example.demo.module.role.dto.RoleDTO;
 import com.example.demo.module.role.dto.SearchRoleRequestDTO;
 

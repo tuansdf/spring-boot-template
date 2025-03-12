@@ -1,6 +1,5 @@
 package com.example.demo.module.permission;
 
-import com.example.demo.entity.Permission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

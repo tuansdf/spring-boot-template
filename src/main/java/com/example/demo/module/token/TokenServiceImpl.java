@@ -1,13 +1,12 @@
 package com.example.demo.module.token;
 
-import com.example.demo.constant.CommonStatus;
-import com.example.demo.constant.CommonType;
-import com.example.demo.entity.Token;
-import com.example.demo.mapper.CommonMapper;
+import com.example.demo.common.constant.CommonStatus;
+import com.example.demo.common.constant.CommonType;
+import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.module.jwt.JWTService;
 import com.example.demo.module.jwt.dto.JWTPayload;
 import com.example.demo.module.token.dto.TokenDTO;
-import com.example.demo.util.RandomUtils;
+import com.example.demo.common.util.RandomUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,6 +1,6 @@
 package com.example.demo.module.configuration;
 
-import com.example.demo.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationResponseData;
 import com.example.demo.module.configuration.dto.ConfigurationDTO;
 import com.example.demo.module.configuration.dto.SearchConfigurationRequestDTO;
 

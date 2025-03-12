@@ -1,15 +1,14 @@
 package com.example.demo.module.permission;
 
-import com.example.demo.constant.CommonStatus;
-import com.example.demo.constant.ResultSetName;
-import com.example.demo.dto.PaginationResponseData;
-import com.example.demo.entity.Permission;
-import com.example.demo.exception.CustomException;
-import com.example.demo.mapper.CommonMapper;
+import com.example.demo.common.constant.CommonStatus;
+import com.example.demo.common.constant.ResultSetName;
+import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.exception.CustomException;
+import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.module.permission.dto.PermissionDTO;
 import com.example.demo.module.permission.dto.SearchPermissionRequestDTO;
-import com.example.demo.util.ConversionUtils;
-import com.example.demo.util.SQLBuilder;
+import com.example.demo.common.util.ConversionUtils;
+import com.example.demo.common.util.SQLBuilder;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;

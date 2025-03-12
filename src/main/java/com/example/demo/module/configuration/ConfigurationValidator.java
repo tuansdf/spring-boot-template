@@ -1,10 +1,10 @@
 package com.example.demo.module.configuration;
 
-import com.example.demo.constant.CommonRegex;
-import com.example.demo.constant.CommonStatus;
+import com.example.demo.common.constant.CommonRegex;
+import com.example.demo.common.constant.CommonStatus;
 import com.example.demo.module.configuration.dto.ConfigurationDTO;
-import com.example.demo.util.I18nHelper;
-import com.example.demo.util.ValidationUtils;
+import com.example.demo.common.util.I18nHelper;
+import com.example.demo.common.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

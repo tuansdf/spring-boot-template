@@ -1,7 +1,7 @@
 package com.example.demo.module.user.dto;
 
-import com.example.demo.constant.CommonStatus;
-import com.example.demo.util.ValidationUtils;
+import com.example.demo.common.constant.CommonStatus;
+import com.example.demo.common.util.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;

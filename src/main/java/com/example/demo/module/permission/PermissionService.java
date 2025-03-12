@@ -1,6 +1,6 @@
 package com.example.demo.module.permission;
 
-import com.example.demo.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationResponseData;
 import com.example.demo.module.permission.dto.PermissionDTO;
 import com.example.demo.module.permission.dto.SearchPermissionRequestDTO;
 

@@ -4,8 +4,8 @@ import com.example.demo.module.auth.dto.ForgotPasswordRequestDTO;
 import com.example.demo.module.auth.dto.LoginRequestDTO;
 import com.example.demo.module.auth.dto.RegisterRequestDTO;
 import com.example.demo.module.auth.dto.ResetPasswordRequestDTO;
-import com.example.demo.util.I18nHelper;
-import com.example.demo.util.ValidationUtils;
+import com.example.demo.common.util.I18nHelper;
+import com.example.demo.common.util.ValidationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

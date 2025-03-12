@@ -1,6 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.util.RandomUtils;
+import com.example.demo.common.util.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

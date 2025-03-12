@@ -1,6 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.constant.RedisKey;
+import com.example.demo.common.constant.RedisKey;
 import com.example.demo.module.email.dto.SendEmailStreamRequest;
 import com.example.demo.module.notification.dto.SendNotificationStreamRequest;
 import com.example.demo.stream.SendEmailStreamListener;

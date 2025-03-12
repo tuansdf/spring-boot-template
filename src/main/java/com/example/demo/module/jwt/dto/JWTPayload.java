@@ -1,6 +1,6 @@
 package com.example.demo.module.jwt.dto;
 
-import com.example.demo.constant.JWTPayloadKey;
+import com.example.demo.common.constant.JWTPayloadKey;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

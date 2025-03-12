@@ -1,8 +1,8 @@
 package com.example.demo.config;
 
-import com.example.demo.constant.MDCKey;
-import com.example.demo.dto.RequestContext;
-import com.example.demo.util.ConversionUtils;
+import com.example.demo.common.constant.MDCKey;
+import com.example.demo.common.dto.RequestContext;
+import com.example.demo.common.util.ConversionUtils;
 import org.slf4j.MDC;
 
 public class RequestContextHolder {

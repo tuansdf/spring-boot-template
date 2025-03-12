@@ -1,6 +1,6 @@
 package com.example.demo.module.notification.dto;
 
-import com.example.demo.dto.RequestContext;
+import com.example.demo.common.dto.RequestContext;
 import lombok.*;
 
 import java.io.Serializable;
