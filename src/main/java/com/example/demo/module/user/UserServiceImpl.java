@@ -138,11 +138,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String findStatusByUserId(UUID userId) {
-        return userRepository.findTopStatusByUserId(userId);
-    }
-
-    @Override
     public PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount) {
         PaginationResponseData<UserDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {

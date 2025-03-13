@@ -102,10 +102,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<String> findAllCodesByUserId(UUID userId) {
-        List<String> result = roleRepository.findAllCodesByUserId(userId);
+    public Set<String> findAllCodesByUserId(UUID userId) {
+        Set<String> result = roleRepository.findAllCodesByUserId(userId);
         if (result == null) {
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         return result;
     }

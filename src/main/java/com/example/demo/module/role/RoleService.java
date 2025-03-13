@@ -22,7 +22,7 @@ public interface RoleService {
 
     RoleDTO findOneByCodeOrThrow(String code);
 
-    List<String> findAllCodesByUserId(UUID userId);
+    Set<String> findAllCodesByUserId(UUID userId);
 
     List<RoleDTO> findAllByUserId(UUID userId);
 

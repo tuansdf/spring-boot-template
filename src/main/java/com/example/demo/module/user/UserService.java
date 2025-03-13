@@ -31,8 +31,6 @@ public interface UserService {
 
     UserDTO findOneByEmailOrThrow(String email);
 
-    String findStatusByUserId(UUID userId);
-
     PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount);
 
 }

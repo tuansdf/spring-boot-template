@@ -66,10 +66,10 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (ConversionUtils.safeToBool(userDTO.getOtpEnabled())) {
-            if (StringUtils.isBlank(requestDTO.getOtp())) {
+            if (StringUtils.isBlank(requestDTO.getOtpCode())) {
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
             }
-            boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtp(), userDTO.getOtpSecret());
+            boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), userDTO.getOtpSecret());
             if (!isOtpCorrect) {
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
             }
@@ -125,7 +125,8 @@ public class AuthServiceImpl implements AuthService {
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
         if (userDTO == null || CommonStatus.ACTIVE.equals(userDTO.getStatus())) return;
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
-        emailService.sendResetPasswordEmail(userDTO.getEmail(), CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail()), tokenDTO.getValue(), userDTO.getId());
+        String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail());
+        emailService.sendResetPasswordEmail(userDTO.getEmail(), name, tokenDTO.getValue(), userDTO.getId());
     }
 
     @Override
@@ -144,17 +145,16 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !CommonType.RESET_PASSWORD.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Optional<User> userOptional = userRepository.findById(tokenDTO.getOwnerId());
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(tokenDTO.getOwnerId(), CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED);
-        }
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         userRepository.save(user);
         tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.RESET_PASSWORD);
+        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.ACTIVATE_ACCOUNT);
+        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.REACTIVATE_ACCOUNT);
         tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.REFRESH_TOKEN);
     }
 
@@ -185,7 +185,8 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !CommonType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        if (!CommonStatus.ACTIVE.equals(userService.findStatusByUserId(tokenDTO.getOwnerId()))) {
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(ConversionUtils.toUUID(tokenDTO.getOwnerId()), CommonStatus.ACTIVE);
+        if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         Set<String> permissions = permissionService.findAllCodesByUserId(tokenDTO.getOwnerId());
@@ -214,12 +215,9 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !validTypes.contains(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UserDTO userDTO = userService.findOneById(ConversionUtils.toUUID(tokenDTO.getOwnerId()));
-        if (userDTO == null) {
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(ConversionUtils.toUUID(tokenDTO.getOwnerId()), CommonStatus.ACTIVE);
+        if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
-        }
-        if (CommonStatus.ACTIVE.equals(userDTO.getStatus())) {
-            return;
         }
         userRepository.updateStatusByUserId(tokenDTO.getOwnerId(), CommonStatus.ACTIVE);
         tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), tokenType);
@@ -230,14 +228,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthDTO enableOtp() {
-        Optional<User> userOptional = userRepository.findById(RequestContextHolder.get().getUserId());
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(RequestContextHolder.get().getUserId(), CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
-            throw new CustomException(HttpStatus.FORBIDDEN);
-        }
         if (ConversionUtils.safeToBool(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -250,14 +245,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void confirmOtp(AuthDTO requestDTO) {
-        Optional<User> userOptional = userRepository.findById(RequestContextHolder.get().getUserId());
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(RequestContextHolder.get().getUserId(), CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
-            throw new CustomException(HttpStatus.FORBIDDEN);
-        }
         if (ConversionUtils.safeToBool(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -271,14 +263,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void disableOtp(AuthDTO requestDTO) {
-        Optional<User> userOptional = userRepository.findById(RequestContextHolder.get().getUserId());
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(RequestContextHolder.get().getUserId(), CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (!CommonStatus.ACTIVE.equals(user.getStatus())) {
-            throw new CustomException(HttpStatus.FORBIDDEN);
-        }
         if (!ConversionUtils.safeToBool(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
