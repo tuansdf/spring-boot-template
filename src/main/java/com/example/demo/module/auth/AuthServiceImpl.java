@@ -4,10 +4,10 @@ import com.example.demo.common.constant.CommonStatus;
 import com.example.demo.common.constant.CommonType;
 import com.example.demo.common.constant.ConfigurationCode;
 import com.example.demo.common.exception.CustomException;
+import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.CommonUtils;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.TOTPHelper;
-import com.example.demo.config.RequestContextHolder;
 import com.example.demo.module.auth.dto.*;
 import com.example.demo.module.configuration.ConfigurationService;
 import com.example.demo.module.email.EmailService;
@@ -20,6 +20,7 @@ import com.example.demo.module.token.dto.TokenDTO;
 import com.example.demo.module.user.User;
 import com.example.demo.module.user.UserRepository;
 import com.example.demo.module.user.UserService;
+import com.example.demo.module.user.dto.ChangePasswordRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final AuthValidator authValidator;
     private final NotificationService notificationService;
+    private final CommonMapper commonMapper;
 
     @Override
     public AuthDTO login(LoginRequestDTO requestDTO) {
@@ -116,14 +118,33 @@ public class AuthServiceImpl implements AuthService {
         user = userRepository.save(user);
 
         TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId(), false);
-        emailService.sendActivateAccountEmail(user.getEmail(), CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail()), tokenDTO.getValue(), user.getId());
+        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail());
+        emailService.sendActivateAccountEmail(user.getEmail(), name, tokenDTO.getValue(), user.getId());
     }
+
+    @Override
+    public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        User user = userOptional.get();
+        boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword());
+        if (!isPasswordCorrect) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
+        user = userRepository.save(user);
+        tokenService.deactivatePastTokens(user.getId(), CommonType.REFRESH_TOKEN);
+        return commonMapper.toDTO(user);
+    }
+
 
     @Override
     public void forgotPassword(ForgotPasswordRequestDTO requestDTO) {
         authValidator.validateForgotPassword(requestDTO);
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
-        if (userDTO == null || CommonStatus.ACTIVE.equals(userDTO.getStatus())) return;
+        if (userDTO == null) return;
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
         String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail());
         emailService.sendResetPasswordEmail(userDTO.getEmail(), name, tokenDTO.getValue(), userDTO.getId());
@@ -227,8 +248,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthDTO enableOtp() {
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(RequestContextHolder.get().getUserId(), CommonStatus.ACTIVE);
+    public AuthDTO enableOtp(UUID userId) {
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -244,8 +265,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void confirmOtp(AuthDTO requestDTO) {
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(RequestContextHolder.get().getUserId(), CommonStatus.ACTIVE);
+    public void confirmOtp(AuthDTO requestDTO, UUID userId) {
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -262,8 +283,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void disableOtp(AuthDTO requestDTO) {
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(RequestContextHolder.get().getUserId(), CommonStatus.ACTIVE);
+    public void disableOtp(AuthDTO requestDTO, UUID userId) {
+        Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }

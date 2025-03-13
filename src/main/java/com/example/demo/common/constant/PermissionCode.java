@@ -42,32 +42,12 @@ public class PermissionCode {
         return STRING_TO_INDEX.get(input);
     }
 
-    public static Set<String> fromIndexes(List<Integer> indexes) {
-        Set<String> result = new HashSet<>();
-        if (CollectionUtils.isEmpty(indexes)) return result;
-        for (Integer index : indexes) {
-            String code = fromIndex(index);
-            if (code != null) result.add(code);
-        }
-        return result;
-    }
-
     public static Set<String> fromIndexes(Set<Integer> indexes) {
         Set<String> result = new HashSet<>();
         if (CollectionUtils.isEmpty(indexes)) return result;
         for (Integer index : indexes) {
             String code = fromIndex(index);
             if (code != null) result.add(code);
-        }
-        return result;
-    }
-
-    public static Set<Integer> toIndexes(List<String> codes) {
-        Set<Integer> result = new HashSet<>();
-        if (CollectionUtils.isEmpty(codes)) return result;
-        for (String code : codes) {
-            Integer index = toIndex(code);
-            if (index != null) result.add(index);
         }
         return result;
     }

@@ -4,8 +4,6 @@ import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.dto.CommonResponse;
 import com.example.demo.common.dto.PaginationResponseData;
 import com.example.demo.common.util.ExceptionUtils;
-import com.example.demo.config.RequestContextHolder;
-import com.example.demo.module.user.dto.ChangePasswordRequestDTO;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +28,6 @@ public class UserController {
     public ResponseEntity<CommonResponse<UserDTO>> findOne(@PathVariable UUID id) {
         try {
             var result = userService.findOneById(id);
-            return ResponseEntity.ok(new CommonResponse<>(result));
-        } catch (Exception e) {
-            return ExceptionUtils.toResponseEntity(e);
-        }
-    }
-
-    @PatchMapping("/password")
-    @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<UserDTO>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
-        try {
-            UUID userId = RequestContextHolder.get().getUserId();
-            var result = userService.changePassword(requestDTO, userId);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

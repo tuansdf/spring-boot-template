@@ -1,6 +1,5 @@
 package com.example.demo.module.user;
 
-import com.example.demo.common.constant.CommonType;
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.constant.ResultSetName;
 import com.example.demo.common.dto.PaginationResponseData;
@@ -9,8 +8,6 @@ import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.AuthHelper;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.SQLBuilder;
-import com.example.demo.module.token.TokenService;
-import com.example.demo.module.user.dto.ChangePasswordRequestDTO;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
 import jakarta.persistence.EntityManager;
@@ -20,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -34,25 +30,6 @@ public class UserServiceImpl implements UserService {
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final TokenService tokenService;
-
-    @Override
-    public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
-        User user = userOptional.get();
-        boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword());
-        if (!isPasswordCorrect) {
-            throw new CustomException(HttpStatus.UNAUTHORIZED);
-        }
-        user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
-        user = userRepository.save(user);
-        tokenService.deactivatePastTokens(user.getId(), CommonType.REFRESH_TOKEN);
-        return commonMapper.toDTO(user);
-    }
 
     @Override
     public UserDTO updateProfile(UserDTO requestDTO) {

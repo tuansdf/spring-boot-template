@@ -1,15 +1,12 @@
 package com.example.demo.module.user;
 
 import com.example.demo.common.dto.PaginationResponseData;
-import com.example.demo.module.user.dto.ChangePasswordRequestDTO;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
 
 import java.util.UUID;
 
 public interface UserService {
-
-    UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId);
 
     UserDTO updateProfile(UserDTO requestDTO);
 
