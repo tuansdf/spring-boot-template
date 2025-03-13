@@ -18,18 +18,16 @@ public class PermissionCode {
 
     static {
         // WARN: Order matters. Be careful when rearranging in production
-        List<String> codes = List.of(
+        STRINGS = List.of(
                 SYSTEM_ADMIN,
                 READ_USER,
                 CREATE_USER,
                 UPDATE_USER,
-                DELETE_USER
-        );
-        STRINGS = codes;
-        STRINGS_SIZE = codes.size();
+                DELETE_USER);
+        STRINGS_SIZE = STRINGS.size();
         Map<String, Integer> tempStringToIndex = new HashMap<>();
-        for (int i = 0; i < codes.size(); i++) {
-            tempStringToIndex.put(codes.get(i), i);
+        for (int i = 0; i < STRINGS.size(); i++) {
+            tempStringToIndex.put(STRINGS.get(i), i);
         }
         STRING_TO_INDEX = Collections.unmodifiableMap(tempStringToIndex);
     }
@@ -46,8 +44,8 @@ public class PermissionCode {
     public static List<String> fromIndexes(List<Integer> indexes) {
         List<String> result = new ArrayList<>();
         if (CollectionUtils.isEmpty(indexes)) return result;
-        for (int i = 0; i < indexes.size(); i++) {
-            String code = fromIndex(indexes.get(i));
+        for (Integer index : indexes) {
+            String code = fromIndex(index);
             if (code != null) result.add(code);
         }
         return result;
