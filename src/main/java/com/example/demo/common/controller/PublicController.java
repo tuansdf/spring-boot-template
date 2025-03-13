@@ -1,6 +1,7 @@
 package com.example.demo.common.controller;
 
 import com.example.demo.common.constant.CommonStatus;
+import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.dto.CommonResponse;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.*;
@@ -309,6 +310,50 @@ public class PublicController {
             @RequestParam(required = false) Float quality) throws IOException {
         ImageHelper.compressImageWriteFile(inputPath, ".temp/compressed-" + DateUtils.currentEpochMillis() + ".jpg",
                 ImageHelper.Options.builder().width(width).height(height).quality(quality).format(format).build());
+        return "OK";
+    }
+
+    public List<Integer> getSetBits(long n) {
+        List<Integer> positions = new ArrayList<>();
+        int pos = 0;
+        while (n != 0) {
+            if ((n & 1) == 1) {
+                positions.add(pos);
+            }
+            n >>= 1;
+            pos++;
+        }
+        return positions;
+    }
+
+    public List<String> getSetBitsD(long n) {
+        List<String> positions = new ArrayList<>();
+        int pos = 0;
+        while (n != 0) {
+            if ((n & 1) == 1) {
+                positions.add(PermissionCode.fromIndex(pos));
+            }
+            n >>= 1;
+            pos++;
+        }
+        return positions;
+    }
+
+    public List<String> toPerms(long n) {
+        return getSetBitsD(n);
+    }
+
+    public List<String> toPerms(List<Integer> ints) {
+        return PermissionCode.fromIndexes(ints);
+    }
+
+    @GetMapping(value = "/bits", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object image(@RequestParam Long num) throws IOException {
+        List<Integer> ints = getSetBits(num);
+        for (int i = 0; i < 1_000_000; i++) {
+            toPerms(num);
+            toPerms(ints);
+        }
         return "OK";
     }
 

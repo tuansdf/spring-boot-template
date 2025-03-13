@@ -1,5 +1,6 @@
 package com.example.demo.module.permission.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import java.time.Instant;
@@ -9,6 +10,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @ToString
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchPermissionRequestDTO {
 
     private Long pageNumber;

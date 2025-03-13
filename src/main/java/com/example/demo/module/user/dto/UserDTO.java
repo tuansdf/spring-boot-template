@@ -3,6 +3,7 @@ package com.example.demo.module.user.dto;
 import com.example.demo.common.constant.CommonStatus;
 import com.example.demo.common.util.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDTO {
 
     private UUID id;

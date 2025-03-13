@@ -13,7 +13,8 @@ public class PermissionCode {
     public static final String DELETE_USER = "ROLE_P_DELETE_USER";
 
     private static final Map<String, Integer> STRING_TO_INDEX;
-    private static final Map<Integer, String> INDEX_TO_STRING;
+    private static final List<String> STRINGS;
+    private static final int STRINGS_SIZE;
 
     static {
         // WARN: Order matters. Be careful when rearranging in production
@@ -24,22 +25,32 @@ public class PermissionCode {
                 UPDATE_USER,
                 DELETE_USER
         );
+        STRINGS = codes;
+        STRINGS_SIZE = codes.size();
         Map<String, Integer> tempStringToIndex = new HashMap<>();
-        Map<Integer, String> tempIndexToString = new HashMap<>();
         for (int i = 0; i < codes.size(); i++) {
-            tempStringToIndex.put(codes.get(i), i + 1);
-            tempIndexToString.put(i + 1, codes.get(i));
+            tempStringToIndex.put(codes.get(i), i);
         }
         STRING_TO_INDEX = Collections.unmodifiableMap(tempStringToIndex);
-        INDEX_TO_STRING = Collections.unmodifiableMap(tempIndexToString);
     }
 
     public static String fromIndex(Integer input) {
-        return INDEX_TO_STRING.get(input);
+        if (input == null || input > STRINGS_SIZE) return null;
+        return STRINGS.get(input);
     }
 
     public static Integer toIndex(String input) {
         return STRING_TO_INDEX.get(input);
+    }
+
+    public static List<String> fromIndexes(List<Integer> indexes) {
+        List<String> result = new ArrayList<>();
+        if (CollectionUtils.isEmpty(indexes)) return result;
+        for (int i = 0; i < indexes.size(); i++) {
+            String code = fromIndex(indexes.get(i));
+            if (code != null) result.add(code);
+        }
+        return result;
     }
 
     public static Set<String> fromIndexes(Set<Integer> indexes) {
@@ -48,6 +59,16 @@ public class PermissionCode {
         for (Integer index : indexes) {
             String code = fromIndex(index);
             if (code != null) result.add(code);
+        }
+        return result;
+    }
+
+    public static List<Integer> toIndexes(List<String> codes) {
+        List<Integer> result = new ArrayList<>();
+        if (CollectionUtils.isEmpty(codes)) return result;
+        for (String code : codes) {
+            Integer index = toIndex(code);
+            if (index != null) result.add(index);
         }
         return result;
     }

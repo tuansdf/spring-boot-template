@@ -1,5 +1,6 @@
 package com.example.demo.module.email.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import java.time.Instant;
@@ -10,6 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EmailDTO {
 
     private UUID id;
