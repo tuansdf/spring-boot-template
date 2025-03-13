@@ -240,12 +240,16 @@ public class PublicController {
 //                RandomUtils.generateUUID().toString();
 //                RandomUtils.generateTimeBasedUUID().toString();
 //                UUID.randomUUID().toString();
-                RandomUtils.Secure.generateUUID();
-                RandomUtils.Insecure.generateUUID();
-                RandomUtils.Insecure.generateHexString(16);
+                RandomUtils.Secure.generateUUID().toString();
+                RandomUtils.Insecure.generateUUID().toString();
+                RandomUtils.Secure.generateTimeBasedUUID().toString();
+                RandomUtils.Insecure.generateTimeBasedUUID().toString();
+                RandomUtils.Secure.generateString(16);
+                RandomUtils.Insecure.generateString(16);
                 RandomUtils.Secure.generateHexString(16);
-                RandomUtils.Insecure.generateOTP(16);
+                RandomUtils.Insecure.generateHexString(16);
                 RandomUtils.Secure.generateOTP(16);
+                RandomUtils.Insecure.generateOTP(16);
             }
         } catch (Exception e) {
             log.error("", e);
@@ -278,14 +282,16 @@ public class PublicController {
     @GetMapping("/rand")
     public Object testRand() {
         Map<String, Object> result = new HashMap<>();
-        result.put("INRAN", RandomUtils.Insecure.generateHexString(16));
-        result.put("RAN", RandomUtils.Secure.generateHexString(16));
-        result.put("INOTP", RandomUtils.Insecure.generateOTP(6));
-        result.put("OTP", RandomUtils.Secure.generateOTP(6));
-        result.put("UUID", RandomUtils.Secure.generateUUID());
-        result.put("IUUID", RandomUtils.Insecure.generateUUID());
-        result.put("TUUID", RandomUtils.Secure.generateTimeBasedUUID());
-        result.put("ITUUID", RandomUtils.Insecure.generateTimeBasedUUID());
+        result.put("Secure.generateHexString", RandomUtils.Secure.generateHexString(16));
+        result.put("Insecure.generateHexString", RandomUtils.Insecure.generateHexString(16));
+        result.put("Secure.generateOTP", RandomUtils.Secure.generateOTP(16));
+        result.put("Insecure.generateOTP", RandomUtils.Insecure.generateOTP(16));
+        result.put("Secure.generateUUID", RandomUtils.Secure.generateUUID());
+        result.put("Insecure.generateUUID", RandomUtils.Insecure.generateUUID());
+        result.put("Secure.generateTimeBasedUUID", RandomUtils.Secure.generateTimeBasedUUID());
+        result.put("Insecure.generateTimeBasedUUID", RandomUtils.Insecure.generateTimeBasedUUID());
+        result.put("Secure.generateString", RandomUtils.Secure.generateString(16));
+        result.put("Insecure.generateString", RandomUtils.Insecure.generateString(16));
         return result;
     }
 
