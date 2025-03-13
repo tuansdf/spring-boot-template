@@ -47,6 +47,17 @@ public class NotificationServiceImpl implements NotificationService {
         return result;
     }
 
+    private void streamSend(UUID notificationId) {
+        SendNotificationStreamRequest request = SendNotificationStreamRequest.builder()
+                .requestContext(RequestContextHolder.get())
+                .notificationId(notificationId)
+                .build();
+        ObjectRecord<String, SendNotificationStreamRequest> data = StreamRecords.newRecord()
+                .ofObject(request)
+                .withStreamKey(RedisKey.SEND_NOTIFICATION_STREAM);
+        redisTemplate.opsForStream().add(data);
+    }
+
     @Override
     public void executeSend(UUID notificationId) {
         // TODO: send notification
@@ -57,17 +68,6 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setStatus(CommonStatus.DONE);
         notificationRepository.save(notification);
         log.info("Notification ".concat(ConversionUtils.safeToString(notification.getId())).concat(" sent"));
-    }
-
-    private void streamSend(UUID notificationId) {
-        SendNotificationStreamRequest request = SendNotificationStreamRequest.builder()
-                .requestContext(RequestContextHolder.get())
-                .notificationId(notificationId)
-                .build();
-        ObjectRecord<String, SendNotificationStreamRequest> data = StreamRecords.newRecord()
-                .ofObject(request)
-                .withStreamKey(RedisKey.SEND_NOTIFICATION_STREAM);
-        redisTemplate.opsForStream().add(data);
     }
 
     @Override

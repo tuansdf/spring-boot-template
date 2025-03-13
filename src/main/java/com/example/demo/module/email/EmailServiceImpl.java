@@ -48,6 +48,17 @@ public class EmailServiceImpl implements EmailService {
         return result;
     }
 
+    private void streamSend(UUID emailId) {
+        SendEmailStreamRequest request = SendEmailStreamRequest.builder()
+                .requestContext(RequestContextHolder.get())
+                .emailId(emailId)
+                .build();
+        ObjectRecord<String, SendEmailStreamRequest> data = StreamRecords.newRecord()
+                .ofObject(request)
+                .withStreamKey(RedisKey.SEND_EMAIL_STREAM);
+        redisTemplate.opsForStream().add(data);
+    }
+
     @Override
     public void executeSend(UUID emailId) {
         // TODO: send email
@@ -58,17 +69,6 @@ public class EmailServiceImpl implements EmailService {
         email.setStatus(CommonStatus.DONE);
         emailRepository.save(email);
         log.info("Email ".concat(ConversionUtils.safeToString(email.getId())).concat(" sent"));
-    }
-
-    private void streamSend(UUID emailId) {
-        SendEmailStreamRequest request = SendEmailStreamRequest.builder()
-                .requestContext(RequestContextHolder.get())
-                .emailId(emailId)
-                .build();
-        ObjectRecord<String, SendEmailStreamRequest> data = StreamRecords.newRecord()
-                .ofObject(request)
-                .withStreamKey(RedisKey.SEND_EMAIL_STREAM);
-        redisTemplate.opsForStream().add(data);
     }
 
     @Override
