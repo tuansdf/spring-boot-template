@@ -3,9 +3,9 @@ package com.example.demo.module.permission;
 import com.example.demo.common.constant.CommonRegex;
 import com.example.demo.common.constant.CommonStatus;
 import com.example.demo.common.constant.Constants;
-import com.example.demo.module.permission.dto.PermissionDTO;
 import com.example.demo.common.util.I18nHelper;
 import com.example.demo.common.util.ValidationUtils;
+import com.example.demo.module.permission.dto.PermissionDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
