@@ -1,8 +1,8 @@
-package com.example.demo.event;
+package com.example.demo.event.publisher;
 
 import com.example.demo.common.constant.RedisKey;
 import com.example.demo.common.dto.RequestContextHolder;
-import com.example.demo.module.notification.dto.SendNotificationStreamRequest;
+import com.example.demo.event.dto.SendNotificationEventRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
@@ -20,11 +20,11 @@ public class SendNotificationEventPublisher {
     private final StringRedisTemplate redisTemplate;
 
     public void publish(UUID notificationId) {
-        SendNotificationStreamRequest request = SendNotificationStreamRequest.builder()
+        SendNotificationEventRequest request = SendNotificationEventRequest.builder()
                 .requestContext(RequestContextHolder.get())
                 .notificationId(notificationId)
                 .build();
-        ObjectRecord<String, SendNotificationStreamRequest> data = StreamRecords.newRecord()
+        ObjectRecord<String, SendNotificationEventRequest> data = StreamRecords.newRecord()
                 .ofObject(request)
                 .withStreamKey(RedisKey.SEND_NOTIFICATION_STREAM);
         redisTemplate.opsForStream().add(data);

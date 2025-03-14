@@ -5,7 +5,7 @@ import com.example.demo.common.constant.Env;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.I18nHelper;
-import com.example.demo.event.SendNotificationEventPublisher;
+import com.example.demo.event.publisher.SendNotificationEventPublisher;
 import com.example.demo.module.notification.dto.NotificationDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

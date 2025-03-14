@@ -2,10 +2,10 @@ package com.example.demo.config;
 
 import com.example.demo.common.constant.RedisKey;
 import com.example.demo.common.util.CommonUtils;
-import com.example.demo.event.SendEmailEventListener;
-import com.example.demo.event.SendNotificationEventListener;
-import com.example.demo.module.email.dto.SendEmailEventRequest;
-import com.example.demo.module.notification.dto.SendNotificationStreamRequest;
+import com.example.demo.event.listener.SendEmailEventListener;
+import com.example.demo.event.listener.SendNotificationEventListener;
+import com.example.demo.event.dto.SendEmailEventRequest;
+import com.example.demo.event.dto.SendNotificationEventRequest;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class RedisStreamConfig {
 
         List<CreateSubscriptionRequest<?>> requests = new ArrayList<>();
         requests.add(new CreateSubscriptionRequest<>(sendEmailEventListener, SendEmailEventRequest.class, RedisKey.SEND_EMAIL_STREAM, RedisKey.SEND_EMAIL_STREAM.concat("_group")));
-        requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationStreamRequest.class, RedisKey.SEND_NOTIFICATION_STREAM, RedisKey.SEND_NOTIFICATION_STREAM.concat("_group")));
+        requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationEventRequest.class, RedisKey.SEND_NOTIFICATION_STREAM, RedisKey.SEND_NOTIFICATION_STREAM.concat("_group")));
         List<Subscription> subscriptions = new ArrayList<>();
 
         for (CreateSubscriptionRequest<?> request : requests) {

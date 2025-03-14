@@ -6,7 +6,7 @@ import com.example.demo.common.constant.Env;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.I18nHelper;
-import com.example.demo.event.SendEmailEventPublisher;
+import com.example.demo.event.publisher.SendEmailEventPublisher;
 import com.example.demo.module.email.dto.EmailDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.example.demo.module.email.dto;
+package com.example.demo.event.dto;
 
 import com.example.demo.common.dto.RequestContext;
 import lombok.*;
@@ -11,9 +11,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Builder
-public class SendEmailEventRequest implements Serializable {
+public class SendNotificationEventRequest implements Serializable {
 
     private RequestContext requestContext;
-    private UUID emailId;
+    private UUID notificationId;
 
 }
