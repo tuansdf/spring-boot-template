@@ -7,7 +7,7 @@ import com.example.demo.common.exception.CustomException;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.AuthHelper;
 import com.example.demo.common.util.ConversionUtils;
-import com.example.demo.common.util.SQLBuilder;
+import com.example.demo.common.util.SQLHelper;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
 import jakarta.persistence.EntityManager;
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private PaginationResponseData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<UserDTO> result = SQLBuilder.getPaginationResponseData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationResponseData<UserDTO> result = SQLHelper.initResponse(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -144,12 +144,12 @@ public class UserServiceImpl implements UserService {
             builder.append(" from _user u ");
             builder.append(" where 1=1 ");
             if (StringUtils.isNotBlank(requestDTO.getUsername())) {
-                builder.append(" and u.username = :username ");
-                params.put("username", StringUtils.stripStart(requestDTO.getUsername(), "%").concat("%"));
+                builder.append(" and u.username like :username ");
+                params.put("username", SQLHelper.escapeLikePattern(requestDTO.getUsername()).concat("%"));
             }
             if (StringUtils.isNotBlank(requestDTO.getEmail())) {
                 builder.append(" and u.email like :email ");
-                params.put("email", StringUtils.stripStart(requestDTO.getEmail(), "%").concat("%"));
+                params.put("email", SQLHelper.escapeLikePattern(requestDTO.getEmail()).concat("%"));
             }
             if (requestDTO.getStatus() != null) {
                 builder.append(" and u.status = :status ");
@@ -164,7 +164,7 @@ public class UserServiceImpl implements UserService {
                 params.put("createdAtTo", requestDTO.getCreatedAtTo());
             }
             if (!isCount) {
-                builder.append(SQLBuilder.getPaginationString(result.getPageNumber(), result.getPageSize()));
+                builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
             }
         }
         builder.append(" ) as filter on (filter.id = u.id) ");
@@ -180,13 +180,13 @@ public class UserServiceImpl implements UserService {
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLBuilder.setParams(query, params);
+            SQLHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLBuilder.getTotalPages(count, result.getPageSize()));
+            result.setTotalPages(SQLHelper.getTotalPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.USER_SEARCH);
-            SQLBuilder.setParams(query, params);
+            SQLHelper.setParams(query, params);
             List<UserDTO> items = query.getResultList();
             result.setItems(items);
         }

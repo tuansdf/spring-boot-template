@@ -6,7 +6,7 @@ import com.example.demo.common.dto.PaginationResponseData;
 import com.example.demo.common.exception.CustomException;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.ConversionUtils;
-import com.example.demo.common.util.SQLBuilder;
+import com.example.demo.common.util.SQLHelper;
 import com.example.demo.module.permission.dto.PermissionDTO;
 import com.example.demo.module.permission.dto.SearchPermissionRequestDTO;
 import jakarta.persistence.EntityManager;
@@ -134,7 +134,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     private PaginationResponseData<PermissionDTO> executeSearch(SearchPermissionRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<PermissionDTO> result = SQLBuilder.getPaginationResponseData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationResponseData<PermissionDTO> result = SQLHelper.initResponse(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -161,17 +161,17 @@ public class PermissionServiceImpl implements PermissionService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
-            builder.append(SQLBuilder.getPaginationString(result.getPageNumber(), result.getPageSize()));
+            builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLBuilder.setParams(query, params);
+            SQLHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLBuilder.getTotalPages(count, result.getPageSize()));
+            result.setTotalPages(SQLHelper.getTotalPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.PERMISSION_SEARCH);
-            SQLBuilder.setParams(query, params);
+            SQLHelper.setParams(query, params);
             List<PermissionDTO> items = query.getResultList();
             result.setItems(items);
         }
