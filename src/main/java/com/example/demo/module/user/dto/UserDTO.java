@@ -1,7 +1,5 @@
 package com.example.demo.module.user.dto;
 
-import com.example.demo.common.constant.CommonStatus;
-import com.example.demo.common.util.ValidationUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -10,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,16 +67,6 @@ public class UserDTO {
             this.permissionCodes = new HashSet<>();
             CollectionUtils.addAll(this.permissionCodes, permissions.split(","));
         }
-    }
-
-    public void validateUpdate() {
-        ValidationUtils.notEmpty(this.username, "Username is required");
-        ValidationUtils.maxLength(this.username, 255, "Username exceeds the maximum length of 255 characters");
-        ValidationUtils.notEmpty(this.email, "Email is required");
-        ValidationUtils.isEmail(this.email, "Email is invalid");
-        ValidationUtils.maxLength(this.email, 255, "Email exceeds the maximum length of 255 characters");
-        ValidationUtils.maxLength(this.name, 255, "Name exceeds the maximum length of 255 characters");
-        ValidationUtils.isIn(this.status, List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE, CommonStatus.PENDING), "Status is invalid");
     }
 
 }

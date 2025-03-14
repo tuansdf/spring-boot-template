@@ -1,73 +1,48 @@
 package com.example.demo.common.util;
 
-import com.example.demo.common.exception.CustomException;
-import org.apache.commons.collections4.CollectionUtils;
+import com.example.demo.common.constant.CommonRegex;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.RegexValidator;
-import org.springframework.http.HttpStatus;
-
-import java.util.List;
 
 public class ValidationUtils {
 
-    public static void notNull(Object input, String message) {
-        if (input == null) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
-        }
+    public static boolean isEmail(String input) {
+        return !EmailValidator.getInstance().isValid(input);
     }
 
-    public static void notEmpty(String input, String message) {
-        if (StringUtils.isEmpty(input)) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
-        }
+    public static boolean isPattern(String input, String pattern) {
+        return new RegexValidator(pattern).isValid(input);
     }
 
-    public static void minLength(String input, int length, String message) {
-        if (input != null && input.length() < length) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
+    public static String validatePassword(String input) {
+        if (StringUtils.isEmpty(input)) return null;
+        if (input.length() < 12 || input.length() > 64) {
+            return I18nHelper.getMessageX("form.error.not_between_length", "field.password", 12, 64);
         }
+        return null;
     }
 
-    public static void maxLength(String input, int length, String message) {
-        if (input != null && input.length() > length) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
+    public static String validateCode(String input) {
+        if (StringUtils.isEmpty(input)) return null;
+        if (input.length() > 255) {
+            return I18nHelper.getMessageX("form.error.over_max_length", "field.code", 255);
         }
+        if (!ValidationUtils.isPattern(input, CommonRegex.CODE)) {
+            return I18nHelper.getMessageX("form.error.invalid", "field.code");
+        }
+        return null;
     }
 
-    public static void betweenLength(String input, int min, int max, String message) {
-        minLength(input, min, message);
-        maxLength(input, max, message);
-    }
-
-    public static void startsWith(String input, String start, String message) {
-        if (input != null && !input.startsWith(start)) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
+    public static String validateEmail(String input) {
+        if (StringUtils.isEmpty(input)) return null;
+        if (input.length() > 255) {
+            return I18nHelper.getMessageX("form.error.over_max_length", "field.email", 255);
         }
-    }
-
-    public static void endsWith(String input, String end, String message) {
-        if (input != null && !input.endsWith(end)) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
+        if (!ValidationUtils.isEmail(input)) {
+            return I18nHelper.getMessageX("form.error.invalid", "field.email");
         }
-    }
-
-    public static void isEmail(String input, String message) {
-        if (input != null && !EmailValidator.getInstance().isValid(input)) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    public static void isPattern(String input, String pattern, String message) {
-        if (input != null && !(new RegexValidator(pattern).isValid(input))) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    public static <T> void isIn(T input, List<T> valid, String message) {
-        if (input != null && CollectionUtils.isNotEmpty(valid) && !valid.contains(input)) {
-            throw new CustomException(message, HttpStatus.BAD_REQUEST);
-        }
+        return null;
     }
 
 }

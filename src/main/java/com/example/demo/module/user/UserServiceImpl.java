@@ -30,10 +30,11 @@ public class UserServiceImpl implements UserService {
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final UserRepository userRepository;
+    private final UserValidator userValidator;
 
     @Override
     public UserDTO updateProfile(UserDTO requestDTO) {
-        requestDTO.validateUpdate();
+        userValidator.validateUpdate(requestDTO);
         Optional<User> userOptional = userRepository.findById(requestDTO.getId());
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.NOT_FOUND);
