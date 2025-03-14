@@ -3,7 +3,7 @@ package com.example.demo.event;
 import com.example.demo.common.constant.RedisKey;
 import com.example.demo.common.dto.RequestContextHolder;
 import com.example.demo.module.email.EmailService;
-import com.example.demo.module.email.dto.SendEmailStreamRequest;
+import com.example.demo.module.email.dto.SendEmailEventRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
@@ -14,15 +14,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class SendEmailEventListener implements StreamListener<String, ObjectRecord<String, SendEmailStreamRequest>> {
+public class SendEmailEventListener implements StreamListener<String, ObjectRecord<String, SendEmailEventRequest>> {
 
     private final EmailService emailService;
     private final StringRedisTemplate redisTemplate;
 
     @Override
-    public void onMessage(ObjectRecord<String, SendEmailStreamRequest> message) {
+    public void onMessage(ObjectRecord<String, SendEmailEventRequest> message) {
         try {
-            SendEmailStreamRequest request = message.getValue();
+            SendEmailEventRequest request = message.getValue();
             RequestContextHolder.set(request.getRequestContext());
             log.info("XSTART");
 

@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString
 @Builder
-public class SendEmailStreamRequest implements Serializable {
+public class SendEmailEventRequest implements Serializable {
 
     private RequestContext requestContext;
     private UUID emailId;
