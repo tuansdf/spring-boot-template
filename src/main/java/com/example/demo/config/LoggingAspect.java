@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,13 +13,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
 
-    @Around("execution(public * com.example.demo.module..*(..))")
+    @Around("execution(public * com.example.demo.module..*(..)) || execution(public * com.example.demo.event..*(..))")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+
         String methodName = joinPoint.getSignature().toShortString();
         Object[] methodArgs = joinPoint.getArgs();
 
-        long start = System.currentTimeMillis();
-        String key = RandomUtils.Insecure.generateTimeBasedUUID().toString();
+        String key = ConversionUtils.toString(RandomUtils.Insecure.generateHexString(8));
 
         log.info("{} ENTER method: {} with arguments: {}", key, methodName, methodArgs);
 

@@ -241,16 +241,18 @@ public class PublicController {
 //                RandomUtils.generateUUID().toString();
 //                RandomUtils.generateTimeBasedUUID().toString();
 //                UUID.randomUUID().toString();
-                RandomUtils.Secure.generateUUID().toString();
-                RandomUtils.Insecure.generateUUID().toString();
-                RandomUtils.Secure.generateTimeBasedUUID().toString();
-                RandomUtils.Insecure.generateTimeBasedUUID().toString();
+//                RandomUtils.Secure.generateUUID().toString();
+//                RandomUtils.Insecure.generateUUID().toString();
+//                RandomUtils.Secure.generateTimeBasedUUID().toString();
+//                RandomUtils.Insecure.generateTimeBasedUUID().toString();
                 RandomUtils.Secure.generateString(16);
                 RandomUtils.Insecure.generateString(16);
+                RandomUtils.Secure.generateHexString(8);
+                RandomUtils.Insecure.generateHexString(8);
                 RandomUtils.Secure.generateHexString(16);
                 RandomUtils.Insecure.generateHexString(16);
-                RandomUtils.Secure.generateOTP(16);
-                RandomUtils.Insecure.generateOTP(16);
+//                RandomUtils.Secure.generateOTP(16);
+//                RandomUtils.Insecure.generateOTP(16);
             }
         } catch (Exception e) {
             log.error("", e);
