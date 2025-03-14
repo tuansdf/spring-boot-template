@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
@@ -124,11 +125,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and c.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+            params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(ChronoUnit.MICROS));
         }
         if (requestDTO.getCreatedAtTo() != null) {
             builder.append(" and c.created_at <= :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo());
+            params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(ChronoUnit.MICROS));
         }
         if (!isCount) {
             builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
