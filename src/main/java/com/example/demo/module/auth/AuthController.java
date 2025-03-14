@@ -4,7 +4,7 @@ import com.example.demo.common.constant.CommonType;
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.dto.CommonResponse;
 import com.example.demo.common.util.ExceptionUtils;
-import com.example.demo.config.RequestContextHolder;
+import com.example.demo.common.dto.RequestContextHolder;
 import com.example.demo.module.auth.dto.AuthDTO;
 import com.example.demo.module.token.TokenService;
 import com.example.demo.module.user.dto.ChangePasswordRequestDTO;

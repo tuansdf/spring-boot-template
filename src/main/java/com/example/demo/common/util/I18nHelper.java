@@ -1,6 +1,6 @@
 package com.example.demo.common.util;
 
-import com.example.demo.config.RequestContextHolder;
+import com.example.demo.common.dto.RequestContextHolder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Scope;

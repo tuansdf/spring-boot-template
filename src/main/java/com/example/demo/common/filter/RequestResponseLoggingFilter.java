@@ -3,7 +3,7 @@ package com.example.demo.common.filter;
 import com.example.demo.common.constant.HTTPHeader;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.RandomUtils;
-import com.example.demo.config.RequestContextHolder;
+import com.example.demo.common.dto.RequestContextHolder;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

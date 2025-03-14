@@ -1,9 +1,9 @@
-package com.example.demo.stream;
+package com.example.demo.event;
 
 import com.example.demo.common.constant.RedisKey;
-import com.example.demo.config.RequestContextHolder;
-import com.example.demo.module.notification.NotificationService;
-import com.example.demo.module.notification.dto.SendNotificationStreamRequest;
+import com.example.demo.common.dto.RequestContextHolder;
+import com.example.demo.module.email.EmailService;
+import com.example.demo.module.email.dto.SendEmailStreamRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
@@ -14,28 +14,28 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class SendNotificationStreamListener implements StreamListener<String, ObjectRecord<String, SendNotificationStreamRequest>> {
+public class SendEmailEventListener implements StreamListener<String, ObjectRecord<String, SendEmailStreamRequest>> {
 
-    private final NotificationService notificationService;
+    private final EmailService emailService;
     private final StringRedisTemplate redisTemplate;
 
     @Override
-    public void onMessage(ObjectRecord<String, SendNotificationStreamRequest> message) {
+    public void onMessage(ObjectRecord<String, SendEmailStreamRequest> message) {
         try {
-            SendNotificationStreamRequest request = message.getValue();
+            SendEmailStreamRequest request = message.getValue();
             RequestContextHolder.set(request.getRequestContext());
             log.info("XSTART");
 
             // TODO: FIX
             Thread.sleep(1000);
 
-            notificationService.executeSend(request.getNotificationId());
+            emailService.executeSend(request.getEmailId());
         } catch (Exception e) {
             log.error("XERROR", e);
         } finally {
             try {
-                redisTemplate.opsForStream().acknowledge(RedisKey.SEND_NOTIFICATION_STREAM, message);
-                redisTemplate.opsForStream().delete(RedisKey.SEND_NOTIFICATION_STREAM, message.getId());
+                redisTemplate.opsForStream().acknowledge(RedisKey.SEND_EMAIL_STREAM, message);
+                redisTemplate.opsForStream().delete(RedisKey.SEND_EMAIL_STREAM, message.getId());
 
                 log.info("XEND");
             } catch (Exception ignore) {

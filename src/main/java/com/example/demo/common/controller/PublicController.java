@@ -357,4 +357,18 @@ public class PublicController {
         return "OK";
     }
 
+    @GetMapping(value = "/perms", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object perms() throws IOException {
+        List<String> STRINGS = List.of(
+                PermissionCode.SYSTEM_ADMIN,
+                PermissionCode.READ_USER,
+                PermissionCode.CREATE_USER,
+                PermissionCode.UPDATE_USER,
+                PermissionCode.DELETE_USER);
+        for (int i = 0; i < 1_000_000; i++) {
+            PermissionCode.toIndexes(STRINGS);
+        }
+        return "OK";
+    }
+
 }

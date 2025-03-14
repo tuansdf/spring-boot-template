@@ -1,7 +1,6 @@
-package com.example.demo.config;
+package com.example.demo.common.dto;
 
 import com.example.demo.common.constant.MDCKey;
-import com.example.demo.common.dto.RequestContext;
 import com.example.demo.common.util.ConversionUtils;
 import org.slf4j.MDC;
 

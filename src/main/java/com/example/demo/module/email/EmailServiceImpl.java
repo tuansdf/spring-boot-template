@@ -3,19 +3,14 @@ package com.example.demo.module.email;
 import com.example.demo.common.constant.CommonStatus;
 import com.example.demo.common.constant.CommonType;
 import com.example.demo.common.constant.Env;
-import com.example.demo.common.constant.RedisKey;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.I18nHelper;
-import com.example.demo.config.RequestContextHolder;
+import com.example.demo.event.SendEmailEventPublisher;
 import com.example.demo.module.email.dto.EmailDTO;
-import com.example.demo.module.email.dto.SendEmailStreamRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.connection.stream.ObjectRecord;
-import org.springframework.data.redis.connection.stream.StreamRecords;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -30,9 +25,8 @@ public class EmailServiceImpl implements EmailService {
     private final Env env;
     private final CommonMapper commonMapper;
     private final EmailRepository emailRepository;
-    private final StringRedisTemplate redisTemplate;
+    private final SendEmailEventPublisher sendEmailEventPublisher;
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     protected EmailDTO save(EmailDTO emailDTO) {
         return commonMapper.toDTO(emailRepository.save(commonMapper.toEntity(emailDTO)));
     }
@@ -43,21 +37,11 @@ public class EmailServiceImpl implements EmailService {
         emailDTO.setStatus(CommonStatus.PENDING);
         EmailDTO result = save(emailDTO);
 
-        streamSend(result.getId());
+        sendEmailEventPublisher.publish(result.getId());
 
         return result;
     }
 
-    private void streamSend(UUID emailId) {
-        SendEmailStreamRequest request = SendEmailStreamRequest.builder()
-                .requestContext(RequestContextHolder.get())
-                .emailId(emailId)
-                .build();
-        ObjectRecord<String, SendEmailStreamRequest> data = StreamRecords.newRecord()
-                .ofObject(request)
-                .withStreamKey(RedisKey.SEND_EMAIL_STREAM);
-        redisTemplate.opsForStream().add(data);
-    }
 
     @Override
     public void executeSend(UUID emailId) {
