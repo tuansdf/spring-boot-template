@@ -24,9 +24,6 @@ public class Env {
     @Value("${custom.jwt-activate-account-lifetime}")
     private Integer jwtActivateAccountLifetime;
 
-    @Value("${custom.email-from}")
-    private String fromEmail;
-
     @Value("${spring.data.redis.host}")
     private String redisHost;
     @Value("${spring.data.redis.port}")
