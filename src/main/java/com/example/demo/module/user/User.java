@@ -37,17 +37,17 @@ import java.util.UUID;
 })
 public class User extends BaseEntity {
 
-    @Column(name = "username", columnDefinition = "text", unique = true)
+    @Column(name = "username", unique = true)
     private String username;
-    @Column(name = "email", columnDefinition = "text", unique = true)
+    @Column(name = "email", unique = true)
     private String email;
-    @Column(name = "password", columnDefinition = "text")
+    @Column(name = "password")
     private String password;
-    @Column(name = "otp_secret", columnDefinition = "text")
+    @Column(name = "otp_secret")
     private String otpSecret;
-    @Column(name = "otp_enabled", columnDefinition = "text")
+    @Column(name = "otp_enabled")
     private Boolean otpEnabled;
-    @Column(name = "name", columnDefinition = "text")
+    @Column(name = "name")
     private String name;
     @Column(name = "status")
     private Integer status;

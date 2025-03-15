@@ -29,7 +29,7 @@ import java.util.UUID;
 })
 public class Configuration extends BaseEntity {
 
-    @Column(name = "code", columnDefinition = "text", unique = true, updatable = false)
+    @Column(name = "code", unique = true, updatable = false)
     private String code;
     @Column(name = "value", columnDefinition = "text")
     private String value;

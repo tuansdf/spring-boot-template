@@ -27,7 +27,7 @@ public class Notification extends BaseEntity {
     private String data;
     @Column(name = "retry_count")
     private Integer retryCount;
-    @Column(name = "topic", columnDefinition = "text")
+    @Column(name = "topic")
     private String topic;
     @Column(name = "type")
     private Integer type;
