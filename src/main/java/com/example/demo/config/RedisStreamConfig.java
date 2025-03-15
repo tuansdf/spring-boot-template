@@ -2,10 +2,10 @@ package com.example.demo.config;
 
 import com.example.demo.common.constant.RedisKey;
 import com.example.demo.common.util.CommonUtils;
-import com.example.demo.event.listener.SendEmailEventListener;
-import com.example.demo.event.listener.SendNotificationEventListener;
 import com.example.demo.event.dto.SendEmailEventRequest;
 import com.example.demo.event.dto.SendNotificationEventRequest;
+import com.example.demo.event.listener.SendEmailEventListener;
+import com.example.demo.event.listener.SendNotificationEventListener;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

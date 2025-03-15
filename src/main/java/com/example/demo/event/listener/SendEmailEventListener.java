@@ -2,8 +2,8 @@ package com.example.demo.event.listener;
 
 import com.example.demo.common.constant.RedisKey;
 import com.example.demo.common.dto.RequestContextHolder;
-import com.example.demo.module.email.EmailService;
 import com.example.demo.event.dto.SendEmailEventRequest;
+import com.example.demo.module.email.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
