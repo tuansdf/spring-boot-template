@@ -3,14 +3,13 @@ package com.example.demo.event.publisher;
 import com.example.demo.common.constant.RedisKey;
 import com.example.demo.common.dto.RequestContextHolder;
 import com.example.demo.event.dto.SendEmailEventRequest;
+import com.example.demo.module.email.dto.EmailDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
 import org.springframework.data.redis.connection.stream.StreamRecords;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,10 +18,10 @@ public class SendEmailEventPublisher {
 
     private final StringRedisTemplate redisTemplate;
 
-    public void publish(UUID emailId) {
+    public void publish(EmailDTO email) {
         SendEmailEventRequest request = SendEmailEventRequest.builder()
                 .requestContext(RequestContextHolder.get())
-                .emailId(emailId)
+                .email(email)
                 .build();
         ObjectRecord<String, SendEmailEventRequest> data = StreamRecords.newRecord()
                 .ofObject(request)

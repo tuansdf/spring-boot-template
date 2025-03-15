@@ -4,6 +4,7 @@ import com.example.demo.module.configuration.Configuration;
 import com.example.demo.module.configuration.dto.ConfigurationDTO;
 import com.example.demo.module.email.Email;
 import com.example.demo.module.email.dto.EmailDTO;
+import com.example.demo.module.email.dto.SendEmailRequest;
 import com.example.demo.module.notification.Notification;
 import com.example.demo.module.notification.dto.NotificationDTO;
 import com.example.demo.module.permission.Permission;
@@ -61,5 +62,9 @@ public interface CommonMapper {
     NotificationDTO toDTO(Notification v);
 
     NotificationDTO clone(NotificationDTO v);
+
+    SendEmailRequest toSendEmailRequest(EmailDTO v);
+
+    SendEmailRequest toSendEmailRequest(Email v);
 
 }

@@ -19,16 +19,14 @@ public class Email extends BaseEntity {
 
     @Column(name = "user_id")
     private UUID userId;
-    @Column(name = "from_email", columnDefinition = "text")
-    private String fromEmail;
     @Column(name = "to_email", columnDefinition = "text")
     private String toEmail;
     @Column(name = "cc_email", columnDefinition = "text")
     private String ccEmail;
     @Column(name = "subject", columnDefinition = "text")
     private String subject;
-    @Column(name = "content", columnDefinition = "text")
-    private String content;
+    @Column(name = "body", columnDefinition = "text")
+    private String body;
     @Column(name = "type")
     private Integer type;
     @Column(name = "retry_count")

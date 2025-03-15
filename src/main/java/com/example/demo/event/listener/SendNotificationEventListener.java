@@ -24,20 +24,20 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
         try {
             SendNotificationEventRequest request = message.getValue();
             RequestContextHolder.set(request.getRequestContext());
-            log.info("XSTART");
+            log.info("SendNotificationEventListener.start");
 
             // TODO: FIX
             Thread.sleep(1000);
 
             notificationService.executeSend(request.getNotificationId());
         } catch (Exception e) {
-            log.error("XERROR", e);
+            log.error("SendNotificationEventListener.error", e);
         } finally {
             try {
                 redisTemplate.opsForStream().acknowledge(RedisKey.SEND_NOTIFICATION_STREAM, message);
                 redisTemplate.opsForStream().delete(RedisKey.SEND_NOTIFICATION_STREAM, message.getId());
 
-                log.info("XEND");
+                log.info("SendNotificationEventListener.end");
             } catch (Exception ignore) {
             }
             RequestContextHolder.clear();

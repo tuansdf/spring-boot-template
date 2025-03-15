@@ -41,8 +41,8 @@ public class RedisStreamConfig {
         String consumerName = "consumer-" + hostname;
 
         List<CreateSubscriptionRequest<?>> requests = new ArrayList<>();
-        requests.add(new CreateSubscriptionRequest<>(sendEmailEventListener, SendEmailEventRequest.class, RedisKey.SEND_EMAIL_STREAM, RedisKey.SEND_EMAIL_STREAM.concat("_group")));
-        requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationEventRequest.class, RedisKey.SEND_NOTIFICATION_STREAM, RedisKey.SEND_NOTIFICATION_STREAM.concat("_group")));
+        requests.add(new CreateSubscriptionRequest<>(sendEmailEventListener, SendEmailEventRequest.class, RedisKey.SEND_EMAIL_STREAM.concat("_group"), RedisKey.SEND_EMAIL_STREAM));
+        requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationEventRequest.class, RedisKey.SEND_NOTIFICATION_STREAM.concat("_group"), RedisKey.SEND_NOTIFICATION_STREAM));
         List<Subscription> subscriptions = new ArrayList<>();
 
         for (CreateSubscriptionRequest<?> request : requests) {
@@ -77,7 +77,7 @@ public class RedisStreamConfig {
         var container = StreamMessageListenerContainer.create(connectionFactory, options);
 
         var subscription = container.receiveAutoAck(Consumer.from(request.groupName(), consumerName),
-                StreamOffset.create(request.streamName(), ReadOffset.lastConsumed()), request.listener());
+                StreamOffset.create(request.streamName(), ReadOffset.from("0-0")), request.listener());
 
         container.start();
         return subscription;
