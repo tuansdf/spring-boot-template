@@ -37,11 +37,7 @@ public class EmailServiceImpl implements EmailService {
         emailDTO.setStatus(CommonStatus.PENDING);
         EmailDTO result = save(emailDTO);
 
-//        sendEmailEventPublisher.publish(result);
-        try {
-            executeSend(emailDTO);
-        } catch (Exception ignore) {
-        }
+        sendEmailEventPublisher.publish(result);
 
         return result;
     }
