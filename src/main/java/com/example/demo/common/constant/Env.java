@@ -29,4 +29,7 @@ public class Env {
     @Value("${spring.data.redis.port}")
     private Integer redisPort;
 
+    @Value("${custom.server-base-url}")
+    private String serverBaseUrl;
+
 }

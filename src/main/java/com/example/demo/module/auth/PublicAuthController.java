@@ -2,15 +2,15 @@ package com.example.demo.module.auth;
 
 import com.example.demo.common.dto.CommonResponse;
 import com.example.demo.common.util.ExceptionUtils;
+import com.example.demo.common.util.HTMLHelper;
 import com.example.demo.common.util.I18nHelper;
 import com.example.demo.module.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -73,15 +73,18 @@ public class PublicAuthController {
         }
     }
 
-    @PostMapping("/account/activate")
-    public ResponseEntity<CommonResponse<Object>> activateAccount(@RequestBody AuthDTO requestDTO) {
+    @GetMapping(value = "/account/activate", produces = MediaType.TEXT_HTML_VALUE)
+    public String activateAccount(@RequestParam(required = false) String token) {
+        String result = I18nHelper.getMessage("common.error");
         try {
-            authService.activateAccount(requestDTO.getToken());
-            var message = I18nHelper.getMessage("auth.activate_account_success");
-            return ResponseEntity.ok(new CommonResponse<>(message));
+            if (StringUtils.isNotEmpty(token)) {
+                authService.activateAccount(token);
+                result = I18nHelper.getMessage("auth.activate_account_success");
+            }
         } catch (Exception e) {
-            return ExceptionUtils.toResponseEntity(e);
+            result = ExceptionUtils.toResponse(e).getMessage();
         }
+        return HTMLHelper.createCenteredHTML(I18nHelper.getMessage("email.activate_account_subject"), result);
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.demo.module.email;
 
 import com.example.demo.common.constant.CommonStatus;
 import com.example.demo.common.constant.CommonType;
+import com.example.demo.common.constant.Env;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.I18nHelper;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class EmailServiceImpl implements EmailService {
 
+    private final Env env;
     private final CommonMapper commonMapper;
     private final EmailRepository emailRepository;
     private final SendEmailEventPublisher sendEmailEventPublisher;
@@ -35,7 +37,11 @@ public class EmailServiceImpl implements EmailService {
         emailDTO.setStatus(CommonStatus.PENDING);
         EmailDTO result = save(emailDTO);
 
-        sendEmailEventPublisher.publish(result);
+//        sendEmailEventPublisher.publish(result);
+        try {
+            executeSend(emailDTO);
+        } catch (Exception ignore) {
+        }
 
         return result;
     }
@@ -68,11 +74,12 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
+        String url = env.getServerBaseUrl().concat("/public/auth/account/activate?token=").concat(token);
         EmailDTO emailDTO = EmailDTO.builder()
                 .userId(userId)
                 .toEmail(email)
                 .subject(I18nHelper.getMessage("email.activate_account_subject"))
-                .body(I18nHelper.getMessage("email.activate_account_content", name, token))
+                .body(I18nHelper.getMessage("email.activate_account_content", name, url))
                 .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
         return startSend(emailDTO);
