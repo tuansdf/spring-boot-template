@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
                 user.setStatus(requestDTO.getStatus());
             }
             if (requestDTO.getRoleIds() != null) {
-                roleService.mapWithUser(user.getId(), requestDTO.getRoleIds());
+                roleService.setUserRoles(user.getId(), requestDTO.getRoleIds());
             }
         }
         return commonMapper.toDTO(userRepository.save(user));

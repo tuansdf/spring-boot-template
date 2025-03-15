@@ -63,7 +63,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public void mapWithRole(UUID roleId, Set<UUID> permissionIds) {
+    public void setRolePermissions(UUID roleId, Set<UUID> permissionIds) {
         rolePermissionRepository.deleteAllByRoleId(roleId);
         if (CollectionUtils.isEmpty(permissionIds)) return;
         List<RolePermission> rolePermissions = new ArrayList<>();

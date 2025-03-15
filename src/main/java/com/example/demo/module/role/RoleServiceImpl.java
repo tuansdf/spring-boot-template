@@ -63,12 +63,12 @@ public class RoleServiceImpl implements RoleService {
         }
         result.setStatus(requestDTO.getStatus());
         result = roleRepository.save(result);
-        permissionService.mapWithRole(result.getId(), requestDTO.getPermissionIds());
+        permissionService.setRolePermissions(result.getId(), requestDTO.getPermissionIds());
         return toDTOAndPopulate(result);
     }
 
     @Override
-    public void mapWithUser(UUID userId, Set<UUID> roleIds) {
+    public void setUserRoles(UUID userId, Set<UUID> roleIds) {
         userRoleRepository.deleteAllByUserId(userId);
         if (CollectionUtils.isEmpty(roleIds)) return;
         List<UserRole> userRoles = new ArrayList<>();

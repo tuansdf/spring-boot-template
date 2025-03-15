@@ -12,7 +12,7 @@ public interface PermissionService {
 
     PermissionDTO save(PermissionDTO permissionDTO);
 
-    void mapWithRole(UUID roleId, Set<UUID> permissionIds);
+    void setRolePermissions(UUID roleId, Set<UUID> permissionIds);
 
     PermissionDTO findOneById(UUID id);
 
