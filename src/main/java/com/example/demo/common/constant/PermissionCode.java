@@ -3,6 +3,7 @@ package com.example.demo.common.constant;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class PermissionCode {
 
@@ -42,43 +43,23 @@ public class PermissionCode {
     }
 
     public static List<String> fromIndexes(List<Integer> indexes) {
-        List<String> result = new ArrayList<>();
-        if (CollectionUtils.isEmpty(indexes)) return result;
-        for (Integer index : indexes) {
-            String code = fromIndex(index);
-            if (code != null) result.add(code);
-        }
-        return result;
+        if (CollectionUtils.isEmpty(indexes)) return new ArrayList<>();
+        return indexes.stream().map(PermissionCode::fromIndex).toList();
     }
 
     public static Set<String> fromIndexes(Set<Integer> indexes) {
-        Set<String> result = new HashSet<>();
-        if (CollectionUtils.isEmpty(indexes)) return result;
-        for (Integer index : indexes) {
-            String code = fromIndex(index);
-            if (code != null) result.add(code);
-        }
-        return result;
+        if (CollectionUtils.isEmpty(indexes)) return new HashSet<>();
+        return indexes.stream().map(PermissionCode::fromIndex).collect(Collectors.toSet());
     }
 
     public static List<Integer> toIndexes(List<String> codes) {
-        List<Integer> result = new ArrayList<>();
-        if (CollectionUtils.isEmpty(codes)) return result;
-        for (String code : codes) {
-            Integer index = toIndex(code);
-            if (index != null) result.add(index);
-        }
-        return result;
+        if (CollectionUtils.isEmpty(codes)) return new ArrayList<>();
+        return codes.stream().map(PermissionCode::toIndex).toList();
     }
 
     public static Set<Integer> toIndexes(Set<String> codes) {
-        Set<Integer> result = new HashSet<>();
-        if (CollectionUtils.isEmpty(codes)) return result;
-        for (String code : codes) {
-            Integer index = toIndex(code);
-            if (index != null) result.add(index);
-        }
-        return result;
+        if (CollectionUtils.isEmpty(codes)) return new HashSet<>();
+        return codes.stream().map(PermissionCode::toIndex).collect(Collectors.toSet());
     }
 
 }
