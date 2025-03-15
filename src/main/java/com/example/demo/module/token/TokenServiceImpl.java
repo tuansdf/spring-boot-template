@@ -34,20 +34,9 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO findOneActiveById(UUID id) {
-        if (id == null) {
-            return null;
-        }
+        Optional<Token> token = tokenRepository.findTopByIdAndStatusAndExpiresAtBefore(id, CommonStatus.ACTIVE, Instant.now());
+        return token.map(commonMapper::toDTO).orElse(null);
 
-        TokenDTO token = findOneById(id);
-        if (token == null) return null;
-
-        boolean isActive = CommonStatus.ACTIVE.equals(token.getStatus());
-        if (!isActive) return null;
-
-        boolean isExpired = Instant.now().isAfter(token.getExpiresAt());
-        if (isExpired) return null;
-
-        return token;
     }
 
     @Override
