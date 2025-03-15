@@ -12,7 +12,7 @@ public interface RoleService {
 
     RoleDTO save(RoleDTO roleDTO);
 
-    void addToUser(UUID userId, Set<UUID> roleIds);
+    void mapWithUser(UUID userId, Set<UUID> roleIds);
 
     RoleDTO findOneById(UUID id);
 

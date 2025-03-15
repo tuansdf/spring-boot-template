@@ -35,7 +35,6 @@ public class UserController {
     }
 
     @PatchMapping
-    @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> updateProfile(@RequestBody UserDTO requestDTO) {
         try {
             var result = userService.updateProfile(requestDTO);

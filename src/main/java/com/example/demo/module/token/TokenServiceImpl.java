@@ -34,7 +34,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO findOneActiveById(UUID id) {
-        Optional<Token> token = tokenRepository.findTopByIdAndStatusAndExpiresAtBefore(id, CommonStatus.ACTIVE, Instant.now());
+        Optional<Token> token = tokenRepository.findTopByIdAndStatusAndExpiresAtAfter(id, CommonStatus.ACTIVE, Instant.now());
         return token.map(commonMapper::toDTO).orElse(null);
 
     }

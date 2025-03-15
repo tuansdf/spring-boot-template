@@ -165,7 +165,7 @@ public class PublicController {
         Set<UUID> roleIds = new HashSet<>();
         roleIds.add(RandomUtils.Secure.generateTimeBasedUUID());
         for (User user : users) {
-            roleService.addToUser(user.getId(), roleIds);
+            roleService.mapWithUser(user.getId(), roleIds);
         }
         return "OK";
     }

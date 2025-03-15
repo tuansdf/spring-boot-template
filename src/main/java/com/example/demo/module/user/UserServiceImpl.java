@@ -3,11 +3,13 @@ package com.example.demo.module.user;
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.constant.ResultSetName;
 import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.RequestContextHolder;
 import com.example.demo.common.exception.CustomException;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.AuthHelper;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.SQLHelper;
+import com.example.demo.module.role.RoleService;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
 import jakarta.persistence.EntityManager;
@@ -31,26 +33,46 @@ public class UserServiceImpl implements UserService {
     private final EntityManager entityManager;
     private final UserRepository userRepository;
     private final UserValidator userValidator;
+    private final RoleService roleService;
 
     @Override
     public UserDTO updateProfile(UserDTO requestDTO) {
+        boolean isAdmin = AuthHelper.hasAnyPermission(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER);
+        if (isAdmin) {
+            if (requestDTO.getId() == null) {
+                throw new CustomException(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            requestDTO.setId(RequestContextHolder.get().getUserId());
+        }
         userValidator.validateUpdate(requestDTO);
         Optional<User> userOptional = userRepository.findById(requestDTO.getId());
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
         User user = userOptional.get();
-        if (!ConversionUtils.safeToString(user.getUsername()).equals(requestDTO.getUsername()) && existsByUsername(requestDTO.getUsername())) {
-            throw new CustomException(HttpStatus.CONFLICT);
+        if (StringUtils.isNotEmpty(requestDTO.getUsername())) {
+            if (!ConversionUtils.safeToString(user.getUsername()).equals(requestDTO.getUsername()) && existsByUsername(requestDTO.getUsername())) {
+                throw new CustomException(HttpStatus.CONFLICT);
+            }
+            user.setUsername(requestDTO.getUsername());
         }
-        if (!ConversionUtils.safeToString(user.getEmail()).equals(requestDTO.getEmail()) && existsByEmail(requestDTO.getEmail())) {
-            throw new CustomException(HttpStatus.CONFLICT);
+        if (StringUtils.isNotEmpty(requestDTO.getEmail())) {
+            if (!ConversionUtils.safeToString(user.getEmail()).equals(requestDTO.getEmail()) && existsByEmail(requestDTO.getEmail())) {
+                throw new CustomException(HttpStatus.CONFLICT);
+            }
+            user.setEmail(requestDTO.getEmail());
         }
-        user.setUsername(requestDTO.getUsername());
-        user.setEmail(requestDTO.getEmail());
-        user.setName(requestDTO.getName());
-        if (AuthHelper.hasAnyPermission(List.of(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER))) {
-            user.setStatus(requestDTO.getStatus());
+        if (StringUtils.isNotEmpty(requestDTO.getName())) {
+            user.setName(requestDTO.getName());
+        }
+        if (isAdmin) {
+            if (requestDTO.getStatus() != null) {
+                user.setStatus(requestDTO.getStatus());
+            }
+            if (requestDTO.getRoleIds() != null) {
+                roleService.mapWithUser(user.getId(), requestDTO.getRoleIds());
+            }
         }
         return commonMapper.toDTO(userRepository.save(user));
     }

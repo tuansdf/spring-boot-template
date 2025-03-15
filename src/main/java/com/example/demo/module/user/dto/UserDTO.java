@@ -32,6 +32,7 @@ public class UserDTO {
     private Instant createdAt;
     private Instant updatedAt;
 
+    private Set<UUID> roleIds;
     private Set<String> roleCodes;
     private Set<String> permissionCodes;
 

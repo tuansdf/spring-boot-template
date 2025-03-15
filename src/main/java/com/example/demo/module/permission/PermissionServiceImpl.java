@@ -9,11 +9,14 @@ import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.SQLHelper;
 import com.example.demo.module.permission.dto.PermissionDTO;
 import com.example.demo.module.permission.dto.SearchPermissionRequestDTO;
+import com.example.demo.module.role.RolePermission;
+import com.example.demo.module.role.RolePermissionRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -30,6 +33,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final PermissionRepository permissionRepository;
     private final EntityManager entityManager;
     private final PermissionValidator permissionValidator;
+    private final RolePermissionRepository rolePermissionRepository;
 
     @Override
     public PermissionDTO save(PermissionDTO requestDTO) {
@@ -59,6 +63,17 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
+    public void mapWithRole(UUID roleId, Set<UUID> permissionIds) {
+        rolePermissionRepository.deleteAllByRoleId(roleId);
+        if (CollectionUtils.isEmpty(permissionIds)) return;
+        List<RolePermission> rolePermissions = new ArrayList<>();
+        for (UUID permissionId : permissionIds) {
+            rolePermissions.add(new RolePermission(roleId, permissionId));
+        }
+        rolePermissionRepository.saveAll(rolePermissions);
+    }
+
+    @Override
     public PermissionDTO findOneById(UUID id) {
         Optional<Permission> result = permissionRepository.findById(id);
         return result.map(commonMapper::toDTO).orElse(null);
@@ -84,6 +99,15 @@ public class PermissionServiceImpl implements PermissionService {
         PermissionDTO result = findOneByCode(code);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        return result;
+    }
+
+    @Override
+    public Set<UUID> findAllIdsByRoleId(UUID roleId) {
+        Set<UUID> result = permissionRepository.findAllIdsByRoleId(roleId);
+        if (result == null) {
+            return new HashSet<>();
         }
         return result;
     }

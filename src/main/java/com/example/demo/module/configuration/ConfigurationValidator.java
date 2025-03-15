@@ -1,6 +1,5 @@
 package com.example.demo.module.configuration;
 
-import com.example.demo.common.constant.CommonRegex;
 import com.example.demo.common.constant.CommonStatus;
 import com.example.demo.common.exception.CustomException;
 import com.example.demo.common.util.I18nHelper;
@@ -23,11 +22,9 @@ public class ConfigurationValidator {
         if (StringUtils.isBlank(requestDTO.getCode())) {
             throw new CustomException(I18nHelper.getMessageX("form.error.missing", "field.code"), HttpStatus.BAD_REQUEST);
         }
-        if (requestDTO.getCode().length() > 255) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.over_max_length", "field.code", 255));
-        }
-        if (ValidationUtils.isPattern(requestDTO.getCode(), CommonRegex.CODE)) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.invalid", "field.code"));
+        String codeError = ValidationUtils.validateCode(requestDTO.getCode());
+        if (codeError != null) {
+            throw new CustomException(codeError);
         }
         if (StringUtils.isNotEmpty(requestDTO.getValue()) && requestDTO.getValue().length() > 255) {
             throw new CustomException(I18nHelper.getMessageX("form.error.over_max_length", "field.value", 255));

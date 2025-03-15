@@ -15,6 +15,7 @@ import com.example.demo.module.jwt.JWTService;
 import com.example.demo.module.jwt.dto.JWTPayload;
 import com.example.demo.module.notification.NotificationService;
 import com.example.demo.module.permission.PermissionService;
+import com.example.demo.module.role.RoleService;
 import com.example.demo.module.token.TokenService;
 import com.example.demo.module.token.dto.TokenDTO;
 import com.example.demo.module.user.User;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private final JWTService jwtService;
     private final UserService userService;
     private final PermissionService permissionService;
+    private final RoleService roleService;
     private final TokenService tokenService;
     private final EmailService emailService;
     private final ConfigurationService configurationService;
@@ -83,6 +85,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Set<String> permissions = permissionService.findAllCodesByUserId(userDTO.getId());
+        Set<String> roles = roleService.findAllCodesByUserId(userDTO.getId());
 
         AuthDTO responseDTO = createAuthResponse(userDTO.getId(), permissions);
         responseDTO.setUserId(userDTO.getId());
@@ -90,6 +93,7 @@ public class AuthServiceImpl implements AuthService {
         responseDTO.setEmail(userDTO.getEmail());
         responseDTO.setName(userDTO.getName());
         responseDTO.setPermissions(permissions);
+        responseDTO.setRoles(roles);
 
         return responseDTO;
     }
@@ -236,9 +240,13 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !validTypes.contains(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(ConversionUtils.toUUID(tokenDTO.getOwnerId()), CommonStatus.ACTIVE);
-        if (userOptional.isEmpty()) {
+        UserDTO user = userService.findOneById(tokenDTO.getOwnerId());
+        if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
+        List<Integer> validStatus = List.of(CommonStatus.PENDING, CommonStatus.INACTIVE);
+        if (!validStatus.contains(user.getStatus())) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         userRepository.updateStatusByUserId(tokenDTO.getOwnerId(), CommonStatus.ACTIVE);
         tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), tokenType);

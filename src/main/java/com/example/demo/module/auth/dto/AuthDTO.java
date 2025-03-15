@@ -26,6 +26,7 @@ public class AuthDTO {
     private String username;
     private String email;
     private String name;
+    private Set<String> roles;
     private Set<String> permissions;
 
 }

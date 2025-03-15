@@ -12,6 +12,8 @@ public interface PermissionService {
 
     PermissionDTO save(PermissionDTO permissionDTO);
 
+    void mapWithRole(UUID roleId, Set<UUID> permissionIds);
+
     PermissionDTO findOneById(UUID id);
 
     PermissionDTO findOneByIdOrThrow(UUID id);
@@ -19,6 +21,8 @@ public interface PermissionService {
     PermissionDTO findOneByCode(String code);
 
     PermissionDTO findOneByCodeOrThrow(String code);
+
+    Set<UUID> findAllIdsByRoleId(UUID roleId);
 
     Set<String> findAllCodesByRoleId(UUID roleId);
 

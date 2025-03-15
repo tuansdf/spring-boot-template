@@ -7,14 +7,17 @@ import com.example.demo.common.exception.CustomException;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.common.util.SQLHelper;
+import com.example.demo.module.permission.PermissionService;
 import com.example.demo.module.role.dto.RoleDTO;
 import com.example.demo.module.role.dto.SearchRoleRequestDTO;
 import com.example.demo.module.user.UserRole;
+import com.example.demo.module.user.UserRoleRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,7 @@ public class RoleServiceImpl implements RoleService {
     private final UserRoleRepository userRoleRepository;
     private final EntityManager entityManager;
     private final RoleValidator roleValidator;
+    private final PermissionService permissionService;
 
     @Override
     public RoleDTO save(RoleDTO requestDTO) {
@@ -58,12 +62,15 @@ public class RoleServiceImpl implements RoleService {
             requestDTO.setStatus(CommonStatus.ACTIVE);
         }
         result.setStatus(requestDTO.getStatus());
-        return commonMapper.toDTO(roleRepository.save(result));
+        result = roleRepository.save(result);
+        permissionService.mapWithRole(result.getId(), requestDTO.getPermissionIds());
+        return toDTOAndPopulate(result);
     }
 
     @Override
-    public void addToUser(UUID userId, Set<UUID> roleIds) {
+    public void mapWithUser(UUID userId, Set<UUID> roleIds) {
         userRoleRepository.deleteAllByUserId(userId);
+        if (CollectionUtils.isEmpty(roleIds)) return;
         List<UserRole> userRoles = new ArrayList<>();
         for (UUID roleId : roleIds) {
             userRoles.add(new UserRole(userId, roleId));
@@ -71,10 +78,16 @@ public class RoleServiceImpl implements RoleService {
         userRoleRepository.saveAll(userRoles);
     }
 
+    private RoleDTO toDTOAndPopulate(Role role) {
+        RoleDTO result = commonMapper.toDTO(role);
+        result.setPermissionIds(permissionService.findAllIdsByRoleId(result.getId()));
+        return result;
+    }
+
     @Override
     public RoleDTO findOneById(UUID id) {
         Optional<Role> result = roleRepository.findById(id);
-        return result.map(commonMapper::toDTO).orElse(null);
+        return result.map(this::toDTOAndPopulate).orElse(null);
     }
 
     @Override
@@ -89,7 +102,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDTO findOneByCode(String code) {
         Optional<Role> result = roleRepository.findTopByCode(code);
-        return result.map(commonMapper::toDTO).orElse(null);
+        return result.map(this::toDTOAndPopulate).orElse(null);
     }
 
     @Override
@@ -116,7 +129,7 @@ public class RoleServiceImpl implements RoleService {
         if (result == null) {
             return new ArrayList<>();
         }
-        return result.stream().map(commonMapper::toDTO).toList();
+        return result.stream().map(this::toDTOAndPopulate).toList();
     }
 
     @Override

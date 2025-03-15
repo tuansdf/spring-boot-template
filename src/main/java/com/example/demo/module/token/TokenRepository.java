@@ -16,7 +16,7 @@ public interface TokenRepository extends JpaRepository<Token, UUID> {
     @Query(value = "update token set status = :status, updated_at = :now " +
             "where owner_id = :userId and created_at < :now and type = :type and status <> :status", nativeQuery = true)
     void updateStatusByOwnerIdAndTypeAndCreatedAtBefore(UUID userId, Integer type, Instant now, Integer status);
-   
-    Optional<Token> findTopByIdAndStatusAndExpiresAtBefore(UUID tokenId, Integer status, Instant now);
+
+    Optional<Token> findTopByIdAndStatusAndExpiresAtAfter(UUID tokenId, Integer status, Instant now);
 
 }
