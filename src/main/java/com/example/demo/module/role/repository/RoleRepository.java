@@ -1,5 +1,6 @@
-package com.example.demo.module.role;
+package com.example.demo.module.role.repository;
 
+import com.example.demo.module.role.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

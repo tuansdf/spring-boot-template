@@ -12,6 +12,9 @@ import com.example.demo.common.util.SQLHelper;
 import com.example.demo.module.role.RoleService;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
+import com.example.demo.module.user.entity.User;
+import com.example.demo.module.user.mapper.UserMapper;
+import com.example.demo.module.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -30,6 +33,7 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private final CommonMapper commonMapper;
+    private final UserMapper userMapper;
     private final EntityManager entityManager;
     private final UserRepository userRepository;
     private final UserValidator userValidator;
@@ -74,7 +78,7 @@ public class UserServiceImpl implements UserService {
                 roleService.setUserRoles(user.getId(), requestDTO.getRoleIds());
             }
         }
-        return commonMapper.toDTO(userRepository.save(user));
+        return userMapper.toDTO(userRepository.save(user));
     }
 
     @Override
@@ -95,7 +99,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneById(UUID userId) {
         Optional<User> result = userRepository.findById(userId);
-        return result.map(commonMapper::toDTO).orElse(null);
+        return result.map(userMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -110,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneByUsername(String username) {
         Optional<User> result = userRepository.findTopByUsername(username);
-        return result.map(commonMapper::toDTO).orElse(null);
+        return result.map(userMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -125,7 +129,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneByEmail(String email) {
         Optional<User> result = userRepository.findTopByEmail(email);
-        return result.map(commonMapper::toDTO).orElse(null);
+        return result.map(userMapper::toDTO).orElse(null);
     }
 
     @Override

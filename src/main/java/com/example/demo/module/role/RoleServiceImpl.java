@@ -10,8 +10,11 @@ import com.example.demo.common.util.SQLHelper;
 import com.example.demo.module.permission.PermissionService;
 import com.example.demo.module.role.dto.RoleDTO;
 import com.example.demo.module.role.dto.SearchRoleRequestDTO;
-import com.example.demo.module.user.UserRole;
-import com.example.demo.module.user.UserRoleRepository;
+import com.example.demo.module.role.entity.Role;
+import com.example.demo.module.role.mapper.RoleMapper;
+import com.example.demo.module.role.repository.RoleRepository;
+import com.example.demo.module.user.entity.UserRole;
+import com.example.demo.module.user.repository.UserRoleRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -31,6 +34,7 @@ import java.util.*;
 public class RoleServiceImpl implements RoleService {
 
     private final CommonMapper commonMapper;
+    private final RoleMapper roleMapper;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
     private final EntityManager entityManager;
@@ -64,7 +68,7 @@ public class RoleServiceImpl implements RoleService {
         result.setStatus(requestDTO.getStatus());
         result = roleRepository.save(result);
         permissionService.setRolePermissions(result.getId(), requestDTO.getPermissionIds());
-        return toDTOAndPopulate(result);
+        return roleMapper.toDTO(result);
     }
 
     @Override
@@ -78,16 +82,10 @@ public class RoleServiceImpl implements RoleService {
         userRoleRepository.saveAll(userRoles);
     }
 
-    private RoleDTO toDTOAndPopulate(Role role) {
-        RoleDTO result = commonMapper.toDTO(role);
-        result.setPermissionIds(permissionService.findAllIdsByRoleId(result.getId()));
-        return result;
-    }
-
     @Override
     public RoleDTO findOneById(UUID id) {
         Optional<Role> result = roleRepository.findById(id);
-        return result.map(this::toDTOAndPopulate).orElse(null);
+        return result.map(roleMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -102,7 +100,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public RoleDTO findOneByCode(String code) {
         Optional<Role> result = roleRepository.findTopByCode(code);
-        return result.map(this::toDTOAndPopulate).orElse(null);
+        return result.map(roleMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -129,7 +127,7 @@ public class RoleServiceImpl implements RoleService {
         if (result == null) {
             return new ArrayList<>();
         }
-        return result.stream().map(this::toDTOAndPopulate).toList();
+        return result.stream().map(roleMapper::toDTO).toList();
     }
 
     @Override

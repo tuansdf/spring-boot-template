@@ -1,4 +1,4 @@
-package com.example.demo.module.role;
+package com.example.demo.module.user.entity;
 
 import com.example.demo.common.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -14,12 +14,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "role_permission")
-public class RolePermission extends BaseEntity {
+@Table(name = "user_role")
+public class UserRole extends BaseEntity {
 
+    @Column(name = "user_id")
+    private UUID userId;
     @Column(name = "role_id")
     private UUID roleId;
-    @Column(name = "permission_id")
-    private UUID permissionId;
 
 }

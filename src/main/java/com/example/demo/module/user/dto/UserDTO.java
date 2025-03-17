@@ -58,6 +58,14 @@ public class UserDTO {
         setPermissionCodes(permissions);
     }
 
+    public void setRoleCodes(Set<String> roleCodes) {
+        this.roleCodes = roleCodes;
+    }
+
+    public void setPermissionCodes(Set<String> permissionCodes) {
+        this.permissionCodes = permissionCodes;
+    }
+
     public void setRoleCodes(String roles) {
         if (StringUtils.isBlank(roles)) {
             this.roleCodes = new HashSet<>();

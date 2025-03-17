@@ -1,4 +1,4 @@
-package com.example.demo.module.role;
+package com.example.demo.module.role.entity;
 
 import com.example.demo.common.constant.ResultSetName;
 import com.example.demo.common.entity.BaseEntity;
