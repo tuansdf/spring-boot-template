@@ -152,7 +152,7 @@ public class RoleServiceImpl implements RoleService {
         }
         builder.append(" from role r ");
         builder.append(" where 1=1 ");
-        if (StringUtils.isNotBlank(requestDTO.getCode())) {
+        if (StringUtils.isNotEmpty(requestDTO.getCode())) {
             builder.append(" and r.code = :code ");
             params.put("code", requestDTO.getCode());
         }

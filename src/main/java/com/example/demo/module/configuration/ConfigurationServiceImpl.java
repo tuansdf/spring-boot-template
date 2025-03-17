@@ -114,7 +114,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         builder.append(" from configuration c ");
         builder.append(" where 1=1 ");
-        if (StringUtils.isNotBlank(requestDTO.getCode())) {
+        if (StringUtils.isNotEmpty(requestDTO.getCode())) {
             builder.append(" and c.code = :code ");
             params.put("code", requestDTO.getCode());
         }

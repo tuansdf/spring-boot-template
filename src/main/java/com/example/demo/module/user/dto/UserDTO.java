@@ -1,15 +1,17 @@
 package com.example.demo.module.user.dto;
 
+import com.example.demo.common.util.ConversionUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -57,17 +59,19 @@ public class UserDTO {
     }
 
     public void setRoleCodes(String roles) {
-        if (StringUtils.isNotBlank(roles)) {
+        if (StringUtils.isBlank(roles)) {
             this.roleCodes = new HashSet<>();
-            CollectionUtils.addAll(this.roleCodes, roles.split(","));
+            return;
         }
+        this.roleCodes = Arrays.stream(roles.split(",")).map(x -> ConversionUtils.safeToString(x).trim()).collect(Collectors.toSet());
     }
 
     public void setPermissionCodes(String permissions) {
-        if (StringUtils.isNotBlank(permissions)) {
+        if (StringUtils.isBlank(permissions)) {
             this.permissionCodes = new HashSet<>();
-            CollectionUtils.addAll(this.permissionCodes, permissions.split(","));
+            return;
         }
+        this.permissionCodes = Arrays.stream(permissions.split(",")).map(x -> ConversionUtils.safeToString(x).trim()).collect(Collectors.toSet());
     }
 
 }

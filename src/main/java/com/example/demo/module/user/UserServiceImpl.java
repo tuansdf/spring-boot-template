@@ -165,11 +165,11 @@ public class UserServiceImpl implements UserService {
             builder.append(" select u.id ");
             builder.append(" from _user u ");
             builder.append(" where 1=1 ");
-            if (StringUtils.isNotBlank(requestDTO.getUsername())) {
+            if (StringUtils.isNotEmpty(requestDTO.getUsername())) {
                 builder.append(" and u.username like :username ");
                 params.put("username", SQLHelper.escapeLikePattern(requestDTO.getUsername()).concat("%"));
             }
-            if (StringUtils.isNotBlank(requestDTO.getEmail())) {
+            if (StringUtils.isNotEmpty(requestDTO.getEmail())) {
                 builder.append(" and u.email like :email ");
                 params.put("email", SQLHelper.escapeLikePattern(requestDTO.getEmail()).concat("%"));
             }
