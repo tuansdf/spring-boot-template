@@ -16,7 +16,7 @@ public class RoleMapper {
 
     public RoleDTO toDTO(Role role) {
         RoleDTO result = commonMapper.toDTO(role);
-        result.setPermissionIds(permissionService.findAllIdsByRoleId(result.getId()));
+        result.setPermissionCodes(permissionService.findAllCodesByRoleId(result.getId()));
         return result;
     }
 

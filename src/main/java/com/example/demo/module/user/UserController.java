@@ -3,6 +3,7 @@ package com.example.demo.module.user;
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.dto.CommonResponse;
 import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.RequestContextHolder;
 import com.example.demo.common.util.ExceptionUtils;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
@@ -22,6 +23,17 @@ import java.util.UUID;
 public class UserController {
 
     private final UserService userService;
+
+    @GetMapping("/me")
+    public ResponseEntity<CommonResponse<UserDTO>> findCurrentUser() {
+        try {
+            UUID userId = RequestContextHolder.get().getUserId();
+            var result = userService.findOneById(userId);
+            return ResponseEntity.ok(new CommonResponse<>(result));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})

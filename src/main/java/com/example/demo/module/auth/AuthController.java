@@ -38,6 +38,14 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/token/verify")
+    public ResponseEntity<CommonResponse<Object>> verifyToken() {
+        try {
+            return ResponseEntity.ok(new CommonResponse<>());
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
 
     @PostMapping("/token/revoke")
     public ResponseEntity<CommonResponse<Object>> revokeRefreshTokens() {
