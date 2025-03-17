@@ -9,5 +9,5 @@ import java.util.UUID;
 public interface RolePermissionRepository extends JpaRepository<RolePermission, UUID> {
 
     void deleteAllByRoleId(UUID roleId);
-   
+
 }
