@@ -15,5 +15,6 @@ public class SendEmailRequest {
     private String ccEmail;
     private String subject;
     private String body;
+    private Boolean isHtml;
 
 }

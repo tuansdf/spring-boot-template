@@ -32,7 +32,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public NotificationDTO send(NotificationDTO notificationDTO) {
+    public NotificationDTO triggerSend(NotificationDTO notificationDTO) {
         notificationDTO.setId(null);
         notificationDTO.setStatus(CommonStatus.PENDING);
         NotificationDTO result = save(notificationDTO);
@@ -62,7 +62,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .userId(userId)
                 .status(CommonStatus.PENDING)
                 .build();
-        return send(notificationDTO);
+        return triggerSend(notificationDTO);
     }
 
 }

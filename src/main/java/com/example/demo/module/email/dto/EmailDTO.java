@@ -25,5 +25,6 @@ public class EmailDTO {
     private Integer status;
     private Instant createdAt;
     private Instant updatedAt;
+    private Boolean isHtml;
 
 }

@@ -1,6 +1,6 @@
 package com.example.demo.common.util;
 
-public class HTMLHelper {
+public class HTMLService {
 
     public static String createCenteredHTML(String title, String message) {
         StringBuilder builder = new StringBuilder();

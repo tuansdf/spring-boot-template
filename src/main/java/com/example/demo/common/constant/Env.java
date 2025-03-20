@@ -31,5 +31,7 @@ public class Env {
 
     @Value("${custom.server-base-url}")
     private String serverBaseUrl;
+    @Value("${custom.client-base-url}")
+    private String clientBaseUrl;
 
 }

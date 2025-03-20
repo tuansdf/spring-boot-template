@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface EmailService {
 
-    EmailDTO startSend(EmailDTO emailDTO);
+    EmailDTO triggerSend(EmailDTO emailDTO);
 
     void executeSend(EmailDTO emailDTO) throws MessagingException;
 

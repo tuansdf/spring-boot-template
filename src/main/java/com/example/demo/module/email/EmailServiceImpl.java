@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,7 +33,8 @@ public class EmailServiceImpl implements EmailService {
         return commonMapper.toDTO(emailRepository.save(commonMapper.toEntity(emailDTO)));
     }
 
-    public EmailDTO startSend(EmailDTO emailDTO) {
+    @Override
+    public EmailDTO triggerSend(EmailDTO emailDTO) {
         emailDTO.setId(null);
         emailDTO.setStatus(CommonStatus.PENDING);
         EmailDTO result = save(emailDTO);
@@ -65,7 +67,7 @@ public class EmailServiceImpl implements EmailService {
                 .body(I18nHelper.getMessage("email.reset_password_content", name, token))
                 .type(CommonType.RESET_PASSWORD)
                 .build();
-        return startSend(emailDTO);
+        return triggerSend(emailDTO);
     }
 
     @Override
@@ -78,7 +80,7 @@ public class EmailServiceImpl implements EmailService {
                 .body(I18nHelper.getMessage("email.activate_account_content", name, url))
                 .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
-        return startSend(emailDTO);
+        return triggerSend(emailDTO);
     }
 
 }

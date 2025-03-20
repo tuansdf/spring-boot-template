@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public interface NotificationService {
 
-    NotificationDTO send(NotificationDTO notificationDTO);
+    NotificationDTO triggerSend(NotificationDTO notificationDTO);
 
     void executeSend(UUID notificationId);
 

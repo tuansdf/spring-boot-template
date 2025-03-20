@@ -1,5 +1,6 @@
 package com.example.demo.module.email;
 
+import com.example.demo.common.util.ConversionUtils;
 import com.example.demo.module.email.dto.SendEmailRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -25,7 +26,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 
         helper.setTo(request.getToEmail());
         helper.setSubject(request.getSubject());
-        helper.setText(request.getBody(), false);
+        helper.setText(request.getBody(), ConversionUtils.safeToBool(request.getIsHtml()));
 
         mailSender.send(message);
     }

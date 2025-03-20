@@ -33,5 +33,7 @@ public class Email extends BaseEntity {
     private Integer retryCount;
     @Column(name = "status")
     private Integer status;
+    @Column(name = "is_html")
+    private Boolean isHtml;
 
 }

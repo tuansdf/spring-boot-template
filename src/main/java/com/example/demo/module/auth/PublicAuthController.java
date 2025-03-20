@@ -2,7 +2,7 @@ package com.example.demo.module.auth;
 
 import com.example.demo.common.dto.CommonResponse;
 import com.example.demo.common.util.ExceptionUtils;
-import com.example.demo.common.util.HTMLHelper;
+import com.example.demo.common.util.HTMLService;
 import com.example.demo.common.util.I18nHelper;
 import com.example.demo.module.auth.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +84,7 @@ public class PublicAuthController {
         } catch (Exception e) {
             result = ExceptionUtils.toResponse(e).getMessage();
         }
-        return HTMLHelper.createCenteredHTML(I18nHelper.getMessage("email.activate_account_subject"), result);
+        return HTMLService.createCenteredHTML(I18nHelper.getMessage("email.activate_account_subject"), result);
     }
 
 }
