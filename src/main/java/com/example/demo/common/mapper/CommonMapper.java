@@ -9,12 +9,14 @@ import com.example.demo.module.notification.Notification;
 import com.example.demo.module.notification.dto.NotificationDTO;
 import com.example.demo.module.permission.Permission;
 import com.example.demo.module.permission.dto.PermissionDTO;
-import com.example.demo.module.role.entity.Role;
 import com.example.demo.module.role.dto.RoleDTO;
+import com.example.demo.module.role.entity.Role;
 import com.example.demo.module.token.Token;
 import com.example.demo.module.token.dto.TokenDTO;
-import com.example.demo.module.user.entity.User;
 import com.example.demo.module.user.dto.UserDTO;
+import com.example.demo.module.user.entity.User;
+import com.example.demo.module.userdevice.UserDevice;
+import com.example.demo.module.userdevice.dto.UserDeviceDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -66,5 +68,11 @@ public interface CommonMapper {
     SendEmailRequest toSendEmailRequest(EmailDTO v);
 
     SendEmailRequest toSendEmailRequest(Email v);
+
+    UserDevice toEntity(UserDeviceDTO v);
+
+    UserDeviceDTO toDTO(UserDevice v);
+
+    UserDeviceDTO clone(UserDeviceDTO v);
 
 }
