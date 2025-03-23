@@ -1,0 +1,31 @@
+FROM ubuntu:24.04 AS build
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y curl tar build-essential zlib1g-dev
+
+RUN mkdir -p /opt/graalvm && curl -fsSL https://download.oracle.com/graalvm/21/latest/graalvm-jdk-21_linux-x64_bin.tar.gz | tar -xz --strip-components=1 -C /opt/graalvm
+
+ENV JAVA_HOME=/opt/graalvm
+ENV GRAALVM_HOME=/opt/graalvm
+ENV PATH="$JAVA_HOME/bin:$PATH"
+
+COPY gradlew build.gradle settings.gradle ./
+COPY gradle gradle
+
+RUN chmod +x ./gradlew
+RUN ./gradlew dependencies --no-daemon
+
+COPY src src
+
+RUN ./gradlew nativeCompile --no-daemon
+
+FROM ubuntu:24.04
+
+WORKDIR /app
+
+COPY --from=build /app/build/native/nativeCompile/demo .
+
+RUN chmod +x ./demo
+
+CMD ["./demo"]
