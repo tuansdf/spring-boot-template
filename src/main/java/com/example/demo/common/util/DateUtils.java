@@ -16,7 +16,7 @@ public class DateUtils {
     }
 
     public static long currentEpochMillis() {
-        return toEpochMillis(null);
+        return System.currentTimeMillis();
     }
 
     public static long toEpochMicros(Instant instant) {

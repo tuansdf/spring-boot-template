@@ -8,6 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import java.security.SecureRandom;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class RandomUtils {
@@ -20,7 +21,6 @@ public class RandomUtils {
 
     private static final int MIN_LENGTH = 1;
 
-    private static final Random insecureRandom = new Random();
     private static final SecureRandom secureRandom = new SecureRandom();
 
     private static String generateHexString(Random random, int length) {
@@ -72,23 +72,23 @@ public class RandomUtils {
 
     public static class Insecure {
         public static UUID generateUUID() {
-            return Generators.randomBasedGenerator(insecureRandom).generate();
+            return Generators.randomBasedGenerator(ThreadLocalRandom.current()).generate();
         }
 
         public static UUID generateTimeBasedUUID() {
-            return Generators.timeBasedEpochRandomGenerator(insecureRandom).generate();
+            return Generators.timeBasedEpochRandomGenerator(ThreadLocalRandom.current()).generate();
         }
 
         public static String generateHexString(int length) {
-            return RandomUtils.generateHexString(insecureRandom, length);
+            return RandomUtils.generateHexString(ThreadLocalRandom.current(), length);
         }
 
         public static String generateOTP(int length) {
-            return RandomUtils.generateString(insecureRandom, OTP_ALPHABET_CHARS, length);
+            return RandomUtils.generateString(ThreadLocalRandom.current(), OTP_ALPHABET_CHARS, length);
         }
 
         public static String generateString(int length) {
-            return RandomUtils.generateString(insecureRandom, DEFAULT_ALPHABET_CHARS, length);
+            return RandomUtils.generateString(ThreadLocalRandom.current(), DEFAULT_ALPHABET_CHARS, length);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.common.util.ConversionUtils;
-import com.example.demo.common.util.RandomUtils;
+import com.example.demo.common.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -13,14 +12,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
 
-    @Around("execution(public * com.example.demo.module..*(..)) || execution(public * com.example.demo.event..*(..))")
+    @Around("execution(public * com.example.demo.module..*(..)) || execution(public * com.example.demo.event..*(..)) || execution(public * com.example.demo.common.controller..*(..)) || execution(public * com.example.demo.common.util..*(..))")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = System.currentTimeMillis();
+        long start = DateUtils.currentEpochMillis();
 
         String methodName = joinPoint.getSignature().toShortString();
         Object[] methodArgs = joinPoint.getArgs();
 
-        String key = ConversionUtils.toString(RandomUtils.Insecure.generateHexString(8));
+        long key = DateUtils.currentEpochMillis();
 
         log.info("{} ENTER method: {} with arguments: {}", key, methodName, methodArgs);
 
@@ -31,7 +30,7 @@ public class LoggingAspect {
             log.error("{} Exception in method: {} with message: {}", key, methodName, e.getMessage());
             throw e;
         } finally {
-            long exTime = System.currentTimeMillis() - start;
+            long exTime = DateUtils.currentEpochMillis() - start;
             log.info("{} EXIT  method: {} after {} ms with result: {}", key, methodName, exTime, result);
         }
 

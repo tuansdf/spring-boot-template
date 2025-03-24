@@ -14,13 +14,13 @@ import com.example.demo.module.configuration.dto.ConfigurationDTO;
 import com.example.demo.module.jwt.JWTService;
 import com.example.demo.module.jwt.dto.JWTPayload;
 import com.example.demo.module.role.RoleService;
-import com.example.demo.module.user.entity.User;
-import com.example.demo.module.user.repository.UserRepository;
 import com.example.demo.module.user.UserService;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
 import com.example.demo.module.user.dto.UserExportTemplate;
 import com.example.demo.module.user.dto.UserImportTemplate;
+import com.example.demo.module.user.entity.User;
+import com.example.demo.module.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -221,38 +221,26 @@ public class PublicController {
     @GetMapping(value = "/bench", produces = MediaType.TEXT_PLAIN_VALUE)
     public String bench() {
         try {
-            for (int i = 0; i < 1_000_000; i++) {
-//                ZonedDateTime.now();
-//                OffsetDateTime.now();
-//                LocalDateTime.now();
-//                Instant.now();
-//                ZonedDateTime.now().toString();
-//                OffsetDateTime.now().toString();
-//                LocalDateTime.now().toString();
-//                Instant.now().toString();
-//                ZonedDateTime.now().format(DateUtils.Formatter.ID);
-//                OffsetDateTime.now().format(DateUtils.Formatter.ID);
-//                LocalDateTime.now().format(DateUtils.Formatter.ID);
-//                DateUtils.toEpochMicro();
-//                ConversionUtils.toString(DateUtils.toEpochMicro());
-//                RandomUtils.generateUUID();
-//                RandomUtils.generateTimeBasedUUID();
-//                UUID.randomUUID();
-//                RandomUtils.generateUUID().toString();
-//                RandomUtils.generateTimeBasedUUID().toString();
-//                UUID.randomUUID().toString();
-//                RandomUtils.Secure.generateUUID().toString();
-//                RandomUtils.Insecure.generateUUID().toString();
-//                RandomUtils.Secure.generateTimeBasedUUID().toString();
-//                RandomUtils.Insecure.generateTimeBasedUUID().toString();
+            for (int i = 0; i < 5_000_000; i++) {
+                RandomUtils.Secure.generateUUID();
+                RandomUtils.Insecure.generateUUID();
+                RandomUtils.Secure.generateTimeBasedUUID();
+                RandomUtils.Insecure.generateTimeBasedUUID();
+                RandomUtils.Secure.generateString(8);
+                RandomUtils.Insecure.generateString(8);
                 RandomUtils.Secure.generateString(16);
                 RandomUtils.Insecure.generateString(16);
                 RandomUtils.Secure.generateHexString(8);
                 RandomUtils.Insecure.generateHexString(8);
                 RandomUtils.Secure.generateHexString(16);
                 RandomUtils.Insecure.generateHexString(16);
-//                RandomUtils.Secure.generateOTP(16);
-//                RandomUtils.Insecure.generateOTP(16);
+                RandomUtils.Secure.generateOTP(8);
+                RandomUtils.Insecure.generateOTP(8);
+                RandomUtils.Secure.generateOTP(16);
+                RandomUtils.Insecure.generateOTP(16);
+                DateUtils.currentEpochMillis();
+                DateUtils.currentEpochMicros();
+                DateUtils.currentEpochNanos();
             }
         } catch (Exception e) {
             log.error("", e);
@@ -369,6 +357,34 @@ public class PublicController {
                 PermissionCode.DELETE_USER);
         for (int i = 0; i < 1_000_000; i++) {
             PermissionCode.toIndexes(STRINGS);
+        }
+        return "OK";
+    }
+    
+    public void doNothingNested() {
+    }
+    
+    public void doNothing() {
+        doNothingNested();
+    }
+    
+    public void doManyNothing() {
+        doNothing();
+        doNothing();
+        doNothing();
+        doNothing();
+        doNothing();
+        doNothing();
+        doNothing();
+        doNothing();
+        doNothing();
+        doNothing();
+    }
+
+    @GetMapping(value = "/logging-aspect", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object loggingAspect() throws IOException {
+        for (int i = 0; i < 10_000_000; i++) {
+            doManyNothing();
         }
         return "OK";
     }
