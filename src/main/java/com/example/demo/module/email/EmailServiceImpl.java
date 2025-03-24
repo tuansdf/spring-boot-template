@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -47,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void executeSend(EmailDTO email) throws MessagingException {
         try {
-            if (!CommonStatus.PENDING.equals(email.getStatus())) return;
+            if (email == null || !CommonStatus.PENDING.equals(email.getStatus())) return;
             sendEmailService.send(commonMapper.toSendEmailRequest(email));
             email.setStatus(CommonStatus.DONE);
             emailRepository.save(commonMapper.toEntity(email));

@@ -77,7 +77,7 @@ public class RedisStreamConfig {
         var container = StreamMessageListenerContainer.create(connectionFactory, options);
 
         var subscription = container.receiveAutoAck(Consumer.from(request.groupName(), consumerName),
-                StreamOffset.create(request.streamName(), ReadOffset.from("0-0")), request.listener());
+                StreamOffset.create(request.streamName(), ReadOffset.lastConsumed()), request.listener());
 
         container.start();
         return subscription;

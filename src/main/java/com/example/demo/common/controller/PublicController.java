@@ -221,7 +221,7 @@ public class PublicController {
     @GetMapping(value = "/bench", produces = MediaType.TEXT_PLAIN_VALUE)
     public String bench() {
         try {
-            for (int i = 0; i < 5_000_000; i++) {
+            for (int i = 0; i < 1_000_000; i++) {
                 RandomUtils.Secure.generateUUID();
                 RandomUtils.Insecure.generateUUID();
                 RandomUtils.Secure.generateTimeBasedUUID();
