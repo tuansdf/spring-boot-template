@@ -7,8 +7,7 @@ import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.*;
 import com.example.demo.common.util.io.CSVHelper;
 import com.example.demo.common.util.io.ExcelHelper;
-import com.example.demo.common.util.io.FastExcelHelper;
-import com.example.demo.common.util.io.ImageHelper;
+import com.example.demo.common.util.io.ImageUtils;
 import com.example.demo.module.configuration.ConfigurationService;
 import com.example.demo.module.configuration.dto.ConfigurationDTO;
 import com.example.demo.module.jwt.JWTService;
@@ -74,8 +73,7 @@ public class PublicController {
     }
 
     @GetMapping("/export-excel")
-    public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total,
-                              @RequestParam(required = false, defaultValue = "false") Boolean fast) throws IOException {
+    public String exportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) throws IOException {
         List<UserDTO> data = createData(total);
 //        var requestDTO = SearchUserRequestDTO.builder()
 //                .pageNumber(1)
@@ -84,11 +82,7 @@ public class PublicController {
 //        var result = userService.search(requestDTO, false);
 //        var data = result.getItems();
         String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
-        if (fast) {
-            FastExcelHelper.Export.processTemplateWriteFile(UserExportTemplate.builder().body(data).skipHeader(false).build(), exportPath);
-        } else {
-            ExcelHelper.Export.processTemplateWriteFile(UserExportTemplate.builder().body(data).skipHeader(false).build(), exportPath);
-        }
+        ExcelHelper.Export.processTemplateWriteFile(UserExportTemplate.builder().body(data).skipHeader(false).build(), exportPath);
         return "OK";
     }
 
@@ -124,19 +118,10 @@ public class PublicController {
     }
 
     @GetMapping("/import-excel")
-    public String importExcel(@RequestParam String inputPath,
-                              @RequestParam(required = false, defaultValue = "false") Boolean fast) {
+    public String importExcel(@RequestParam String inputPath) {
         final int BATCH = 1000;
         List<UserDTO> items = new ArrayList<>();
-        if (fast) {
-            FastExcelHelper.Import.processTemplate(new UserImportTemplate(x -> {
-                items.add(x);
-            }), inputPath);
-        } else {
-            ExcelHelper.Import.processTemplate(new UserImportTemplate(x -> {
-                items.add(x);
-            }), inputPath);
-        }
+        ExcelHelper.Import.processTemplate(new UserImportTemplate(items::add), inputPath);
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
@@ -298,8 +283,8 @@ public class PublicController {
             @RequestParam(required = false) Integer height,
             @RequestParam(required = false) String format,
             @RequestParam(required = false) Float quality) throws IOException {
-        ImageHelper.compressImageWriteFile(inputPath, ".temp/compressed-" + DateUtils.currentEpochMillis() + ".jpg",
-                ImageHelper.Options.builder().width(width).height(height).quality(quality).format(format).build());
+        ImageUtils.compressImageWriteFile(inputPath, ".temp/compressed-" + DateUtils.currentEpochMillis() + ".jpg",
+                ImageUtils.Options.builder().width(width).height(height).quality(quality).format(format).build());
         return "OK";
     }
 

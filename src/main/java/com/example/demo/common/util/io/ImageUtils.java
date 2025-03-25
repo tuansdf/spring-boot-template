@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.*;
 import java.nio.file.Paths;
 
-public class ImageHelper {
+public class ImageUtils {
 
     public static void compressImage(InputStream input, OutputStream output, Options options) throws IOException {
         var builder = Thumbnails.of(input);
