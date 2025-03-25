@@ -47,7 +47,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
         if (result == null) {
             permissionValidator.validateCreate(requestDTO);
-            String code = ConversionUtils.toCode(requestDTO.getCode());
+            String code = ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase();
             if (permissionRepository.existsByCode(code)) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }

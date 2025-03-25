@@ -43,7 +43,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         if (result == null) {
             configurationValidator.validateCreate(requestDTO);
-            String code = ConversionUtils.toCode(requestDTO.getCode());
+            String code = ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase();
             if (configurationRepository.existsByCode(code)) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }

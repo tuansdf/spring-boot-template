@@ -16,7 +16,7 @@ public class RandomUtils {
     private static final String DEFAULT_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final char[] DEFAULT_ALPHABET_CHARS = DEFAULT_ALPHABET.toCharArray();
 
-    private static final String OTP_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String OTP_ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
     private static final char[] OTP_ALPHABET_CHARS = OTP_ALPHABET.toCharArray();
 
     private static final int MIN_LENGTH = 1;

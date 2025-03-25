@@ -53,7 +53,7 @@ public class RoleServiceImpl implements RoleService {
         }
         if (result == null) {
             roleValidator.validateCreate(requestDTO);
-            String code = ConversionUtils.toCode(requestDTO.getCode());
+            String code = ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase();
             if (roleRepository.existsByCode(code)) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }

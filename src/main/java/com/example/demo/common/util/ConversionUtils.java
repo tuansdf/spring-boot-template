@@ -22,10 +22,6 @@ public class ConversionUtils {
         }
     }
 
-    public static String toCode(Object input) {
-        return safeToString(input).trim().toUpperCase();
-    }
-
     public static UUID toUUID(Object input) {
         try {
             return switch (input) {
