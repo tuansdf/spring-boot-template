@@ -24,8 +24,8 @@ FROM ubuntu:24.04
 
 WORKDIR /app
 
-COPY --from=build /app/build/native/nativeCompile/demo .
+COPY --from=build /app/build/native/nativeCompile/sbt .
 
-RUN chmod +x ./demo
+RUN chmod +x ./sbt
 
-CMD ["./demo"]
+CMD ["./sbt"]

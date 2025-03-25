@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.jvm
     container_name: application
     environment:
-      - DB_URL=jdbc:postgresql://postgres:5432/demo
+      - DB_URL=jdbc:postgresql://postgres:5432/sbt
       - DB_USERNAME=postgres
       - DB_PASSWORD=password
       - REDIS_HOST=redis
@@ -25,7 +25,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=demo
+      - POSTGRES_DB=sbt
     networks:
       - application
     volumes:
