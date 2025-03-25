@@ -1,6 +1,6 @@
 package com.example.demo.module.user;
 
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
 import com.example.demo.module.user.dto.UserDTO;
 
@@ -28,6 +28,6 @@ public interface UserService {
 
     UserDTO findOneByEmailOrThrow(String email);
 
-    PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount);
+    PaginationData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount);
 
 }

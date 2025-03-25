@@ -2,7 +2,7 @@ package com.example.demo.module.user;
 
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.constant.ResultSetName;
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.common.dto.RequestContextHolder;
 import com.example.demo.common.exception.CustomException;
 import com.example.demo.common.mapper.CommonMapper;
@@ -142,16 +142,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PaginationResponseData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<UserDTO> result = executeSearch(requestDTO, true);
+    public PaginationData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount) {
+        PaginationData<UserDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
         }
         return result;
     }
 
-    private PaginationResponseData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<UserDTO> result = SQLHelper.initResponse(requestDTO.getPageNumber(), requestDTO.getPageSize());
+    private PaginationData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount) {
+        PaginationData<UserDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -183,11 +183,11 @@ public class UserServiceImpl implements UserService {
             }
             if (requestDTO.getCreatedAtFrom() != null) {
                 builder.append(" and u.created_at >= :createdAtFrom ");
-                params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_SECOND_UNIT));
+                params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
             }
             if (requestDTO.getCreatedAtTo() != null) {
                 builder.append(" and u.created_at <= :createdAtTo ");
-                params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_SECOND_UNIT));
+                params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
             }
             if (!isCount) {
                 builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
@@ -209,7 +209,7 @@ public class UserServiceImpl implements UserService {
             SQLHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLHelper.getTotalPages(count, result.getPageSize()));
+            result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.USER_SEARCH);
             SQLHelper.setParams(query, params);

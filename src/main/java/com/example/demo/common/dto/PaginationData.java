@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString
 @Builder
-public class PaginationResponseData<T> {
+public class PaginationData<T> {
 
     private long pageNumber;
     private long pageSize;

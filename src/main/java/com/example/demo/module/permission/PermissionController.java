@@ -2,7 +2,7 @@ package com.example.demo.module.permission;
 
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.dto.CommonResponse;
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.common.util.ExceptionUtils;
 import com.example.demo.module.permission.dto.PermissionDTO;
 import com.example.demo.module.permission.dto.SearchPermissionRequestDTO;
@@ -58,7 +58,7 @@ public class PermissionController {
 
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PaginationResponseData<PermissionDTO>>> search(
+    public ResponseEntity<CommonResponse<PaginationData<PermissionDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String code,

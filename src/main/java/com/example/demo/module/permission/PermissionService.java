@@ -1,6 +1,6 @@
 package com.example.demo.module.permission;
 
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.module.permission.dto.PermissionDTO;
 import com.example.demo.module.permission.dto.SearchPermissionRequestDTO;
 
@@ -32,6 +32,6 @@ public interface PermissionService {
 
     List<PermissionDTO> findAllByUserId(UUID userId);
 
-    PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount);
+    PaginationData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount);
 
 }

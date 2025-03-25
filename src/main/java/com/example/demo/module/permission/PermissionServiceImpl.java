@@ -2,7 +2,7 @@ package com.example.demo.module.permission;
 
 import com.example.demo.common.constant.CommonStatus;
 import com.example.demo.common.constant.ResultSetName;
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.common.exception.CustomException;
 import com.example.demo.common.mapper.CommonMapper;
 import com.example.demo.common.util.ConversionUtils;
@@ -149,16 +149,16 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public PaginationResponseData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<PermissionDTO> result = executeSearch(requestDTO, true);
+    public PaginationData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount) {
+        PaginationData<PermissionDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
         }
         return result;
     }
 
-    private PaginationResponseData<PermissionDTO> executeSearch(SearchPermissionRequestDTO requestDTO, boolean isCount) {
-        PaginationResponseData<PermissionDTO> result = SQLHelper.initResponse(requestDTO.getPageNumber(), requestDTO.getPageSize());
+    private PaginationData<PermissionDTO> executeSearch(SearchPermissionRequestDTO requestDTO, boolean isCount) {
+        PaginationData<PermissionDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -178,11 +178,11 @@ public class PermissionServiceImpl implements PermissionService {
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and p.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_SECOND_UNIT));
+            params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
         }
         if (requestDTO.getCreatedAtTo() != null) {
             builder.append(" and p.created_at <= :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_SECOND_UNIT));
+            params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
         }
         if (!isCount) {
             builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
@@ -192,7 +192,7 @@ public class PermissionServiceImpl implements PermissionService {
             SQLHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLHelper.getTotalPages(count, result.getPageSize()));
+            result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.PERMISSION_SEARCH);
             SQLHelper.setParams(query, params);

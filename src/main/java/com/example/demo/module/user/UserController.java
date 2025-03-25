@@ -2,7 +2,7 @@ package com.example.demo.module.user;
 
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.dto.CommonResponse;
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.common.dto.RequestContextHolder;
 import com.example.demo.common.util.ExceptionUtils;
 import com.example.demo.module.user.dto.SearchUserRequestDTO;
@@ -58,7 +58,7 @@ public class UserController {
 
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PaginationResponseData<UserDTO>>> search(
+    public ResponseEntity<CommonResponse<PaginationData<UserDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String username,

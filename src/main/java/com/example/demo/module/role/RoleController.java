@@ -2,7 +2,7 @@ package com.example.demo.module.role;
 
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.dto.CommonResponse;
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.common.util.ExceptionUtils;
 import com.example.demo.module.role.dto.RoleDTO;
 import com.example.demo.module.role.dto.SearchRoleRequestDTO;
@@ -58,7 +58,7 @@ public class RoleController {
 
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PaginationResponseData<RoleDTO>>> search(
+    public ResponseEntity<CommonResponse<PaginationData<RoleDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String code,

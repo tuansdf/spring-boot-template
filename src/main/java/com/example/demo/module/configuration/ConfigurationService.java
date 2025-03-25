@@ -1,6 +1,6 @@
 package com.example.demo.module.configuration;
 
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.module.configuration.dto.ConfigurationDTO;
 import com.example.demo.module.configuration.dto.SearchConfigurationRequestDTO;
 
@@ -20,6 +20,6 @@ public interface ConfigurationService {
 
     String findValueByCode(String code);
 
-    PaginationResponseData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCount);
+    PaginationData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCount);
 
 }

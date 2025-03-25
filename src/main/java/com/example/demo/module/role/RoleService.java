@@ -1,6 +1,6 @@
 package com.example.demo.module.role;
 
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.module.role.dto.RoleDTO;
 import com.example.demo.module.role.dto.SearchRoleRequestDTO;
 
@@ -26,6 +26,6 @@ public interface RoleService {
 
     List<RoleDTO> findAllByUserId(UUID userId);
 
-    PaginationResponseData<RoleDTO> search(SearchRoleRequestDTO requestDTO, boolean isCount);
+    PaginationData<RoleDTO> search(SearchRoleRequestDTO requestDTO, boolean isCount);
 
 }

@@ -2,7 +2,7 @@ package com.example.demo.module.configuration;
 
 import com.example.demo.common.constant.PermissionCode;
 import com.example.demo.common.dto.CommonResponse;
-import com.example.demo.common.dto.PaginationResponseData;
+import com.example.demo.common.dto.PaginationData;
 import com.example.demo.common.util.ExceptionUtils;
 import com.example.demo.module.configuration.dto.ConfigurationDTO;
 import com.example.demo.module.configuration.dto.SearchConfigurationRequestDTO;
@@ -58,7 +58,7 @@ public class ConfigurationController {
 
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PaginationResponseData<ConfigurationDTO>>> search(
+    public ResponseEntity<CommonResponse<PaginationData<ConfigurationDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String code,
