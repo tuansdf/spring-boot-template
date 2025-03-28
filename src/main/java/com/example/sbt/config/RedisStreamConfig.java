@@ -49,7 +49,7 @@ public class RedisStreamConfig {
             try {
                 redisTemplate.opsForStream().createGroup(request.streamName(), ReadOffset.from("0"), request.groupName());
             } catch (Exception e) {
-                log.info("Group " + request.groupName() + " already exists");
+                log.info("Group {} already exists", request.groupName());
             }
 
             subscriptions.add(createSubscription(request, connectionFactory, consumerName));
