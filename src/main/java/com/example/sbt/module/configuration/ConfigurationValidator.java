@@ -7,7 +7,6 @@ import com.example.sbt.common.util.ValidationUtils;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,7 +19,7 @@ public class ConfigurationValidator {
 
     public void validateCreate(ConfigurationDTO requestDTO) {
         if (StringUtils.isBlank(requestDTO.getCode())) {
-            throw new CustomException(I18nHelper.getMessage("form.error.missing", "#field.code"), HttpStatus.BAD_REQUEST);
+            throw new CustomException(I18nHelper.getMessage("form.error.missing", "#field.code"));
         }
         String codeError = ValidationUtils.validateCode(requestDTO.getCode());
         if (codeError != null) {
