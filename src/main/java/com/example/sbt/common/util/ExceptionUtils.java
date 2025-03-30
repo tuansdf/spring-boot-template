@@ -13,7 +13,6 @@ public class ExceptionUtils {
         CommonResponse<T> result = CommonResponse.<T>builder()
                 .message(I18nHelper.getMessage("common.error"))
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .httpStatus(HttpStatus.INTERNAL_SERVER_ERROR)
                 .data(null)
                 .build();
         if (e instanceof CustomException ce) {
@@ -22,14 +21,13 @@ public class ExceptionUtils {
             }
             result.setMessage(ce.getMessage());
             result.setStatus(ce.getStatus().value());
-            result.setHttpStatus(ce.getStatus());
         }
         return result;
     }
 
     public static <T> ResponseEntity<CommonResponse<T>> toResponseEntity(Exception e) {
         CommonResponse<T> response = toResponse(e);
-        return new ResponseEntity<>(response, response.getHttpStatus());
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
 }

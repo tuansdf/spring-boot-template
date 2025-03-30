@@ -1,6 +1,5 @@
 package com.example.sbt.common.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,9 +15,6 @@ public class CommonResponse<T> {
     private String message;
     private int status;
     private T data;
-
-    @JsonIgnore
-    private HttpStatus httpStatus;
 
     public CommonResponse() {
         this.data = null;

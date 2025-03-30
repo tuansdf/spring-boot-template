@@ -36,7 +36,7 @@ public class RequestResponseLoggingFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             long exTime = DateUtils.currentEpochMillis() - start;
-            log.info("{} EXIT  after {} ms with status={}", start, exTime, httpServletResponse.getStatus());
+            log.info("{} EXIT  method={} path={} after {} ms with status={}", start, httpServletRequest.getMethod(), httpServletRequest.getServletPath(), exTime, httpServletResponse.getStatus());
             RequestContextHolder.clear();
         }
     }
