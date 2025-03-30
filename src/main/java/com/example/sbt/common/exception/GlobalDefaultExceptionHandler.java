@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.nio.file.AccessDeniedException;
-
 @Slf4j
 @ControllerAdvice
 public class GlobalDefaultExceptionHandler {
@@ -66,11 +64,6 @@ public class GlobalDefaultExceptionHandler {
         response.setMessage(HttpStatus.FORBIDDEN.getReasonPhrase());
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<CommonResponse<Object>> accessDeniedHandler() {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new CommonResponse<>());
     }
 
     @ExceptionHandler(CustomException.class)
