@@ -20,29 +20,29 @@ public class PermissionValidator {
 
     public void validateCreate(PermissionDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getCode())) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.missing", "field.code"));
+            throw new CustomException(I18nHelper.getMessage("form.error.missing", "#field.code"));
         }
         if (!requestDTO.getCode().startsWith(Constants.PERMISSION_STARTS_WITH)) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.not_start_with", "field.code", Constants.PERMISSION_STARTS_WITH));
+            throw new CustomException(I18nHelper.getMessage("form.error.not_start_with", "#field.code", Constants.PERMISSION_STARTS_WITH));
         }
         String codeError = ValidationUtils.validateCode(requestDTO.getCode());
         if (codeError != null) {
             throw new CustomException(codeError);
         }
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.over_max_length", "field.name", 255));
+            throw new CustomException(I18nHelper.getMessage("form.error.over_max_length", "#field.name", 255));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.invalid", "field.status"));
+            throw new CustomException(I18nHelper.getMessage("form.error.invalid", "#field.status"));
         }
     }
 
     public void validateUpdate(PermissionDTO requestDTO) {
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.over_max_length", "field.name", 255));
+            throw new CustomException(I18nHelper.getMessage("form.error.over_max_length", "#field.name", 255));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.invalid", "field.status"));
+            throw new CustomException(I18nHelper.getMessage("form.error.invalid", "#field.status"));
         }
     }
 

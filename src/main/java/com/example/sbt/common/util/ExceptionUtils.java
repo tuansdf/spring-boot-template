@@ -17,6 +17,9 @@ public class ExceptionUtils {
                 .data(null)
                 .build();
         if (e instanceof CustomException ce) {
+            if (ce.getStatus() == null) {
+                ce.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
             result.setMessage(ce.getMessage());
             result.setStatus(ce.getStatus().value());
             result.setHttpStatus(ce.getStatus());

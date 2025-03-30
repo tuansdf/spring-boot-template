@@ -27,10 +27,10 @@ public class UserValidator {
             throw new CustomException(emailError);
         }
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.over_max_length", "field.name", 255));
+            throw new CustomException(I18nHelper.getMessage("form.error.over_max_length", "#field.name", 255));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(I18nHelper.getMessageX("form.error.invalid", "field.status"));
+            throw new CustomException(I18nHelper.getMessage("form.error.invalid", "#field.status"));
         }
     }
 

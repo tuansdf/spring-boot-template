@@ -16,7 +16,7 @@ public class CustomException extends RuntimeException {
 
     public CustomException(String message) {
         super(message);
-        this.status = HttpStatus.INTERNAL_SERVER_ERROR;
+        this.status = HttpStatus.BAD_REQUEST;
     }
 
     public CustomException(HttpStatus status) {
