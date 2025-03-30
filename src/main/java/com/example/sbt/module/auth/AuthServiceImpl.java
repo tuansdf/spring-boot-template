@@ -4,7 +4,6 @@ import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.ConfigurationCode;
 import com.example.sbt.common.exception.CustomException;
-import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.TOTPHelper;
@@ -53,7 +52,6 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final AuthValidator authValidator;
     private final NotificationService notificationService;
-    private final CommonMapper commonMapper;
 
     @Override
     public AuthDTO login(LoginRequestDTO requestDTO) {
@@ -127,7 +125,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserDTO changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) {
+    public void changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.NOT_FOUND);
@@ -140,7 +138,6 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         user = userRepository.save(user);
         tokenService.deactivatePastTokens(user.getId(), CommonType.REFRESH_TOKEN);
-        return commonMapper.toDTO(user);
     }
 
 
@@ -193,7 +190,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthDTO refreshAccessToken(String refreshJwt) {
+    public RefreshTokenResponseDTO refreshAccessToken(String refreshJwt) {
         if (StringUtils.isBlank(refreshJwt)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -216,7 +213,7 @@ public class AuthServiceImpl implements AuthService {
         }
         Set<String> permissions = permissionService.findAllCodesByUserId(tokenDTO.getOwnerId());
         JWTPayload accessJwt = jwtService.createAccessJwt(tokenDTO.getOwnerId(), permissions);
-        return AuthDTO.builder()
+        return RefreshTokenResponseDTO.builder()
                 .accessToken(accessJwt.getValue())
                 .build();
     }
@@ -256,7 +253,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public AuthDTO enableOtp(UUID userId) {
+    public EnableOtpResponseDTO enableOtp(UUID userId) {
         Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -269,11 +266,11 @@ public class AuthServiceImpl implements AuthService {
         user.setOtpSecret(secret);
         user.setOtpEnabled(false);
         userRepository.save(user);
-        return AuthDTO.builder().otpSecret(secret).build();
+        return EnableOtpResponseDTO.builder().otpSecret(secret).build();
     }
 
     @Override
-    public void confirmOtp(AuthDTO requestDTO, UUID userId) {
+    public void confirmOtp(ConfirmOtpRequestDTO requestDTO, UUID userId) {
         Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -291,7 +288,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void disableOtp(AuthDTO requestDTO, UUID userId) {
+    public void disableOtp(DisableOtpRequestDTO requestDTO, UUID userId) {
         Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);

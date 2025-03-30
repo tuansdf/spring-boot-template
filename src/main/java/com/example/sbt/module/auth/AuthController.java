@@ -5,10 +5,10 @@ import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ExceptionUtils;
-import com.example.sbt.module.auth.dto.AuthDTO;
+import com.example.sbt.module.auth.dto.ConfirmOtpRequestDTO;
+import com.example.sbt.module.auth.dto.DisableOtpRequestDTO;
 import com.example.sbt.module.token.TokenService;
 import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
-import com.example.sbt.module.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +28,11 @@ public class AuthController {
 
     @PatchMapping("/password")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<UserDTO>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
         try {
             UUID userId = RequestContextHolder.get().getUserId();
-            var result = authService.changePassword(requestDTO, userId);
-            return ResponseEntity.ok(new CommonResponse<>(result));
+            authService.changePassword(requestDTO, userId);
+            return ResponseEntity.ok(new CommonResponse<>());
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
@@ -70,7 +70,7 @@ public class AuthController {
     }
 
     @PostMapping("/2fa/confirm")
-    public ResponseEntity<CommonResponse<Object>> confirmOtp(@RequestBody AuthDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> confirmOtp(@RequestBody ConfirmOtpRequestDTO requestDTO) {
         try {
             UUID userId = RequestContextHolder.get().getUserId();
             authService.confirmOtp(requestDTO, userId);
@@ -81,7 +81,7 @@ public class AuthController {
     }
 
     @PostMapping("/2fa/disable")
-    public ResponseEntity<CommonResponse<Object>> disableOtp(@RequestBody AuthDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> disableOtp(@RequestBody DisableOtpRequestDTO requestDTO) {
         try {
             UUID userId = RequestContextHolder.get().getUserId();
             authService.disableOtp(requestDTO, userId);
