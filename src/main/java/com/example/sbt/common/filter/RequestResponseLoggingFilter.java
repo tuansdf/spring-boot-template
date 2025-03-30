@@ -3,6 +3,7 @@ package com.example.sbt.common.filter;
 import com.example.sbt.common.constant.HTTPHeader;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.common.util.RandomUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ public class RequestResponseLoggingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        long start = System.currentTimeMillis();
+        long start = DateUtils.currentEpochMillis();
 
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
@@ -31,11 +32,11 @@ public class RequestResponseLoggingFilter implements Filter {
             RequestContextHolder.get().setTenantId(httpServletRequest.getHeader(HTTPHeader.X_TENANT_ID));
             RequestContextHolder.syncMDC();
 
-            log.info("ENTER method={} path={} query={}", httpServletRequest.getMethod(), httpServletRequest.getServletPath(), httpServletRequest.getQueryString());
+            log.info("{} ENTER method={} path={} query={}", start, httpServletRequest.getMethod(), httpServletRequest.getServletPath(), httpServletRequest.getQueryString());
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
-            long exTime = System.currentTimeMillis() - start;
-            log.info("EXIT  after {} ms with status={}", exTime, httpServletResponse.getStatus());
+            long exTime = DateUtils.currentEpochMillis() - start;
+            log.info("{} EXIT  after {} ms with status={}", start, exTime, httpServletResponse.getStatus());
             RequestContextHolder.clear();
         }
     }
