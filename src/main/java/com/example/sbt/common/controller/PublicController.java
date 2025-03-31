@@ -157,7 +157,7 @@ public class PublicController {
 
     @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
     public String testI18n(HttpServletRequest servletRequest, @RequestParam(required = false, defaultValue = "John Doe") String name) {
-        return I18nHelper.getMessage("msg.hello", servletRequest.getLocale(), name);
+        return LocaleHelper.getMessage("msg.hello", servletRequest.getLocale(), name);
     }
 
     @GetMapping(value = "/rand", produces = MediaType.TEXT_PLAIN_VALUE)

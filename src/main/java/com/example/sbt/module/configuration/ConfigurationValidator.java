@@ -2,7 +2,7 @@ package com.example.sbt.module.configuration;
 
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.exception.CustomException;
-import com.example.sbt.common.util.I18nHelper;
+import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.ValidationUtils;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import lombok.RequiredArgsConstructor;
@@ -19,32 +19,32 @@ public class ConfigurationValidator {
 
     public void validateCreate(ConfigurationDTO requestDTO) {
         if (StringUtils.isBlank(requestDTO.getCode())) {
-            throw new CustomException(I18nHelper.getMessage("form.error.missing", "#field.code"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "#field.code"));
         }
         String codeError = ValidationUtils.validateCode(requestDTO.getCode());
         if (codeError != null) {
             throw new CustomException(codeError);
         }
         if (StringUtils.isNotEmpty(requestDTO.getValue()) && requestDTO.getValue().length() > 255) {
-            throw new CustomException(I18nHelper.getMessage("form.error.over_max_length", "#field.value", 255));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.value", 255));
         }
         if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(I18nHelper.getMessage("form.error.over_max_length", "#field.description", 255));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.description", 255));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(I18nHelper.getMessage("form.error.invalid", "#field.status"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "#field.status"));
         }
     }
 
     public void validateUpdate(ConfigurationDTO requestDTO) {
         if (StringUtils.isNotEmpty(requestDTO.getValue()) && requestDTO.getValue().length() > 255) {
-            throw new CustomException(I18nHelper.getMessage("form.error.over_max_length", "#field.value"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.value"));
         }
         if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(I18nHelper.getMessage("form.error.over_max_length", "#field.description"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.description"));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(I18nHelper.getMessage("form.error.invalid", "#field.status"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "#field.status"));
         }
     }
 

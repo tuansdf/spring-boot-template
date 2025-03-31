@@ -5,7 +5,7 @@ import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.Env;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.I18nHelper;
+import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.event.publisher.SendEmailEventPublisher;
 import com.example.sbt.module.email.dto.EmailDTO;
 import jakarta.mail.MessagingException;
@@ -62,8 +62,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .userId(userId)
                 .toEmail(email)
-                .subject(I18nHelper.getMessage("email.reset_password_subject"))
-                .body(I18nHelper.getMessage("email.reset_password_content", name, token))
+                .subject(LocaleHelper.getMessage("email.reset_password_subject"))
+                .body(LocaleHelper.getMessage("email.reset_password_content", name, token))
                 .type(CommonType.RESET_PASSWORD)
                 .build();
         return triggerSend(emailDTO);
@@ -75,8 +75,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .userId(userId)
                 .toEmail(email)
-                .subject(I18nHelper.getMessage("email.activate_account_subject"))
-                .body(I18nHelper.getMessage("email.activate_account_content", name, url))
+                .subject(LocaleHelper.getMessage("email.activate_account_subject"))
+                .body(LocaleHelper.getMessage("email.activate_account_content", name, url))
                 .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
         return triggerSend(emailDTO);

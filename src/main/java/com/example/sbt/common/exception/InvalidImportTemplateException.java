@@ -1,6 +1,6 @@
 package com.example.sbt.common.exception;
 
-import com.example.sbt.common.util.I18nHelper;
+import com.example.sbt.common.util.LocaleHelper;
 import org.springframework.http.HttpStatus;
 
 public class InvalidImportTemplateException extends CustomException {
@@ -10,7 +10,7 @@ public class InvalidImportTemplateException extends CustomException {
     }
 
     public InvalidImportTemplateException() {
-        super(I18nHelper.getMessage("report.error.invalid_import_template"), HttpStatus.BAD_REQUEST);
+        super(LocaleHelper.getMessage("report.error.invalid_import_template"), HttpStatus.BAD_REQUEST);
     }
 
 }

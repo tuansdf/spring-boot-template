@@ -4,7 +4,7 @@ import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.Env;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.I18nHelper;
+import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.event.publisher.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import jakarta.transaction.Transactional;
@@ -57,8 +57,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO sendNewComerNotification(UUID userId) {
         NotificationDTO notificationDTO = NotificationDTO.builder()
-                .title(I18nHelper.getMessage("notification.new_comer_title", env.getApplicationVersion()))
-                .content(I18nHelper.getMessage("notification.new_comer_content"))
+                .title(LocaleHelper.getMessage("notification.new_comer_title", env.getApplicationVersion()))
+                .content(LocaleHelper.getMessage("notification.new_comer_content"))
                 .userId(userId)
                 .status(CommonStatus.PENDING)
                 .build();

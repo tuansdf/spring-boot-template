@@ -12,7 +12,7 @@ import java.util.Locale;
 
 @RequiredArgsConstructor
 @Configuration
-public class I18nConfig {
+public class LocaleConfig {
 
     @Bean
     public LocaleResolver localeResolver() {

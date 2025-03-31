@@ -18,7 +18,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @ControllerAdvice
 public class GlobalDefaultExceptionHandler {
 
-    // Missing request body exception
+    /**
+     * Missing request body exception
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<CommonResponse<Object>> handleMissingRequestBody() {
         CommonResponse<Object> response = new CommonResponse<>();
@@ -28,7 +30,9 @@ public class GlobalDefaultExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Missing request param exception
+    /**
+     * Missing request param exception
+     */
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<CommonResponse<Object>> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
         CommonResponse<Object> response = new CommonResponse<>();
@@ -38,7 +42,9 @@ public class GlobalDefaultExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    // Request param parsing exception
+    /**
+     * Request param parsing exception
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<CommonResponse<Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         CommonResponse<Object> response = new CommonResponse<>();

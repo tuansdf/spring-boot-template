@@ -3,7 +3,7 @@ package com.example.sbt.module.auth;
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.util.ExceptionUtils;
 import com.example.sbt.common.util.HTMLService;
-import com.example.sbt.common.util.I18nHelper;
+import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.module.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequestDTO requestDTO) {
         try {
             authService.register(requestDTO);
-            var message = I18nHelper.getMessage("auth.activate_account_email_sent");
+            var message = LocaleHelper.getMessage("auth.activate_account_email_sent");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -45,7 +45,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> forgotPassword(@RequestBody ForgotPasswordRequestDTO requestDTO) {
         try {
             authService.forgotPassword(requestDTO);
-            var message = I18nHelper.getMessage("auth.reset_password_email_sent");
+            var message = LocaleHelper.getMessage("auth.reset_password_email_sent");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -56,7 +56,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequestDTO requestDTO) {
         try {
             authService.resetPassword(requestDTO);
-            var message = I18nHelper.getMessage("auth.reset_password_success");
+            var message = LocaleHelper.getMessage("auth.reset_password_success");
             return ResponseEntity.ok(new CommonResponse<>(message));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -75,16 +75,16 @@ public class PublicAuthController {
 
     @GetMapping(value = "/account/activate", produces = MediaType.TEXT_HTML_VALUE)
     public String activateAccount(@RequestParam(required = false) String token) {
-        String result = I18nHelper.getMessage("common.error");
+        String result = LocaleHelper.getMessage("common.error");
         try {
             if (StringUtils.isNotEmpty(token)) {
                 authService.activateAccount(token);
-                result = I18nHelper.getMessage("auth.activate_account_success");
+                result = LocaleHelper.getMessage("auth.activate_account_success");
             }
         } catch (Exception e) {
             result = ExceptionUtils.toResponse(e).getMessage();
         }
-        return HTMLService.createCenteredHTML(I18nHelper.getMessage("email.activate_account_subject"), result);
+        return HTMLService.createCenteredHTML(LocaleHelper.getMessage("email.activate_account_subject"), result);
     }
 
 }

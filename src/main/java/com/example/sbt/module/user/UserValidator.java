@@ -2,7 +2,7 @@ package com.example.sbt.module.user;
 
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.exception.CustomException;
-import com.example.sbt.common.util.I18nHelper;
+import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.ValidationUtils;
 import com.example.sbt.module.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
@@ -27,10 +27,10 @@ public class UserValidator {
             throw new CustomException(emailError);
         }
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(I18nHelper.getMessage("form.error.over_max_length", "#field.name", 255));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.name", 255));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(I18nHelper.getMessage("form.error.invalid", "#field.status"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "#field.status"));
         }
     }
 

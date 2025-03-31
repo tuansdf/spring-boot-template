@@ -11,7 +11,7 @@ public class ExceptionUtils {
 
     public static <T> CommonResponse<T> toResponse(Exception e) {
         CommonResponse<T> result = CommonResponse.<T>builder()
-                .message(I18nHelper.getMessage("common.error"))
+                .message(LocaleHelper.getMessage("common.error"))
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .data(null)
                 .build();
