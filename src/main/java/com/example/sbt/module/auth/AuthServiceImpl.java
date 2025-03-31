@@ -12,6 +12,7 @@ import com.example.sbt.module.configuration.ConfigurationService;
 import com.example.sbt.module.email.EmailService;
 import com.example.sbt.module.jwt.JWTService;
 import com.example.sbt.module.jwt.dto.JWTPayload;
+import com.example.sbt.module.loginaudit.LoginAuditService;
 import com.example.sbt.module.notification.NotificationService;
 import com.example.sbt.module.permission.PermissionService;
 import com.example.sbt.module.role.RoleService;
@@ -30,6 +31,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -52,6 +54,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final AuthValidator authValidator;
     private final NotificationService notificationService;
+    private final LoginAuditService loginAuditService;
 
     @Override
     public AuthDTO login(LoginRequestDTO requestDTO) {
@@ -79,8 +82,22 @@ public class AuthServiceImpl implements AuthService {
 
         boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getPassword(), userDTO.getPassword());
         if (!isPasswordCorrect) {
+            loginAuditService.add(userDTO.getId(), false);
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
+
+        Long timeWindow = ConversionUtils.toLong(configurationService.findValueByCode(ConfigurationCode.FAILED_LOGIN_TIME_WINDOW));
+        if (timeWindow != null && timeWindow > 0) {
+            Long maxAttempts = ConversionUtils.toLong(configurationService.findValueByCode(ConfigurationCode.FAILED_LOGIN_MAX_ATTEMPTS));
+            if (maxAttempts != null && maxAttempts > 0) {
+                long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(userDTO.getId(), Instant.now().minusSeconds(timeWindow));
+                if (attempts >= maxAttempts) {
+                    throw new CustomException(HttpStatus.UNAUTHORIZED);
+                }
+            }
+        }
+
+        loginAuditService.add(userDTO.getId(), true);
 
         Set<String> permissions = permissionService.findAllCodesByUserId(userDTO.getId());
         Set<String> roles = roleService.findAllCodesByUserId(userDTO.getId());

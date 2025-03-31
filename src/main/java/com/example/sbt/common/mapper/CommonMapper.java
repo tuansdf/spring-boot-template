@@ -5,6 +5,8 @@ import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import com.example.sbt.module.email.Email;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.SendEmailRequest;
+import com.example.sbt.module.loginaudit.LoginAudit;
+import com.example.sbt.module.loginaudit.LoginAuditDTO;
 import com.example.sbt.module.notification.Notification;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import com.example.sbt.module.permission.Permission;
@@ -74,5 +76,9 @@ public interface CommonMapper {
     UserDeviceDTO toDTO(UserDevice v);
 
     UserDeviceDTO clone(UserDeviceDTO v);
+
+    LoginAuditDTO toDTO(LoginAudit v);
+
+    LoginAudit toEntity(LoginAuditDTO v);
 
 }
