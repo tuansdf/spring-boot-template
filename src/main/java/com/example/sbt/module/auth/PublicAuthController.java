@@ -2,7 +2,7 @@ package com.example.sbt.module.auth;
 
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.util.ExceptionUtils;
-import com.example.sbt.common.util.HTMLService;
+import com.example.sbt.common.util.HTMLTemplate;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.module.auth.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +84,7 @@ public class PublicAuthController {
         } catch (Exception e) {
             result = ExceptionUtils.toResponse(e).getMessage();
         }
-        return HTMLService.createCenteredHTML(LocaleHelper.getMessage("email.activate_account_subject"), result);
+        return HTMLTemplate.createCenteredHtml(LocaleHelper.getMessage("email.activate_account_subject"), result);
     }
 
 }

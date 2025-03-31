@@ -1,8 +1,8 @@
 package com.example.sbt.common.util;
 
-public class HTMLService {
+public class HTMLTemplate {
 
-    public static String createCenteredHTML(String title, String message) {
+    public static String createCenteredHtml(String title, String message) {
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html>");
         builder.append("<html>");
