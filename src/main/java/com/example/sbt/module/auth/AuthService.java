@@ -19,6 +19,8 @@ public interface AuthService {
 
     RefreshTokenResponseDTO refreshAccessToken(String refreshJwt);
 
+    void requestActivateAccount(RequestActivateAccountRequestDTO requestDTO);
+
     void activateAccount(String jwt);
 
     EnableOtpResponseDTO enableOtp(UUID userId);

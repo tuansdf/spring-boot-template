@@ -87,4 +87,15 @@ public class PublicAuthController {
         return HTMLTemplate.createCenteredHtml(LocaleHelper.getMessage("email.activate_account_subject"), result);
     }
 
+    @PostMapping("/account/request-activate")
+    public ResponseEntity<CommonResponse<Object>> requestActivateAccount(@RequestBody RequestActivateAccountRequestDTO requestDTO) {
+        try {
+            authService.requestActivateAccount(requestDTO);
+            var message = LocaleHelper.getMessage("auth.activate_account_email_sent");
+            return ResponseEntity.ok(new CommonResponse<>(message));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
+
 }

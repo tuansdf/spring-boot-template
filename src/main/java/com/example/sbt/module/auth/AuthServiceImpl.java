@@ -164,6 +164,7 @@ public class AuthServiceImpl implements AuthService {
         authValidator.validateForgotPassword(requestDTO);
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
         if (userDTO == null) return;
+        tokenService.deactivatePastTokens(userDTO.getId(), CommonType.RESET_PASSWORD);
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
         String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail());
         emailService.sendResetPasswordEmail(userDTO.getEmail(), name, tokenDTO.getValue(), userDTO.getId());
@@ -234,6 +235,17 @@ public class AuthServiceImpl implements AuthService {
         return RefreshTokenResponseDTO.builder()
                 .accessToken(accessJwt.getValue())
                 .build();
+    }
+
+    @Override
+    public void requestActivateAccount(RequestActivateAccountRequestDTO requestDTO) {
+        authValidator.validateRequestActivateAccount(requestDTO);
+        UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
+        if (userDTO == null || !CommonStatus.PENDING.equals(userDTO.getStatus())) return;
+        tokenService.deactivatePastTokens(userDTO.getId(), CommonType.ACTIVATE_ACCOUNT);
+        TokenDTO tokenDTO = tokenService.createActivateAccountToken(userDTO.getId(), false);
+        String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail());
+        emailService.sendActivateAccountEmail(userDTO.getEmail(), name, tokenDTO.getValue(), userDTO.getId());
     }
 
     @Override

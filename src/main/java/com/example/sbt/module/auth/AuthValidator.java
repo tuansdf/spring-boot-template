@@ -3,10 +3,7 @@ package com.example.sbt.module.auth;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.ValidationUtils;
-import com.example.sbt.module.auth.dto.ForgotPasswordRequestDTO;
-import com.example.sbt.module.auth.dto.LoginRequestDTO;
-import com.example.sbt.module.auth.dto.RegisterRequestDTO;
-import com.example.sbt.module.auth.dto.ResetPasswordRequestDTO;
+import com.example.sbt.module.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -55,6 +52,16 @@ public class AuthValidator {
     }
 
     public void validateForgotPassword(ForgotPasswordRequestDTO requestDTO) {
+        if (StringUtils.isEmpty(requestDTO.getEmail())) {
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.email"));
+        }
+        String emailError = ValidationUtils.validateEmail(requestDTO.getEmail());
+        if (emailError != null) {
+            throw new CustomException(emailError);
+        }
+    }
+
+    public void validateRequestActivateAccount(RequestActivateAccountRequestDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getEmail())) {
             throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.email"));
         }
