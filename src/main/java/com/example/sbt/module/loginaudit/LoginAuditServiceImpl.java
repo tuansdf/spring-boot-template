@@ -27,9 +27,10 @@ public class LoginAuditServiceImpl implements LoginAuditService {
     }
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void add(UUID userId, boolean isSuccess) {
         LoginAudit audit = new LoginAudit();
-        audit.setId(userId);
+        audit.setUserId(userId);
         audit.setIsSuccess(isSuccess);
         loginAuditRepository.save(audit);
     }
@@ -38,4 +39,5 @@ public class LoginAuditServiceImpl implements LoginAuditService {
     public long countRecentlyFailedAttemptsByUserId(UUID userId, Instant fromTime) {
         return ConversionUtils.safeToLong(loginAuditRepository.countRecentlyFailedAttemptsByUserId(userId, fromTime));
     }
+
 }

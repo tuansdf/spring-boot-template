@@ -6,6 +6,7 @@ import com.example.sbt.common.constant.ConfigurationCode;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.TOTPHelper;
 import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.configuration.ConfigurationService;
@@ -70,6 +71,17 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
+        Long maxAttempts = ConversionUtils.toLong(configurationService.findValueByCode(ConfigurationCode.FAILED_LOGIN_MAX_ATTEMPTS));
+        if (maxAttempts != null && maxAttempts > 0) {
+            Long timeWindow = ConversionUtils.toLong(configurationService.findValueByCode(ConfigurationCode.FAILED_LOGIN_TIME_WINDOW));
+            if (timeWindow != null && timeWindow > 0) {
+                long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(userDTO.getId(), Instant.now().minusSeconds(timeWindow));
+                if (attempts >= maxAttempts) {
+                    throw new CustomException(LocaleHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
+                }
+            }
+        }
+
         if (ConversionUtils.safeToBool(userDTO.getOtpEnabled())) {
             if (StringUtils.isBlank(requestDTO.getOtpCode())) {
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -84,17 +96,6 @@ public class AuthServiceImpl implements AuthService {
         if (!isPasswordCorrect) {
             loginAuditService.add(userDTO.getId(), false);
             throw new CustomException(HttpStatus.UNAUTHORIZED);
-        }
-
-        Long timeWindow = ConversionUtils.toLong(configurationService.findValueByCode(ConfigurationCode.FAILED_LOGIN_TIME_WINDOW));
-        if (timeWindow != null && timeWindow > 0) {
-            Long maxAttempts = ConversionUtils.toLong(configurationService.findValueByCode(ConfigurationCode.FAILED_LOGIN_MAX_ATTEMPTS));
-            if (maxAttempts != null && maxAttempts > 0) {
-                long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(userDTO.getId(), Instant.now().minusSeconds(timeWindow));
-                if (attempts >= maxAttempts) {
-                    throw new CustomException(HttpStatus.UNAUTHORIZED);
-                }
-            }
         }
 
         loginAuditService.add(userDTO.getId(), true);

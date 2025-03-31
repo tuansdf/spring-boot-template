@@ -17,7 +17,6 @@ public class LoginAuditDTO {
     private UUID id;
     private UUID userId;
     private Boolean isSuccess;
-    private Integer type;
     private Instant createdAt;
     private Instant updatedAt;
 

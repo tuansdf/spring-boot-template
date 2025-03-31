@@ -10,17 +10,16 @@ import org.springframework.http.ResponseEntity;
 public class ExceptionUtils {
 
     public static <T> CommonResponse<T> toResponse(Exception e) {
-        CommonResponse<T> result = CommonResponse.<T>builder()
-                .message(LocaleHelper.getMessage("common.error"))
-                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .data(null)
-                .build();
+        CommonResponse<T> result = new CommonResponse<>();
         if (e instanceof CustomException ce) {
             if (ce.getStatus() == null) {
                 ce.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             result.setMessage(ce.getMessage());
             result.setStatus(ce.getStatus().value());
+        } else {
+            result.setMessage(LocaleHelper.getMessage("common.error"));
+            result.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
         return result;
     }

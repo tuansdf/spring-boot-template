@@ -74,6 +74,13 @@ public class GlobalDefaultExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<CommonResponse<Object>> handleMissingRequestBody(CustomException ex) {
+        CommonResponse<Object> response = new CommonResponse<>();
+        if (ex.getStatus() == null) {
+            ex.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        response.setStatus(ex.getStatus().value());
+        response.setMessage(ex.getMessage());
+
         return ExceptionUtils.toResponseEntity(ex);
     }
 
