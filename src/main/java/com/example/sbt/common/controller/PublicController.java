@@ -273,6 +273,10 @@ public class PublicController {
 
     @GetMapping(value = "/totp", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object totp() {
+        String secret = "B4JJYHMIGX2NZWAZWSX243BJH4BY7MMV";
+        for (int i = 0; i < 1_000_000; i++) {
+            TOTPHelper.verify("123456", secret);
+        }
         return TOTPHelper.generateSecret();
     }
 

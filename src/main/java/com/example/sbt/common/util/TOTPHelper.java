@@ -7,16 +7,13 @@ import com.atlassian.onetime.service.RandomSecretProvider;
 
 public class TOTPHelper {
 
-    private static final RandomSecretProvider randomSecretProvider = new RandomSecretProvider();
-    private static final DefaultTOTPService totpService = new DefaultTOTPService();
-
     public static String generateSecret() {
-        return randomSecretProvider.generateSecret().getBase32Encoded();
+        return new RandomSecretProvider().generateSecret().getBase32Encoded();
     }
 
     public static boolean verify(String input, String secret) {
         try {
-            var result = totpService.verify(new TOTP(input), TOTPSecret.Companion.fromBase32EncodedString(secret));
+            var result = new DefaultTOTPService().verify(new TOTP(input), TOTPSecret.Companion.fromBase32EncodedString(secret));
             return ConversionUtils.safeToBool(result.isSuccess());
         } catch (Exception e) {
             return false;
