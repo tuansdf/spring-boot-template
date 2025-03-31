@@ -1,10 +1,10 @@
 package com.example.sbt.event.dto;
 
 import com.example.sbt.common.dto.RequestContext;
+import com.example.sbt.module.notification.dto.NotificationDTO;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +14,6 @@ import java.util.UUID;
 public class SendNotificationEventRequest implements Serializable {
 
     private RequestContext requestContext;
-    private UUID notificationId;
+    private NotificationDTO notification;
 
 }

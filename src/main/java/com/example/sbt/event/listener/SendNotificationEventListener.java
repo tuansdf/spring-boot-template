@@ -26,10 +26,7 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
             RequestContextHolder.set(request.getRequestContext());
             log.info("SendNotificationEventListener.start");
 
-            // TODO: FIX
-            Thread.sleep(1000);
-
-            notificationService.executeSend(request.getNotificationId());
+            notificationService.executeSend(request.getNotification());
         } catch (Exception e) {
             log.error("SendNotificationEventListener.error", e);
         } finally {

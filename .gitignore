@@ -42,7 +42,3 @@ out/
 *.gz
 
 logs/
-
-.env
-.env.*
-!.env.example

@@ -5,7 +5,6 @@ import com.example.sbt.module.email.dto.EmailDTO;
 import lombok.*;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -15,7 +14,6 @@ import java.util.UUID;
 public class SendEmailEventRequest implements Serializable {
 
     private RequestContext requestContext;
-    private UUID emailId;
     private EmailDTO email;
 
 }

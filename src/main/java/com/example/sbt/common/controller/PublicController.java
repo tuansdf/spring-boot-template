@@ -20,6 +20,9 @@ import com.example.sbt.module.user.dto.UserExportTemplate;
 import com.example.sbt.module.user.dto.UserImportTemplate;
 import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.repository.UserRepository;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +50,7 @@ public class PublicController {
     private final RoleService roleService;
     private final ConfigurationService configurationService;
     private final UserService userService;
+    private final FirebaseMessaging firebaseMessaging;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
@@ -375,6 +379,15 @@ public class PublicController {
         for (int i = 0; i < 10_000_000; i++) {
             doManyNothing();
         }
+        return "OK";
+    }
+
+    @GetMapping(value = "/test-firebase", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testFirebase(@RequestParam String token) throws IOException, FirebaseMessagingException {
+        firebaseMessaging.send(Message.builder()
+                .setToken(token)
+                .putData("hello", "world")
+                .build());
         return "OK";
     }
 

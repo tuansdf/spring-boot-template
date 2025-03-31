@@ -7,12 +7,15 @@ import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.event.publisher.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.dto.NotificationDTO;
+import com.example.sbt.module.userdevice.UserDeviceService;
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.google.firebase.messaging.Message;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -25,8 +28,9 @@ public class NotificationServiceImpl implements NotificationService {
     private final CommonMapper commonMapper;
     private final NotificationRepository notificationRepository;
     private final SendNotificationEventPublisher sendNotificationEventPublisher;
+    private final SendNotificationService sendNotificationService;
+    private final UserDeviceService userDeviceService;
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     protected NotificationDTO save(NotificationDTO notificationDTO) {
         return commonMapper.toDTO(notificationRepository.save(commonMapper.toEntity(notificationDTO)));
     }
@@ -37,21 +41,25 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDTO.setStatus(CommonStatus.PENDING);
         NotificationDTO result = save(notificationDTO);
 
-        sendNotificationEventPublisher.publish(result.getId());
+        sendNotificationEventPublisher.publish(notificationDTO);
 
         return result;
     }
 
     @Override
-    public void executeSend(UUID notificationId) {
-        // TODO: send notification
-        Optional<Notification> notificationOptional = notificationRepository.findById(notificationId);
-        if (notificationOptional.isEmpty()) return;
-        Notification notification = notificationOptional.get();
-        if (!CommonStatus.PENDING.equals(notification.getStatus())) return;
-        notification.setStatus(CommonStatus.DONE);
-        notificationRepository.save(notification);
-        log.info("Notification ".concat(ConversionUtils.safeToString(notification.getId())).concat(" sent"));
+    public void executeSend(NotificationDTO notificationDTO) throws FirebaseMessagingException {
+        if (notificationDTO == null || !CommonStatus.PENDING.equals(notificationDTO.getStatus())) return;
+        List<String> tokens = userDeviceService.findAllTokensByUserId(notificationDTO.getUserId());
+        for (String token : tokens) {
+            sendNotificationService.send(Message.builder()
+                    .setToken(token)
+                    .putData("title", notificationDTO.getTitle())
+                    .putData("body", notificationDTO.getContent())
+                    .build());
+        }
+        notificationDTO.setStatus(CommonStatus.DONE);
+        notificationRepository.save(commonMapper.toEntity(notificationDTO));
+        log.info("Notification ".concat(ConversionUtils.safeToString(notificationDTO.getId())).concat(" sent"));
     }
 
     @Override

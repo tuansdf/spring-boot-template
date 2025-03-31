@@ -34,4 +34,7 @@ public class Env {
     @Value("${custom.client-base-url}")
     private String clientBaseUrl;
 
+    @Value("${custom.firebase-service-account}")
+    private String firebaseServiceAccount;
+
 }

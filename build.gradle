@@ -44,6 +44,8 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
     implementation 'io.lettuce:lettuce-core:6.5.1.RELEASE'
 
+    implementation 'com.google.firebase:firebase-admin:9.4.3'
+
     implementation 'org.apache.commons:commons-lang3:3.17.0'
     implementation 'org.apache.commons:commons-collections4:4.5.0-M3'
     implementation 'org.apache.commons:commons-text:1.13.0'

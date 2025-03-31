@@ -26,9 +26,6 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
             RequestContextHolder.set(request.getRequestContext());
             log.info("SendEmailEventListener.start");
 
-            // TODO: FIX
-            Thread.sleep(1000);
-
             emailService.executeSend(request.getEmail());
         } catch (Exception e) {
             log.error("SendEmailEventListener.error", e);
