@@ -20,35 +20,35 @@ public class RoleValidator {
 
     public void validateCreate(RoleDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getCode())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "#field.code"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.code"));
         }
         if (!requestDTO.getCode().startsWith(Constants.ROLE_STARTS_WITH)) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.not_start_with", "#field.code", Constants.ROLE_STARTS_WITH));
+            throw new CustomException(LocaleHelper.getMessage("form.error.not_start_with", "##field.code", Constants.ROLE_STARTS_WITH));
         }
         String codeError = ValidationUtils.validateCode(requestDTO.getCode());
         if (codeError != null) {
             throw new CustomException(codeError);
         }
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.name", 255));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.name", 255));
         }
         if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.description", 255));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.description", 255));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "#field.status"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "##field.status"));
         }
     }
 
     public void validateUpdate(RoleDTO requestDTO) {
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.name", 255));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.name", 255));
         }
         if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "#field.description", 255));
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.description", 255));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "#field.status"));
+            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "##field.status"));
         }
     }
 

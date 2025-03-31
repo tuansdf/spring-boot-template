@@ -29,8 +29,8 @@ public class LocaleHelper {
         try {
             if (ArrayUtils.isNotEmpty(args)) {
                 for (int i = 0; i < args.length; i++) {
-                    if (args[i] != null && args[i] instanceof String v && v.startsWith("#")) {
-                        args[i] = getMessage(v.substring(1), locale);
+                    if (args[i] != null && args[i] instanceof String v && v.startsWith("##")) {
+                        args[i] = getMessage(v.substring(2), locale);
                     }
                 }
             }
