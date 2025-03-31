@@ -17,20 +17,20 @@ public class AuthValidator {
 
     public void validateRegister(RegisterRequestDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getUsername())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.username"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.username"));
         }
         if (requestDTO.getUsername().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.username", 255));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.over_max_length", "##field.username", 255));
         }
         if (StringUtils.isEmpty(requestDTO.getEmail())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.email"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.email"));
         }
         String emailError = ValidationUtils.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
             throw new CustomException(emailError);
         }
         if (StringUtils.isEmpty(requestDTO.getPassword())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.password"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.password"));
         }
         String passwordError = ValidationUtils.validatePassword(requestDTO.getPassword());
         if (passwordError != null) {
@@ -40,13 +40,13 @@ public class AuthValidator {
 
     public void validateLogin(LoginRequestDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getUsername())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.username"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.username"));
         }
         if (requestDTO.getUsername().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.username", 255));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.over_max_length", "##field.username", 255));
         }
         if (StringUtils.isEmpty(requestDTO.getPassword())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.password"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.password"));
         }
         String passwordError = ValidationUtils.validatePassword(requestDTO.getPassword());
         if (passwordError != null) {
@@ -56,7 +56,7 @@ public class AuthValidator {
 
     public void validateForgotPassword(ForgotPasswordRequestDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getEmail())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.email"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.email"));
         }
         String emailError = ValidationUtils.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
@@ -66,10 +66,10 @@ public class AuthValidator {
 
     public void validateResetPassword(ResetPasswordRequestDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getToken())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.token"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.token"));
         }
         if (StringUtils.isEmpty(requestDTO.getNewPassword())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.password"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.password"));
         }
         String passwordError = ValidationUtils.validatePassword(requestDTO.getNewPassword());
         if (passwordError != null) {

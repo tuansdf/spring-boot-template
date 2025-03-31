@@ -19,32 +19,32 @@ public class ConfigurationValidator {
 
     public void validateCreate(ConfigurationDTO requestDTO) {
         if (StringUtils.isBlank(requestDTO.getCode())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", "##field.code"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.missing", "##field.code"));
         }
         String codeError = ValidationUtils.validateCode(requestDTO.getCode());
         if (codeError != null) {
             throw new CustomException(codeError);
         }
         if (StringUtils.isNotEmpty(requestDTO.getValue()) && requestDTO.getValue().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.value", 255));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.over_max_length", "##field.value", 255));
         }
         if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.description", 255));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.over_max_length", "##field.description", 255));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "##field.status"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.invalid", "##field.status"));
         }
     }
 
     public void validateUpdate(ConfigurationDTO requestDTO) {
         if (StringUtils.isNotEmpty(requestDTO.getValue()) && requestDTO.getValue().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.value"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.over_max_length", "##field.value"));
         }
         if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", "##field.description"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.over_max_length", "##field.description"));
         }
         if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.invalid", "##field.status"));
+            throw new CustomException(LocaleHelper.getMessageX("form.error.invalid", "##field.status"));
         }
     }
 

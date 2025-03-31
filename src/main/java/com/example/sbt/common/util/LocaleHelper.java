@@ -27,13 +27,6 @@ public class LocaleHelper {
             locale = RequestContextHolder.get().getLocale();
         }
         try {
-            if (ArrayUtils.isNotEmpty(args)) {
-                for (int i = 0; i < args.length; i++) {
-                    if (args[i] != null && args[i] instanceof String v && v.startsWith("##")) {
-                        args[i] = getMessage(v.substring(2), locale);
-                    }
-                }
-            }
             return messageSource.getMessage(code, args, code, locale);
         } catch (Exception e) {
             return code;
@@ -49,14 +42,8 @@ public class LocaleHelper {
     }
 
     public static String getMessage(String code, Locale locale) {
-        if (StringUtils.isEmpty(code)) {
-            return "";
-        }
-        if (locale == null) {
-            locale = RequestContextHolder.get().getLocale();
-        }
         try {
-            return messageSource.getMessage(code, null, code, locale);
+            return getMessage(code, locale, (Object) null);
         } catch (Exception e) {
             return code;
         }
@@ -65,6 +52,35 @@ public class LocaleHelper {
     public static String getMessage(String code) {
         try {
             return getMessage(code, RequestContextHolder.get().getLocale());
+        } catch (Exception e) {
+            return code;
+        }
+    }
+
+    public static String getMessageX(String code, Locale locale, Object... args) {
+        if (StringUtils.isEmpty(code)) {
+            return "";
+        }
+        if (locale == null) {
+            locale = RequestContextHolder.get().getLocale();
+        }
+        try {
+            if (ArrayUtils.isNotEmpty(args)) {
+                for (int i = 0; i < args.length; i++) {
+                    if (args[i] != null && args[i] instanceof String v && v.startsWith("##")) {
+                        args[i] = getMessage(v.substring(2), locale);
+                    }
+                }
+            }
+            return messageSource.getMessage(code, args, code, locale);
+        } catch (Exception e) {
+            return code;
+        }
+    }
+
+    public static String getMessageX(String code, Object... args) {
+        try {
+            return getMessageX(code, RequestContextHolder.get().getLocale(), args);
         } catch (Exception e) {
             return code;
         }
