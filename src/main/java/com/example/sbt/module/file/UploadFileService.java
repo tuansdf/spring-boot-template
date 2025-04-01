@@ -4,7 +4,7 @@ import java.net.URL;
 
 public interface UploadFileService {
 
-    boolean upload(String filePath, byte[] file);
+    String upload(String filePath, byte[] file);
 
     URL getFileUrl(String filePath);
 

@@ -6,8 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 
-import java.util.UUID;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -18,6 +16,6 @@ import java.util.UUID;
 public class FileObject extends BaseEntity {
 
     @Column(name = "file_url", columnDefinition = "text")
-    private UUID fileUrl;
+    private String fileUrl;
 
 }

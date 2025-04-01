@@ -5,6 +5,8 @@ import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import com.example.sbt.module.email.Email;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.SendEmailRequest;
+import com.example.sbt.module.file.FileObject;
+import com.example.sbt.module.file.FileObjectDTO;
 import com.example.sbt.module.loginaudit.LoginAudit;
 import com.example.sbt.module.loginaudit.LoginAuditDTO;
 import com.example.sbt.module.notification.Notification;
@@ -80,5 +82,9 @@ public interface CommonMapper {
     LoginAuditDTO toDTO(LoginAudit v);
 
     LoginAudit toEntity(LoginAuditDTO v);
+
+    FileObjectDTO toDTO(FileObject v);
+
+    FileObject toEntity(FileObjectDTO v);
 
 }

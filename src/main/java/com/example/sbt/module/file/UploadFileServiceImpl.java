@@ -20,7 +20,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     private final S3Client s3Client;
 
     @Override
-    public boolean upload(String filePath, byte[] file) {
+    public String upload(String filePath, byte[] file) {
         try {
             s3Client.putObject(
                     PutObjectRequest.builder()
@@ -28,10 +28,12 @@ public class UploadFileServiceImpl implements UploadFileService {
                             .key(filePath)
                             .build(),
                     RequestBody.fromBytes(file));
-            return true;
+            URL url = getFileUrl(filePath);
+            if (url == null) return null;
+            return url.toString();
         } catch (Exception e) {
             log.error("uploadFile ", e);
-            return false;
+            return null;
         }
     }
 
