@@ -36,5 +36,13 @@ public class Env {
 
     @Value("${custom.firebase-service-account}")
     private String firebaseServiceAccount;
+    @Value("${custom.aws-access-key}")
+    private String awsAccessKey;
+    @Value("${custom.aws-secret-key}")
+    private String awsSecretKey;
+    @Value("${custom.aws-region}")
+    private String awsRegion;
+    @Value("${custom.aws-bucket}")
+    private String awsBucket;
 
 }

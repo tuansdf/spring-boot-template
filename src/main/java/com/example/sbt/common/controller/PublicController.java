@@ -10,6 +10,7 @@ import com.example.sbt.common.util.io.ExcelHelper;
 import com.example.sbt.common.util.io.ImageUtils;
 import com.example.sbt.module.configuration.ConfigurationService;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
+import com.example.sbt.module.file.UploadFileService;
 import com.example.sbt.module.jwt.JWTService;
 import com.example.sbt.module.jwt.dto.JWTPayload;
 import com.example.sbt.module.role.RoleService;
@@ -32,8 +33,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
 import java.time.Instant;
 import java.util.*;
 
@@ -51,6 +54,7 @@ public class PublicController {
     private final ConfigurationService configurationService;
     private final UserService userService;
     private final FirebaseMessaging firebaseMessaging;
+    private final UploadFileService uploadFileService;
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
@@ -388,6 +392,16 @@ public class PublicController {
                 .setToken(token)
                 .putData("hello", "world")
                 .build());
+        return "OK";
+    }
+
+    @GetMapping(value = "/s3-upload", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testS3Upload(@RequestParam MultipartFile file, @RequestParam String filePath) throws IOException, FirebaseMessagingException {
+        uploadFileService.upload(filePath, file.getBytes());
+        URL url = uploadFileService.getFileUrl(filePath);
+        if (url != null) {
+            return url.toString();
+        }
         return "OK";
     }
 
