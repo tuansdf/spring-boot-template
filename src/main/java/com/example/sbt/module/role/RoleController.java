@@ -62,7 +62,6 @@ public class RoleController {
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String code,
-            @RequestParam(required = false) Integer status,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
@@ -71,7 +70,6 @@ public class RoleController {
                     .pageNumber(pageNumber)
                     .pageSize(pageSize)
                     .code(code)
-                    .status(status)
                     .createdAtTo(createdAtTo)
                     .createdAtFrom(createdAtFrom)
                     .build();

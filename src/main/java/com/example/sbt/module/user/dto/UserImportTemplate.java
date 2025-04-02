@@ -18,16 +18,15 @@ import java.util.function.Function;
 @Builder
 public class UserImportTemplate implements ImportTemplate<UserDTO> {
 
-    private static final List<String> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
+    private static final List<String> header = List.of("Order", "ID", "Username", "Email", "Name", "Created At", "Updated At");
     private static final Function<List<Object>, UserDTO> rowPreProcessor = row -> {
         UserDTO result = new UserDTO();
         result.setId(ConversionUtils.toUUID(row.get(1)));
         result.setUsername(ConversionUtils.safeToString(row.get(2)));
         result.setEmail(ConversionUtils.safeToString(row.get(3)));
         result.setName(ConversionUtils.safeToString(row.get(4)));
-        result.setStatus(ConversionUtils.toInt(row.get(5)));
-        result.setCreatedAt(DateUtils.toInstant(row.get(8)));
-        result.setUpdatedAt(DateUtils.toInstant(row.get(9)));
+        result.setCreatedAt(DateUtils.toInstant(row.get(5)));
+        result.setUpdatedAt(DateUtils.toInstant(row.get(6)));
         return result;
     };
 

@@ -27,12 +27,12 @@ public class Email extends BaseEntity {
     private String subject;
     @Column(name = "body", columnDefinition = "text")
     private String body;
-    @Column(name = "type")
-    private Integer type;
     @Column(name = "retry_count")
     private Integer retryCount;
+    @Column(name = "type")
+    private Integer type;
     @Column(name = "status")
-    private Integer status;
+    private String status;
     @Column(name = "is_html")
     private Boolean isHtml;
 

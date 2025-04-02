@@ -10,9 +10,9 @@ import java.util.Map;
 
 public class SQLHelper {
 
-    public static final TemporalUnit MIN_TIME_PRECISION = ChronoUnit.MICROS;
-    public static final long DEFAULT_PAGE_NUMBER = 1;
-    public static final long DEFAULT_PAGE_SIZE = 10;
+    public final static TemporalUnit MIN_TIME_PRECISION = ChronoUnit.MICROS;
+    public final static long DEFAULT_PAGE_NUMBER = 1;
+    public final static long DEFAULT_PAGE_SIZE = 10;
 
     public static <T> PaginationData<T> initData(Long pageNumber, Long pageSize) {
         if (pageSize == null || pageSize <= 0) {

@@ -21,7 +21,5 @@ public class UserDevice extends BaseEntity {
     private UUID userId;
     @Column(name = "fcm_token")
     private String fcmToken;
-    @Column(name = "status")
-    private Integer status;
 
 }

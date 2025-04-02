@@ -16,7 +16,6 @@ public class SearchRoleRequestDTO {
     private Long pageNumber;
     private Long pageSize;
     private String code;
-    private Integer status;
     private Instant createdAtFrom;
     private Instant createdAtTo;
 

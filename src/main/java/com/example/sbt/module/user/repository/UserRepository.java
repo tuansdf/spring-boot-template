@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
-    Optional<User> findTopByIdAndStatus(UUID id, Integer status);
+    Optional<User> findTopByIdAndStatus(UUID id, String status);
 
     @Modifying
     @Query(value = "update _user set password = :password, updated_at = now() where id = :userId", nativeQuery = true)
@@ -32,7 +32,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Modifying
     @Query(value = "update _user set status = :status, updated_at = now() where id = :userId", nativeQuery = true)
-    void updateStatusByUserId(UUID userId, Integer status);
+    void updateStatusByUserId(UUID userId, String status);
 
     @Query(value = "select u.status from _user u where u.id = :userId limit 1", nativeQuery = true)
     String findTopStatusByUserId(UUID userId);

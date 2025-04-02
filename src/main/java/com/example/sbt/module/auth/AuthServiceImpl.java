@@ -271,7 +271,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        List<Integer> validStatus = List.of(CommonStatus.PENDING, CommonStatus.INACTIVE);
+        List<String> validStatus = List.of(CommonStatus.PENDING, CommonStatus.INACTIVE);
         if (!validStatus.contains(user.getStatus())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }

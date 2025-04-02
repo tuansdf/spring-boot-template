@@ -21,7 +21,6 @@ import java.util.UUID;
                 @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "code", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
-                @ColumnResult(name = "status", type = Integer.class),
                 @ColumnResult(name = "created_at", type = Instant.class),
                 @ColumnResult(name = "updated_at", type = Instant.class),
         })
@@ -32,7 +31,5 @@ public class Permission extends BaseEntity {
     private String code;
     @Column(name = "name")
     private String name;
-    @Column(name = "status")
-    private Integer status;
 
 }

@@ -22,7 +22,6 @@ import java.util.UUID;
                 @ColumnResult(name = "code", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
                 @ColumnResult(name = "description", type = String.class),
-                @ColumnResult(name = "status", type = Integer.class),
                 @ColumnResult(name = "created_at", type = Instant.class),
                 @ColumnResult(name = "updated_at", type = Instant.class),
         })
@@ -35,7 +34,5 @@ public class Role extends BaseEntity {
     private String name;
     @Column(name = "description", columnDefinition = "text")
     private String description;
-    @Column(name = "status")
-    private Integer status;
 
 }

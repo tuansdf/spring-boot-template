@@ -17,7 +17,6 @@ public class UserDeviceDTO {
     private UUID id;
     private UUID userId;
     private String fcmToken;
-    private Integer status;
     private Instant createdAt;
     private Instant updatedAt;
 

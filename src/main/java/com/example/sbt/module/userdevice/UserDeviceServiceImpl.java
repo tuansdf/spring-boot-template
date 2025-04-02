@@ -1,6 +1,5 @@
 package com.example.sbt.module.userdevice;
 
-import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
@@ -36,7 +35,6 @@ public class UserDeviceServiceImpl implements UserDeviceService {
         if (result == null) {
             result = new UserDevice();
             result.setUserId(RequestContextHolder.get().getUserId());
-            result.setStatus(CommonStatus.ACTIVE);
         }
         result.setFcmToken(userDeviceDTO.getFcmToken());
         return commonMapper.toDTO(userDeviceRepository.save(result));

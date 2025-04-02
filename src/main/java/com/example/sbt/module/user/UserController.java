@@ -63,7 +63,7 @@ public class UserController {
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {

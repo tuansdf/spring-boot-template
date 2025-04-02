@@ -17,7 +17,7 @@ public class SearchUserRequestDTO {
     private Long pageSize;
     private String username;
     private String email;
-    private Integer status;
+    private String status;
     private Instant createdAtFrom;
     private Instant createdAtTo;
 

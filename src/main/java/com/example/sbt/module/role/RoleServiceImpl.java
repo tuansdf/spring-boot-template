@@ -1,6 +1,5 @@
 package com.example.sbt.module.role;
 
-import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.exception.CustomException;
@@ -62,10 +61,6 @@ public class RoleServiceImpl implements RoleService {
         }
         result.setName(requestDTO.getName());
         result.setDescription(requestDTO.getDescription());
-        if (requestDTO.getStatus() == null) {
-            requestDTO.setStatus(CommonStatus.ACTIVE);
-        }
-        result.setStatus(requestDTO.getStatus());
         result = roleRepository.save(result);
         permissionService.setRolePermissions(result.getId(), requestDTO.getPermissionIds());
         return roleMapper.toDTO(result);
@@ -153,10 +148,6 @@ public class RoleServiceImpl implements RoleService {
         if (StringUtils.isNotEmpty(requestDTO.getCode())) {
             builder.append(" and r.code = :code ");
             params.put("code", requestDTO.getCode());
-        }
-        if (requestDTO.getStatus() != null) {
-            builder.append(" and r.status = :status ");
-            params.put("status", requestDTO.getStatus());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and r.created_at >= :createdAtFrom ");

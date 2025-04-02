@@ -198,8 +198,8 @@ public class ExcelHelper {
     }
 
     public static class Import {
-        public static final int BUFFER_SIZE = 4096;
-        public static final int ROW_CACHE_SIZE = 10000;
+        public final static int BUFFER_SIZE = 4096;
+        public final static int ROW_CACHE_SIZE = 10000;
 
         public static <T> void processTemplate(ImportTemplate<T> template, Workbook workbook) {
             try {

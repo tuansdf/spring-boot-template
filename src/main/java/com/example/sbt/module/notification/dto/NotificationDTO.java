@@ -22,7 +22,7 @@ public class NotificationDTO {
     private String topic;
     private Integer retryCount;
     private Integer type;
-    private Integer status;
+    private String status;
     private Instant createdAt;
     private Instant updatedAt;
 

@@ -1,6 +1,5 @@
 package com.example.sbt.module.permission;
 
-import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.exception.CustomException;
@@ -55,10 +54,6 @@ public class PermissionServiceImpl implements PermissionService {
             result.setCode(code);
         }
         result.setName(requestDTO.getName());
-        if (requestDTO.getStatus() == null) {
-            requestDTO.setStatus(CommonStatus.ACTIVE);
-        }
-        result.setStatus(requestDTO.getStatus());
         return commonMapper.toDTO(permissionRepository.save(result));
     }
 
@@ -171,10 +166,6 @@ public class PermissionServiceImpl implements PermissionService {
         if (StringUtils.isNotEmpty(requestDTO.getCode())) {
             builder.append(" and p.code = :code ");
             params.put("code", requestDTO.getCode());
-        }
-        if (requestDTO.getStatus() != null) {
-            builder.append(" and p.status = :status ");
-            params.put("status", requestDTO.getStatus());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and p.created_at >= :createdAtFrom ");

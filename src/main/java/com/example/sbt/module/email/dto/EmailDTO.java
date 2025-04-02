@@ -20,9 +20,9 @@ public class EmailDTO {
     private String ccEmail;
     private String subject;
     private String body;
-    private Integer type;
     private Integer retryCount;
-    private Integer status;
+    private Integer type;
+    private String status;
     private Instant createdAt;
     private Instant updatedAt;
     private Boolean isHtml;

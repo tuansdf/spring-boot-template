@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 public class UserValidator {
 
-    private static final List<Integer> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE, CommonStatus.PENDING);
+    private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE, CommonStatus.PENDING);
 
     public void validateUpdate(UserDTO requestDTO) {
         String usernameError = ValidationUtils.validateUsername(requestDTO.getUsername());

@@ -22,7 +22,7 @@ import java.util.UUID;
                 @ColumnResult(name = "username", type = String.class),
                 @ColumnResult(name = "email", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
-                @ColumnResult(name = "status", type = Integer.class),
+                @ColumnResult(name = "status", type = String.class),
                 @ColumnResult(name = "created_at", type = Instant.class),
                 @ColumnResult(name = "updated_at", type = Instant.class),
                 @ColumnResult(name = "roles", type = String.class),
@@ -50,6 +50,6 @@ public class User extends BaseEntity {
     @Column(name = "name")
     private String name;
     @Column(name = "status")
-    private Integer status;
+    private String status;
 
 }

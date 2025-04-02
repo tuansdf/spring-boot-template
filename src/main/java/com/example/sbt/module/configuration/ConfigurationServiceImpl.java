@@ -1,6 +1,5 @@
 package com.example.sbt.module.configuration;
 
-import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.exception.CustomException;
@@ -52,10 +51,6 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
-        if (requestDTO.getStatus() == null) {
-            requestDTO.setStatus(CommonStatus.ACTIVE);
-        }
-        result.setStatus(requestDTO.getStatus());
         return commonMapper.toDTO(configurationRepository.save(result));
     }
 
@@ -91,7 +86,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public String findValueByCode(String code) {
-        return configurationRepository.findTopValueByCodeAndStatus(code, CommonStatus.ACTIVE);
+        return configurationRepository.findTopValueByCodeAndStatus(code);
     }
 
     @Override

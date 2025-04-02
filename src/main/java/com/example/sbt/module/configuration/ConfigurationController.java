@@ -62,7 +62,7 @@ public class ConfigurationController {
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String code,
-            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) String status,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
