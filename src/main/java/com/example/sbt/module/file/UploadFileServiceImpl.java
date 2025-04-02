@@ -24,7 +24,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         try {
             s3Client.putObject(
                     PutObjectRequest.builder()
-                            .bucket(env.getAwsBucket())
+                            .bucket(env.getAwsS3Bucket())
                             .key(filePath)
                             .build(),
                     RequestBody.fromBytes(file));
@@ -40,7 +40,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     @Override
     public URL getFileUrl(String filePath) {
         try {
-            return s3Client.utilities().getUrl(GetUrlRequest.builder().bucket(env.getAwsBucket()).key(filePath).build());
+            return s3Client.utilities().getUrl(GetUrlRequest.builder().bucket(env.getAwsS3Bucket()).key(filePath).build());
         } catch (Exception e) {
             return null;
         }

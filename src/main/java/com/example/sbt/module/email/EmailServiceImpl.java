@@ -2,7 +2,6 @@ package com.example.sbt.module.email;
 
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.CommonType;
-import com.example.sbt.common.constant.ConfigurationCode;
 import com.example.sbt.common.constant.Env;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
@@ -64,7 +63,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void throttleSend(UUID userId, String type, String messageKey) {
-        Long timeWindow = ConversionUtils.toLong(configurationService.findValueByCode(ConfigurationCode.EMAIL_THROTTLE_TIME_WINDOW));
+        Integer timeWindow = env.getEmailThrottleTimeWindow();
         if (timeWindow == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
