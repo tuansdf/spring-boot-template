@@ -20,7 +20,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/v1/auth")
 public class AuthController {
 
     private final TokenService tokenService;

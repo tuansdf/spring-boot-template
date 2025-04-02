@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/permissions")
+@RequestMapping("/v1/permissions")
 public class PermissionController {
 
     private final PermissionService permissionService;

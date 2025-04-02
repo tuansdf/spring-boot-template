@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/roles")
+@RequestMapping("/v1/roles")
 public class RoleController {
 
     private final RoleService roleService;

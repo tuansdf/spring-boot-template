@@ -18,7 +18,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/configurations")
+@RequestMapping("/v1/configurations")
 public class ConfigurationController {
 
     private final ConfigurationService configurationService;

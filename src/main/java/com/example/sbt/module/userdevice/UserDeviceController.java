@@ -15,7 +15,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user-devices")
+@RequestMapping("/v1/user-devices")
 public class UserDeviceController {
 
     private final UserDeviceService userDeviceService;

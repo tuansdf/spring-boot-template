@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/public/auth")
+@RequestMapping("/public/v1/auth")
 public class PublicAuthController {
 
     private final AuthService authService;
