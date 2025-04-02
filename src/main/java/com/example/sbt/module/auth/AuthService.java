@@ -23,7 +23,7 @@ public interface AuthService {
 
     void activateAccount(String jwt);
 
-    EnableOtpResponseDTO enableOtp(UUID userId);
+    EnableOtpResponseDTO enableOtp(EnableOtpRequestDTO requestDTO, UUID userId);
 
     void confirmOtp(ConfirmOtpRequestDTO requestDTO, UUID userId);
 

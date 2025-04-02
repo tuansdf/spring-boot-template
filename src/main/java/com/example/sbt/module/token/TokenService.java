@@ -15,6 +15,8 @@ public interface TokenService {
 
     void deactivatePastTokens(UUID userId, List<String> types);
 
+    void deactivatePastTokensByUserId(UUID userId);
+
     TokenDTO createRefreshToken(UUID userId);
 
     TokenDTO createResetPasswordToken(UUID userId);

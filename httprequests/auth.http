@@ -1,7 +1,7 @@
 @username=user1
 @email=user1@example.com
 @password=superpassword
-@otp_code=otp_code
+@otp_code=729658
 @activate_token=jkdlsf
 @reset_token=jkdlsf
 
@@ -66,4 +66,57 @@ Content-Type: application/json
 
 {
   "email": "{{email}}"
+}
+
+###
+
+PATCH {{base_url}}/v1/auth/password
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "oldPassword": "{{password}}",
+  "newPassword": "{{password}}"
+}
+
+###
+
+GET {{base_url}}/v1/auth/token/verify
+Authorization: Bearer {{access_token}}
+
+###
+
+POST {{base_url}}/v1/auth/token/revoke
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+###
+
+POST {{base_url}}/v1/auth/2fa/enable
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "password": "{{password}}"
+}
+
+###
+
+POST {{base_url}}/v1/auth/2fa/confirm
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "otpCode": "{{otp_code}}"
+}
+
+###
+
+POST {{base_url}}/v1/auth/2fa/disable
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "password": "{{password}}",
+  "otpCode": "{{otp_code}}"
 }

@@ -1,12 +1,12 @@
 package com.example.sbt.module.auth;
 
-import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ExceptionUtils;
 import com.example.sbt.module.auth.dto.ConfirmOtpRequestDTO;
 import com.example.sbt.module.auth.dto.DisableOtpRequestDTO;
+import com.example.sbt.module.auth.dto.EnableOtpRequestDTO;
 import com.example.sbt.module.token.TokenService;
 import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -48,10 +48,10 @@ public class AuthController {
     }
 
     @PostMapping("/token/revoke")
-    public ResponseEntity<CommonResponse<Object>> revokeRefreshTokens() {
+    public ResponseEntity<CommonResponse<Object>> revokeAllTokens() {
         try {
             UUID userId = RequestContextHolder.get().getUserId();
-            tokenService.deactivatePastTokens(userId, CommonType.REFRESH_TOKEN);
+            tokenService.deactivatePastTokensByUserId(userId);
             return ResponseEntity.ok(new CommonResponse<>());
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
@@ -59,10 +59,10 @@ public class AuthController {
     }
 
     @PostMapping("/2fa/enable")
-    public ResponseEntity<CommonResponse<Object>> enableOtp() {
+    public ResponseEntity<CommonResponse<Object>> enableOtp(@RequestBody EnableOtpRequestDTO requestDTO) {
         try {
             UUID userId = RequestContextHolder.get().getUserId();
-            var result = authService.enableOtp(userId);
+            var result = authService.enableOtp(requestDTO, userId);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

@@ -281,12 +281,16 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public EnableOtpResponseDTO enableOtp(UUID userId) {
+    public EnableOtpResponseDTO enableOtp(EnableOtpRequestDTO requestDTO, UUID userId) {
         Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
         if (userOptional.isEmpty()) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
+        boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getPassword(), user.getPassword());
+        if (!isPasswordCorrect) {
+            throw new CustomException(HttpStatus.UNAUTHORIZED);
+        }
         if (ConversionUtils.safeToBool(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }

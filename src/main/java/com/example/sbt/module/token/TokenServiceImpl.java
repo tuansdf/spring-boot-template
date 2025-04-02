@@ -41,12 +41,17 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public void deactivatePastTokens(UUID userId, String type) {
-        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(userId, type, CommonStatus.INACTIVE);
+        tokenRepository.updateStatusByOwnerIdAndType(userId, type, CommonStatus.INACTIVE);
     }
 
     @Override
     public void deactivatePastTokens(UUID userId, List<String> types) {
-        tokenRepository.updateStatusByOwnerIdAndTypesAndCreatedAtBefore(userId, types, CommonStatus.INACTIVE);
+        tokenRepository.updateStatusByOwnerIdAndTypes(userId, types, CommonStatus.INACTIVE);
+    }
+
+    @Override
+    public void deactivatePastTokensByUserId(UUID userId) {
+        tokenRepository.updateStatusByOwnerId(userId, CommonStatus.INACTIVE);
     }
 
     @Override
