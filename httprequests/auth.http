@@ -1,0 +1,69 @@
+@username=user1
+@email=user1@example.com
+@password=superpassword
+@otp_code=otp_code
+@activate_token=jkdlsf
+@reset_token=jkdlsf
+
+###
+
+POST {{base_url}}/pub/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}",
+  "otpCode": "{{otp_code}}"
+}
+
+###
+
+POST {{base_url}}/pub/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+###
+
+POST {{base_url}}/pub/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "{{email}}"
+}
+
+###
+
+POST {{base_url}}/pub/v1/auth/reset-password
+Content-Type: application/json
+
+{
+  "token": "{{reset_token}}",
+  "newPassword": "{{password}}"
+}
+
+###
+
+POST {{base_url}}/pub/v1/auth/token/refresh
+Content-Type: application/json
+
+{
+  "token": "{{refresh_token}}"
+}
+
+###
+
+GET {{base_url}}/pub/v1/auth/account/activate?token={{activate_token}}
+
+###
+
+POST {{base_url}}/pub/v1/auth/account/request-activate
+Content-Type: application/json
+
+{
+  "email": "{{email}}"
+}

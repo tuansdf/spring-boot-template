@@ -1,0 +1,29 @@
+@id=0195f58e-4636-7db8-b5ac-60fdca1ef428
+@code=ROLE_P_PERMISSION_1
+@name=PERMISSION_1
+
+###
+
+GET {{base_url}}/v1/permissions/code/{{code}}
+Authorization: Bearer {{access_token}}
+
+###
+
+GET {{base_url}}/v1/permissions/{{id}}
+Authorization: Bearer {{access_token}}
+
+###
+
+GET {{base_url}}/v1/permissions/search
+Authorization: Bearer {{access_token}}
+
+###
+
+PUT {{base_url}}/v1/permissions
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "code": "{{code}}",
+  "name": "{{name}}"
+}

@@ -1,0 +1,31 @@
+@id=
+@code=
+@value=
+@description=
+
+###
+
+GET {{base_url}}/v1/configurations/code/{{code}}
+Authorization: Bearer {{access_token}}
+
+###
+
+GET {{base_url}}/v1/configurations/{{id}}
+Authorization: Bearer {{access_token}}
+
+###
+
+GET {{base_url}}/v1/configurations/search
+Authorization: Bearer {{access_token}}
+
+###
+
+PUT {{base_url}}/v1/configurations
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "code": "{{code}}",
+  "value": "{{value}}",
+  "description": "{{description}}"
+}
