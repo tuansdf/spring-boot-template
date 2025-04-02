@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.sbt.common.constant.CommonType;
-import com.example.sbt.common.constant.Env;
+import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.util.Base64Helper;
 import com.example.sbt.module.jwt.dto.JWTPayload;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @Service
 public class JWTServiceImpl implements JWTService {
 
-    private final Env env;
+    private final ApplicationProperties applicationProperties;
     private final Algorithm algorithm;
     private final JWTVerifier jwtVerifier;
     private final ObjectMapper objectMapper;
@@ -37,7 +37,7 @@ public class JWTServiceImpl implements JWTService {
             jwtPayload.setNotBefore(now);
         }
         if (jwtPayload.getExpiresAt() == null) {
-            jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
+            jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtAccessLifetime()));
         }
         String value = JWT.create()
                 .withPayload(jwtPayload.toMap())
@@ -54,7 +54,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setPermissions(PermissionCode.toIndexes(permissions));
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtAccessLifetime()));
+        jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtAccessLifetime()));
         jwtPayload.setType(CommonType.toIndex(CommonType.ACCESS_TOKEN));
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
@@ -68,7 +68,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtRefreshLifetime()));
+        jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtRefreshLifetime()));
         jwtPayload.setType(CommonType.toIndex(CommonType.REFRESH_TOKEN));
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
@@ -81,7 +81,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtResetPasswordLifetime()));
+        jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtResetPasswordLifetime()));
         jwtPayload.setType(CommonType.toIndex(CommonType.RESET_PASSWORD));
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;
@@ -94,7 +94,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setTokenId(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(env.getJwtActivateAccountLifetime()));
+        jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtActivateAccountLifetime()));
         jwtPayload.setType(CommonType.toIndex(isReactivate ? CommonType.REACTIVATE_ACCOUNT : CommonType.ACTIVATE_ACCOUNT));
         jwtPayload.setValue(create(jwtPayload).getValue());
         return jwtPayload;

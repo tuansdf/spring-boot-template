@@ -2,7 +2,7 @@ package com.example.sbt.module.email;
 
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.CommonType;
-import com.example.sbt.common.constant.Env;
+import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
@@ -26,7 +26,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class EmailServiceImpl implements EmailService {
 
-    private final Env env;
+    private final ApplicationProperties applicationProperties;
     private final CommonMapper commonMapper;
     private final EmailRepository emailRepository;
     private final SendEmailEventPublisher sendEmailEventPublisher;
@@ -63,7 +63,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void throttleSend(UUID userId, String type, String messageKey) {
-        Integer timeWindow = env.getEmailThrottleTimeWindow();
+        Integer timeWindow = applicationProperties.getEmailThrottleTimeWindow();
         if (timeWindow == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -88,7 +88,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
         throttleSend(userId, CommonType.ACTIVATE_ACCOUNT, "auth.activate_account_email_sent");
-        String url = env.getServerBaseUrl().concat("/public/auth/account/activate?token=").concat(token);
+        String url = applicationProperties.getServerBaseUrl().concat("/public/auth/account/activate?token=").concat(token);
         EmailDTO emailDTO = EmailDTO.builder()
                 .userId(userId)
                 .toEmail(email)

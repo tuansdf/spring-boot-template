@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Getter
 @Component
-public class Env {
+public class ApplicationProperties {
 
     @Value("${custom.app-name}")
     private String applicationName;

@@ -3,7 +3,7 @@ package com.example.sbt.module.auth;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.ConfigurationCode;
-import com.example.sbt.common.constant.Env;
+import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
@@ -45,7 +45,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class AuthServiceImpl implements AuthService {
 
-    private final Env env;
+    private final ApplicationProperties applicationProperties;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
     private final UserService userService;
@@ -73,8 +73,8 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
 
-        Integer maxAttempts = env.getLoginMaxAttempts();
-        Integer timeWindow = env.getLoginTimeWindow();
+        Integer maxAttempts = applicationProperties.getLoginMaxAttempts();
+        Integer timeWindow = applicationProperties.getLoginTimeWindow();
         if (maxAttempts != null && maxAttempts > 0 && timeWindow != null && timeWindow > 0) {
             long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(userDTO.getId(), Instant.now().minusSeconds(timeWindow));
             if (attempts >= maxAttempts) {

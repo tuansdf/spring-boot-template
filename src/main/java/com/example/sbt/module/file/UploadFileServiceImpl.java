@@ -1,6 +1,6 @@
 package com.example.sbt.module.file;
 
-import com.example.sbt.common.constant.Env;
+import com.example.sbt.common.constant.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ import java.net.URL;
 @Service
 public class UploadFileServiceImpl implements UploadFileService {
 
-    private final Env env;
+    private final ApplicationProperties applicationProperties;
     private final S3Client s3Client;
 
     @Override
@@ -24,7 +24,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         try {
             s3Client.putObject(
                     PutObjectRequest.builder()
-                            .bucket(env.getAwsS3Bucket())
+                            .bucket(applicationProperties.getAwsS3Bucket())
                             .key(filePath)
                             .build(),
                     RequestBody.fromBytes(file));
@@ -40,7 +40,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     @Override
     public URL getFileUrl(String filePath) {
         try {
-            return s3Client.utilities().getUrl(GetUrlRequest.builder().bucket(env.getAwsS3Bucket()).key(filePath).build());
+            return s3Client.utilities().getUrl(GetUrlRequest.builder().bucket(applicationProperties.getAwsS3Bucket()).key(filePath).build());
         } catch (Exception e) {
             return null;
         }
