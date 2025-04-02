@@ -17,7 +17,7 @@ public class TokenDTO {
 
     private UUID id;
     private UUID ownerId;
-    private Integer type;
+    private String type;
     private String status;
     private Instant expiresAt;
     private Instant createdAt;

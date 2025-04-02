@@ -13,9 +13,9 @@ public class PermissionCode {
     public final static String UPDATE_USER = "ROLE_P_UPDATE_USER";
     public final static String DELETE_USER = "ROLE_P_DELETE_USER";
 
-    private static final Map<String, Integer> STRING_TO_INDEX;
-    private static final List<String> STRINGS;
-    private static final int STRINGS_SIZE;
+    private final static Map<String, Integer> STRING_TO_INDEX;
+    private final static List<String> STRINGS;
+    private final static int STRINGS_SIZE;
 
     static {
         // WARN: Order matters. Be careful when rearranging in production

@@ -63,7 +63,7 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    private void throttleSend(UUID userId, Integer type, String messageKey) {
+    private void throttleSend(UUID userId, String type, String messageKey) {
         Long timeWindow = ConversionUtils.toLong(configurationService.findValueByCode(ConfigurationCode.EMAIL_THROTTLE_TIME_WINDOW));
         if (timeWindow == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);

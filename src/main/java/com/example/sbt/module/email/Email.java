@@ -30,7 +30,7 @@ public class Email extends BaseEntity {
     @Column(name = "retry_count")
     private Integer retryCount;
     @Column(name = "type")
-    private Integer type;
+    private String type;
     @Column(name = "status")
     private String status;
     @Column(name = "is_html")

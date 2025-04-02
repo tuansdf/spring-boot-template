@@ -21,7 +21,7 @@ public class NotificationDTO {
     private String data;
     private String topic;
     private Integer retryCount;
-    private Integer type;
+    private String type;
     private String status;
     private Instant createdAt;
     private Instant updatedAt;

@@ -21,7 +21,7 @@ public class EmailDTO {
     private String subject;
     private String body;
     private Integer retryCount;
-    private Integer type;
+    private String type;
     private String status;
     private Instant createdAt;
     private Instant updatedAt;

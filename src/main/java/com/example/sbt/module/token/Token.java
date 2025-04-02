@@ -23,7 +23,7 @@ public class Token extends BaseEntity {
     @Column(name = "expires_at")
     private Instant expiresAt;
     @Column(name = "type")
-    private Integer type;
+    private String type;
     @Column(name = "status")
     private String status;
 

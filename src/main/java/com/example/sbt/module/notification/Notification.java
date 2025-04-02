@@ -30,7 +30,7 @@ public class Notification extends BaseEntity {
     @Column(name = "topic")
     private String topic;
     @Column(name = "type")
-    private Integer type;
+    private String type;
     @Column(name = "status")
     private String status;
 

@@ -177,7 +177,7 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Integer tokenType = jwtPayload.getType();
+        String tokenType = CommonType.fromIndex(jwtPayload.getType());
         if (!CommonType.RESET_PASSWORD.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -217,7 +217,7 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Integer tokenType = jwtPayload.getType();
+        String tokenType = CommonType.fromIndex(jwtPayload.getType());
         if (!CommonType.REFRESH_TOKEN.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -257,8 +257,8 @@ public class AuthServiceImpl implements AuthService {
         if (jwtPayload == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Integer tokenType = jwtPayload.getType();
-        List<Integer> validTypes = List.of(CommonType.ACTIVATE_ACCOUNT, CommonType.REACTIVATE_ACCOUNT);
+        String tokenType = CommonType.fromIndex(jwtPayload.getType());
+        List<String> validTypes = List.of(CommonType.ACTIVATE_ACCOUNT, CommonType.REACTIVATE_ACCOUNT);
         if (!validTypes.contains(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
