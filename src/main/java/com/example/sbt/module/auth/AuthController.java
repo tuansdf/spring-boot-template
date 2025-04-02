@@ -38,7 +38,7 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/token/verify")
+    @GetMapping("/token/verify")
     public ResponseEntity<CommonResponse<Object>> verifyToken() {
         try {
             return ResponseEntity.ok(new CommonResponse<>());

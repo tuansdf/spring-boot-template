@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -37,7 +38,7 @@ public class GlobalDefaultExceptionHandler {
     public ResponseEntity<CommonResponse<Object>> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setMessage("Missing required parameter: " + ex.getParameterName());
+        response.setMessage("Missing required parameter: ".concat(ex.getParameterName()));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -49,7 +50,7 @@ public class GlobalDefaultExceptionHandler {
     public ResponseEntity<CommonResponse<Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setMessage("Invalid value for parameter: " + ex.getName());
+        response.setMessage("Invalid value for parameter: ".concat(ex.getName()));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
@@ -58,7 +59,16 @@ public class GlobalDefaultExceptionHandler {
     public ResponseEntity<CommonResponse<Object>> handleNotFound(HttpServletRequest servletRequest) {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setMessage("Endpoint not found: " + servletRequest.getServletPath());
+        response.setMessage("Endpoint not found: ".concat(servletRequest.getMethod()).concat(" ").concat(servletRequest.getServletPath()));
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<CommonResponse<Object>> handleHttpRequestMethodNotSupportedException(HttpServletRequest servletRequest) {
+        CommonResponse<Object> response = new CommonResponse<>();
+        response.setStatus(HttpStatus.NOT_FOUND.value());
+        response.setMessage("Endpoint not found: ".concat(servletRequest.getMethod()).concat(" ").concat(servletRequest.getServletPath()));
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
