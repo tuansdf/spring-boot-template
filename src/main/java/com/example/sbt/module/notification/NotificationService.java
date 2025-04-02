@@ -12,4 +12,5 @@ public interface NotificationService {
     void executeSend(NotificationDTO notificationDTO) throws FirebaseMessagingException;
 
     NotificationDTO sendNewComerNotification(UUID userId);
+
 }

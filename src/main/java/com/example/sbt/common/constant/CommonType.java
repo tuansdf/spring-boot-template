@@ -13,9 +13,9 @@ public class CommonType {
     public final static String ACTIVATE_ACCOUNT = "ACTIVATE_ACCOUNT";
     public final static String REACTIVATE_ACCOUNT = "REACTIVATE_ACCOUNT";
 
-    private static final Map<String, Integer> STRING_TO_INDEX;
-    private static final List<String> STRINGS;
-    private static final int STRINGS_SIZE;
+    private final static Map<String, Integer> STRING_TO_INDEX;
+    private final static List<String> STRINGS;
+    private final static int STRINGS_SIZE;
 
     static {
         STRINGS = List.of(
