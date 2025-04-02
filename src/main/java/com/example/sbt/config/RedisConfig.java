@@ -1,6 +1,6 @@
 package com.example.sbt.config;
 
-import com.example.sbt.common.constant.Env;
+import com.example.sbt.common.constant.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,11 +13,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 @Configuration
 public class RedisConfig {
 
-    private final Env env;
+    private final ApplicationProperties applicationProperties;
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(new RedisStandaloneConfiguration(env.getRedisHost(), env.getRedisPort()));
+        return new LettuceConnectionFactory(new RedisStandaloneConfiguration(applicationProperties.getRedisHost(), applicationProperties.getRedisPort()));
     }
 
     @Bean

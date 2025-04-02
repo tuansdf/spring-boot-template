@@ -18,7 +18,6 @@ public class PermissionCode {
     private static final int STRINGS_SIZE;
 
     static {
-        // WARN: Order matters. Be careful when rearranging in production
         STRINGS = List.of(
                 SYSTEM_ADMIN,
                 READ_USER,

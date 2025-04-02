@@ -1,7 +1,7 @@
 package com.example.sbt.module.notification;
 
 import com.example.sbt.common.constant.CommonStatus;
-import com.example.sbt.common.constant.Env;
+import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
@@ -24,7 +24,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class NotificationServiceImpl implements NotificationService {
 
-    private final Env env;
+    private final ApplicationProperties applicationProperties;
     private final CommonMapper commonMapper;
     private final NotificationRepository notificationRepository;
     private final SendNotificationEventPublisher sendNotificationEventPublisher;
@@ -65,7 +65,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO sendNewComerNotification(UUID userId) {
         NotificationDTO notificationDTO = NotificationDTO.builder()
-                .title(LocaleHelper.getMessage("notification.new_comer_title", env.getApplicationName()))
+                .title(LocaleHelper.getMessage("notification.new_comer_title", applicationProperties.getApplicationName()))
                 .content(LocaleHelper.getMessage("notification.new_comer_content"))
                 .userId(userId)
                 .status(CommonStatus.PENDING)

@@ -1,6 +1,6 @@
 package com.example.sbt.config;
 
-import com.example.sbt.common.constant.Env;
+import com.example.sbt.common.constant.ApplicationProperties;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -17,11 +17,11 @@ import java.io.InputStream;
 @Configuration
 public class FirebaseConfig {
 
-    private final Env env;
+    private final ApplicationProperties applicationProperties;
 
     @Bean
     public GoogleCredentials googleCredentials() {
-        try (InputStream inputStream = new ClassPathResource(env.getFirebaseServiceAccount()).getInputStream()) {
+        try (InputStream inputStream = new ClassPathResource(applicationProperties.getFirebaseServiceAccount()).getInputStream()) {
             return GoogleCredentials.fromStream(inputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
