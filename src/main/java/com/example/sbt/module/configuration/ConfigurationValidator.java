@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class ConfigurationValidator {
 
     public void validateCreate(ConfigurationDTO requestDTO) {
-        if (StringUtils.isBlank(requestDTO.getCode())) {
+        if (StringUtils.isEmpty(requestDTO.getCode())) {
             throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.code")));
         }
         String codeError = ValidationUtils.validateCode(requestDTO.getCode());

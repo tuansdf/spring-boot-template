@@ -39,16 +39,31 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> findOne(@PathVariable UUID id) {
         try {
-            var result = userService.findOneById(id);
+            var result = userService.findOneByIdOrThrow(id);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }
     }
 
-    @PatchMapping
+    @PatchMapping("/me")
     public ResponseEntity<CommonResponse<UserDTO>> updateProfile(@RequestBody UserDTO requestDTO) {
         try {
+            requestDTO.setId(RequestContextHolder.get().getUserId());
+            var result = userService.updateProfile(requestDTO);
+            return ResponseEntity.ok(new CommonResponse<>(result));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
+
+    @PatchMapping("/{id}")
+    @Secured({PermissionCode.SYSTEM_ADMIN})
+    public ResponseEntity<CommonResponse<UserDTO>> updateProfileById(
+            @PathVariable UUID id,
+            @RequestBody UserDTO requestDTO) {
+        try {
+            requestDTO.setId(id);
             var result = userService.updateProfile(requestDTO);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {

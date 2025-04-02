@@ -114,7 +114,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             builder.append(" and c.code = :code ");
             params.put("code", requestDTO.getCode());
         }
-        if (requestDTO.getStatus() != null) {
+        if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
             builder.append(" and c.status = :status ");
             params.put("status", requestDTO.getStatus());
         }

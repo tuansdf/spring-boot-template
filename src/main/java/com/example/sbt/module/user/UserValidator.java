@@ -30,7 +30,7 @@ public class UserValidator {
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
             throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
         }
-        if (requestDTO.getStatus() != null && !validStatus.contains(requestDTO.getStatus())) {
+        if (StringUtils.isNotEmpty(requestDTO.getStatus()) && !validStatus.contains(requestDTO.getStatus())) {
             throw new CustomException(LocaleHelper.getMessage("form.error.invalid", new LocaleKey("field.status")));
         }
     }

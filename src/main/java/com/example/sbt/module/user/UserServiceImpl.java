@@ -3,9 +3,7 @@ package com.example.sbt.module.user;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.exception.CustomException;
-import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.AuthHelper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.SQLHelper;
@@ -32,7 +30,6 @@ import java.util.*;
 @Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
 
-    private final CommonMapper commonMapper;
     private final UserMapper userMapper;
     private final EntityManager entityManager;
     private final UserRepository userRepository;
@@ -42,12 +39,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateProfile(UserDTO requestDTO) {
         boolean isAdmin = AuthHelper.hasAnyPermission(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER);
-        if (isAdmin) {
-            if (requestDTO.getId() == null) {
-                throw new CustomException(HttpStatus.NOT_FOUND);
-            }
-        } else {
-            requestDTO.setId(RequestContextHolder.get().getUserId());
+        if (requestDTO.getId() == null) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
         }
         userValidator.validateUpdate(requestDTO);
         Optional<User> userOptional = userRepository.findById(requestDTO.getId());
@@ -71,7 +64,7 @@ public class UserServiceImpl implements UserService {
             user.setName(requestDTO.getName());
         }
         if (isAdmin) {
-            if (requestDTO.getStatus() != null) {
+            if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
                 user.setStatus(requestDTO.getStatus());
             }
             if (requestDTO.getRoleIds() != null) {
@@ -160,8 +153,6 @@ public class UserServiceImpl implements UserService {
             builder.append(" select u.*, ");
             builder.append(" string_agg(distinct(r.code), ',') as roles, ");
             builder.append(" string_agg(distinct(p.code), ',') as permissions ");
-            builder.append(" null as roles, ");
-            builder.append(" null as permissions ");
         }
         builder.append(" from _user u ");
         builder.append(" inner join ( ");
@@ -177,7 +168,7 @@ public class UserServiceImpl implements UserService {
                 builder.append(" and u.email like :email ");
                 params.put("email", SQLHelper.escapeLikePattern(requestDTO.getEmail()).concat("%"));
             }
-            if (requestDTO.getStatus() != null) {
+            if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
                 builder.append(" and u.status = :status ");
                 params.put("status", requestDTO.getStatus());
             }
