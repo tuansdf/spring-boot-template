@@ -8,7 +8,6 @@ public class JWTPayloadKey {
     public static final String SUBJECT = "sub";
     public static final String ISSUER = "iss";
     public static final String TYPE = "typ";
-    public static final String TOKEN_ID = "tid";
     public static final String PERMISSIONS = "per";
 
 }

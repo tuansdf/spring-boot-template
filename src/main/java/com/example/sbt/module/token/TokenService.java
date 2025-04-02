@@ -2,6 +2,7 @@ package com.example.sbt.module.token;
 
 import com.example.sbt.module.token.dto.TokenDTO;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface TokenService {
@@ -11,6 +12,8 @@ public interface TokenService {
     TokenDTO findOneActiveById(UUID id);
 
     void deactivatePastTokens(UUID userId, String type);
+
+    void deactivatePastTokens(UUID userId, List<String> types);
 
     TokenDTO createRefreshToken(UUID userId);
 

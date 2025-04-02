@@ -61,10 +61,7 @@ public class PermissionServiceImpl implements PermissionService {
     public void setRolePermissions(UUID roleId, Set<UUID> permissionIds) {
         rolePermissionRepository.deleteAllByRoleId(roleId);
         if (CollectionUtils.isEmpty(permissionIds)) return;
-        List<RolePermission> rolePermissions = new ArrayList<>();
-        for (UUID permissionId : permissionIds) {
-            rolePermissions.add(new RolePermission(roleId, permissionId));
-        }
+        List<RolePermission> rolePermissions = permissionIds.stream().map(x -> new RolePermission(roleId, x)).toList();
         rolePermissionRepository.saveAll(rolePermissions);
     }
 

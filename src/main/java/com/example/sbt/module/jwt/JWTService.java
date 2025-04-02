@@ -11,7 +11,7 @@ public interface JWTService {
 
     JWTPayload createAccessJwt(UUID userId, Set<String> permissions);
 
-    JWTPayload createRefreshJwt(UUID userId, UUID tokenId);
+    JWTPayload createRefreshJwt(UUID tokenId);
 
     JWTPayload createResetPasswordJwt(UUID tokenId);
 

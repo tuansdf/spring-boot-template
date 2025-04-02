@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/public/v1/auth")
+@RequestMapping("/pub/v1/auth")
 public class PublicAuthController {
 
     private final AuthService authService;
@@ -64,10 +64,10 @@ public class PublicAuthController {
     }
 
     @PostMapping("/token/refresh")
-    public ResponseEntity<CommonResponse<AuthDTO>> refreshAccessToken(@RequestBody AuthDTO requestDTO) {
+    public ResponseEntity<CommonResponse<RefreshTokenResponseDTO>> refreshAccessToken(@RequestBody AuthDTO requestDTO) {
         try {
-            authService.refreshAccessToken(requestDTO.getToken());
-            return ResponseEntity.ok(new CommonResponse<>());
+            var result = authService.refreshAccessToken(requestDTO.getToken());
+            return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);
         }

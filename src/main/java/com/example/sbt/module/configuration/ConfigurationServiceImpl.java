@@ -51,7 +51,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
-        return commonMapper.toDTO(configurationRepository.save(result));
+        result = configurationRepository.save(result);
+        return commonMapper.toDTO(result);
     }
 
     @Override

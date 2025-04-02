@@ -88,7 +88,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
         throttleSend(userId, CommonType.ACTIVATE_ACCOUNT, "auth.activate_account_email_sent");
-        String url = applicationProperties.getServerBaseUrl().concat("/public/auth/account/activate?token=").concat(token);
+        String url = applicationProperties.getServerBaseUrl().concat("/pub/auth/account/activate?token=").concat(token);
         EmailDTO emailDTO = EmailDTO.builder()
                 .userId(userId)
                 .toEmail(email)

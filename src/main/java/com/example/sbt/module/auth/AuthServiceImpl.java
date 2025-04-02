@@ -1,9 +1,9 @@
 package com.example.sbt.module.auth;
 
+import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.ConfigurationCode;
-import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
@@ -181,7 +181,7 @@ public class AuthServiceImpl implements AuthService {
         if (!CommonType.RESET_PASSWORD.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getTokenId());
+        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getSubject());
         TokenDTO tokenDTO = tokenService.findOneActiveById(tokenId);
         if (tokenDTO == null || !CommonType.RESET_PASSWORD.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -193,10 +193,8 @@ public class AuthServiceImpl implements AuthService {
         User user = userOptional.get();
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         userRepository.save(user);
-        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.RESET_PASSWORD);
-        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.ACTIVATE_ACCOUNT);
-        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.REACTIVATE_ACCOUNT);
-        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), CommonType.REFRESH_TOKEN);
+        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), List.of(CommonType.RESET_PASSWORD,
+                CommonType.REFRESH_TOKEN, CommonType.ACTIVATE_ACCOUNT, CommonType.REACTIVATE_ACCOUNT));
     }
 
     private AuthDTO createAuthResponse(UUID userId, Set<String> permissionCodes) {
@@ -221,7 +219,7 @@ public class AuthServiceImpl implements AuthService {
         if (!CommonType.REFRESH_TOKEN.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getTokenId());
+        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getSubject());
         TokenDTO tokenDTO = tokenService.findOneActiveById(tokenId);
         if (tokenDTO == null || !CommonType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -262,7 +260,7 @@ public class AuthServiceImpl implements AuthService {
         if (!validTypes.contains(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getTokenId());
+        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getSubject());
         TokenDTO tokenDTO = tokenService.findOneActiveById(tokenId);
         if (tokenDTO == null || !validTypes.contains(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);

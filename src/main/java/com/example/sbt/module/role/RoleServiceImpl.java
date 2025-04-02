@@ -70,10 +70,7 @@ public class RoleServiceImpl implements RoleService {
     public void setUserRoles(UUID userId, Set<UUID> roleIds) {
         userRoleRepository.deleteAllByUserId(userId);
         if (CollectionUtils.isEmpty(roleIds)) return;
-        List<UserRole> userRoles = new ArrayList<>();
-        for (UUID roleId : roleIds) {
-            userRoles.add(new UserRole(userId, roleId));
-        }
+        List<UserRole> userRoles = roleIds.stream().map(x -> new UserRole(userId, x)).toList();
         userRoleRepository.saveAll(userRoles);
     }
 

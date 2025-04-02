@@ -42,7 +42,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/public")
+@RequestMapping("/pub/utils")
 public class PublicController {
 
     private final CommonMapper commonMapper;

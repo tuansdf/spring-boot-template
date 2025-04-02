@@ -3,8 +3,8 @@ package com.example.sbt.module.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.util.Base64Helper;
 import com.example.sbt.module.jwt.dto.JWTPayload;
@@ -61,11 +61,10 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public JWTPayload createRefreshJwt(UUID userId, UUID tokenId) {
+    public JWTPayload createRefreshJwt(UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(userId.toString());
-        jwtPayload.setTokenId(tokenId.toString());
+        jwtPayload.setSubject(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtRefreshLifetime()));
@@ -78,7 +77,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createResetPasswordJwt(UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setTokenId(tokenId.toString());
+        jwtPayload.setSubject(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtResetPasswordLifetime()));
@@ -91,7 +90,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload createActivateAccountJwt(UUID tokenId, boolean isReactivate) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setTokenId(tokenId.toString());
+        jwtPayload.setSubject(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtActivateAccountLifetime()));

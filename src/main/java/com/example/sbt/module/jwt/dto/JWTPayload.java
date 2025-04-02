@@ -32,9 +32,6 @@ public class JWTPayload {
 
     @JsonProperty(JWTPayloadKey.TYPE)
     private Integer type;
-    @JsonProperty(JWTPayloadKey.TOKEN_ID)
-    private String tokenId;
-
     @JsonProperty(JWTPayloadKey.PERMISSIONS)
     private Set<Integer> permissions;
 
@@ -49,7 +46,6 @@ public class JWTPayload {
         if (subject != null) result.put(JWTPayloadKey.SUBJECT, subject);
         if (issuer != null) result.put(JWTPayloadKey.ISSUER, issuer);
         if (type != null) result.put(JWTPayloadKey.TYPE, type);
-        if (tokenId != null) result.put(JWTPayloadKey.TOKEN_ID, tokenId);
         if (permissions != null) result.put(JWTPayloadKey.PERMISSIONS, permissions.stream().toList());
         return result;
     }

@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,18 +37,22 @@ public class TokenServiceImpl implements TokenService {
     public TokenDTO findOneActiveById(UUID id) {
         Optional<Token> token = tokenRepository.findTopByIdAndStatusAndExpiresAtAfter(id, CommonStatus.ACTIVE, Instant.now());
         return token.map(commonMapper::toDTO).orElse(null);
-
     }
 
     @Override
     public void deactivatePastTokens(UUID userId, String type) {
-        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(userId, type, Instant.now(), CommonStatus.INACTIVE);
+        tokenRepository.updateStatusByOwnerIdAndTypeAndCreatedAtBefore(userId, type, CommonStatus.INACTIVE);
+    }
+
+    @Override
+    public void deactivatePastTokens(UUID userId, List<String> types) {
+        tokenRepository.updateStatusByOwnerIdAndTypesAndCreatedAtBefore(userId, types, CommonStatus.INACTIVE);
     }
 
     @Override
     public TokenDTO createRefreshToken(UUID userId) {
         UUID id = RandomUtils.Secure.generateTimeBasedUUID();
-        JWTPayload jwtPayload = jwtService.createRefreshJwt(userId, id);
+        JWTPayload jwtPayload = jwtService.createRefreshJwt(id);
 
         Token token = new Token();
         token.setId(id);
