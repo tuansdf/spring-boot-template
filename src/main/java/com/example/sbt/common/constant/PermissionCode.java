@@ -7,15 +7,15 @@ import java.util.stream.Collectors;
 
 public class PermissionCode {
 
-    public final static String SYSTEM_ADMIN = "ROLE_P_SYSTEM_ADMIN";
-    public final static String READ_USER = "ROLE_P_READ_USER";
-    public final static String CREATE_USER = "ROLE_P_CREATE_USER";
-    public final static String UPDATE_USER = "ROLE_P_UPDATE_USER";
-    public final static String DELETE_USER = "ROLE_P_DELETE_USER";
+    public static final String SYSTEM_ADMIN = "ROLE_P_SYSTEM_ADMIN";
+    public static final String READ_USER = "ROLE_P_READ_USER";
+    public static final String CREATE_USER = "ROLE_P_CREATE_USER";
+    public static final String UPDATE_USER = "ROLE_P_UPDATE_USER";
+    public static final String DELETE_USER = "ROLE_P_DELETE_USER";
 
-    private final static Map<String, Integer> STRING_TO_INDEX;
-    private final static List<String> STRINGS;
-    private final static int STRINGS_SIZE;
+    private static final Map<String, Integer> STRING_TO_INDEX;
+    private static final List<String> STRINGS;
+    private static final int STRINGS_SIZE;
 
     static {
         // WARN: Order matters. Be careful when rearranging in production

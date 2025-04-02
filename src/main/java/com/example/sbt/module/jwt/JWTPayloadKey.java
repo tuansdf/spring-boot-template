@@ -2,13 +2,13 @@ package com.example.sbt.module.jwt;
 
 public class JWTPayloadKey {
 
-    public final static String ISSUED_AT = "iat";
-    public final static String NOT_BEFORE = "nbf";
-    public final static String EXPIRES_AT = "exp";
-    public final static String SUBJECT = "sub";
-    public final static String ISSUER = "iss";
-    public final static String TYPE = "typ";
-    public final static String TOKEN_ID = "tid";
-    public final static String PERMISSIONS = "per";
+    public static final String ISSUED_AT = "iat";
+    public static final String NOT_BEFORE = "nbf";
+    public static final String EXPIRES_AT = "exp";
+    public static final String SUBJECT = "sub";
+    public static final String ISSUER = "iss";
+    public static final String TYPE = "typ";
+    public static final String TOKEN_ID = "tid";
+    public static final String PERMISSIONS = "per";
 
 }

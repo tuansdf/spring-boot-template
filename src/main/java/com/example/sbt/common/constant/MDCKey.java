@@ -2,7 +2,7 @@ package com.example.sbt.common.constant;
 
 public class MDCKey {
 
-    public final static String REQUEST_ID = "requestId";
-    public final static String USER_ID = "userId";
+    public static final String REQUEST_ID = "requestId";
+    public static final String USER_ID = "userId";
 
 }

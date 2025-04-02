@@ -2,9 +2,9 @@ package com.example.sbt.common.constant;
 
 public class CommonStatus {
 
-    public final static String ACTIVE = "ACTIVE";
-    public final static String INACTIVE = "INACTIVE";
-    public final static String PENDING = "PENDING";
-    public final static String DONE = "DONE";
+    public static final String ACTIVE = "ACTIVE";
+    public static final String INACTIVE = "INACTIVE";
+    public static final String PENDING = "PENDING";
+    public static final String DONE = "DONE";
 
 }

@@ -132,12 +132,12 @@ public class DateUtils {
     }
 
     public static class Format {
-        public final static String DATE_TIME_FE = "dd/MM/yyyy HH:mm:ss";
+        public static final String DATE_TIME_FE = "dd/MM/yyyy HH:mm:ss";
     }
 
     public static class Formatter {
-        public final static DateTimeFormatter ID = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-        public final static DateTimeFormatter DATE_TIME_BE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+        public static final DateTimeFormatter ID = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+        public static final DateTimeFormatter DATE_TIME_BE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
     }
 
 }

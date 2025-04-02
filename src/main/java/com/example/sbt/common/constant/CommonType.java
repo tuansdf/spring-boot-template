@@ -7,15 +7,15 @@ import java.util.Map;
 
 public class CommonType {
 
-    public final static String ACCESS_TOKEN = "ACCESS_TOKEN";
-    public final static String REFRESH_TOKEN = "REFRESH_TOKEN";
-    public final static String RESET_PASSWORD = "RESET_PASSWORD";
-    public final static String ACTIVATE_ACCOUNT = "ACTIVATE_ACCOUNT";
-    public final static String REACTIVATE_ACCOUNT = "REACTIVATE_ACCOUNT";
+    public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
+    public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
+    public static final String RESET_PASSWORD = "RESET_PASSWORD";
+    public static final String ACTIVATE_ACCOUNT = "ACTIVATE_ACCOUNT";
+    public static final String REACTIVATE_ACCOUNT = "REACTIVATE_ACCOUNT";
 
-    private final static Map<String, Integer> STRING_TO_INDEX;
-    private final static List<String> STRINGS;
-    private final static int STRINGS_SIZE;
+    private static final Map<String, Integer> STRING_TO_INDEX;
+    private static final List<String> STRINGS;
+    private static final int STRINGS_SIZE;
 
     static {
         STRINGS = List.of(
