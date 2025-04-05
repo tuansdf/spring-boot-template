@@ -16,6 +16,7 @@ public class FileObjectDTO {
 
     private UUID id;
     private String fileUrl;
+    private String previewFileUrl;
     private Instant createdAt;
     private Instant updatedAt;
 

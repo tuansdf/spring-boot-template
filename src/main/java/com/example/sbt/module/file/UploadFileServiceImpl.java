@@ -1,8 +1,10 @@
 package com.example.sbt.module.file;
 
 import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -21,6 +23,12 @@ public class UploadFileServiceImpl implements UploadFileService {
 
     @Override
     public String upload(String filePath, byte[] file) {
+        if (StringUtils.isBlank(filePath)) {
+            return null;
+        }
+        if (filePath.startsWith("/")) {
+            filePath = CommonUtils.leftTrim(filePath, '/');
+        }
         try {
             s3Client.putObject(
                     PutObjectRequest.builder()

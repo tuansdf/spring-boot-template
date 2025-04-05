@@ -48,4 +48,30 @@ public class CommonUtils {
         return rightPad(list, size, null);
     }
 
+    public static String leftTrim(String input, char trimChar) {
+        if (input == null) {
+            return null;
+        }
+        int i = 0;
+        while (i < input.length() && input.charAt(i) == trimChar) {
+            i++;
+        }
+        return input.substring(i);
+    }
+
+    public static String trim(String input, char trimChar) {
+        if (input == null) {
+            return null;
+        }
+        int start = 0;
+        while (start < input.length() && input.charAt(start) == trimChar) {
+            start++;
+        }
+        int end = input.length();
+        while (end > start && input.charAt(end - 1) == trimChar) {
+            end--;
+        }
+        return input.substring(start, end);
+    }
+
 }

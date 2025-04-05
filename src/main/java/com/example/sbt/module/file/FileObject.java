@@ -17,5 +17,7 @@ public class FileObject extends BaseEntity {
 
     @Column(name = "file_url", columnDefinition = "text")
     private String fileUrl;
+    @Column(name = "preview_file_url", columnDefinition = "text")
+    private String previewFileUrl;
 
 }

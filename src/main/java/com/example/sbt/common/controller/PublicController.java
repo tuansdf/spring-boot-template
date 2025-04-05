@@ -396,7 +396,7 @@ public class PublicController {
 
     @GetMapping(value = "/s3-upload", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object testS3Upload(@RequestParam MultipartFile file, @RequestParam String filePath) throws IOException, FirebaseMessagingException {
-        return fileObjectService.upload(filePath, file.getBytes());
+        return fileObjectService.uploadImage(file, filePath);
     }
 
 }
