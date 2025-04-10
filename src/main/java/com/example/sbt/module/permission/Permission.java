@@ -15,7 +15,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "permission")
+@Table(
+        name = "permission",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "permission_code_idx", columnNames = "code"),
+        },
+        indexes = {
+                @Index(name = "permission_created_at_idx", columnList = "created_at"),
+        }
+)
 @SqlResultSetMapping(name = ResultSetName.PERMISSION_SEARCH, classes = {
         @ConstructorResult(targetClass = PermissionDTO.class, columns = {
                 @ColumnResult(name = "id", type = UUID.class),
@@ -27,7 +35,7 @@ import java.util.UUID;
 })
 public class Permission extends BaseEntity {
 
-    @Column(name = "code", unique = true, updatable = false)
+    @Column(name = "code", updatable = false)
     private String code;
     @Column(name = "name")
     private String name;

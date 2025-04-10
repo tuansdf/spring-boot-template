@@ -15,7 +15,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "configuration")
+@Table(
+        name = "configuration",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "configuration_code_idx", columnNames = "code"),
+        },
+        indexes = {
+                @Index(name = "configuration_created_at_idx", columnList = "created_at"),
+        }
+)
 @SqlResultSetMapping(name = ResultSetName.CONFIGURATION_SEARCH, classes = {
         @ConstructorResult(targetClass = ConfigurationDTO.class, columns = {
                 @ColumnResult(name = "id", type = UUID.class),
@@ -28,7 +36,7 @@ import java.util.UUID;
 })
 public class Configuration extends BaseEntity {
 
-    @Column(name = "code", unique = true, updatable = false)
+    @Column(name = "code", updatable = false)
     private String code;
     @Column(name = "value", columnDefinition = "text")
     private String value;

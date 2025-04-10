@@ -3,6 +3,7 @@ package com.example.sbt.module.notification;
 import com.example.sbt.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.*;
 
@@ -14,7 +15,13 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "notification")
+@Table(
+        name = "notification",
+        indexes = {
+                @Index(name = "notification_user_id_idx", columnList = "user_id"),
+                @Index(name = "notification_created_at_idx", columnList = "created_at"),
+        }
+)
 public class Notification extends BaseEntity {
 
     @Column(name = "user_id")

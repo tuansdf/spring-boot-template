@@ -1,9 +1,7 @@
 package com.example.sbt.module.role.entity;
 
 import com.example.sbt.common.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -14,7 +12,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "role_permission")
+@Table(
+        name = "role_permission",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "role_permission_rel_idx", columnNames = {"role_id", "permission_id" }),
+        },
+        indexes = {
+                @Index(name = "role_permission_created_at_idx", columnList = "created_at"),
+        }
+)
 public class RolePermission extends BaseEntity {
 
     @Column(name = "role_id")

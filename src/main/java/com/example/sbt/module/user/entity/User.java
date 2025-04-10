@@ -15,7 +15,16 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "_user")
+@Table(
+        name = "_user",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "user_username_idx", columnNames = "username"),
+                @UniqueConstraint(name = "user_email_idx", columnNames = "email"),
+        },
+        indexes = {
+                @Index(name = "user_created_at_idx", columnList = "created_at"),
+        }
+)
 @SqlResultSetMapping(name = ResultSetName.USER_SEARCH, classes = {
         @ConstructorResult(targetClass = UserDTO.class, columns = {
                 @ColumnResult(name = "id", type = UUID.class),
@@ -37,9 +46,9 @@ import java.util.UUID;
 })
 public class User extends BaseEntity {
 
-    @Column(name = "username", unique = true)
+    @Column(name = "username")
     private String username;
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     private String email;
     @Column(name = "password")
     private String password;

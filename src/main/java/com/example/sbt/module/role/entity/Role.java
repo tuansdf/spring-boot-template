@@ -15,7 +15,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "role")
+@Table(
+        name = "role",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "role_code_idx", columnNames = "code"),
+        },
+        indexes = {
+                @Index(name = "role_created_at_idx", columnList = "created_at"),
+        }
+)
 @SqlResultSetMapping(name = ResultSetName.ROLE_SEARCH, classes = {
         @ConstructorResult(targetClass = RoleDTO.class, columns = {
                 @ColumnResult(name = "id", type = UUID.class),
@@ -28,7 +36,7 @@ import java.util.UUID;
 })
 public class Role extends BaseEntity {
 
-    @Column(name = "code", unique = true, updatable = false)
+    @Column(name = "code", updatable = false)
     private String code;
     @Column(name = "name")
     private String name;
