@@ -18,8 +18,7 @@ import java.util.UUID;
 @Table(
         name = "login_audit",
         indexes = {
-                @Index(name = "login_audit_user_id_idx", columnList = "user_id"),
-                @Index(name = "login_audit_created_at_idx", columnList = "created_at"),
+                @Index(name = "login_audit_comp_user_id_created_at_idx", columnList = "user_id, created_at"),
         }
 )
 public class LoginAudit extends BaseEntity {
