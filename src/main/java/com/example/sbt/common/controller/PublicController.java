@@ -3,6 +3,7 @@ package com.example.sbt.common.controller;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.CommonResponse;
+import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.*;
 import com.example.sbt.common.util.io.CSVHelper;
@@ -28,6 +29,7 @@ import com.google.firebase.messaging.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -38,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 @Slf4j
@@ -148,7 +151,32 @@ public class PublicController {
     @GetMapping("/import-csv")
     public String importCsv(@RequestParam String inputPath) {
         List<UserDTO> items = new ArrayList<>();
-        CSVHelper.Import.processTemplate(new UserImportTemplate(items::add), inputPath);
+        CSVHelper.Import.processTemplate(inputPath, csvParser -> {
+            List<String> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
+            int rowSize = header.size();
+            if (!ListUtils.isEqualList(header, csvParser.getHeaderNames())) {
+                throw new CustomException("Invalid template");
+            }
+            for (var item : csvParser) {
+                List<String> data = CommonUtils.rightPad(item.stream().toList(), rowSize);
+                UserDTO temp = UserDTO.builder()
+                        .id(ConversionUtils.toUUID(data.get(1)))
+                        .username(ConversionUtils.toString(data.get(2)))
+                        .email(ConversionUtils.toString(data.get(3)))
+                        .name(ConversionUtils.toString(data.get(4)))
+                        .status(ConversionUtils.toString(data.get(5)))
+                        .build();
+                OffsetDateTime createdAt = DateUtils.toOffsetDateTime(data.get(6));
+                if (createdAt != null) {
+                    temp.setCreatedAt(createdAt.toInstant());
+                }
+                OffsetDateTime updatedAt = DateUtils.toOffsetDateTime(data.get(7));
+                if (updatedAt != null) {
+                    temp.setCreatedAt(updatedAt.toInstant());
+                }
+                items.add(temp);
+            }
+        });
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
