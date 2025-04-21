@@ -1,7 +1,6 @@
 package com.example.sbt.module.file;
 
 import com.example.sbt.common.constant.ApplicationProperties;
-import com.example.sbt.common.util.CommonUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +26,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             return null;
         }
         if (filePath.startsWith("/")) {
-            filePath = CommonUtils.trimLeft(filePath, '/');
+            filePath = StringUtils.strip(filePath, "/");
         }
         try {
             s3Client.putObject(

@@ -3,7 +3,7 @@ package com.example.sbt.module.file;
 import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
-import com.example.sbt.common.util.CommonUtils;
+import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.RandomUtils;
 import com.example.sbt.common.util.io.FileUtils;
 import com.example.sbt.common.util.io.ImageUtils;
@@ -43,20 +43,17 @@ public class FileObjectServiceImpl implements FileObjectService {
     @Override
     public FileObjectDTO uploadImage(MultipartFile file, String dirPath, Integer thumbnailWidth) {
         try {
-            if (StringUtils.isBlank(dirPath)) {
-                throw new CustomException(HttpStatus.BAD_REQUEST);
-            }
             if (!FileUtils.validateFileType(file, IMAGE_FILE_TYPES)) {
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
 
-            dirPath = CommonUtils.trim(dirPath, '/');
+            dirPath = StringUtils.strip(ConversionUtils.safeToString(dirPath), "/");
             String extension = FilenameUtils.getExtension(file.getOriginalFilename());
             if (StringUtils.isBlank(extension)) {
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
             UUID id = RandomUtils.Secure.generateTimeBasedUUID();
-            String filePath = dirPath.concat("/").concat(id.toString()).concat(".").concat(extension);
+            String filePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat(".").concat(extension), "/");
 
             byte[] fileBytes = file.getBytes();
             {
@@ -73,7 +70,7 @@ public class FileObjectServiceImpl implements FileObjectService {
 
             String thumbnailUrl = null;
             if (thumbnailWidth != null && thumbnailWidth > 0) {
-                String thumbnailFilePath = dirPath.concat("/").concat(id.toString()).concat("_thumbnail.").concat(FileType.JPG.getExtension());
+                String thumbnailFilePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat("_thumbnail.").concat(FileType.JPG.getExtension()), "/");
                 byte[] thumbnailFileBytes = ImageUtils.compressImageToBytes(fileBytes,
                         ImageUtils.Options.builder().width(thumbnailWidth).format(FileType.JPG.getExtension()).quality(0.8F).build());
                 if (thumbnailFileBytes != null) {
@@ -99,7 +96,7 @@ public class FileObjectServiceImpl implements FileObjectService {
 
     @Override
     public FileObjectDTO uploadImage(MultipartFile file) {
-        return uploadImage(file, null, THUMBNAIL_WIDTH);
+        return uploadImage(file, "", THUMBNAIL_WIDTH);
     }
 
 }
