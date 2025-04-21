@@ -179,7 +179,7 @@ public class PublicController {
                     }
                     OffsetDateTime updatedAt = DateUtils.toOffsetDateTime(data.get(7));
                     if (updatedAt != null) {
-                        temp.setCreatedAt(updatedAt.toInstant());
+                        temp.setUpdatedAt(updatedAt.toInstant());
                     }
                     items.add(temp);
                 } finally {
@@ -215,7 +215,7 @@ public class PublicController {
                 }
                 OffsetDateTime updatedAt = DateUtils.toOffsetDateTime(data.get(7));
                 if (updatedAt != null) {
-                    temp.setCreatedAt(updatedAt.toInstant());
+                    temp.setUpdatedAt(updatedAt.toInstant());
                 }
                 items.add(temp);
             }
