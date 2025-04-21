@@ -161,11 +161,11 @@ public class ExcelHelper {
 
     public static class Import {
         public static final int BUFFER_SIZE = 4096;
-        public static final int ROW_CACHE_SIZE = 10000;
+        public static final int ROW_CACHE_SIZE = 100;
 
         public static void processTemplate(String filePath, Consumer<Workbook> bodyFn) {
             try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile());
-                 Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).open(inputStream)) {
+                 Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
                 bodyFn.accept(workbook);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
