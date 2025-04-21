@@ -165,7 +165,7 @@ public class PublicController {
                         }
                         continue;
                     }
-                    List<Object> data = CommonUtils.rightPad(ExcelHelper.getRowCellValues(row), rowSize);
+                    List<Object> data = CommonUtils.padRight(ExcelHelper.getRowCellValues(row), rowSize);
                     UserDTO temp = UserDTO.builder()
                             .id(ConversionUtils.toUUID(data.get(1)))
                             .username(ConversionUtils.toString(data.get(2)))
@@ -201,7 +201,7 @@ public class PublicController {
                 throw new CustomException("Invalid template");
             }
             for (var item : csvParser) {
-                List<String> data = CommonUtils.rightPad(item.stream().toList(), rowSize);
+                List<String> data = CommonUtils.padRight(item.stream().toList(), rowSize);
                 UserDTO temp = UserDTO.builder()
                         .id(ConversionUtils.toUUID(data.get(1)))
                         .username(ConversionUtils.toString(data.get(2)))

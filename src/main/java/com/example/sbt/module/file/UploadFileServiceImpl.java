@@ -27,7 +27,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             return null;
         }
         if (filePath.startsWith("/")) {
-            filePath = CommonUtils.leftTrim(filePath, '/');
+            filePath = CommonUtils.trimLeft(filePath, '/');
         }
         try {
             s3Client.putObject(

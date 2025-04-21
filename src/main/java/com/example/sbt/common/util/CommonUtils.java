@@ -34,7 +34,7 @@ public class CommonUtils {
         return null;
     }
 
-    public static <T> List<T> rightPad(List<T> list, int size, T padValue) {
+    public static <T> List<T> padRight(List<T> list, int size, T padValue) {
         if (list == null) {
             list = new ArrayList<>();
         }
@@ -44,11 +44,11 @@ public class CommonUtils {
         return list;
     }
 
-    public static <T> List<T> rightPad(List<T> list, int size) {
-        return rightPad(list, size, null);
+    public static <T> List<T> padRight(List<T> list, int size) {
+        return padRight(list, size, null);
     }
 
-    public static String leftTrim(String input, char trimChar) {
+    public static String trimLeft(String input, char trimChar) {
         if (input == null) {
             return null;
         }
