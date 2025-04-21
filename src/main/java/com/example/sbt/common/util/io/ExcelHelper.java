@@ -33,7 +33,7 @@ public class ExcelHelper {
                 workbook.write(bufferedOutputStream);
             }
         } catch (Exception e) {
-            log.error("writeFile", e);
+            log.error("writeFile ", e);
         }
     }
 
@@ -45,7 +45,7 @@ public class ExcelHelper {
                 return outputStream.toByteArray();
             }
         } catch (Exception e) {
-            log.error("toBytes", e);
+            log.error("toBytes ", e);
             return new byte[0];
         }
     }
@@ -182,7 +182,8 @@ public class ExcelHelper {
         }
 
         public static void processTemplate(MultipartFile file, Consumer<Workbook> bodyFn) {
-            try (Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(file.getInputStream())) {
+            try (InputStream inputStream = file.getInputStream();
+                 Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
                 bodyFn.accept(workbook);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
