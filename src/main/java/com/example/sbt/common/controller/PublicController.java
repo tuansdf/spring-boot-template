@@ -18,7 +18,6 @@ import com.example.sbt.module.role.RoleService;
 import com.example.sbt.module.user.UserService;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
-import com.example.sbt.module.user.dto.UserExportTemplate;
 import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.repository.UserRepository;
 import com.google.common.collect.Lists;
@@ -118,7 +117,7 @@ public class PublicController {
         try (Workbook workbook = new SXSSFWorkbook()) {
             for (int i = 0; i < total; i += BATCH) {
                 var result = userService.search(requestDTO, false);
-                UserExportTemplate template = UserExportTemplate.builder().body(result.getItems()).skipHeader(i > 0).build();
+//                UserExportTemplate template = UserExportTemplate.builder().body(result.getItems()).skipHeader(i > 0).build();
 //                ExcelHelper.Export.processTemplate(template, workbook);
                 requestDTO.setPageNumber(requestDTO.getPageNumber() + 1);
             }

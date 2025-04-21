@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
 
-    private static final int MAX_RESULT_LENGTH = 1000;
+    private static final int MAX_RESULT_LENGTH = 10000;
 
     @Around("execution(public * com.example.sbt.module..*(..)) || execution(public * com.example.sbt.event..*(..)) || execution(public * com.example.sbt.common.controller..*(..)) || execution(public * com.example.sbt.common.util..*(..))")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
@@ -40,7 +40,7 @@ public class LoggingAspect {
             long exTime = DateUtils.currentEpochMillis() - start;
             String resultString = ConversionUtils.toString(result);
             if (resultString != null && resultString.length() > MAX_RESULT_LENGTH) {
-                resultString = resultString.substring(0, MAX_RESULT_LENGTH).concat("...");
+                resultString = resultString.substring(0, MAX_RESULT_LENGTH);
             }
             log.info("{} EXIT  method: {} after {} ms with result: {}", start, methodName, exTime, resultString);
         } catch (Throwable e) {
