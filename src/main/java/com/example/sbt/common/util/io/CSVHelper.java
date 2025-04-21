@@ -13,6 +13,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Slf4j
 public class CSVHelper {
@@ -20,29 +21,18 @@ public class CSVHelper {
     private static final int DEFAULT_BODY_ROW = 1;
 
     public static class Export {
-        public static <T> void processTemplate(ExportTemplate<T> template, Writer writer) {
-            var header = template.getHeader();
-            var body = template.getBody();
-            var rowDataExtractor = template.getRowExtractor();
-            var rowSize = header.size();
-
+        public static <T> void processTemplate(Writer writer, List<String> header, Consumer<CSVPrinter> bodyFn) {
             try (CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.builder().setHeader(header.toArray(new String[0])).build())) {
-                int i = 0;
-                for (T data : body) {
-                    int rowNum = DEFAULT_BODY_ROW + i;
-                    csvPrinter.printRecord(CommonUtils.rightPad(rowDataExtractor.apply(data, rowNum), rowSize));
-                    i++;
-                }
+                bodyFn.accept(csvPrinter);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
             }
         }
 
-        public static <T> byte[] processTemplateToBytes(ExportTemplate<T> exportTemplate) {
+        public static <T> byte[] processTemplateToBytes(List<String> header, Consumer<CSVPrinter> bodyFn) {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream);
-                 OutputStreamWriter writer = new OutputStreamWriter(bufferedOutputStream)) {
-                processTemplate(exportTemplate, writer);
+                 OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                processTemplate(writer, header, bodyFn);
                 return outputStream.toByteArray();
             } catch (Exception e) {
                 log.error("processTemplateToBytes", e);
@@ -50,10 +40,10 @@ public class CSVHelper {
             }
         }
 
-        public static <T> void processTemplateWriteFile(ExportTemplate<T> exportTemplate, String outputPath) {
+        public static <T> void processTemplateWriteFile(String outputPath, List<String> header, Consumer<CSVPrinter> bodyFn) {
             try (FileWriter writer = new FileWriter(outputPath, StandardCharsets.UTF_8);
                  BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
-                processTemplate(exportTemplate, bufferedWriter);
+                processTemplate(bufferedWriter, header, bodyFn);
             } catch (Exception e) {
                 log.error("processTemplateWriteFile", e);
             }
@@ -67,7 +57,7 @@ public class CSVHelper {
             var rowProcessor = template.getRowProcessor();
             var rowSize = header.size();
 
-            try (CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader().build())) {
+            try (CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.builder().setHeader(header.toArray(new String[0])).build())) {
                 List<String> csvHeader = csvParser.getHeaderNames();
                 if (csvHeader.size() != rowSize) {
                     throw new InvalidImportTemplateException();

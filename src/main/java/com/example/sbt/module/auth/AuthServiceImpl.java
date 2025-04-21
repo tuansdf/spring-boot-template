@@ -82,7 +82,7 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        if (ConversionUtils.safeToBool(userDTO.getOtpEnabled())) {
+        if (ConversionUtils.safeToBoolean(userDTO.getOtpEnabled())) {
             if (StringUtils.isBlank(requestDTO.getOtpCode())) {
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
             }
@@ -118,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
     public void register(RegisterRequestDTO requestDTO) {
         authValidator.validateRegister(requestDTO);
 
-        Boolean isRegistrationEnabled = ConversionUtils.toBool(configurationService.findValueByCode(ConfigurationCode.REGISTRATION_ENABLED));
+        Boolean isRegistrationEnabled = ConversionUtils.toBoolean(configurationService.findValueByCode(ConfigurationCode.REGISTRATION_ENABLED));
         if (isRegistrationEnabled != null && !isRegistrationEnabled) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -291,7 +291,7 @@ public class AuthServiceImpl implements AuthService {
         if (!isPasswordCorrect) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        if (ConversionUtils.safeToBool(user.getOtpEnabled())) {
+        if (ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         String secret = TOTPHelper.generateSecret();
@@ -308,7 +308,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (ConversionUtils.safeToBool(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
+        if (ConversionUtils.safeToBoolean(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), user.getOtpSecret());
@@ -326,7 +326,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         User user = userOptional.get();
-        if (!ConversionUtils.safeToBool(user.getOtpEnabled())) {
+        if (!ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), user.getOtpSecret());

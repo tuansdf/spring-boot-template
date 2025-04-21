@@ -6,6 +6,7 @@ import com.example.sbt.common.util.ConversionUtils;
 import com.github.pjfanning.xlsx.StreamingReader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,95 +30,25 @@ public class ExcelHelper {
     public static void writeFile(Workbook workbook, String outputPath) {
         try {
             if (workbook == null || StringUtils.isBlank(outputPath)) return;
-            try (FileOutputStream outputStream = new FileOutputStream(outputPath);
+            try (workbook; FileOutputStream outputStream = new FileOutputStream(outputPath);
                  BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
                 workbook.write(bufferedOutputStream);
             }
         } catch (Exception e) {
             log.error("writeFile", e);
-        } finally {
-            try {
-                if (workbook != null) workbook.close();
-            } catch (Exception ignored) {
-            }
         }
     }
 
     public static byte[] toBytes(Workbook workbook) {
         try {
             if (workbook == null) return new byte[0];
-            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            try (workbook; ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
                 workbook.write(outputStream);
                 return outputStream.toByteArray();
             }
         } catch (Exception e) {
             log.error("toBytes", e);
             return new byte[0];
-        } finally {
-            try {
-                if (workbook != null) workbook.close();
-            } catch (Exception ignored) {
-            }
-        }
-    }
-
-    private static List<Object> getRowCellValues(Row row) {
-        List<Object> rowData = new ArrayList<>();
-        for (Cell cell : row) {
-            rowData.add(getCellValue(cell));
-        }
-        return rowData;
-    }
-
-    private static Object getCellValue(Cell cell) {
-        if (cell == null) return null;
-        try {
-            return switch (cell.getCellType()) {
-                case BOOLEAN -> cell.getBooleanCellValue();
-                case NUMERIC -> cell.getNumericCellValue();
-                case STRING -> cell.getStringCellValue();
-                default -> null;
-            };
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private static Object getCellValue(Row row, int col) {
-        try {
-            if (row == null) return null;
-            return getCellValue(row.getCell(col));
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private static <T> void setRowCellValue(Row row, List<T> objects) {
-        if (CollectionUtils.isEmpty(objects)) return;
-        for (int i = 0; i < objects.size(); i++) {
-            setCellValue(getCell(row, i), objects.get(i));
-        }
-    }
-
-    private static <T> void setRowCellValue(Row row, T[] objects) {
-        for (int i = 0; i < objects.length; i++) {
-            setCellValue(getCell(row, i), ConversionUtils.safeToString(objects[i]));
-        }
-    }
-
-    private static void setCellValue(Sheet sheet, int row, int col, Object value) {
-        setCellValue(getCell(getRow(sheet, row), col), value);
-    }
-
-    private static void setCellValue(Cell cell, Object value) {
-        if (cell == null || value == null) return;
-        switch (value) {
-            case String v -> cell.setCellValue(v);
-            case Double v -> cell.setCellValue(v);
-            case Integer v -> cell.setCellValue(v);
-            case Long v -> cell.setCellValue(v);
-            case Boolean v -> cell.setCellValue(v);
-            default -> cell.setCellValue(value.toString());
         }
     }
 
@@ -143,6 +74,71 @@ public class ExcelHelper {
             result = row.createCell(i);
         }
         return result;
+    }
+
+    private static Object getCellValue(Cell cell) {
+        if (cell == null) return null;
+        try {
+            return switch (cell.getCellType()) {
+                case BOOLEAN -> cell.getBooleanCellValue();
+                case NUMERIC -> cell.getNumericCellValue();
+                case STRING -> cell.getStringCellValue();
+                default -> null;
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static Object getCellValue(Row row, int col) {
+        try {
+            if (row == null) return null;
+            return getCellValue(row.getCell(col));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static List<Object> getRowCellValues(Row row) {
+        List<Object> rowData = new ArrayList<>();
+        for (Cell cell : row) {
+            rowData.add(getCellValue(cell));
+        }
+        return rowData;
+    }
+
+    private static void setCellValue(Cell cell, Object value) {
+        if (cell == null || value == null) return;
+        switch (value) {
+            case String v -> cell.setCellValue(v);
+            case Double v -> cell.setCellValue(v);
+            case Integer v -> cell.setCellValue(v);
+            case Long v -> cell.setCellValue(v);
+            case Number v -> {
+                Double vDouble = ConversionUtils.toDouble(v);
+                if (vDouble != null) cell.setCellValue(vDouble);
+            }
+            case Boolean v -> cell.setCellValue(v);
+            default -> cell.setCellValue(value.toString());
+        }
+    }
+
+    private static void setRowCellValue(Row row, List<Object> objects) {
+        if (CollectionUtils.isEmpty(objects)) return;
+        for (int i = 0; i < objects.size(); i++) {
+            setCellValue(getCell(row, i), objects.get(i));
+        }
+    }
+
+    private static <T> void setRowCellValue(Row row, T[] objects) {
+        if (ArrayUtils.isEmpty(objects)) return;
+        for (int i = 0; i < objects.length; i++) {
+            setCellValue(getCell(row, i), ConversionUtils.safeToString(objects[i]));
+        }
+    }
+
+    private static void setCellValue(Sheet sheet, int row, int col, Object value) {
+        setCellValue(getCell(getRow(sheet, row), col), value);
     }
 
     public static class Export {

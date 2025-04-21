@@ -5,7 +5,7 @@ import java.util.function.BiFunction;
 
 public interface ExportTemplate<T> {
 
-    List<String> getHeader();
+    List<Object> getHeader();
 
     List<T> getBody();
 

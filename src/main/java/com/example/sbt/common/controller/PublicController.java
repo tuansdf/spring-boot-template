@@ -21,6 +21,7 @@ import com.example.sbt.module.user.dto.UserExportTemplate;
 import com.example.sbt.module.user.dto.UserImportTemplate;
 import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.repository.UserRepository;
+import com.google.common.collect.Lists;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -120,7 +121,18 @@ public class PublicController {
     public String exportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
-        CSVHelper.Export.processTemplateWriteFile(new UserExportTemplate(data, true), exportPath);
+        CSVHelper.Export.processTemplateWriteFile(exportPath,
+                List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At"),
+                csvPrinter -> {
+                    try {
+                        int idx = 1;
+                        for (var item : data) {
+                            csvPrinter.printRecord(Lists.newArrayList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
+                            idx++;
+                        }
+                    } catch (Exception ignored) {
+                    }
+                });
         return "OK";
     }
 

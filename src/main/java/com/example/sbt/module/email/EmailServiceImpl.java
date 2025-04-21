@@ -67,7 +67,7 @@ public class EmailServiceImpl implements EmailService {
         if (timeWindow == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if (ConversionUtils.safeToBool(emailRepository.existsRecentByUserIdAndType(userId, type, Instant.now().minusSeconds(timeWindow)))) {
+        if (ConversionUtils.safeToBoolean(emailRepository.existsRecentByUserIdAndType(userId, type, Instant.now().minusSeconds(timeWindow)))) {
             throw new CustomException(LocaleHelper.getMessage(messageKey), HttpStatus.OK);
         }
     }

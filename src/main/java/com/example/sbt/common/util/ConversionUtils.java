@@ -58,7 +58,7 @@ public class ConversionUtils {
         }
     }
 
-    public static Integer toInt(Object input) {
+    public static Integer toInteger(Object input) {
         try {
             return switch (input) {
                 case Number v -> v.intValue();
@@ -70,7 +70,7 @@ public class ConversionUtils {
         }
     }
 
-    public static int safeToInt(Object input) {
+    public static int safeToInteger(Object input) {
         try {
             return switch (input) {
                 case Number v -> v.intValue();
@@ -82,7 +82,31 @@ public class ConversionUtils {
         }
     }
 
-    public static Boolean toBool(Object input) {
+    public static Double toDouble(Object input) {
+        try {
+            return switch (input) {
+                case Number v -> v.doubleValue();
+                case String v -> Double.parseDouble(v);
+                case null, default -> null;
+            };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static double safeToDouble(Object input) {
+        try {
+            return switch (input) {
+                case Number v -> v.doubleValue();
+                case String v -> Double.parseDouble(v);
+                case null, default -> 0;
+            };
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public static Boolean toBoolean(Object input) {
         try {
             return switch (input) {
                 case Boolean v -> v;
@@ -94,7 +118,7 @@ public class ConversionUtils {
         }
     }
 
-    public static boolean safeToBool(Object input) {
+    public static boolean safeToBoolean(Object input) {
         try {
             return switch (input) {
                 case Boolean v -> v;

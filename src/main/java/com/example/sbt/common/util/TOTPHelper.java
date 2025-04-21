@@ -14,7 +14,7 @@ public class TOTPHelper {
     public static boolean verify(String input, String secret) {
         try {
             var result = new DefaultTOTPService().verify(new TOTP(input), TOTPSecret.Companion.fromBase32EncodedString(secret));
-            return ConversionUtils.safeToBool(result.isSuccess());
+            return ConversionUtils.safeToBoolean(result.isSuccess());
         } catch (Exception e) {
             return false;
         }

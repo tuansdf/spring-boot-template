@@ -13,7 +13,7 @@ import java.util.function.BiFunction;
 @Builder
 public class UserExportTemplate implements ExportTemplate<UserDTO> {
 
-    private static final List<String> HEADER = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
+    private static final List<Object> HEADER = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
     private static final BiFunction<UserDTO, Integer, List<Object>> ROW_EXTRACTOR = (user, index) -> Arrays.asList(
             index,
             user.getId(),
@@ -31,7 +31,7 @@ public class UserExportTemplate implements ExportTemplate<UserDTO> {
     private boolean skipHeader = false;
 
     @Override
-    public List<String> getHeader() {
+    public List<Object> getHeader() {
         if (skipHeader) return null;
         return HEADER;
     }

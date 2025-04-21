@@ -26,7 +26,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 
         helper.setTo(request.getToEmail());
         helper.setSubject(request.getSubject());
-        helper.setText(request.getBody(), ConversionUtils.safeToBool(request.getIsHtml()));
+        helper.setText(request.getBody(), ConversionUtils.safeToBoolean(request.getIsHtml()));
 
         mailSender.send(message);
     }
