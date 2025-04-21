@@ -1,7 +1,5 @@
 package com.example.sbt.common.util.io;
 
-import com.example.sbt.common.exception.InvalidImportTemplateException;
-import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
 import com.github.pjfanning.xlsx.StreamingReader;
 import lombok.extern.slf4j.Slf4j;
@@ -12,13 +10,13 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Slf4j
 public class ExcelHelper {
@@ -52,7 +50,8 @@ public class ExcelHelper {
         }
     }
 
-    private static Sheet getSheet(Workbook workbook) {
+    public static Sheet getSheet(Workbook workbook) {
+        if (workbook == null) return null;
         Sheet result = workbook.getSheet(DEFAULT_SHEET);
         if (result == null) {
             result = workbook.createSheet(DEFAULT_SHEET);
@@ -60,23 +59,25 @@ public class ExcelHelper {
         return result;
     }
 
-    private static Row getRow(Sheet sheet, int i) {
-        Row result = sheet.getRow(i);
+    public static Row getRow(Sheet sheet, Integer rowIdx) {
+        if (sheet == null || rowIdx == null) return null;
+        Row result = sheet.getRow(rowIdx);
         if (result == null) {
-            result = sheet.createRow(i);
+            result = sheet.createRow(rowIdx);
         }
         return result;
     }
 
-    private static Cell getCell(Row row, int i) {
-        Cell result = row.getCell(i);
+    public static Cell getCell(Row row, Integer colIdx) {
+        if (row == null || colIdx == null) return null;
+        Cell result = row.getCell(colIdx);
         if (result == null) {
-            result = row.createCell(i);
+            result = row.createCell(colIdx);
         }
         return result;
     }
 
-    private static Object getCellValue(Cell cell) {
+    public static Object getCellValue(Cell cell) {
         if (cell == null) return null;
         try {
             return switch (cell.getCellType()) {
@@ -90,16 +91,18 @@ public class ExcelHelper {
         }
     }
 
-    private static Object getCellValue(Row row, int col) {
-        try {
-            if (row == null) return null;
-            return getCellValue(row.getCell(col));
-        } catch (Exception e) {
-            return null;
-        }
+    public static Object getCellValue(Row row, Integer colIdx) {
+        if (row == null || colIdx == null) return null;
+        return getCellValue(getCell(row, colIdx));
     }
 
-    private static List<Object> getRowCellValues(Row row) {
+    public static Object getCellValue(Sheet sheet, Integer rowIdx, Integer colIdx) {
+        if (sheet == null || rowIdx == null || colIdx == null) return null;
+        return getCellValue(getCell(getRow(sheet, rowIdx), colIdx));
+    }
+
+    public static List<Object> getRowCellValues(Row row) {
+        if (row == null) return null;
         List<Object> rowData = new ArrayList<>();
         for (Cell cell : row) {
             rowData.add(getCellValue(cell));
@@ -107,7 +110,7 @@ public class ExcelHelper {
         return rowData;
     }
 
-    private static void setCellValue(Cell cell, Object value) {
+    public static void setCellValue(Cell cell, Object value) {
         if (cell == null || value == null) return;
         switch (value) {
             case String v -> cell.setCellValue(v);
@@ -123,73 +126,36 @@ public class ExcelHelper {
         }
     }
 
-    private static void setRowCellValue(Row row, List<Object> objects) {
-        if (CollectionUtils.isEmpty(objects)) return;
+    public static void setCellValue(Sheet sheet, Integer rowIdx, Integer colIdx, Object value) {
+        if (sheet == null || rowIdx == null || colIdx == null || value == null) return;
+        setCellValue(getCell(getRow(sheet, rowIdx), colIdx), value);
+    }
+
+    public static void setCellValue(Row row, Integer colIdx, Object value) {
+        if (row == null || colIdx == null || value == null) return;
+        setCellValue(getCell(row, colIdx), value);
+    }
+
+    public static void setRowCellValues(Row row, List<Object> objects) {
+        if (row == null || CollectionUtils.isEmpty(objects)) return;
         for (int i = 0; i < objects.size(); i++) {
             setCellValue(getCell(row, i), objects.get(i));
         }
     }
 
-    private static <T> void setRowCellValue(Row row, T[] objects) {
-        if (ArrayUtils.isEmpty(objects)) return;
+    public static void setRowCellValues(Sheet sheet, Integer rowIdx, List<Object> objects) {
+        if (sheet == null || rowIdx == null || CollectionUtils.isEmpty(objects)) return;
+        Row row = getRow(sheet, rowIdx);
+        if (row == null) return;
+        for (int i = 0; i < objects.size(); i++) {
+            setCellValue(row, i, objects.get(i));
+        }
+    }
+
+    public static <T> void setRowCellValues(Row row, T[] objects) {
+        if (row == null || ArrayUtils.isEmpty(objects)) return;
         for (int i = 0; i < objects.length; i++) {
             setCellValue(getCell(row, i), ConversionUtils.safeToString(objects[i]));
-        }
-    }
-
-    private static void setCellValue(Sheet sheet, int row, int col, Object value) {
-        setCellValue(getCell(getRow(sheet, row), col), value);
-    }
-
-    public static class Export {
-        public static <T> void processTemplate(ExportTemplate<T> template, Workbook workbook) {
-            try {
-                Sheet sheet = getSheet(workbook);
-                if (template.getHeader() != null) {
-                    setRowCellValue(getRow(sheet, sheet.getLastRowNum() + 1), template.getHeader());
-                }
-
-                var body = template.getBody();
-                var rowDataExtractor = template.getRowExtractor();
-                int fromRow = sheet.getLastRowNum() + 1;
-                int i = 0;
-                for (T item : body) {
-                    int rowNum = fromRow + i;
-                    Row row = getRow(sheet, rowNum);
-                    setRowCellValue(row, rowDataExtractor.apply(item, rowNum));
-                    i++;
-                }
-            } catch (Exception e) {
-                log.error("processTemplate ", e);
-            }
-        }
-
-        public static <T> Workbook processTemplate(ExportTemplate<T> template) {
-            try {
-                Workbook workbook = new SXSSFWorkbook();
-                processTemplate(template, workbook);
-                return workbook;
-            } catch (Exception e) {
-                log.error("processTemplate ", e);
-                return null;
-            }
-        }
-
-        public static <T> void processTemplateWriteFile(ExportTemplate<T> template, String outputPath) {
-            try {
-                writeFile(processTemplate(template), outputPath);
-            } catch (Exception e) {
-                log.error("processTemplateWriteFile", e);
-            }
-        }
-
-        public static <T> byte[] processTemplateToBytes(ExportTemplate<T> exportTemplate) {
-            try {
-                return toBytes(processTemplate(exportTemplate));
-            } catch (Exception e) {
-                log.error("processTemplateToBytes", e);
-                return new byte[0];
-            }
         }
     }
 
@@ -197,61 +163,27 @@ public class ExcelHelper {
         public static final int BUFFER_SIZE = 4096;
         public static final int ROW_CACHE_SIZE = 10000;
 
-        public static <T> void processTemplate(ImportTemplate<T> template, Workbook workbook) {
-            try {
-                var header = template.getHeader();
-                var rowPreProcessor = template.getRowPreProcessor();
-                var rowProcessor = template.getRowProcessor();
-                var rowSize = header.size();
-
-                Sheet sheet = workbook.getSheetAt(0);
-
-                int rowIdx = 0;
-                for (Row row : sheet) {
-                    if (rowIdx == 0) {
-                        if (row.getLastCellNum() != rowSize) {
-                            throw new InvalidImportTemplateException();
-                        }
-                        for (int colIdx = 0; colIdx < rowSize; colIdx++) {
-                            if (!header.get(colIdx).equals(getCellValue(row, colIdx))) {
-                                throw new InvalidImportTemplateException();
-                            }
-                        }
-                    } else {
-                        var item = rowPreProcessor.apply(CommonUtils.rightPad(getRowCellValues(row), rowSize));
-                        if (rowProcessor != null) {
-                            rowProcessor.accept(item);
-                        }
-                    }
-
-                    rowIdx++;
-                }
-            } catch (Exception e) {
-                log.error("processTemplate ", e);
-            }
-        }
-
-        public static <T> void processTemplate(ImportTemplate<T> template, String filePath) {
+        public static void processTemplate(String filePath, Consumer<Workbook> bodyFn) {
             try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile());
                  Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).open(inputStream)) {
-                processTemplate(template, workbook);
+                bodyFn.accept(workbook);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
             }
         }
 
-        public static <T> void processTemplate(ImportTemplate<T> template, byte[] bytes) {
+        public static void processTemplate(byte[] bytes, Consumer<Workbook> bodyFn) {
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
                  Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
-                processTemplate(template, workbook);
+                bodyFn.accept(workbook);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
             }
         }
 
-        public static <T> void processTemplate(ImportTemplate<T> template, MultipartFile file) {
+        public static void processTemplate(MultipartFile file, Consumer<Workbook> bodyFn) {
             try (Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(file.getInputStream())) {
-                processTemplate(template, workbook);
+                bodyFn.accept(workbook);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
             }

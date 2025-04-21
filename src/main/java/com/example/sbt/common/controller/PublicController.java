@@ -19,7 +19,6 @@ import com.example.sbt.module.user.UserService;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.dto.UserExportTemplate;
-import com.example.sbt.module.user.dto.UserImportTemplate;
 import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.repository.UserRepository;
 import com.google.common.collect.Lists;
@@ -30,6 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -93,7 +93,17 @@ public class PublicController {
 //        var result = userService.search(requestDTO, false);
 //        var data = result.getItems();
         String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
-        ExcelHelper.Export.processTemplateWriteFile(UserExportTemplate.builder().body(data).skipHeader(false).build(), exportPath);
+        try (Workbook workbook = new SXSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet();
+            List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
+            ExcelHelper.setRowCellValues(sheet, 0, header);
+            int idx = 1;
+            for (var item : data) {
+                ExcelHelper.setRowCellValues(sheet, idx, Lists.newArrayList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
+                idx++;
+            }
+            ExcelHelper.writeFile(workbook, exportPath);
+        }
         return "OK";
     }
 
@@ -109,7 +119,7 @@ public class PublicController {
             for (int i = 0; i < total; i += BATCH) {
                 var result = userService.search(requestDTO, false);
                 UserExportTemplate template = UserExportTemplate.builder().body(result.getItems()).skipHeader(i > 0).build();
-                ExcelHelper.Export.processTemplate(template, workbook);
+//                ExcelHelper.Export.processTemplate(template, workbook);
                 requestDTO.setPageNumber(requestDTO.getPageNumber() + 1);
             }
             String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
@@ -143,7 +153,41 @@ public class PublicController {
     public String importExcel(@RequestParam String inputPath) {
         final int BATCH = 1000;
         List<UserDTO> items = new ArrayList<>();
-        ExcelHelper.Import.processTemplate(new UserImportTemplate(items::add), inputPath);
+        ExcelHelper.Import.processTemplate(inputPath, workbook -> {
+            List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
+            int rowSize = header.size();
+            Sheet sheet = workbook.getSheetAt(0);
+            int idx = 0;
+            for (var row : sheet) {
+                try {
+                    if (idx == 0) {
+                        if (!ListUtils.isEqualList(header, ExcelHelper.getRowCellValues(row))) {
+                            throw new CustomException("Invalid template");
+                        }
+                        continue;
+                    }
+                    List<Object> data = CommonUtils.rightPad(ExcelHelper.getRowCellValues(row), rowSize);
+                    UserDTO temp = UserDTO.builder()
+                            .id(ConversionUtils.toUUID(data.get(1)))
+                            .username(ConversionUtils.toString(data.get(2)))
+                            .email(ConversionUtils.toString(data.get(3)))
+                            .name(ConversionUtils.toString(data.get(4)))
+                            .status(ConversionUtils.toString(data.get(5)))
+                            .build();
+                    OffsetDateTime createdAt = DateUtils.toOffsetDateTime(data.get(6));
+                    if (createdAt != null) {
+                        temp.setCreatedAt(createdAt.toInstant());
+                    }
+                    OffsetDateTime updatedAt = DateUtils.toOffsetDateTime(data.get(7));
+                    if (updatedAt != null) {
+                        temp.setCreatedAt(updatedAt.toInstant());
+                    }
+                    items.add(temp);
+                } finally {
+                    idx++;
+                }
+            }
+        });
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
