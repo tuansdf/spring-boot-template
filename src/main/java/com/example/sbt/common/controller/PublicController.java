@@ -40,7 +40,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -208,15 +211,9 @@ public class PublicController {
                         .email(ConversionUtils.toString(data.get(3)))
                         .name(ConversionUtils.toString(data.get(4)))
                         .status(ConversionUtils.toString(data.get(5)))
+                        .createdAt(DateUtils.toInstant(data.get(6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .updatedAt(DateUtils.toInstant(data.get(7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                         .build();
-                OffsetDateTime createdAt = DateUtils.toOffsetDateTime(data.get(6));
-                if (createdAt != null) {
-                    temp.setCreatedAt(createdAt.toInstant());
-                }
-                OffsetDateTime updatedAt = DateUtils.toOffsetDateTime(data.get(7));
-                if (updatedAt != null) {
-                    temp.setUpdatedAt(updatedAt.toInstant());
-                }
                 items.add(temp);
             }
         });
@@ -477,9 +474,17 @@ public class PublicController {
         return "OK";
     }
 
-    @GetMapping(value = "/s3-upload", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/s3-upload", produces = APPLICATION_JSON_VALUE)
     public Object testS3Upload(@RequestParam MultipartFile file, @RequestParam String filePath) throws IOException, FirebaseMessagingException {
         return fileObjectService.uploadImage(file, filePath);
+    }
+
+    @GetMapping(value = "/test-dates", produces = APPLICATION_JSON_VALUE)
+    public Object testDates(@RequestParam String stringValue, @RequestParam Long longValue) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("stringValue", DateUtils.toInstant(stringValue));
+        result.put("longValue", DateUtils.toInstant(longValue));
+        return result;
     }
 
 }
