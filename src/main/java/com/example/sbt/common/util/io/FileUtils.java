@@ -14,12 +14,10 @@ import java.io.FileOutputStream;
 public class FileUtils {
 
     public static void writeFile(byte[] bytes, String outputPath) {
-        try {
-            if (bytes == null) return;
-            try (FileOutputStream outputStream = new FileOutputStream(outputPath);
-                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
-                bufferedOutputStream.write(bytes);
-            }
+        if (bytes == null) return;
+        try (FileOutputStream outputStream = new FileOutputStream(outputPath);
+             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+            bufferedOutputStream.write(bytes);
         } catch (Exception e) {
             log.error("writeFile ", e);
         }

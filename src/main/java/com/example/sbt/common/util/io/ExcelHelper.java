@@ -22,28 +22,22 @@ import java.util.function.Consumer;
 public class ExcelHelper {
 
     private static final String DEFAULT_SHEET = "Sheet1";
-    private static final int DEFAULT_HEADER_ROW = 0;
-    private static final int DEFAULT_BODY_ROW = 1;
 
     public static void writeFile(Workbook workbook, String outputPath) {
-        try {
-            if (workbook == null || StringUtils.isBlank(outputPath)) return;
-            try (workbook; FileOutputStream outputStream = new FileOutputStream(outputPath);
-                 BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
-                workbook.write(bufferedOutputStream);
-            }
+        if (workbook == null || StringUtils.isBlank(outputPath)) return;
+        try (workbook; FileOutputStream outputStream = new FileOutputStream(outputPath);
+             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+            workbook.write(bufferedOutputStream);
         } catch (Exception e) {
             log.error("writeFile ", e);
         }
     }
 
     public static byte[] toBytes(Workbook workbook) {
-        try {
-            if (workbook == null) return new byte[0];
-            try (workbook; ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-                workbook.write(outputStream);
-                return outputStream.toByteArray();
-            }
+        if (workbook == null) return new byte[0];
+        try (workbook; ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
         } catch (Exception e) {
             log.error("toBytes ", e);
             return new byte[0];
