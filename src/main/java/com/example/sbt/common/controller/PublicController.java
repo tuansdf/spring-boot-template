@@ -345,16 +345,29 @@ public class PublicController {
     @GetMapping("/rand")
     public Object testRand() {
         Map<String, Object> result = new HashMap<>();
-        result.put("Secure.generateHexString", RandomUtils.Secure.generateHexString(16));
-        result.put("Insecure.generateHexString", RandomUtils.Insecure.generateHexString(16));
-        result.put("Secure.generateOTP", RandomUtils.Secure.generateOTP(16));
-        result.put("Insecure.generateOTP", RandomUtils.Insecure.generateOTP(16));
         result.put("Secure.generateUUID", RandomUtils.Secure.generateUUID());
         result.put("Insecure.generateUUID", RandomUtils.Insecure.generateUUID());
         result.put("Secure.generateTimeBasedUUID", RandomUtils.Secure.generateTimeBasedUUID());
         result.put("Insecure.generateTimeBasedUUID", RandomUtils.Insecure.generateTimeBasedUUID());
-        result.put("Secure.generateString", RandomUtils.Secure.generateString(16));
-        result.put("Insecure.generateString", RandomUtils.Insecure.generateString(16));
+        result.put("Secure.generateString(4)", RandomUtils.Secure.generateString(4));
+        result.put("Insecure.generateString(4)", RandomUtils.Insecure.generateString(4));
+        result.put("Secure.generateString(8)", RandomUtils.Secure.generateString(8));
+        result.put("Insecure.generateString(8)", RandomUtils.Insecure.generateString(8));
+        result.put("Secure.generateString(16)", RandomUtils.Secure.generateString(16));
+        result.put("Insecure.generateString(16)", RandomUtils.Insecure.generateString(16));
+        result.put("Secure.generateHexString(4)", RandomUtils.Secure.generateHexString(4));
+        result.put("Insecure.generateHexString(4)", RandomUtils.Insecure.generateHexString(4));
+        result.put("Secure.generateHexString(8)", RandomUtils.Secure.generateHexString(8));
+        result.put("Insecure.generateHexString(8)", RandomUtils.Insecure.generateHexString(8));
+        result.put("Secure.generateHexString(16)", RandomUtils.Secure.generateHexString(16));
+        result.put("Insecure.generateHexString(16)", RandomUtils.Insecure.generateHexString(16));
+        result.put("Secure.generateOTP(8)", RandomUtils.Secure.generateOTP(8));
+        result.put("Insecure.generateOTP(8)", RandomUtils.Insecure.generateOTP(8));
+        result.put("Secure.generateOTP(16)", RandomUtils.Secure.generateOTP(16));
+        result.put("Insecure.generateOTP(16)", RandomUtils.Insecure.generateOTP(16));
+        result.put("DateUtils.currentEpochMillis", DateUtils.currentEpochMillis());
+        result.put("DateUtils.currentEpochMicros", DateUtils.currentEpochMicros());
+        result.put("DateUtils.currentEpochNanos", DateUtils.currentEpochNanos());
         return result;
     }
 

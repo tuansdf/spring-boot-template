@@ -21,7 +21,7 @@ public class LoggingAspect {
         long start = DateUtils.currentEpochMillis();
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
-        String methodName = signature.getDeclaringTypeName();
+        String methodName = signature.toShortString();
         String[] paramNames = signature.getParameterNames();
         Object[] paramValues = joinPoint.getArgs();
 
@@ -32,7 +32,7 @@ public class LoggingAspect {
         }
         String paramString = !params.isEmpty() ? params.toString() : "";
 
-        log.info("{} ENTER method: {} with arguments: {}", start, methodName, paramString);
+        log.info("[methodAroundId={}] ENTER [method={}] [arguments={}]", start, methodName, paramString);
 
         Object result = null;
         try {
@@ -42,10 +42,10 @@ public class LoggingAspect {
             if (resultString != null && resultString.length() > MAX_RESULT_LENGTH) {
                 resultString = resultString.substring(0, MAX_RESULT_LENGTH);
             }
-            log.info("{} EXIT  method: {} after {} ms with result: {}", start, methodName, exTime, resultString);
+            log.info("[methodAroundId={}] EXIT  [method={}] [execTime={} ms] result: {}", start, methodName, exTime, resultString);
         } catch (Throwable e) {
             long exTime = DateUtils.currentEpochMillis() - start;
-            log.error("{} EXIT  method: {} after {} ms with exception: ", start, methodName, exTime, e);
+            log.error("[methodAroundId={}] EXIT  [method={}] [execTime={} ms] exception: ", start, methodName, exTime, e);
             throw e;
         }
 
