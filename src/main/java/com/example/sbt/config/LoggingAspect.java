@@ -32,7 +32,7 @@ public class LoggingAspect {
         }
         String paramString = !params.isEmpty() ? params.toString() : "";
 
-        log.info("[methodAroundId={}] ENTER [method={}] [arguments={}]", start, methodName, paramString);
+        log.info("[methodAt={}] ENTER [method={}] [arguments={}]", start, methodName, paramString);
 
         Object result = null;
         try {
@@ -42,10 +42,10 @@ public class LoggingAspect {
             if (resultString != null && resultString.length() > MAX_RESULT_LENGTH) {
                 resultString = resultString.substring(0, MAX_RESULT_LENGTH);
             }
-            log.info("[methodAroundId={}] EXIT  [method={}] [execTime={} ms] result: {}", start, methodName, exTime, resultString);
+            log.info("[methodAt={}] EXIT  [method={}] [execTime={} ms] result: {}", start, methodName, exTime, resultString);
         } catch (Throwable e) {
             long exTime = DateUtils.currentEpochMillis() - start;
-            log.error("[methodAroundId={}] EXIT  [method={}] [execTime={} ms] exception: ", start, methodName, exTime, e);
+            log.error("[methodAt={}] EXIT  [method={}] [execTime={} ms] exception: ", start, methodName, exTime, e);
             throw e;
         }
 

@@ -32,11 +32,11 @@ public class RequestResponseLoggingFilter implements Filter {
             RequestContextHolder.get().setTenantId(httpServletRequest.getHeader(HTTPHeader.X_TENANT_ID));
             RequestContextHolder.syncMDC();
 
-            log.info("[requestAroundId={}] ENTER [method={}] [path={}] [query={}]", start, httpServletRequest.getMethod(), httpServletRequest.getServletPath(), httpServletRequest.getQueryString());
+            log.info("[requestAt={}] ENTER [method={}] [path={}] [query={}]", start, httpServletRequest.getMethod(), httpServletRequest.getServletPath(), httpServletRequest.getQueryString());
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             long execTime = DateUtils.currentEpochMillis() - start;
-            log.info("[requestAroundId={}] EXIT  [method={}] [path={}] [execTime={} ms] [status={}]", start, httpServletRequest.getMethod(), httpServletRequest.getServletPath(), execTime, httpServletResponse.getStatus());
+            log.info("[requestAt={}] EXIT  [method={}] [path={}] [execTime={} ms] [status={}]", start, httpServletRequest.getMethod(), httpServletRequest.getServletPath(), execTime, httpServletResponse.getStatus());
             RequestContextHolder.clear();
         }
     }
