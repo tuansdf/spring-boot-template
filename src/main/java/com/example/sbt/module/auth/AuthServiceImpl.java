@@ -88,6 +88,7 @@ public class AuthServiceImpl implements AuthService {
             }
             boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), userDTO.getOtpSecret());
             if (!isOtpCorrect) {
+                loginAuditService.add(userDTO.getId(), false);
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
             }
         }
