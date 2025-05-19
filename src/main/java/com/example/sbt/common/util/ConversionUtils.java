@@ -38,7 +38,7 @@ public class ConversionUtils {
         try {
             return switch (input) {
                 case Number v -> v.longValue();
-                case String v -> Long.parseLong(v);
+                case String v -> Long.valueOf(v);
                 case null, default -> null;
             };
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class ConversionUtils {
         try {
             return switch (input) {
                 case Number v -> v.intValue();
-                case String v -> Integer.parseInt(v);
+                case String v -> Integer.valueOf(v);
                 case null, default -> null;
             };
         } catch (Exception e) {
@@ -86,7 +86,7 @@ public class ConversionUtils {
         try {
             return switch (input) {
                 case Number v -> v.doubleValue();
-                case String v -> Double.parseDouble(v);
+                case String v -> Double.valueOf(v);
                 case null, default -> null;
             };
         } catch (Exception e) {
@@ -110,7 +110,7 @@ public class ConversionUtils {
         try {
             return switch (input) {
                 case Boolean v -> v;
-                case String v -> Boolean.parseBoolean(v);
+                case String v -> Boolean.valueOf(v);
                 case null, default -> null;
             };
         } catch (Exception e) {
