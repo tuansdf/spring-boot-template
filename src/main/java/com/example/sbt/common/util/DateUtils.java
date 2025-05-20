@@ -56,7 +56,7 @@ public class DateUtils {
                 default -> {
                     Instant result = toInstant(input, offset, formatter);
                     if (result == null) yield null;
-                    yield OffsetDateTime.ofInstant(result, offset);
+                    yield result.atOffset(offset);
                 }
             };
         } catch (Exception e) {
@@ -123,10 +123,10 @@ public class DateUtils {
                 case OffsetDateTime v -> v.toInstant();
                 case Number v -> Instant.ofEpochMilli(v.longValue());
                 case String v -> {
-                    if (formatter != null && !ZoneOffset.UTC.equals(offset)) {
-                        yield OffsetDateTime.parse(v, formatter).toInstant();
+                    if (formatter != null) {
+                        yield ZonedDateTime.parse(v, formatter).toInstant();
                     } else {
-                        yield Instant.parse(v);
+                        yield Instant.ofEpochMilli(Long.parseLong(v));
                     }
                 }
                 case null, default -> null;
