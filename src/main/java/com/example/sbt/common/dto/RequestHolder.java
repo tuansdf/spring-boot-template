@@ -5,11 +5,11 @@ import com.example.sbt.common.util.ConversionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
-public class RequestContextHolder {
+public class RequestHolder {
 
     private static final ThreadLocal<RequestContext> context = new ThreadLocal<>();
 
-    public static RequestContext get() {
+    public static RequestContext getContext() {
         RequestContext result = context.get();
         if (result == null) {
             result = new RequestContext();
@@ -18,7 +18,7 @@ public class RequestContextHolder {
         return result;
     }
 
-    public static void set(RequestContext input) {
+    public static void setContext(RequestContext input) {
         context.set(input);
         syncMDC();
     }
@@ -29,7 +29,7 @@ public class RequestContextHolder {
     }
 
     public static void syncMDC() {
-        RequestContext context = get();
+        RequestContext context = getContext();
         String userId = ConversionUtils.toString(context.getUserId());
         String requestId = ConversionUtils.toString(context.getRequestId());
         if (StringUtils.isNotEmpty(userId)) {

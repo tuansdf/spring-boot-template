@@ -4,16 +4,18 @@ import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.entity.BaseEntity;
 import com.example.sbt.module.permission.dto.PermissionDTO;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 @Entity
 @Table(
         name = "permission",

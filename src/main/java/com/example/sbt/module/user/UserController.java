@@ -3,7 +3,7 @@ package com.example.sbt.module.user;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.common.dto.RequestContextHolder;
+import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.util.ExceptionUtils;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
@@ -27,7 +27,7 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<CommonResponse<UserDTO>> findCurrentUser() {
         try {
-            UUID userId = RequestContextHolder.get().getUserId();
+            UUID userId = RequestHolder.getContext().getUserId();
             var result = userService.findOneById(userId);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<CommonResponse<UserDTO>> updateProfile(@RequestBody UserDTO requestDTO) {
         try {
-            requestDTO.setId(RequestContextHolder.get().getUserId());
+            requestDTO.setId(RequestHolder.getContext().getUserId());
             var result = userService.updateProfile(requestDTO);
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {

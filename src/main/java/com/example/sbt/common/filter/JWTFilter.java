@@ -2,7 +2,7 @@ package com.example.sbt.common.filter;
 
 import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.PermissionCode;
-import com.example.sbt.common.dto.RequestContextHolder;
+import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.module.jwt.JWTService;
 import com.example.sbt.module.jwt.dto.JWTPayload;
@@ -60,9 +60,9 @@ public class JWTFilter extends OncePerRequestFilter {
                 permissions.stream().map(SimpleGrantedAuthority::new).toList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        RequestContextHolder.get().setUserId(ConversionUtils.toUUID(jwtPayload.getSubject()));
-        RequestContextHolder.get().setPermissions(permissions);
-        RequestContextHolder.syncMDC();
+        RequestHolder.getContext().setUserId(ConversionUtils.toUUID(jwtPayload.getSubject()));
+        RequestHolder.getContext().setPermissions(permissions);
+        RequestHolder.syncMDC();
 
         chain.doFilter(servletRequest, servletResponse);
     }

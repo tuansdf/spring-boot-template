@@ -1,7 +1,7 @@
 package com.example.sbt.event.publisher;
 
 import com.example.sbt.common.constant.RedisKey;
-import com.example.sbt.common.dto.RequestContextHolder;
+import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class SendNotificationEventPublisher {
 
     public void publish(NotificationDTO notification) {
         SendNotificationEventRequest request = SendNotificationEventRequest.builder()
-                .requestContext(RequestContextHolder.get())
+                .requestContext(RequestHolder.getContext())
                 .notification(notification)
                 .build();
         ObjectRecord<String, SendNotificationEventRequest> data = StreamRecords.newRecord()

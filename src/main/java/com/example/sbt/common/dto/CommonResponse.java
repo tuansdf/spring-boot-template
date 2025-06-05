@@ -3,12 +3,10 @@ package com.example.sbt.common.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 import org.springframework.http.HttpStatus;
 
 @Data
 @AllArgsConstructor
-@ToString
 @Builder
 public class CommonResponse<T> {
 
