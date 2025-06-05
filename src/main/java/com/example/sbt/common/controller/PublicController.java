@@ -155,41 +155,42 @@ public class PublicController {
     public String importExcel(@RequestParam String inputPath) {
         final int BATCH = 1000;
         List<UserDTO> items = new ArrayList<>();
-        ExcelHelper.Import.processTemplate(inputPath, workbook -> {
+        try (Workbook workbook = ExcelHelper.toWorkbook(inputPath)) {
+            if (workbook == null) return null;
             List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
             int rowSize = header.size();
             Sheet sheet = workbook.getSheetAt(0);
-            int idx = 0;
+            if (sheet == null) return null;
+            boolean isHeader = true;
             for (var row : sheet) {
-                try {
-                    if (idx == 0) {
-                        if (!ListUtils.isEqualList(header, ExcelHelper.getRowCellValues(row))) {
-                            throw new CustomException("Invalid template");
-                        }
-                        continue;
+                if (isHeader) {
+                    if (!ListUtils.isEqualList(header, ExcelHelper.getRowCellValues(row))) {
+                        throw new CustomException("Invalid template");
                     }
-                    List<Object> data = CommonUtils.padRight(ExcelHelper.getRowCellValues(row), rowSize);
-                    UserDTO temp = UserDTO.builder()
-                            .id(ConversionUtils.toUUID(data.get(1)))
-                            .username(ConversionUtils.toString(data.get(2)))
-                            .email(ConversionUtils.toString(data.get(3)))
-                            .name(ConversionUtils.toString(data.get(4)))
-                            .status(ConversionUtils.toString(data.get(5)))
-                            .build();
-                    OffsetDateTime createdAt = DateUtils.toOffsetDateTime(data.get(6));
-                    if (createdAt != null) {
-                        temp.setCreatedAt(createdAt.toInstant());
-                    }
-                    OffsetDateTime updatedAt = DateUtils.toOffsetDateTime(data.get(7));
-                    if (updatedAt != null) {
-                        temp.setUpdatedAt(updatedAt.toInstant());
-                    }
-                    items.add(temp);
-                } finally {
-                    idx++;
+                    isHeader = false;
+                    continue;
                 }
+                List<Object> data = CommonUtils.padRight(ExcelHelper.getRowCellValues(row), rowSize);
+                UserDTO temp = UserDTO.builder()
+                        .id(ConversionUtils.toUUID(data.get(1)))
+                        .username(ConversionUtils.toString(data.get(2)))
+                        .email(ConversionUtils.toString(data.get(3)))
+                        .name(ConversionUtils.toString(data.get(4)))
+                        .status(ConversionUtils.toString(data.get(5)))
+                        .build();
+                OffsetDateTime createdAt = DateUtils.toOffsetDateTime(data.get(6));
+                if (createdAt != null) {
+                    temp.setCreatedAt(createdAt.toInstant());
+                }
+                OffsetDateTime updatedAt = DateUtils.toOffsetDateTime(data.get(7));
+                if (updatedAt != null) {
+                    temp.setUpdatedAt(updatedAt.toInstant());
+                }
+                items.add(temp);
             }
-        });
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
