@@ -14,6 +14,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class RoleValidator {
 
+    public void validateUpdate(RoleDTO requestDTO) {
+        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
+        }
+        if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.description"), 255));
+        }
+    }
+
     public void validateCreate(RoleDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getCode())) {
             throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.code")));
@@ -25,21 +34,7 @@ public class RoleValidator {
         if (codeError != null) {
             throw new CustomException(codeError);
         }
-        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
-        }
-        if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.description"), 255));
-        }
-    }
-
-    public void validateUpdate(RoleDTO requestDTO) {
-        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
-        }
-        if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.description"), 255));
-        }
+        validateUpdate(requestDTO);
     }
 
 }

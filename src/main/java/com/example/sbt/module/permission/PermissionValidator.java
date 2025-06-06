@@ -14,6 +14,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PermissionValidator {
 
+    public void validateUpdate(PermissionDTO requestDTO) {
+        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
+        }
+    }
+
     public void validateCreate(PermissionDTO requestDTO) {
         if (StringUtils.isEmpty(requestDTO.getCode())) {
             throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.code")));
@@ -25,15 +31,7 @@ public class PermissionValidator {
         if (codeError != null) {
             throw new CustomException(codeError);
         }
-        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
-        }
-    }
-
-    public void validateUpdate(PermissionDTO requestDTO) {
-        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
-        }
+        validateUpdate(requestDTO);
     }
 
 }

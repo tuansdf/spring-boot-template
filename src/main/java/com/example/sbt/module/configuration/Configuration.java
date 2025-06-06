@@ -32,6 +32,7 @@ import java.util.UUID;
                 @ColumnResult(name = "code", type = String.class),
                 @ColumnResult(name = "value", type = String.class),
                 @ColumnResult(name = "description", type = String.class),
+                @ColumnResult(name = "status", type = String.class),
                 @ColumnResult(name = "created_at", type = Instant.class),
                 @ColumnResult(name = "updated_at", type = Instant.class),
         })
@@ -44,5 +45,7 @@ public class Configuration extends BaseEntity {
     private String value;
     @Column(name = "description", columnDefinition = "text")
     private String description;
+    @Column(name = "status")
+    private String status;
 
 }

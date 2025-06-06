@@ -1,5 +1,6 @@
 package com.example.sbt.module.configuration;
 
+import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.KVKey;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
@@ -66,6 +67,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
+        result.setStatus(requestDTO.getStatus());
         result = configurationRepository.save(result);
         setValueToKVByCode(result.getCode(), result.getValue());
         return commonMapper.toDTO(result);
@@ -104,7 +106,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         if (StringUtils.isBlank(code)) return null;
         String result = getValueFromKVByCode(code);
         if (result == null) {
-            result = configurationRepository.findTopValueByCode(code);
+            result = configurationRepository.findTopValueByCodeAndStatus(code, CommonStatus.ACTIVE);
         }
         if (result != null) {
             setValueToKVByCode(code, result);

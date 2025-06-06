@@ -18,6 +18,7 @@ public class ConfigurationDTO {
     private String code;
     private String value;
     private String description;
+    private String status;
     private Instant createdAt;
     private Instant updatedAt;
 
