@@ -1,6 +1,9 @@
 package com.example.sbt.common.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Locale;
 import java.util.Set;
@@ -9,7 +12,6 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
 public class RequestContext {
 

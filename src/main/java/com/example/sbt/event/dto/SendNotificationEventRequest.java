@@ -9,7 +9,6 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
 public class SendNotificationEventRequest implements Serializable {
 

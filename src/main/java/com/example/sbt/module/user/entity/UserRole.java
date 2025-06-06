@@ -2,20 +2,22 @@ package com.example.sbt.module.user.entity;
 
 import com.example.sbt.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
 @Entity
 @Table(
         name = "user_role",
         uniqueConstraints = {
-                @UniqueConstraint(name = "user_role_rel_idx", columnNames = {"user_id", "role_id" }),
+                @UniqueConstraint(name = "user_role_rel_idx", columnNames = {"user_id", "role_id"}),
         },
         indexes = {
                 @Index(name = "user_role_created_at_idx", columnList = "created_at"),

@@ -1,16 +1,16 @@
 package com.example.sbt.module.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class SearchUserRequestDTO {
 
     private Long pageNumber;

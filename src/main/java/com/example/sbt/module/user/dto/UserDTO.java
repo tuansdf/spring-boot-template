@@ -2,8 +2,10 @@ package com.example.sbt.module.user.dto;
 
 import com.example.sbt.common.util.ConversionUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
@@ -16,9 +18,7 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDTO {
 
     private UUID id;

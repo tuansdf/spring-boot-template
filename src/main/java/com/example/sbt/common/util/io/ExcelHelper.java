@@ -16,11 +16,12 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 @Slf4j
 public class ExcelHelper {
 
+    public static final int BUFFER_SIZE = 4096;
+    public static final int ROW_CACHE_SIZE = 100;
     private static final String DEFAULT_SHEET = "Sheet1";
 
     public static void writeFile(Workbook workbook, String outputPath) {
@@ -46,9 +47,9 @@ public class ExcelHelper {
 
     public static Sheet getSheet(Workbook workbook) {
         if (workbook == null) return null;
-        Sheet result = workbook.getSheet(DEFAULT_SHEET);
+        Sheet result = workbook.getSheetAt(0);
         if (result == null) {
-            result = workbook.createSheet(DEFAULT_SHEET);
+            result = workbook.createSheet();
         }
         return result;
     }
@@ -153,35 +154,30 @@ public class ExcelHelper {
         }
     }
 
-    public static class Import {
-        public static final int BUFFER_SIZE = 4096;
-        public static final int ROW_CACHE_SIZE = 100;
-
-        public static void processTemplate(String filePath, Consumer<Workbook> bodyFn) {
-            try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile());
-                 Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
-                bodyFn.accept(workbook);
-            } catch (Exception e) {
-                log.error("processTemplate ", e);
-            }
+    public static Workbook toWorkbook(String filePath) {
+        try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile())) {
+            return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
+        } catch (Exception e) {
+            log.error("toWorkbook ", e);
+            return null;
         }
+    }
 
-        public static void processTemplate(byte[] bytes, Consumer<Workbook> bodyFn) {
-            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-                 Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
-                bodyFn.accept(workbook);
-            } catch (Exception e) {
-                log.error("processTemplate ", e);
-            }
+    public static Workbook toWorkbook(byte[] bytes) {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
+            return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
+        } catch (Exception e) {
+            log.error("toWorkbook ", e);
+            return null;
         }
+    }
 
-        public static void processTemplate(MultipartFile file, Consumer<Workbook> bodyFn) {
-            try (InputStream inputStream = file.getInputStream();
-                 Workbook workbook = StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream)) {
-                bodyFn.accept(workbook);
-            } catch (Exception e) {
-                log.error("processTemplate ", e);
-            }
+    public static Workbook toWorkbook(MultipartFile file) {
+        try (InputStream inputStream = file.getInputStream()) {
+            return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
+        } catch (Exception e) {
+            log.error("toWorkbook ", e);
+            return null;
         }
     }
 

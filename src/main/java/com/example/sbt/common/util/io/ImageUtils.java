@@ -38,10 +38,9 @@ public class ImageUtils {
     }
 
     public static byte[] compressImageToBytes(String inputPath, Options options) {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BufferedImage image = ImageIO.read(Paths.get(inputPath).toFile());
-            compressImage(image, bufferedOutputStream, options);
+            compressImage(image, outputStream, options);
             return outputStream.toByteArray();
         } catch (Exception e) {
             log.error("compressImageToBytes ", e);
@@ -51,10 +50,9 @@ public class ImageUtils {
 
     public static byte[] compressImageToBytes(byte[] bytes, Options options) {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BufferedImage image = ImageIO.read(inputStream);
-            compressImage(image, bufferedOutputStream, options);
+            compressImage(image, outputStream, options);
             return outputStream.toByteArray();
         } catch (Exception e) {
             log.error("compressImageToBytes ", e);

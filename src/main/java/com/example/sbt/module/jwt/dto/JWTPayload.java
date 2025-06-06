@@ -2,9 +2,11 @@ package com.example.sbt.module.jwt.dto;
 
 import com.example.sbt.module.jwt.JWTPayloadKey;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -14,9 +16,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class JWTPayload {
 
     @JsonProperty(JWTPayloadKey.ISSUED_AT)
