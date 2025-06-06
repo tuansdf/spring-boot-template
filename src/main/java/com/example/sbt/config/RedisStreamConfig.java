@@ -1,6 +1,6 @@
 package com.example.sbt.config;
 
-import com.example.sbt.common.constant.RedisKey;
+import com.example.sbt.common.constant.EventKey;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.event.dto.SendEmailEventRequest;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
@@ -41,8 +41,8 @@ public class RedisStreamConfig {
         String consumerName = "consumer-" + hostname;
 
         List<CreateSubscriptionRequest<?>> requests = new ArrayList<>();
-        requests.add(new CreateSubscriptionRequest<>(sendEmailEventListener, SendEmailEventRequest.class, RedisKey.SEND_EMAIL_STREAM.concat("_group"), RedisKey.SEND_EMAIL_STREAM));
-        requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationEventRequest.class, RedisKey.SEND_NOTIFICATION_STREAM.concat("_group"), RedisKey.SEND_NOTIFICATION_STREAM));
+        requests.add(new CreateSubscriptionRequest<>(sendEmailEventListener, SendEmailEventRequest.class, EventKey.SEND_EMAIL.concat("_group"), EventKey.SEND_EMAIL));
+        requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationEventRequest.class, EventKey.SEND_NOTIFICATION.concat("_group"), EventKey.SEND_NOTIFICATION));
         List<Subscription> subscriptions = new ArrayList<>();
 
         for (CreateSubscriptionRequest<?> request : requests) {

@@ -1,6 +1,6 @@
 package com.example.sbt.event.listener;
 
-import com.example.sbt.common.constant.RedisKey;
+import com.example.sbt.common.constant.EventKey;
 import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
 import com.example.sbt.module.notification.NotificationService;
@@ -31,8 +31,8 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
             log.error("SendNotificationEventListener.error", e);
         } finally {
             try {
-                redisTemplate.opsForStream().acknowledge(RedisKey.SEND_NOTIFICATION_STREAM, message);
-                redisTemplate.opsForStream().delete(RedisKey.SEND_NOTIFICATION_STREAM, message.getId());
+                redisTemplate.opsForStream().acknowledge(EventKey.SEND_NOTIFICATION, message);
+                redisTemplate.opsForStream().delete(EventKey.SEND_NOTIFICATION, message.getId());
 
                 log.info("SendNotificationEventListener.end");
             } catch (Exception ignore) {

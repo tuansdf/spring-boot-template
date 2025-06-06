@@ -1,6 +1,6 @@
 package com.example.sbt.event.publisher;
 
-import com.example.sbt.common.constant.RedisKey;
+import com.example.sbt.common.constant.EventKey;
 import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.event.dto.SendEmailEventRequest;
 import com.example.sbt.module.email.dto.EmailDTO;
@@ -25,7 +25,7 @@ public class SendEmailEventPublisher {
                 .build();
         ObjectRecord<String, SendEmailEventRequest> data = StreamRecords.newRecord()
                 .ofObject(request)
-                .withStreamKey(RedisKey.SEND_EMAIL_STREAM);
+                .withStreamKey(EventKey.SEND_EMAIL);
         redisTemplate.opsForStream().add(data);
     }
 

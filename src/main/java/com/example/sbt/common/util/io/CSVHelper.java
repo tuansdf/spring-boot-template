@@ -31,7 +31,7 @@ public class CSVHelper {
                 return outputStream.toByteArray();
             } catch (Exception e) {
                 log.error("processTemplateToBytes", e);
-                return new byte[0];
+                return null;
             }
         }
 

@@ -1,5 +1,6 @@
 package com.example.sbt.module.configuration;
 
+import com.example.sbt.common.constant.KVKey;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.exception.CustomException;
@@ -14,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private final EntityManager entityManager;
     private final ConfigurationRepository configurationRepository;
     private final ConfigurationValidator configurationValidator;
+    private final StringRedisTemplate redisTemplate;
+
+    private void setValueToKVByCode(String code, String value) {
+        if (StringUtils.isBlank(code) || value == null) return;
+        String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
+        redisTemplate.opsForValue().set(kvKey, value);
+    }
+
+    private String getValueFromKVByCode(String code) {
+        if (StringUtils.isBlank(code)) return null;
+        String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
+        return ConversionUtils.toString(redisTemplate.opsForValue().get(kvKey));
+    }
 
     @Override
     public ConfigurationDTO save(ConfigurationDTO requestDTO) {
@@ -52,13 +67,13 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
         result = configurationRepository.save(result);
+        setValueToKVByCode(result.getCode(), result.getValue());
         return commonMapper.toDTO(result);
     }
 
     @Override
     public ConfigurationDTO findOneById(UUID id) {
-        Optional<Configuration> configurationOptional = configurationRepository.findById(id);
-        return commonMapper.toDTO(configurationOptional.orElse(null));
+        return commonMapper.toDTO(configurationRepository.findById(id).orElse(null));
     }
 
     @Override
@@ -72,8 +87,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ConfigurationDTO findOneByCode(String code) {
-        Optional<Configuration> configurationOptional = configurationRepository.findTopByCode(code);
-        return commonMapper.toDTO(configurationOptional.orElse(null));
+        return commonMapper.toDTO(configurationRepository.findTopByCode(code).orElse(null));
     }
 
     @Override
@@ -87,7 +101,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public String findValueByCode(String code) {
-        return configurationRepository.findTopValueByCodeAndStatus(code);
+        if (StringUtils.isBlank(code)) return null;
+        String result = getValueFromKVByCode(code);
+        if (result == null) {
+            result = configurationRepository.findTopValueByCode(code);
+        }
+        if (result != null) {
+            setValueToKVByCode(code, result);
+        }
+        return result;
     }
 
     @Override

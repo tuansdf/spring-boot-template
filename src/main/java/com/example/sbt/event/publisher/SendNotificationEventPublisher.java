@@ -1,6 +1,6 @@
 package com.example.sbt.event.publisher;
 
-import com.example.sbt.common.constant.RedisKey;
+import com.example.sbt.common.constant.EventKey;
 import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
 import com.example.sbt.module.notification.dto.NotificationDTO;
@@ -25,7 +25,7 @@ public class SendNotificationEventPublisher {
                 .build();
         ObjectRecord<String, SendNotificationEventRequest> data = StreamRecords.newRecord()
                 .ofObject(request)
-                .withStreamKey(RedisKey.SEND_NOTIFICATION_STREAM);
+                .withStreamKey(EventKey.SEND_NOTIFICATION);
         redisTemplate.opsForStream().add(data);
     }
 

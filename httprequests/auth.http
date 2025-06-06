@@ -1,9 +1,9 @@
-@username=user1
-@email=user1@example.com
-@password=superpassword
-@otp_code=729658
-@activate_token=jkdlsf
-@reset_token=jkdlsf
+@username=
+@email=
+@password=
+@otp_code=
+@activate_token=
+@reset_token=
 
 ###
 

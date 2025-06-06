@@ -5,8 +5,8 @@ import java.util.UUID;
 public class ConversionUtils {
 
     public static String toString(Object input) {
-        if (input == null) return null;
         try {
+            if (input == null) return null;
             return input.toString();
         } catch (Exception e) {
             return null;
@@ -14,8 +14,8 @@ public class ConversionUtils {
     }
 
     public static String safeToString(Object input) {
-        if (input == null) return "";
         try {
+            if (input == null) return "";
             return input.toString();
         } catch (Exception e) {
             return "";
@@ -127,6 +127,16 @@ public class ConversionUtils {
             };
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T safeCast(Object value) {
+        try {
+            if (value == null) return null;
+            return (T) value;
+        } catch (Exception e) {
+            return null;
         }
     }
 

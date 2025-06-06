@@ -1,6 +1,6 @@
 package com.example.sbt.event.listener;
 
-import com.example.sbt.common.constant.RedisKey;
+import com.example.sbt.common.constant.EventKey;
 import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.event.dto.SendEmailEventRequest;
 import com.example.sbt.module.email.EmailService;
@@ -31,8 +31,8 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
             log.error("SendEmailEventListener.error", e);
         } finally {
             try {
-                redisTemplate.opsForStream().acknowledge(RedisKey.SEND_EMAIL_STREAM, message);
-                redisTemplate.opsForStream().delete(RedisKey.SEND_EMAIL_STREAM, message.getId());
+                redisTemplate.opsForStream().acknowledge(EventKey.SEND_EMAIL, message);
+                redisTemplate.opsForStream().delete(EventKey.SEND_EMAIL, message.getId());
 
                 log.info("SendEmailEventListener.end");
             } catch (Exception ignore) {
