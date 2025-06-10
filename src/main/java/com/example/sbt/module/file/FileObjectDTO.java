@@ -15,8 +15,11 @@ import java.util.UUID;
 public class FileObjectDTO {
 
     private UUID id;
-    private String fileUrl;
-    private String previewFileUrl;
+    private String filePath;
+    private String previewFilePath;
+    private String fileName;
+    private String fileType;
+    private Long fileSize;
     private Instant createdAt;
     private Instant updatedAt;
 

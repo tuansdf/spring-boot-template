@@ -1,6 +1,7 @@
 package com.example.sbt.module.file;
 
 import com.example.sbt.common.constant.FileType;
+import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
@@ -21,23 +22,39 @@ import java.util.UUID;
 @Service
 public class FileObjectServiceImpl implements FileObjectService {
 
-    private static final int PRIMARY_WIDTH = 2000;
+    private static final int PRIMARY_WIDTH = 4000;
     private static final int THUMBNAIL_WIDTH = 600;
     private static final FileType[] IMAGE_FILE_TYPES = {FileType.JPEG, FileType.JPG, FileType.PNG, FileType.WEBP};
+
     private final CommonMapper commonMapper;
     private final UploadFileService uploadFileService;
     private final FileObjectRepository fileObjectRepository;
 
     @Override
-    public FileObjectDTO upload(byte[] file, String filePath) {
-        String url = uploadFileService.upload(filePath, file);
-        if (url == null) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+    public FileObjectDTO upload(MultipartFile file, String dirPath) {
+        try {
+            String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+            if (StringUtils.isBlank(extension)) {
+                throw new CustomException(HttpStatus.BAD_REQUEST);
+            }
+            dirPath = StringUtils.strip(ConversionUtils.safeToString(dirPath).trim(), "/");
+            UUID id = RandomUtils.Secure.generateTimeBasedUUID();
+            String filePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat(".").concat(extension), "/");
+            filePath = uploadFileService.upload(file.getBytes(), filePath);
+            if (filePath == null) {
+                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            FileObject result = new FileObject();
+            result.setId(id);
+            result.setFilePath(filePath);
+            result.setFileName(file.getOriginalFilename());
+            result.setFileType(file.getContentType());
+            result.setFileSize(file.getSize());
+            result.setCreatedBy(RequestHolder.getContext().getUserId());
+            return commonMapper.toDTO(result);
+        } catch (IOException e) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        FileObject result = new FileObject();
-        result.setFileUrl(url);
-        result = fileObjectRepository.save(result);
-        return commonMapper.toDTO(result);
     }
 
     @Override
@@ -47,41 +64,49 @@ public class FileObjectServiceImpl implements FileObjectService {
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
 
-            dirPath = StringUtils.strip(ConversionUtils.safeToString(dirPath), "/");
             String extension = FilenameUtils.getExtension(file.getOriginalFilename());
             if (StringUtils.isBlank(extension)) {
                 throw new CustomException(HttpStatus.BAD_REQUEST);
             }
+            dirPath = StringUtils.strip(ConversionUtils.safeToString(dirPath).trim(), "/");
             UUID id = RandomUtils.Secure.generateTimeBasedUUID();
             String filePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat(".").concat(extension), "/");
 
+            String fileName = file.getOriginalFilename();
+            String fileType = file.getContentType();
+            long fileSize = file.getSize();
             byte[] fileBytes = file.getBytes();
             {
                 byte[] compressedFileBytes = ImageUtils.compressImageToBytes(fileBytes,
                         ImageUtils.Options.builder().width(PRIMARY_WIDTH).format(extension).quality(0.8F).build());
                 if (compressedFileBytes != null) {
+                    fileSize = fileBytes.length;
                     fileBytes = compressedFileBytes;
                 }
             }
-            String url = uploadFileService.upload(filePath, fileBytes);
-            if (url == null) {
+            filePath = uploadFileService.upload(fileBytes, filePath);
+            if (filePath == null) {
                 throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
-            String thumbnailUrl = null;
+            String thumbnailPath = null;
             if (thumbnailWidth != null && thumbnailWidth > 0) {
                 String thumbnailFilePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat("_thumbnail.").concat(FileType.JPG.getExtension()), "/");
-                byte[] thumbnailFileBytes = ImageUtils.compressImageToBytes(fileBytes,
+                fileBytes = ImageUtils.compressImageToBytes(fileBytes,
                         ImageUtils.Options.builder().width(thumbnailWidth).format(FileType.JPG.getExtension()).quality(0.8F).build());
-                if (thumbnailFileBytes != null) {
-                    thumbnailUrl = uploadFileService.upload(thumbnailFilePath, thumbnailFileBytes);
+                if (fileBytes != null) {
+                    thumbnailPath = uploadFileService.upload(fileBytes, thumbnailFilePath);
                 }
             }
 
             FileObject result = new FileObject();
             result.setId(id);
-            result.setFileUrl(url);
-            result.setPreviewFileUrl(thumbnailUrl);
+            result.setFilePath(filePath);
+            result.setPreviewFilePath(thumbnailPath);
+            result.setFileName(fileName);
+            result.setFileType(fileType);
+            result.setFileSize(fileSize);
+            result.setCreatedBy(RequestHolder.getContext().getUserId());
             result = fileObjectRepository.save(result);
             return commonMapper.toDTO(result);
         } catch (IOException e) {

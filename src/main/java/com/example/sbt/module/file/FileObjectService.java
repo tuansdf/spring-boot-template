@@ -4,7 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface FileObjectService {
 
-    FileObjectDTO upload(byte[] file, String filePath);
+    FileObjectDTO upload(MultipartFile file, String filePath);
 
     FileObjectDTO uploadImage(MultipartFile file, String dirPath, Integer thumbnailWidth);
 
