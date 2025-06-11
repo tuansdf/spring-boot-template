@@ -1,0 +1,9 @@
+###
+
+GET {{base_url}}/v1/emails/search
+Authorization: Bearer {{access_token}}
+
+###
+
+GET {{base_url}}/v1/emails/stats
+Authorization: Bearer {{access_token}}

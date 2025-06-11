@@ -1,0 +1,9 @@
+###
+
+GET {{base_url}}/v1/notifications/search
+Authorization: Bearer {{access_token}}
+
+###
+
+GET {{base_url}}/v1/notifications/stats
+Authorization: Bearer {{access_token}}

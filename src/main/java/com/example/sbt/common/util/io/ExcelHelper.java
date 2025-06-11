@@ -133,8 +133,10 @@ public class ExcelHelper {
 
     public static void setRowCellValues(Row row, List<Object> objects) {
         if (row == null || CollectionUtils.isEmpty(objects)) return;
-        for (int i = 0; i < objects.size(); i++) {
-            setCellValue(getCell(row, i), objects.get(i));
+        int i = 0;
+        for (Object object : objects) {
+            setCellValue(row, i, object);
+            i++;
         }
     }
 
@@ -142,15 +144,17 @@ public class ExcelHelper {
         if (sheet == null || rowIdx == null || CollectionUtils.isEmpty(objects)) return;
         Row row = getRow(sheet, rowIdx);
         if (row == null) return;
-        for (int i = 0; i < objects.size(); i++) {
-            setCellValue(row, i, objects.get(i));
+        int i = 0;
+        for (Object object : objects) {
+            setCellValue(row, i, object);
+            i++;
         }
     }
 
     public static <T> void setRowCellValues(Row row, T[] objects) {
         if (row == null || ArrayUtils.isEmpty(objects)) return;
         for (int i = 0; i < objects.length; i++) {
-            setCellValue(getCell(row, i), ConversionUtils.safeToString(objects[i]));
+            setCellValue(row, i, ConversionUtils.safeToString(objects[i]));
         }
     }
 
