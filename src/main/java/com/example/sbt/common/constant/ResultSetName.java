@@ -8,5 +8,6 @@ public class ResultSetName {
     public static final String PERMISSION_SEARCH = "PERMISSION_SEARCH";
     public static final String CONFIGURATION_SEARCH = "CONFIGURATION_SEARCH";
     public static final String NOTIFICATION_SEARCH = "NOTIFICATION_SEARCH";
+    public static final String EMAIL_SEARCH = "EMAIL_SEARCH";
 
 }

@@ -142,7 +142,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .putData("body", notificationDTO.getContent())
                     .build());
         }
-        notificationDTO.setSendStatus(CommonStatus.DONE);
+        notificationDTO.setSendStatus(CommonStatus.SENT);
         notificationRepository.save(commonMapper.toEntity(notificationDTO));
         log.info("Notification {} sent", ConversionUtils.safeToString(notificationDTO.getId()));
     }
