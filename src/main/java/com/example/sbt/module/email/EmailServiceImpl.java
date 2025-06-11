@@ -1,8 +1,8 @@
 package com.example.sbt.module.email;
 
+import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.CommonType;
-import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
