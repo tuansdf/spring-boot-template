@@ -22,6 +22,16 @@ public class ConversionUtils {
         }
     }
 
+    public static String safeTrim(Object input) {
+        try {
+            if (input == null) return "";
+            return input.toString().trim();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+
     public static UUID toUUID(Object input) {
         try {
             return switch (input) {
