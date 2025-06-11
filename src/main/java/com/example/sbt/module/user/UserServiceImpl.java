@@ -192,9 +192,7 @@ public class UserServiceImpl implements UserService {
             builder.append(" left join permission p on (p.id = rp.permission_id) ");
         }
         builder.append(" where 1=1 ");
-        if (!isCount) {
-            builder.append(" group by u.id ");
-        }
+        builder.append(" group by u.id ");
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
             SQLHelper.setParams(query, params);

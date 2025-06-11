@@ -1,15 +1,15 @@
 package com.example.sbt.module.notification;
 
+import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import com.example.sbt.module.notification.dto.NotificationDTO;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -24,6 +24,21 @@ import java.util.UUID;
                 @Index(name = "notification_created_at_idx", columnList = "created_at"),
         }
 )
+@SqlResultSetMapping(name = ResultSetName.NOTIFICATION_SEARCH, classes = {
+        @ConstructorResult(targetClass = NotificationDTO.class, columns = {
+                @ColumnResult(name = "id", type = UUID.class),
+                @ColumnResult(name = "user_id", type = UUID.class),
+                @ColumnResult(name = "title", type = String.class),
+                @ColumnResult(name = "content", type = String.class),
+                @ColumnResult(name = "data", type = String.class),
+                @ColumnResult(name = "topic", type = String.class),
+                @ColumnResult(name = "retry_count", type = Integer.class),
+                @ColumnResult(name = "type", type = String.class),
+                @ColumnResult(name = "status", type = String.class),
+                @ColumnResult(name = "created_at", type = Instant.class),
+                @ColumnResult(name = "updated_at", type = Instant.class),
+        })
+})
 public class Notification extends BaseEntity {
 
     @Column(name = "user_id")

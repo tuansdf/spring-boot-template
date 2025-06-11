@@ -1,5 +1,6 @@
 package com.example.sbt.module.notification.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class NotificationDTO {
     private String content;
     private String data;
     private String topic;
+    @JsonIgnore
     private Integer retryCount;
     private String type;
     private String status;
