@@ -4,12 +4,14 @@ import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
+import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.SQLHelper;
 import com.example.sbt.event.publisher.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.dto.NotificationDTO;
+import com.example.sbt.module.notification.dto.NotificationStatsDTO;
 import com.example.sbt.module.notification.dto.SearchNotificationRequestDTO;
 import com.example.sbt.module.userdevice.UserDeviceService;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -40,15 +42,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final SendNotificationService sendNotificationService;
     private final UserDeviceService userDeviceService;
     private final EntityManager entityManager;
-
-    @Override
-    public PaginationData<NotificationDTO> search(SearchNotificationRequestDTO requestDTO, boolean isCount) {
-        PaginationData<NotificationDTO> result = executeSearch(requestDTO, true);
-        if (!isCount && result.getTotalItems() > 0) {
-            result.setItems(executeSearch(requestDTO, false).getItems());
-        }
-        return result;
-    }
 
     private PaginationData<NotificationDTO> executeSearch(SearchNotificationRequestDTO requestDTO, boolean isCount) {
         PaginationData<NotificationDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
@@ -95,15 +88,43 @@ public class NotificationServiceImpl implements NotificationService {
         return result;
     }
 
-    protected NotificationDTO save(NotificationDTO notificationDTO) {
-        return commonMapper.toDTO(notificationRepository.save(commonMapper.toEntity(notificationDTO)));
+    @Override
+    public PaginationData<NotificationDTO> search(SearchNotificationRequestDTO requestDTO, boolean isCount) {
+        PaginationData<NotificationDTO> result = executeSearch(requestDTO, true);
+        if (!isCount && result.getTotalItems() > 0) {
+            result.setItems(executeSearch(requestDTO, false).getItems());
+        }
+        return result;
+    }
+
+    @Override
+    public NotificationStatsDTO getStatsByUser(UUID userId) {
+        NotificationStatsDTO result = new NotificationStatsDTO();
+        result.setTotalRead(executeSearch(SearchNotificationRequestDTO.builder().userId(userId).status(CommonStatus.READ).build(), true).getTotalItems());
+        result.setTotalUnread(executeSearch(SearchNotificationRequestDTO.builder().userId(userId).status(CommonStatus.UNREAD).build(), true).getTotalItems());
+        return result;
+    }
+
+    @Override
+    public NotificationDTO findOneById(UUID id) {
+        if (id == null) return null;
+        Notification result = notificationRepository.findById(id).orElse(null);
+        if (result == null || result.getUserId() == null || result.getUserId().equals(RequestHolder.getContext().getUserId())) {
+            return null;
+        }
+        if (CommonStatus.UNREAD.equals(result.getStatus())) {
+            result.setStatus(CommonStatus.READ);
+            result = notificationRepository.save(result);
+        }
+        return commonMapper.toDTO(result);
     }
 
     @Override
     public NotificationDTO triggerSend(NotificationDTO notificationDTO) {
         notificationDTO.setId(null);
-        notificationDTO.setStatus(CommonStatus.PENDING);
-        NotificationDTO result = save(notificationDTO);
+        notificationDTO.setStatus(CommonStatus.UNREAD);
+        notificationDTO.setSendStatus(CommonStatus.PENDING);
+        NotificationDTO result = commonMapper.toDTO(notificationRepository.save(commonMapper.toEntity(notificationDTO)));
 
         sendNotificationEventPublisher.publish(notificationDTO);
 
@@ -112,7 +133,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void executeSend(NotificationDTO notificationDTO) throws FirebaseMessagingException {
-        if (notificationDTO == null || !CommonStatus.PENDING.equals(notificationDTO.getStatus())) return;
+        if (notificationDTO == null || !CommonStatus.PENDING.equals(notificationDTO.getSendStatus())) return;
         List<String> tokens = userDeviceService.findAllTokensByUserId(notificationDTO.getUserId());
         for (String token : tokens) {
             sendNotificationService.send(Message.builder()
@@ -121,7 +142,7 @@ public class NotificationServiceImpl implements NotificationService {
                     .putData("body", notificationDTO.getContent())
                     .build());
         }
-        notificationDTO.setStatus(CommonStatus.DONE);
+        notificationDTO.setSendStatus(CommonStatus.DONE);
         notificationRepository.save(commonMapper.toEntity(notificationDTO));
         log.info("Notification {} sent", ConversionUtils.safeToString(notificationDTO.getId()));
     }
@@ -132,7 +153,6 @@ public class NotificationServiceImpl implements NotificationService {
                 .title(LocaleHelper.getMessage("notification.new_comer_title", applicationProperties.getApplicationName()))
                 .content(LocaleHelper.getMessage("notification.new_comer_content"))
                 .userId(userId)
-                .status(CommonStatus.PENDING)
                 .build();
         return triggerSend(notificationDTO);
     }

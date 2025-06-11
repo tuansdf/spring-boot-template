@@ -5,16 +5,15 @@ import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.util.ExceptionUtils;
 import com.example.sbt.module.notification.dto.NotificationDTO;
+import com.example.sbt.module.notification.dto.NotificationStatsDTO;
 import com.example.sbt.module.notification.dto.SearchNotificationRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,6 +41,26 @@ public class NotificationController {
                     .createdAtFrom(createdAtFrom)
                     .build();
             var result = notificationService.search(requestDTO, count);
+            return ResponseEntity.ok(new CommonResponse<>(result));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CommonResponse<NotificationDTO>> findOneById(@PathVariable UUID id) {
+        try {
+            var result = notificationService.findOneById(id);
+            return ResponseEntity.ok(new CommonResponse<>(result));
+        } catch (Exception e) {
+            return ExceptionUtils.toResponseEntity(e);
+        }
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<CommonResponse<NotificationStatsDTO>> getStats() {
+        try {
+            var result = notificationService.getStatsByUser(RequestHolder.getContext().getUserId());
             return ResponseEntity.ok(new CommonResponse<>(result));
         } catch (Exception e) {
             return ExceptionUtils.toResponseEntity(e);

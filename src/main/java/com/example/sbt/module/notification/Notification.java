@@ -35,6 +35,7 @@ import java.util.UUID;
                 @ColumnResult(name = "retry_count", type = Integer.class),
                 @ColumnResult(name = "type", type = String.class),
                 @ColumnResult(name = "status", type = String.class),
+                @ColumnResult(name = "send_status", type = String.class),
                 @ColumnResult(name = "created_at", type = Instant.class),
                 @ColumnResult(name = "updated_at", type = Instant.class),
         })
@@ -57,5 +58,7 @@ public class Notification extends BaseEntity {
     private String type;
     @Column(name = "status")
     private String status;
+    @Column(name = "send_status")
+    private String sendStatus;
 
 }
