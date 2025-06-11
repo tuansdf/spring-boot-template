@@ -71,6 +71,7 @@ public class EmailServiceImpl implements EmailService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
         }
         if (!isCount) {
+            builder.append(" order by e.created_at desc, e.id asc ");
             builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {

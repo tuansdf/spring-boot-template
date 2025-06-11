@@ -71,6 +71,7 @@ public class NotificationServiceImpl implements NotificationService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
         }
         if (!isCount) {
+            builder.append(" order by n.created_at desc, n.id asc ");
             builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
