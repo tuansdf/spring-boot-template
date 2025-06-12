@@ -12,8 +12,7 @@ import java.util.UUID;
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, UUID> {
 
-    @Query(value = "select rp.permission_id from role_permission rp " +
-            "where rp.role_id = :roleId", nativeQuery = true)
+    @Query(value = "select permission_id from role_permission where role_id = :roleId", nativeQuery = true)
     Set<UUID> findAllIdsByRoleId(UUID roleId);
 
     @Query(value = "select p.code from role_permission rp " +
@@ -41,5 +40,7 @@ public interface PermissionRepository extends JpaRepository<Permission, UUID> {
     Optional<Permission> findTopByCode(String code);
 
     boolean existsByCode(String code);
+
+    long countByIdIn(Set<UUID> ids);
 
 }

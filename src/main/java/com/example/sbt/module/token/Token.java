@@ -27,7 +27,7 @@ import java.util.UUID;
 )
 public class Token extends BaseEntity {
 
-    @Column(name = "owner_id")
+    @Column(name = "owner_id", updatable = false)
     private UUID ownerId;
     @Column(name = "expires_at")
     private Instant expiresAt;

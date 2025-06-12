@@ -3,7 +3,6 @@ package com.example.sbt.module.role;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.exception.CustomException;
-import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.SQLHelper;
 import com.example.sbt.module.permission.PermissionService;
@@ -32,7 +31,6 @@ import java.util.*;
 @Transactional(rollbackOn = Exception.class)
 public class RoleServiceImpl implements RoleService {
 
-    private final CommonMapper commonMapper;
     private final RoleMapper roleMapper;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
@@ -42,22 +40,16 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO save(RoleDTO requestDTO) {
+        roleValidator.cleanRequest(requestDTO);
+        roleValidator.validateUpdate(requestDTO);
         Role result = null;
         if (requestDTO.getId() != null) {
-            Optional<Role> roleOptional = roleRepository.findById(requestDTO.getId());
-            if (roleOptional.isPresent()) {
-                roleValidator.validateUpdate(requestDTO);
-                result = roleOptional.get();
-            }
+            result = roleRepository.findById(requestDTO.getId()).orElse(null);
         }
         if (result == null) {
             roleValidator.validateCreate(requestDTO);
-            String code = ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase();
-            if (roleRepository.existsByCode(code)) {
-                throw new CustomException(HttpStatus.CONFLICT);
-            }
             result = new Role();
-            result.setCode(code);
+            result.setCode(requestDTO.getCode());
         }
         result.setName(requestDTO.getName());
         result.setDescription(requestDTO.getDescription());
@@ -68,16 +60,28 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public void setUserRoles(UUID userId, Set<UUID> roleIds) {
-        userRoleRepository.deleteAllByUserId(userId);
-        if (CollectionUtils.isEmpty(roleIds)) return;
-        List<UserRole> userRoles = roleIds.stream().map(x -> new UserRole(userId, x)).toList();
-        userRoleRepository.saveAll(userRoles);
+        if (userId == null) return;
+        if (CollectionUtils.isEmpty(roleIds)) {
+            userRoleRepository.deleteAllByUserId(userId);
+            return;
+        }
+        Set<UUID> existingIds = roleRepository.findAllIdsByUserId(userId);
+        Set<UUID> removeIds = new HashSet<>(existingIds);
+        removeIds.removeAll(roleIds);
+        Set<UUID> newIds = new HashSet<>(roleIds);
+        newIds.removeAll(existingIds);
+        if (CollectionUtils.isNotEmpty(removeIds)) {
+            userRoleRepository.deleteAllByUserIdAndRoleIdIn(userId, removeIds);
+        }
+        if (CollectionUtils.isNotEmpty(newIds)) {
+            userRoleRepository.saveAll(newIds.stream().map(roleId -> UserRole.builder().userId(userId).roleId(roleId).build()).toList());
+        }
     }
 
     @Override
     public RoleDTO findOneById(UUID id) {
-        Optional<Role> result = roleRepository.findById(id);
-        return result.map(roleMapper::toDTO).orElse(null);
+        if (id == null) return null;
+        return roleRepository.findById(id).map(roleMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -91,8 +95,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDTO findOneByCode(String code) {
-        Optional<Role> result = roleRepository.findTopByCode(code);
-        return result.map(roleMapper::toDTO).orElse(null);
+        if (StringUtils.isBlank(code)) return null;
+        return roleRepository.findTopByCode(code).map(roleMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -106,19 +110,17 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Set<String> findAllCodesByUserId(UUID userId) {
+        if (userId == null) return new HashSet<>();
         Set<String> result = roleRepository.findAllCodesByUserId(userId);
-        if (result == null) {
-            return new HashSet<>();
-        }
+        if (result == null) return new HashSet<>();
         return result;
     }
 
     @Override
     public List<RoleDTO> findAllByUserId(UUID userId) {
+        if (userId == null) return new ArrayList<>();
         List<Role> result = roleRepository.findAllByUserId(userId);
-        if (result == null) {
-            return new ArrayList<>();
-        }
+        if (result == null) return new ArrayList<>();
         return result.stream().map(roleMapper::toDTO).toList();
     }
 
@@ -142,7 +144,7 @@ public class RoleServiceImpl implements RoleService {
         }
         builder.append(" from role r ");
         builder.append(" where 1=1 ");
-        if (StringUtils.isNotEmpty(requestDTO.getCode())) {
+        if (StringUtils.isNotBlank(requestDTO.getCode())) {
             builder.append(" and r.code = :code ");
             params.put("code", requestDTO.getCode());
         }

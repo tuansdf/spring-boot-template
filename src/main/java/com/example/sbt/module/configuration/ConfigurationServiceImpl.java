@@ -48,30 +48,21 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private String getValueFromKVByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
         String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
-        String result = ConversionUtils.toString(redisTemplate.opsForValue().get(kvKey));
-        if (Constants.NULL.equals(result)) return null;
-        return result;
+        return ConversionUtils.toString(redisTemplate.opsForValue().get(kvKey));
     }
 
     @Override
     public ConfigurationDTO save(ConfigurationDTO requestDTO) {
-        if (requestDTO == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
+        configurationValidator.cleanRequest(requestDTO);
+        configurationValidator.validateUpdate(requestDTO);
         Configuration result = null;
         if (requestDTO.getId() != null) {
             result = configurationRepository.findById(requestDTO.getId()).orElse(null);
         }
         if (result == null) {
-            requestDTO.setCode(ConversionUtils.safeTrim(requestDTO.getCode()).toUpperCase());
             configurationValidator.validateCreate(requestDTO);
-            if (configurationRepository.existsByCode(requestDTO.getCode())) {
-                throw new CustomException(HttpStatus.CONFLICT);
-            }
             result = new Configuration();
             result.setCode(requestDTO.getCode());
-        } else {
-            configurationValidator.validateUpdate(requestDTO);
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
@@ -83,6 +74,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ConfigurationDTO findOneById(UUID id) {
+        if (id == null) return null;
         return commonMapper.toDTO(configurationRepository.findById(id).orElse(null));
     }
 
@@ -97,6 +89,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public ConfigurationDTO findOneByCode(String code) {
+        if (StringUtils.isBlank(code)) return null;
         return commonMapper.toDTO(configurationRepository.findTopByCode(code).orElse(null));
     }
 
@@ -113,10 +106,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public String findValueByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
         String result = getValueFromKVByCode(code);
+        if (Constants.NULL.equals(result)) return null;
         if (result == null) {
             result = configurationRepository.findTopValueByCodeAndStatus(code, CommonStatus.ACTIVE);
-        }
-        if (result != null) {
             setValueToKVByCode(code, result);
         }
         return result;
@@ -142,11 +134,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         builder.append(" from configuration c ");
         builder.append(" where 1=1 ");
-        if (StringUtils.isNotEmpty(requestDTO.getCode())) {
+        if (StringUtils.isNotBlank(requestDTO.getCode())) {
             builder.append(" and c.code = :code ");
             params.put("code", requestDTO.getCode());
         }
-        if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
+        if (StringUtils.isNotBlank(requestDTO.getStatus())) {
             builder.append(" and c.status = :status ");
             params.put("status", requestDTO.getStatus());
         }

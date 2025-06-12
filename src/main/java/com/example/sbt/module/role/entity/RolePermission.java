@@ -2,10 +2,7 @@ package com.example.sbt.module.role.entity;
 
 import com.example.sbt.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
@@ -13,6 +10,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(
         name = "role_permission",
@@ -25,9 +23,9 @@ import java.util.UUID;
 )
 public class RolePermission extends BaseEntity {
 
-    @Column(name = "role_id")
+    @Column(name = "role_id", updatable = false)
     private UUID roleId;
-    @Column(name = "permission_id")
+    @Column(name = "permission_id", updatable = false)
     private UUID permissionId;
 
 }

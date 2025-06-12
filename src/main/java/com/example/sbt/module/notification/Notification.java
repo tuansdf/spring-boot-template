@@ -42,7 +42,7 @@ import java.util.UUID;
 })
 public class Notification extends BaseEntity {
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", updatable = false)
     private UUID userId;
     @Column(name = "title", columnDefinition = "text")
     private String title;

@@ -13,6 +13,9 @@ import java.util.UUID;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, UUID> {
 
+    @Query(value = "select role_id from user_role where user_id = :userId", nativeQuery = true)
+    Set<UUID> findAllIdsByUserId(UUID userId);
+
     @Query(value = "select r.code from user_role ur " +
             "inner join role r on (r.id = ur.role_id) " +
             "where ur.user_id = :userId", nativeQuery = true)
@@ -26,5 +29,7 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
     Optional<Role> findTopByCode(String code);
 
     boolean existsByCode(String code);
+
+    long countByIdIn(Set<UUID> ids);
 
 }

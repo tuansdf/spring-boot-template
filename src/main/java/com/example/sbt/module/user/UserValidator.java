@@ -2,6 +2,7 @@ package com.example.sbt.module.user;
 
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.exception.CustomException;
+import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.LocaleHelper.LocaleKey;
 import com.example.sbt.common.util.ValidationUtils;
@@ -19,6 +20,12 @@ public class UserValidator {
     private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE, CommonStatus.PENDING);
 
     public void validateUpdate(UserDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+        }
+        requestDTO.setUsername(ConversionUtils.safeTrim(requestDTO.getUsername()));
+        requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
+        requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
         String usernameError = ValidationUtils.validateUsername(requestDTO.getUsername());
         if (usernameError != null) {
             throw new CustomException(usernameError);

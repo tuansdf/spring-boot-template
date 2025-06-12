@@ -36,22 +36,16 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PermissionDTO save(PermissionDTO requestDTO) {
+        permissionValidator.cleanRequest(requestDTO);
+        permissionValidator.validateUpdate(requestDTO);
         Permission result = null;
         if (requestDTO.getId() != null) {
-            Optional<Permission> permissionOptional = permissionRepository.findById(requestDTO.getId());
-            if (permissionOptional.isPresent()) {
-                permissionValidator.validateUpdate(requestDTO);
-                result = permissionOptional.get();
-            }
+            result = permissionRepository.findById(requestDTO.getId()).orElse(null);
         }
         if (result == null) {
             permissionValidator.validateCreate(requestDTO);
-            String code = ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase();
-            if (permissionRepository.existsByCode(code)) {
-                throw new CustomException(HttpStatus.CONFLICT);
-            }
             result = new Permission();
-            result.setCode(code);
+            result.setCode(requestDTO.getCode());
         }
         result.setName(requestDTO.getName());
         return commonMapper.toDTO(permissionRepository.save(result));
@@ -59,16 +53,28 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public void setRolePermissions(UUID roleId, Set<UUID> permissionIds) {
-        rolePermissionRepository.deleteAllByRoleId(roleId);
-        if (CollectionUtils.isEmpty(permissionIds)) return;
-        List<RolePermission> rolePermissions = permissionIds.stream().map(x -> new RolePermission(roleId, x)).toList();
-        rolePermissionRepository.saveAll(rolePermissions);
+        if (roleId == null) return;
+        if (CollectionUtils.isEmpty(permissionIds)) {
+            rolePermissionRepository.deleteAllByRoleId(roleId);
+            return;
+        }
+        Set<UUID> existingIds = permissionRepository.findAllIdsByRoleId(roleId);
+        Set<UUID> removeIds = new HashSet<>(existingIds);
+        removeIds.removeAll(permissionIds);
+        Set<UUID> newIds = new HashSet<>(permissionIds);
+        newIds.removeAll(existingIds);
+        if (CollectionUtils.isNotEmpty(removeIds)) {
+            rolePermissionRepository.deleteAllByRoleIdAndPermissionIdIn(roleId, removeIds);
+        }
+        if (CollectionUtils.isNotEmpty(newIds)) {
+            rolePermissionRepository.saveAll(newIds.stream().map(permissionId -> RolePermission.builder().roleId(roleId).permissionId(permissionId).build()).toList());
+        }
     }
 
     @Override
     public PermissionDTO findOneById(UUID id) {
-        Optional<Permission> result = permissionRepository.findById(id);
-        return result.map(commonMapper::toDTO).orElse(null);
+        if (id == null) return null;
+        return permissionRepository.findById(id).map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -82,8 +88,8 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public PermissionDTO findOneByCode(String code) {
-        Optional<Permission> result = permissionRepository.findTopByCode(code);
-        return result.map(commonMapper::toDTO).orElse(null);
+        if (StringUtils.isBlank(code)) return null;
+        return permissionRepository.findTopByCode(code).map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -97,46 +103,41 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public Set<UUID> findAllIdsByRoleId(UUID roleId) {
+        if (roleId == null) return new HashSet<>();
         Set<UUID> result = permissionRepository.findAllIdsByRoleId(roleId);
-        if (result == null) {
-            return new HashSet<>();
-        }
+        if (result == null) return new HashSet<>();
         return result;
     }
 
     @Override
     public Set<String> findAllCodesByRoleId(UUID roleId) {
+        if (roleId == null) return new HashSet<>();
         Set<String> result = permissionRepository.findAllCodesByRoleId(roleId);
-        if (result == null) {
-            return new HashSet<>();
-        }
+        if (result == null) return new HashSet<>();
         return result;
     }
 
     @Override
     public Set<String> findAllCodesByUserId(UUID userId) {
+        if (userId == null) return new HashSet<>();
         Set<String> result = permissionRepository.findAllCodesByUserId(userId);
-        if (result == null) {
-            return new HashSet<>();
-        }
+        if (result == null) return new HashSet<>();
         return result;
     }
 
     @Override
     public List<PermissionDTO> findAllByRoleId(UUID roleId) {
+        if (roleId == null) return new ArrayList<>();
         List<Permission> result = permissionRepository.findAllByRoleId(roleId);
-        if (result == null) {
-            return new ArrayList<>();
-        }
+        if (result == null) return new ArrayList<>();
         return result.stream().map(commonMapper::toDTO).toList();
     }
 
     @Override
     public List<PermissionDTO> findAllByUserId(UUID userId) {
+        if (userId == null) return new ArrayList<>();
         List<Permission> result = permissionRepository.findAllByUserId(userId);
-        if (result == null) {
-            return new ArrayList<>();
-        }
+        if (result == null) return new ArrayList<>();
         return result.stream().map(commonMapper::toDTO).toList();
     }
 
@@ -160,7 +161,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
         builder.append(" from permission p ");
         builder.append(" where 1=1 ");
-        if (StringUtils.isNotEmpty(requestDTO.getCode())) {
+        if (StringUtils.isNotBlank(requestDTO.getCode())) {
             builder.append(" and p.code = :code ");
             params.put("code", requestDTO.getCode());
         }

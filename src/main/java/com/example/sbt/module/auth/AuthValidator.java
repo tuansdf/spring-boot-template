@@ -1,6 +1,7 @@
 package com.example.sbt.module.auth;
 
 import com.example.sbt.common.exception.CustomException;
+import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.LocaleHelper.LocaleKey;
 import com.example.sbt.common.util.ValidationUtils;
@@ -14,21 +15,28 @@ import org.springframework.stereotype.Component;
 public class AuthValidator {
 
     public void validateRegister(RegisterRequestDTO requestDTO) {
-        if (StringUtils.isEmpty(requestDTO.getUsername())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.username")));
+        if (requestDTO == null) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
         }
-        if (requestDTO.getUsername().length() > 255) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.username"), 255));
+        requestDTO.setUsername(ConversionUtils.safeTrim(requestDTO.getUsername()));
+        requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
+        requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
+        if (StringUtils.isBlank(requestDTO.getUsername())) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.username")));
         }
-        if (StringUtils.isEmpty(requestDTO.getEmail())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.email")));
+        String usernameError = ValidationUtils.validateUsername(requestDTO.getUsername());
+        if (usernameError != null) {
+            throw new CustomException(usernameError);
+        }
+        if (StringUtils.isBlank(requestDTO.getEmail())) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.email")));
         }
         String emailError = ValidationUtils.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
             throw new CustomException(emailError);
         }
         if (StringUtils.isEmpty(requestDTO.getPassword())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.password")));
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.password")));
         }
         String passwordError = ValidationUtils.validatePassword(requestDTO.getPassword());
         if (passwordError != null) {
@@ -37,14 +45,18 @@ public class AuthValidator {
     }
 
     public void validateLogin(LoginRequestDTO requestDTO) {
-        if (StringUtils.isEmpty(requestDTO.getUsername())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.username")));
+        if (requestDTO == null) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+        }
+        requestDTO.setUsername(ConversionUtils.safeTrim(requestDTO.getUsername()));
+        if (StringUtils.isBlank(requestDTO.getUsername())) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.username")));
         }
         if (requestDTO.getUsername().length() > 255) {
             throw new CustomException(LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.username"), 255));
         }
         if (StringUtils.isEmpty(requestDTO.getPassword())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.password")));
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.password")));
         }
         String passwordError = ValidationUtils.validatePassword(requestDTO.getPassword());
         if (passwordError != null) {
@@ -53,8 +65,12 @@ public class AuthValidator {
     }
 
     public void validateForgotPassword(ForgotPasswordRequestDTO requestDTO) {
-        if (StringUtils.isEmpty(requestDTO.getEmail())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.email")));
+        if (requestDTO == null) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+        }
+        requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
+        if (StringUtils.isBlank(requestDTO.getEmail())) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.email")));
         }
         String emailError = ValidationUtils.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
@@ -63,8 +79,11 @@ public class AuthValidator {
     }
 
     public void validateRequestActivateAccount(RequestActivateAccountRequestDTO requestDTO) {
-        if (StringUtils.isEmpty(requestDTO.getEmail())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.email")));
+        if (requestDTO == null) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+        }
+        if (StringUtils.isBlank(requestDTO.getEmail())) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.email")));
         }
         String emailError = ValidationUtils.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
@@ -73,11 +92,14 @@ public class AuthValidator {
     }
 
     public void validateResetPassword(ResetPasswordRequestDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+        }
         if (StringUtils.isEmpty(requestDTO.getToken())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.token")));
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.token")));
         }
         if (StringUtils.isEmpty(requestDTO.getNewPassword())) {
-            throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.password")));
+            throw new CustomException(LocaleHelper.getMessage("form.error.required", new LocaleKey("field.password")));
         }
         String passwordError = ValidationUtils.validatePassword(requestDTO.getNewPassword());
         if (passwordError != null) {

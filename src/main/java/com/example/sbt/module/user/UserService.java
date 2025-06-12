@@ -10,12 +10,6 @@ public interface UserService {
 
     UserDTO updateProfile(UserDTO requestDTO);
 
-    boolean existsByUsername(String username);
-
-    boolean existsByEmail(String email);
-
-    boolean existsByUsernameOrEmail(String username, String email);
-
     UserDTO findOneById(UUID userId);
 
     UserDTO findOneByIdOrThrow(UUID userId);

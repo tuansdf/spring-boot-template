@@ -22,7 +22,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,31 +41,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateProfile(UserDTO requestDTO) {
-        boolean isAdmin = AuthHelper.hasAnyPermission(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER);
         if (requestDTO.getId() == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
         userValidator.validateUpdate(requestDTO);
-        Optional<User> userOptional = userRepository.findById(requestDTO.getId());
-        if (userOptional.isEmpty()) {
+        User user = userRepository.findById(requestDTO.getId()).orElse(null);
+        if (user == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
-        User user = userOptional.get();
-        if (StringUtils.isNotEmpty(requestDTO.getUsername())) {
-            if (!ConversionUtils.safeToString(user.getUsername()).equals(requestDTO.getUsername()) && existsByUsername(requestDTO.getUsername())) {
+        if (StringUtils.isNotBlank(requestDTO.getUsername())) {
+            if (!user.getUsername().equals(requestDTO.getUsername()) && userRepository.existsByUsername(requestDTO.getUsername())) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }
             user.setUsername(requestDTO.getUsername());
         }
-        if (StringUtils.isNotEmpty(requestDTO.getEmail())) {
-            if (!ConversionUtils.safeToString(user.getEmail()).equals(requestDTO.getEmail()) && existsByEmail(requestDTO.getEmail())) {
+        if (StringUtils.isNotBlank(requestDTO.getEmail())) {
+            if (!user.getEmail().equals(requestDTO.getEmail()) && userRepository.existsByEmail(requestDTO.getEmail())) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }
             user.setEmail(requestDTO.getEmail());
         }
-        if (StringUtils.isNotEmpty(requestDTO.getName())) {
+        if (StringUtils.isNotBlank(requestDTO.getName())) {
             user.setName(requestDTO.getName());
         }
+        boolean isAdmin = AuthHelper.hasAnyPermission(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER);
         if (isAdmin) {
             if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
                 user.setStatus(requestDTO.getStatus());
@@ -75,24 +77,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
-    }
-
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
-    @Override
-    public boolean existsByUsernameOrEmail(String username, String email) {
-        return userRepository.existsByUsernameOrEmail(username, email);
-    }
-
-    @Override
     public UserDTO findOneById(UUID userId) {
-        Optional<User> result = userRepository.findById(userId);
-        return result.map(userMapper::toDTO).orElse(null);
+        if (userId == null) return null;
+        return userRepository.findById(userId).map(userMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -106,8 +93,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneByUsername(String username) {
-        Optional<User> result = userRepository.findTopByUsername(username);
-        return result.map(userMapper::toDTO).orElse(null);
+        if (StringUtils.isBlank(username)) return null;
+        return userRepository.findTopByUsername(username).map(userMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -121,8 +108,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneByEmail(String email) {
-        Optional<User> result = userRepository.findTopByEmail(email);
-        return result.map(userMapper::toDTO).orElse(null);
+        if (StringUtils.isBlank(email)) return null;
+        return userRepository.findTopByEmail(email).map(userMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -160,15 +147,15 @@ public class UserServiceImpl implements UserService {
             builder.append(" select u.id ");
             builder.append(" from _user u ");
             builder.append(" where 1=1 ");
-            if (StringUtils.isNotEmpty(requestDTO.getUsername())) {
-                builder.append(" and u.username like :username ");
+            if (StringUtils.isNotBlank(requestDTO.getUsername())) {
+                builder.append(" and u.username ilike :username ");
                 params.put("username", SQLHelper.escapeLikePattern(requestDTO.getUsername()).concat("%"));
             }
-            if (StringUtils.isNotEmpty(requestDTO.getEmail())) {
-                builder.append(" and u.email like :email ");
+            if (StringUtils.isNotBlank(requestDTO.getEmail())) {
+                builder.append(" and u.email ilike :email ");
                 params.put("email", SQLHelper.escapeLikePattern(requestDTO.getEmail()).concat("%"));
             }
-            if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
+            if (StringUtils.isNotBlank(requestDTO.getStatus())) {
                 builder.append(" and u.status = :status ");
                 params.put("status", requestDTO.getStatus());
             }

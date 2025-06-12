@@ -58,7 +58,7 @@ public class EmailServiceImpl implements EmailService {
             builder.append(" and e.user_id = :userId ");
             params.put("userId", requestDTO.getUserId());
         }
-        if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
+        if (StringUtils.isNotBlank(requestDTO.getStatus())) {
             builder.append(" and e.status = :status ");
             params.put("status", requestDTO.getStatus());
         }

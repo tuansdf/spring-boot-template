@@ -8,10 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -27,10 +24,7 @@ public class UserDeviceServiceImpl implements UserDeviceService {
     public UserDeviceDTO save(UserDeviceDTO userDeviceDTO) {
         UserDevice result = null;
         if (userDeviceDTO.getId() != null) {
-            Optional<UserDevice> userDeviceOptional = userDeviceRepository.findById(userDeviceDTO.getId());
-            if (userDeviceOptional.isPresent()) {
-                result = userDeviceOptional.get();
-            }
+            result = userDeviceRepository.findById(userDeviceDTO.getId()).orElse(null);
         }
         if (result == null) {
             result = new UserDevice();
@@ -42,20 +36,21 @@ public class UserDeviceServiceImpl implements UserDeviceService {
 
     @Override
     public UserDeviceDTO findOneById(UUID id) {
+        if (id == null) return null;
         return userDeviceRepository.findById(id).map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
     public List<UserDeviceDTO> findAllByUserId(UUID userId) {
+        if (userId == null) return new ArrayList<>();
         List<UserDevice> userDevices = userDeviceRepository.findAllByUserId(userId);
-        if (userDevices.isEmpty()) {
-            return new ArrayList<>();
-        }
+        if (userDevices.isEmpty()) return new ArrayList<>();
         return userDevices.stream().map(commonMapper::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public List<String> findAllTokensByUserId(UUID userId) {
+    public Set<String> findAllTokensByUserId(UUID userId) {
+        if (userId == null) return new HashSet<>();
         return userDeviceRepository.findAllTokensByUserId(userId);
     }
 

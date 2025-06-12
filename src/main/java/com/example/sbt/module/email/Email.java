@@ -43,7 +43,7 @@ import java.util.UUID;
 })
 public class Email extends BaseEntity {
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", updatable = false)
     private UUID userId;
     @Column(name = "to_email", columnDefinition = "text")
     private String toEmail;
