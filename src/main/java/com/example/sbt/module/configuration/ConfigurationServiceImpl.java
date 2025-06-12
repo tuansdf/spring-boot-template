@@ -1,6 +1,7 @@
 package com.example.sbt.module.configuration;
 
 import com.example.sbt.common.constant.CommonStatus;
+import com.example.sbt.common.constant.Constants;
 import com.example.sbt.common.constant.KVKey;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
@@ -20,7 +21,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -35,7 +39,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private final StringRedisTemplate redisTemplate;
 
     private void setValueToKVByCode(String code, String value) {
-        if (StringUtils.isBlank(code) || value == null) return;
+        if (StringUtils.isBlank(code)) return;
+        if (value == null) value = Constants.NULL;
         String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
         redisTemplate.opsForValue().set(kvKey, value);
     }
@@ -43,27 +48,30 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private String getValueFromKVByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
         String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
-        return ConversionUtils.toString(redisTemplate.opsForValue().get(kvKey));
+        String result = ConversionUtils.toString(redisTemplate.opsForValue().get(kvKey));
+        if (Constants.NULL.equals(result)) return null;
+        return result;
     }
 
     @Override
     public ConfigurationDTO save(ConfigurationDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
         Configuration result = null;
         if (requestDTO.getId() != null) {
-            Optional<Configuration> configurationOptional = configurationRepository.findById(requestDTO.getId());
-            if (configurationOptional.isPresent()) {
-                configurationValidator.validateUpdate(requestDTO);
-                result = configurationOptional.get();
-            }
+            result = configurationRepository.findById(requestDTO.getId()).orElse(null);
         }
         if (result == null) {
+            requestDTO.setCode(ConversionUtils.safeTrim(requestDTO.getCode()).toUpperCase());
             configurationValidator.validateCreate(requestDTO);
-            String code = ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase();
-            if (configurationRepository.existsByCode(code)) {
+            if (configurationRepository.existsByCode(requestDTO.getCode())) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }
             result = new Configuration();
-            result.setCode(code);
+            result.setCode(requestDTO.getCode());
+        } else {
+            configurationValidator.validateUpdate(requestDTO);
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
@@ -151,6 +159,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
         }
         if (!isCount) {
+            builder.append(" order by c.code asc, c.id asc ");
             builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
