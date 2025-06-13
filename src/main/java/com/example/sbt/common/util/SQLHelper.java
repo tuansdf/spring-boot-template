@@ -26,14 +26,13 @@ public class SQLHelper {
 
     static public void setParams(Query query, Map<String, Object> params) {
         if (query == null || MapUtils.isEmpty(params)) return;
-
         for (Map.Entry<String, Object> item : params.entrySet()) {
             query.setParameter(item.getKey(), item.getValue());
         }
     }
 
     public static String toLimitOffset(long pageNumber, long pageSize) {
-        return " limit " + pageSize + " offset " + ((pageNumber - 1) * pageSize);
+        return " limit " + pageSize + " offset " + ((pageNumber - 1) * pageSize) + " ";
     }
 
     public static long toPages(long totalItems, long pageSize) {

@@ -157,6 +157,7 @@ public class RoleServiceImpl implements RoleService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
         }
         if (!isCount) {
+            builder.append(" order by r.code asc, r.id asc ");
             builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {

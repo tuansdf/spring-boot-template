@@ -174,6 +174,7 @@ public class PermissionServiceImpl implements PermissionService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
         }
         if (!isCount) {
+            builder.append(" order by p.code asc, p.id asc ");
             builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {

@@ -180,6 +180,9 @@ public class UserServiceImpl implements UserService {
         }
         builder.append(" where 1=1 ");
         builder.append(" group by u.id ");
+        if (!isCount) {
+            builder.append(" order by u.id asc ");
+        }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
             SQLHelper.setParams(query, params);
