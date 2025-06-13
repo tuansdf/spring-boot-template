@@ -36,7 +36,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (StringUtils.isBlank(extension)) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        dirPath = StringUtils.strip(ConversionUtils.safeToString(dirPath).trim(), "/");
+        dirPath = StringUtils.strip(ConversionUtils.safeTrim(dirPath), "/");
         UUID id = RandomUtils.Secure.generateTimeBasedUUID();
         String filePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat(".").concat(extension), "/");
         filePath = uploadFileService.upload(file.getBytes(), filePath);
@@ -63,7 +63,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (StringUtils.isBlank(extension)) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        dirPath = StringUtils.strip(ConversionUtils.safeToString(dirPath).trim(), "/");
+        dirPath = StringUtils.strip(ConversionUtils.safeTrim(dirPath), "/");
         UUID id = RandomUtils.Secure.generateTimeBasedUUID();
         String filePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat(".").concat(extension), "/");
 

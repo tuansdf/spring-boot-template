@@ -131,8 +131,8 @@ public class AuthServiceImpl implements AuthService {
 
         String hashedPassword = passwordEncoder.encode(requestDTO.getPassword());
         User user = new User();
-        user.setUsername(ConversionUtils.safeToString(requestDTO.getUsername()).trim());
-        user.setEmail(ConversionUtils.safeToString(requestDTO.getEmail()).trim());
+        user.setUsername(requestDTO.getUsername());
+        user.setEmail(requestDTO.getEmail());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
         user.setStatus(CommonStatus.PENDING);

@@ -69,17 +69,17 @@ public class UserDTO {
     public void setRoleCodes(String roles) {
         if (StringUtils.isBlank(roles)) {
             this.roleCodes = new HashSet<>();
-            return;
+        } else {
+            this.roleCodes = Arrays.stream(roles.split(",")).map(ConversionUtils::safeTrim).collect(Collectors.toSet());
         }
-        this.roleCodes = Arrays.stream(roles.split(",")).map(x -> ConversionUtils.safeToString(x).trim()).collect(Collectors.toSet());
     }
 
     public void setPermissionCodes(String permissions) {
         if (StringUtils.isBlank(permissions)) {
             this.permissionCodes = new HashSet<>();
-            return;
+        } else {
+            this.permissionCodes = Arrays.stream(permissions.split(",")).map(ConversionUtils::safeTrim).collect(Collectors.toSet());
         }
-        this.permissionCodes = Arrays.stream(permissions.split(",")).map(x -> ConversionUtils.safeToString(x).trim()).collect(Collectors.toSet());
     }
 
 }
