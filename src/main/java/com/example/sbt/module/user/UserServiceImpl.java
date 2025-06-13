@@ -168,6 +168,7 @@ public class UserServiceImpl implements UserService {
                 params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
             }
             if (!isCount) {
+                builder.append(" order by u.username asc, u.id asc ");
                 builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
             }
         }
@@ -177,11 +178,8 @@ public class UserServiceImpl implements UserService {
             builder.append(" left join role r on (r.id = ur.role_id) ");
             builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
             builder.append(" left join permission p on (p.id = rp.permission_id) ");
-        }
-        builder.append(" where 1=1 ");
-        builder.append(" group by u.id ");
-        if (!isCount) {
-            builder.append(" order by u.id asc ");
+            builder.append(" group by u.id ");
+            builder.append(" order by u.username asc, u.id asc ");
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
