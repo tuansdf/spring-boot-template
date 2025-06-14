@@ -30,11 +30,7 @@ public class RequestHolder {
 
     public static void syncMDC() {
         RequestContext context = getContext();
-        String userId = ConversionUtils.toString(context.getUserId());
         String requestId = ConversionUtils.toString(context.getRequestId());
-        if (StringUtils.isNotEmpty(userId)) {
-            MDC.put(MDCKey.USER_ID, userId);
-        }
         if (StringUtils.isNotEmpty(requestId)) {
             MDC.put(MDCKey.REQUEST_ID, requestId);
         }

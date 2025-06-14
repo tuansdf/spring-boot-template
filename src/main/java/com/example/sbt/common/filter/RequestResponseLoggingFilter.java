@@ -36,7 +36,7 @@ public class RequestResponseLoggingFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
             long execTime = DateUtils.currentEpochMillis() - start;
-            log.info("[requestAt={}] EXIT  [method={}] [path={}] [execTime={} ms] [status={}]", start, httpServletRequest.getMethod(), httpServletRequest.getServletPath(), execTime, httpServletResponse.getStatus());
+            log.info("[requestAt={}] EXIT  [userId={}] [method={}] [path={}] [execTime={} ms] [status={}]", start, RequestHolder.getContext().getUserId(), httpServletRequest.getMethod(), httpServletRequest.getServletPath(), execTime, httpServletResponse.getStatus());
             RequestHolder.clear();
         }
     }
