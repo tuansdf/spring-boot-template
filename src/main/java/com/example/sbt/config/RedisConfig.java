@@ -2,6 +2,7 @@ package com.example.sbt.config;
 
 import com.example.sbt.common.constant.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -17,7 +18,16 @@ public class RedisConfig {
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(new RedisStandaloneConfiguration(applicationProperties.getRedisHost(), applicationProperties.getRedisPort()));
+        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(applicationProperties.getRedisHost());
+        configuration.setPort(applicationProperties.getRedisPort());
+        if (StringUtils.isNotBlank(applicationProperties.getRedisUsername())) {
+            configuration.setUsername(applicationProperties.getRedisUsername());
+        }
+        if (StringUtils.isNotBlank(applicationProperties.getRedisPassword())) {
+            configuration.setPassword(applicationProperties.getRedisPassword());
+        }
+        return new LettuceConnectionFactory(configuration);
     }
 
     @Bean

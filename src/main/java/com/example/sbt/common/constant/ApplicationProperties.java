@@ -28,6 +28,10 @@ public class ApplicationProperties {
     private String redisHost;
     @Value("${spring.data.redis.port}")
     private Integer redisPort;
+    @Value("${spring.data.redis.username}")
+    private String redisUsername;
+    @Value("${spring.data.redis.password}")
+    private String redisPassword;
 
     @Value("${custom.server-base-url}")
     private String serverBaseUrl;
