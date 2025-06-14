@@ -16,51 +16,83 @@ public class Base64Helper {
 
     public static String encode(byte[] bytes) {
         try {
+            if (bytes == null) return null;
             return encoder.encodeToString(bytes);
         } catch (Exception e) {
             log.error("base64 encode", e);
-            return "";
+            return null;
         }
     }
 
     public static String encode(String input) {
-        if (StringUtils.isBlank(input)) return "";
-        return encode(input.getBytes(StandardCharsets.UTF_8));
+        try {
+            if (input == null) return null;
+            return encode(input.getBytes(StandardCharsets.UTF_8));
+        } catch (Exception e) {
+            log.error("base64 encode", e);
+            return null;
+        }
     }
 
     public static String urlEncode(byte[] bytes) {
         try {
+            if (bytes == null) return null;
             return urlEncoder.encodeToString(bytes);
         } catch (Exception e) {
-            log.error("base64 encode url", e);
-            return "";
+            log.error("base64url encode", e);
+            return null;
         }
     }
 
     public static String urlEncode(String input) {
-        if (StringUtils.isBlank(input)) return "";
-        return urlEncode(input.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public static String decode(String input) {
         try {
-            byte[] result = decoder.decode(input.getBytes());
-            if (result == null) return "";
-            return new String(result);
+            if (input == null) return null;
+            return urlEncode(input.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            log.error("base64 decode", e);
-            return "";
+            log.error("base64url encode", e);
+            return null;
         }
     }
 
-    public static String urlDecode(String input) {
+    public static byte[] decode(String input) {
         try {
-            byte[] result = urlDecoder.decode(input.getBytes());
-            if (result == null) return "";
-            return new String(result);
+            if (StringUtils.isBlank(input)) return null;
+            return decoder.decode(input.getBytes());
         } catch (Exception e) {
-            log.error("base64 decode url", e);
-            return "";
+            log.error("base64 decode", e);
+            return null;
+        }
+    }
+
+    public static String decodeToString(String input) {
+        try {
+            byte[] result = decode(input);
+            if (result == null) return null;
+            return new String(result, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            log.error("base64 decode to string", e);
+            return null;
+        }
+    }
+
+    public static byte[] urlDecode(String input) {
+        try {
+            if (StringUtils.isBlank(input)) return null;
+            return urlDecoder.decode(input.getBytes());
+        } catch (Exception e) {
+            log.error("base64url decode", e);
+            return null;
+        }
+    }
+
+    public static String urlDecodeToString(String input) {
+        try {
+            byte[] result = urlDecode(input);
+            if (result == null) return null;
+            return new String(result, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            log.error("base64url decode to string", e);
+            return null;
         }
     }
 
