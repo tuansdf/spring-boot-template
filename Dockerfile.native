@@ -10,22 +10,14 @@ ENV JAVA_HOME=/opt/graalvm
 ENV GRAALVM_HOME=/opt/graalvm
 ENV PATH="$JAVA_HOME/bin:$PATH"
 
-COPY gradlew build.gradle settings.gradle ./
-COPY gradle gradle
-
+COPY . .
 RUN chmod +x ./gradlew
-RUN ./gradlew dependencies --no-daemon
-
-COPY src src
-
-RUN ./gradlew nativeCompile --no-daemon
+RUN --mount=type=cache,id=gradle,target=/root/.gradle ./gradlew nativeCompile --no-daemon
 
 FROM ubuntu:24.04
-
 WORKDIR /app
-
 COPY --from=build /app/build/native/nativeCompile/sbt .
-
 RUN chmod +x ./sbt
 
+EXPOSE 8080
 CMD ["./sbt"]
