@@ -2,5 +2,17 @@
   {
     "name": "java.util.UUID[]",
     "unsafeAllocated": true
+  },
+  {
+    "name": "io.grpc.netty.shaded.io.netty.channel.ProtocolNegotiators",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.google.common.util.concurrent.AbstractFuture$Waiter",
+    "allDeclaredConstructors": true,
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
   }
 ]
