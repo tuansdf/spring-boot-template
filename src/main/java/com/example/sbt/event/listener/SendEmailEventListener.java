@@ -24,17 +24,17 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
         try {
             SendEmailEventRequest request = message.getValue();
             RequestHolder.setContext(request.getRequestContext());
-            log.info("SendEmailEventListener.start");
+            log.info("SendEmailEventListener.start ");
 
             emailService.executeSend(request.getEmail());
         } catch (Exception e) {
-            log.error("SendEmailEventListener.error", e);
+            log.error("SendEmailEventListener.error ", e);
         } finally {
             try {
                 redisTemplate.opsForStream().acknowledge(EventKey.SEND_EMAIL, message);
                 redisTemplate.opsForStream().delete(EventKey.SEND_EMAIL, message.getId());
 
-                log.info("SendEmailEventListener.end");
+                log.info("SendEmailEventListener.end ");
             } catch (Exception ignore) {
             }
             RequestHolder.clear();

@@ -106,7 +106,7 @@ public class JWTServiceImpl implements JWTService {
             String jwtPayloadJson = Base64Helper.urlDecodeToString(jwtPayloadBase64);
             return objectMapper.readValue(jwtPayloadJson, JWTPayload.class);
         } catch (Exception e) {
-            log.error("verify", e);
+            log.error("verify ", e);
             return null;
         }
     }

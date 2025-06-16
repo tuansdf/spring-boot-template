@@ -36,8 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -144,7 +142,7 @@ public class PrivateController {
                 }
             }
         } catch (Exception e) {
-            log.error("test import", e);
+            log.error("test import ", e);
         }
         log.info("items: {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
@@ -279,7 +277,7 @@ public class PrivateController {
         return "OK";
     }
 
-    @GetMapping(value = "/s3-upload", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/s3-upload", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object testS3Upload(@RequestParam MultipartFile file, @RequestParam String filePath) throws IOException {
         return fileObjectService.uploadImage(file, filePath);
     }

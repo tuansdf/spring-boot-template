@@ -19,7 +19,7 @@ public class Base64Helper {
             if (bytes == null) return null;
             return encoder.encodeToString(bytes);
         } catch (Exception e) {
-            log.error("base64 encode", e);
+            log.error("base64 encode ", e);
             return null;
         }
     }
@@ -29,7 +29,7 @@ public class Base64Helper {
             if (input == null) return null;
             return encode(input.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            log.error("base64 encode", e);
+            log.error("base64 encode ", e);
             return null;
         }
     }
@@ -39,7 +39,7 @@ public class Base64Helper {
             if (bytes == null) return null;
             return urlEncoder.encodeToString(bytes);
         } catch (Exception e) {
-            log.error("base64url encode", e);
+            log.error("base64url encode ", e);
             return null;
         }
     }
@@ -49,7 +49,7 @@ public class Base64Helper {
             if (input == null) return null;
             return urlEncode(input.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            log.error("base64url encode", e);
+            log.error("base64url encode ", e);
             return null;
         }
     }
@@ -59,7 +59,7 @@ public class Base64Helper {
             if (StringUtils.isBlank(input)) return null;
             return decoder.decode(input.getBytes());
         } catch (Exception e) {
-            log.error("base64 decode", e);
+            log.error("base64 decode ", e);
             return null;
         }
     }
@@ -70,7 +70,7 @@ public class Base64Helper {
             if (result == null) return null;
             return new String(result, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            log.error("base64 decode to string", e);
+            log.error("base64 decode to string ", e);
             return null;
         }
     }
@@ -80,7 +80,7 @@ public class Base64Helper {
             if (StringUtils.isBlank(input)) return null;
             return urlDecoder.decode(input.getBytes());
         } catch (Exception e) {
-            log.error("base64url decode", e);
+            log.error("base64url decode ", e);
             return null;
         }
     }
@@ -91,7 +91,7 @@ public class Base64Helper {
             if (result == null) return null;
             return new String(result, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            log.error("base64url decode to string", e);
+            log.error("base64url decode to string ", e);
             return null;
         }
     }

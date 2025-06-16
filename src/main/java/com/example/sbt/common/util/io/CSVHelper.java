@@ -30,7 +30,7 @@ public class CSVHelper {
                 processTemplate(writer, header, bodyFn);
                 return outputStream.toByteArray();
             } catch (Exception e) {
-                log.error("processTemplateToBytes", e);
+                log.error("processTemplateToBytes ", e);
                 return null;
             }
         }
@@ -40,7 +40,7 @@ public class CSVHelper {
                  BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
                 processTemplate(bufferedWriter, header, bodyFn);
             } catch (Exception e) {
-                log.error("processTemplateWriteFile", e);
+                log.error("processTemplateWriteFile ", e);
             }
         }
     }
