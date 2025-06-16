@@ -121,6 +121,7 @@ public class ConversionUtils {
             return switch (input) {
                 case Boolean v -> v;
                 case String v -> Boolean.valueOf(v);
+                case Number v -> v.intValue() != 0;
                 case null, default -> null;
             };
         } catch (Exception e) {
@@ -133,6 +134,7 @@ public class ConversionUtils {
             return switch (input) {
                 case Boolean v -> v;
                 case String v -> Boolean.parseBoolean(v);
+                case Number v -> v.intValue() != 0;
                 case null, default -> false;
             };
         } catch (Exception e) {
