@@ -69,7 +69,7 @@ public class RedisStreamConfig {
 
         var options = StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                 .pollTimeout(Duration.ofSeconds(5))
-                .targetType(request.request())
+                .targetType(request.requestClass())
                 .batchSize(10)
                 .executor(executor)
                 .build();
@@ -77,15 +77,15 @@ public class RedisStreamConfig {
         var container = StreamMessageListenerContainer.create(connectionFactory, options);
 
         var subscription = container.receiveAutoAck(Consumer.from(request.groupName(), consumerName),
-                StreamOffset.create(request.streamName(), ReadOffset.lastConsumed()), request.listener());
+                StreamOffset.create(request.streamName(), ReadOffset.lastConsumed()), request.streamListener());
 
         container.start();
         return subscription;
     }
 
     private record CreateSubscriptionRequest<T>(
-            StreamListener<String, ObjectRecord<String, T>> listener,
-            Class<T> request,
+            StreamListener<String, ObjectRecord<String, T>> streamListener,
+            Class<T> requestClass,
             String groupName,
             String streamName
     ) {
