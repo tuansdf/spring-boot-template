@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .sessionManagement(configurer -> configurer
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((configurer) -> configurer
-                        .requestMatchers("/actuator/**", "/pub/**").permitAll()
+                        .requestMatchers("/actuator/**", "/open/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(configurer -> configurer
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))

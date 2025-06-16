@@ -3,7 +3,6 @@ package com.example.sbt.module.configuration;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.common.util.ExceptionUtils;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -26,34 +25,22 @@ public class ConfigurationController {
     @GetMapping("/code/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(@PathVariable String code) {
-        try {
-            var result = configurationService.findOneByCodeOrThrow(code);
-            return ResponseEntity.ok(new CommonResponse<>(result));
-        } catch (Exception e) {
-            return ExceptionUtils.toResponseEntity(e);
-        }
+        var result = configurationService.findOneByCodeOrThrow(code);
+        return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneById(@PathVariable UUID id) {
-        try {
-            var result = configurationService.findOneByIdOrThrow(id);
-            return ResponseEntity.ok(new CommonResponse<>(result));
-        } catch (Exception e) {
-            return ExceptionUtils.toResponseEntity(e);
-        }
+        var result = configurationService.findOneByIdOrThrow(id);
+        return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PutMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<ConfigurationDTO>> save(@RequestBody ConfigurationDTO requestDTO) {
-        try {
-            var result = configurationService.save(requestDTO);
-            return ResponseEntity.ok(new CommonResponse<>(result));
-        } catch (Exception e) {
-            return ExceptionUtils.toResponseEntity(e);
-        }
+        var result = configurationService.save(requestDTO);
+        return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/search")
@@ -66,20 +53,16 @@ public class ConfigurationController {
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
-        try {
-            var requestDTO = SearchConfigurationRequestDTO.builder()
-                    .pageNumber(pageNumber)
-                    .pageSize(pageSize)
-                    .code(code)
-                    .status(status)
-                    .createdAtTo(createdAtTo)
-                    .createdAtFrom(createdAtFrom)
-                    .build();
-            var result = configurationService.search(requestDTO, count);
-            return ResponseEntity.ok(new CommonResponse<>(result));
-        } catch (Exception e) {
-            return ExceptionUtils.toResponseEntity(e);
-        }
+        var requestDTO = SearchConfigurationRequestDTO.builder()
+                .pageNumber(pageNumber)
+                .pageSize(pageSize)
+                .code(code)
+                .status(status)
+                .createdAtTo(createdAtTo)
+                .createdAtFrom(createdAtFrom)
+                .build();
+        var result = configurationService.search(requestDTO, count);
+        return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
 }

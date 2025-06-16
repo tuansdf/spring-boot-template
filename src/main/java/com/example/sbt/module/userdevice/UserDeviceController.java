@@ -1,7 +1,6 @@
 package com.example.sbt.module.userdevice;
 
 import com.example.sbt.common.dto.CommonResponse;
-import com.example.sbt.common.util.ExceptionUtils;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +20,8 @@ public class UserDeviceController {
 
     @PutMapping
     public ResponseEntity<CommonResponse<UserDeviceDTO>> save(@RequestBody UserDeviceDTO requestDTO) {
-        try {
-            var result = userDeviceService.save(requestDTO);
-            return ResponseEntity.ok(new CommonResponse<>(result));
-        } catch (Exception e) {
-            return ExceptionUtils.toResponseEntity(e);
-        }
+        var result = userDeviceService.save(requestDTO);
+        return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
 }
