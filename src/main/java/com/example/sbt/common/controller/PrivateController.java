@@ -6,8 +6,10 @@ import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.*;
 import com.example.sbt.common.util.io.CSVHelper;
 import com.example.sbt.common.util.io.ExcelHelper;
+import com.example.sbt.common.util.io.FileUtils;
 import com.example.sbt.common.util.io.ImageUtils;
 import com.example.sbt.module.file.FileObjectService;
+import com.example.sbt.module.file.UploadFileService;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.google.common.collect.Lists;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -16,6 +18,7 @@ import com.google.firebase.messaging.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -40,12 +43,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/testing")
-@Secured({PermissionCode.SYSTEM_ADMIN})
 public class PrivateController {
 
     private final StringRedisTemplate redisTemplate;
     private final FirebaseMessaging firebaseMessaging;
     private final FileObjectService fileObjectService;
+    private final UploadFileService uploadFileService;
 
     @GetMapping("/health")
     @Secured({PermissionCode.SYSTEM_ADMIN})
@@ -277,9 +280,20 @@ public class PrivateController {
         return "OK";
     }
 
-    @GetMapping(value = "/s3-upload", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object testS3Upload(@RequestParam MultipartFile file, @RequestParam String filePath) throws IOException {
+    @GetMapping(value = "/s3/upload", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Object testS3Upload(@RequestParam MultipartFile file, @RequestParam(defaultValue = "") String filePath) throws IOException {
         return fileObjectService.uploadImage(file, filePath);
+    }
+
+    @GetMapping(value = "/s3/presigned", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testS3Presigned(@RequestParam String filePath) {
+        return uploadFileService.createPresignedGetUrl(filePath, 3600L);
+    }
+
+    @GetMapping(value = "/s3/get", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testS3GetFile(@RequestParam String filePath) {
+        FileUtils.writeFile(uploadFileService.getFile(filePath), ".temp/" + FilenameUtils.getBaseName(filePath) + "-" + DateUtils.currentEpochMillis() + "." + FilenameUtils.getExtension(filePath));
+        return "OK";
     }
 
 }

@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 public class ImageUtils {
 
     public static void compressImage(BufferedImage input, OutputStream output, Options options) throws IOException {
+        if (input == null || output == null) return;
         var builder = Thumbnails.of(input);
         if (options.getWidth() != null && input.getWidth() > options.getWidth()) {
             builder = builder.width(options.getWidth());
@@ -38,6 +39,7 @@ public class ImageUtils {
     }
 
     public static byte[] compressImageToBytes(String inputPath, Options options) {
+        if (StringUtils.isBlank(inputPath)) return null;
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BufferedImage image = ImageIO.read(Paths.get(inputPath).toFile());
             compressImage(image, outputStream, options);
@@ -49,6 +51,7 @@ public class ImageUtils {
     }
 
     public static byte[] compressImageToBytes(byte[] bytes, Options options) {
+        if (bytes == null || bytes.length == 0) return null;
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             BufferedImage image = ImageIO.read(inputStream);
@@ -61,6 +64,7 @@ public class ImageUtils {
     }
 
     public static void compressImageWriteFile(String inputPath, String outputPath, Options options) {
+        if (StringUtils.isBlank(inputPath) || StringUtils.isBlank(outputPath)) return;
         try (FileOutputStream outputStream = new FileOutputStream(outputPath);
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
             BufferedImage image = ImageIO.read(Paths.get(inputPath).toFile());

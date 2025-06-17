@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface FileObjectService {
 
-    FileObjectDTO upload(MultipartFile file, String filePath) throws IOException;
+    FileObjectDTO uploadFile(MultipartFile file, String filePath) throws IOException;
 
     FileObjectDTO uploadImage(MultipartFile file, String dirPath, Integer thumbnailWidth) throws IOException;
 

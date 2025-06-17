@@ -31,15 +31,20 @@ public class FileObjectServiceImpl implements FileObjectService {
     private final FileObjectRepository fileObjectRepository;
 
     @Override
-    public FileObjectDTO upload(MultipartFile file, String dirPath) throws IOException {
+    public FileObjectDTO uploadFile(MultipartFile file, String dirPath) throws IOException {
+        if (file == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        if (StringUtils.isBlank(dirPath)) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         if (StringUtils.isBlank(extension)) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        dirPath = StringUtils.strip(ConversionUtils.safeTrim(dirPath), "/");
         UUID id = RandomUtils.Secure.generateTimeBasedUUID();
-        String filePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat(".").concat(extension), "/");
-        filePath = uploadFileService.upload(file.getBytes(), filePath);
+        String filePath = dirPath.concat("/").concat(id.toString()).concat(".").concat(extension);
+        filePath = uploadFileService.uploadFile(file.getBytes(), filePath);
         if (filePath == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -55,6 +60,9 @@ public class FileObjectServiceImpl implements FileObjectService {
 
     @Override
     public FileObjectDTO uploadImage(MultipartFile file, String dirPath, Integer thumbnailWidth) throws IOException {
+        if (file == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
         if (!FileUtils.validateFileType(file, IMAGE_FILE_TYPES)) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -63,9 +71,9 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (StringUtils.isBlank(extension)) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        dirPath = StringUtils.strip(ConversionUtils.safeTrim(dirPath), "/");
+        dirPath = ConversionUtils.safeTrim(dirPath);
         UUID id = RandomUtils.Secure.generateTimeBasedUUID();
-        String filePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat(".").concat(extension), "/");
+        String filePath = dirPath.concat("/").concat(id.toString()).concat(".").concat(extension);
 
         String fileName = file.getOriginalFilename();
         String fileType = file.getContentType();
@@ -74,23 +82,23 @@ public class FileObjectServiceImpl implements FileObjectService {
         {
             byte[] compressedFileBytes = ImageUtils.compressImageToBytes(fileBytes,
                     ImageUtils.Options.builder().width(PRIMARY_WIDTH).format(extension).quality(0.8F).build());
-            if (compressedFileBytes != null) {
-                fileSize = fileBytes.length;
+            if (compressedFileBytes != null && compressedFileBytes.length > 0) {
+                fileSize = compressedFileBytes.length;
                 fileBytes = compressedFileBytes;
             }
         }
-        filePath = uploadFileService.upload(fileBytes, filePath);
+        filePath = uploadFileService.uploadFile(fileBytes, filePath);
         if (filePath == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         String thumbnailPath = null;
         if (thumbnailWidth != null && thumbnailWidth > 0) {
-            String thumbnailFilePath = StringUtils.strip(dirPath.concat("/").concat(id.toString()).concat("_thumbnail.").concat(FileType.JPG.getExtension()), "/");
-            fileBytes = ImageUtils.compressImageToBytes(fileBytes,
+            String thumbnailFilePath = dirPath.concat("/").concat(id.toString()).concat("_thumbnail.").concat(FileType.JPG.getExtension());
+            byte[] compressedFileBytes = ImageUtils.compressImageToBytes(fileBytes,
                     ImageUtils.Options.builder().width(thumbnailWidth).format(FileType.JPG.getExtension()).quality(0.8F).build());
-            if (fileBytes != null) {
-                thumbnailPath = uploadFileService.upload(fileBytes, thumbnailFilePath);
+            if (compressedFileBytes != null && compressedFileBytes.length > 0) {
+                thumbnailPath = uploadFileService.uploadFile(compressedFileBytes, thumbnailFilePath);
             }
         }
 
