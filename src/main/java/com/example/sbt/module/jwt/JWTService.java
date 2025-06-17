@@ -7,8 +7,6 @@ import java.util.UUID;
 
 public interface JWTService {
 
-    JWTPayload create(JWTPayload payload);
-
     JWTPayload createAccessJwt(UUID userId, Set<String> permissions);
 
     JWTPayload createRefreshJwt(UUID tokenId);
