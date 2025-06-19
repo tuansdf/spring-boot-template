@@ -4,7 +4,7 @@ import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.RandomUtils;
+import com.example.sbt.common.util.io.FileUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
@@ -35,17 +35,13 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (StringUtils.isBlank(extension)) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        UUID id = RandomUtils.Secure.generateTimeBasedUUID();
-        String fileName = id.toString().concat(".").concat(extension);
-        String filePath = dirPath.concat("/").concat(fileName);
-        filePath = uploadFileService.uploadFile(file, filePath, file.getOriginalFilename());
+        String filePath = uploadFileService.uploadFile(file, dirPath, file.getOriginalFilename());
         if (filePath == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         FileObject result = new FileObject();
-        result.setId(id);
         result.setFilePath(filePath);
-        result.setFileName(file.getOriginalFilename());
+        result.setFileName(FileUtils.truncateFileName(file.getOriginalFilename(), 255));
         result.setFileType(file.getContentType());
         result.setFileSize(file.getSize());
         result.setCreatedBy(RequestHolder.getContext().getUserId());

@@ -2,10 +2,14 @@ package com.example.sbt.module.file;
 
 import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.common.util.RandomUtils;
+import com.example.sbt.common.util.io.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.ContentDisposition;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -25,30 +29,30 @@ import java.util.stream.Collectors;
 @Service
 public class UploadFileServiceImpl implements UploadFileService {
 
+    private static final String PATH_SEPARATOR = "/";
+    private static final String EXTENSION_SEPARATOR = ".";
     private static final long DEFAULT_PRESIGNED_SECONDS = 24L * 60L * 60L;
 
     private final ApplicationProperties applicationProperties;
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
-    private String safeToFilePath(String filePath) {
-        return ConversionUtils.safeTrim(StringUtils.strip(filePath
-                .replaceAll("\\s*/\\s*", "/")
-                .replaceAll("/+", "/"), "/"));
-    }
-
     @Override
-    public String uploadFile(byte[] file, String filePath, String fileName) {
+    public String uploadFile(byte[] file, String dirPath, String originalFileName) {
         try {
-            if (file == null || StringUtils.isBlank(filePath)) return null;
-            filePath = safeToFilePath(filePath);
-            if (StringUtils.isBlank(filePath)) return null;
+            if (file == null || StringUtils.isBlank(originalFileName)) return null;
+            dirPath = ConversionUtils.safeTrim(dirPath);
+            originalFileName = FileUtils.truncateFileName(FileUtils.cleanFileName(originalFileName), null);
+            String extension = FilenameUtils.getExtension(originalFileName);
+            String fileName = RandomUtils.Secure.generateUUID().toString();
+            if (StringUtils.isNotBlank(extension)) {
+                fileName = fileName.concat(EXTENSION_SEPARATOR).concat(extension);
+            }
+            String filePath = FileUtils.cleanFilePath(dirPath.concat(PATH_SEPARATOR).concat(fileName));
             PutObjectRequest.Builder putObjectRequestBuilder = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
+                    .contentDisposition(ContentDisposition.attachment().filename(originalFileName).build().toString())
                     .key(filePath);
-            if (StringUtils.isNotBlank(fileName)) {
-                putObjectRequestBuilder = putObjectRequestBuilder.contentDisposition("attachment; filename=\"".concat(fileName).concat("\""));
-            }
             s3Client.putObject(putObjectRequestBuilder.build(), RequestBody.fromBytes(file));
             return filePath;
         } catch (Exception e) {
@@ -58,17 +62,21 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public String uploadFile(MultipartFile file, String filePath, String fileName) {
+    public String uploadFile(MultipartFile file, String dirPath, String originalFileName) {
         try {
-            if (file == null || StringUtils.isBlank(filePath)) return null;
-            filePath = safeToFilePath(filePath);
-            if (StringUtils.isBlank(filePath)) return null;
+            if (file == null || StringUtils.isBlank(originalFileName)) return null;
+            dirPath = ConversionUtils.safeTrim(dirPath);
+            originalFileName = FileUtils.truncateFileName(FileUtils.cleanFileName(originalFileName), null);
+            String extension = FilenameUtils.getExtension(originalFileName);
+            String fileName = RandomUtils.Secure.generateUUID().toString();
+            if (StringUtils.isNotBlank(extension)) {
+                fileName = fileName.concat(EXTENSION_SEPARATOR).concat(extension);
+            }
+            String filePath = FileUtils.cleanFilePath(dirPath.concat(PATH_SEPARATOR).concat(fileName));
             PutObjectRequest.Builder putObjectRequestBuilder = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
+                    .contentDisposition(ContentDisposition.attachment().filename(originalFileName).build().toString())
                     .key(filePath);
-            if (StringUtils.isNotBlank(fileName)) {
-                putObjectRequestBuilder = putObjectRequestBuilder.contentDisposition("attachment; filename=\"".concat(fileName).concat("\""));
-            }
             s3Client.putObject(putObjectRequestBuilder.build(), RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
             return filePath;
         } catch (Exception e) {
