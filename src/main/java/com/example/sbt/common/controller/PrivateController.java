@@ -34,10 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -282,12 +279,18 @@ public class PrivateController {
 
     @GetMapping(value = "/s3/upload", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object testS3Upload(@RequestParam MultipartFile file, @RequestParam(defaultValue = "") String filePath) throws IOException {
-        return fileObjectService.uploadImage(file, filePath);
+        return fileObjectService.uploadFile(file, filePath);
     }
 
-    @GetMapping(value = "/s3/presigned", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testS3Presigned(@RequestParam String filePath) {
-        return uploadFileService.createPresignedGetUrl(filePath, 3600L);
+    @GetMapping(value = "/s3/presigned", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Object testS3Presigned(@RequestParam UUID id) {
+        return fileObjectService.getFileById(id);
+    }
+
+    @GetMapping(value = "/s3/delete", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testS3Delete(@RequestParam Set<UUID> ids) {
+        fileObjectService.deleteFilesByIds(ids);
+        return "OK";
     }
 
     @GetMapping(value = "/s3/get", produces = MediaType.TEXT_PLAIN_VALUE)

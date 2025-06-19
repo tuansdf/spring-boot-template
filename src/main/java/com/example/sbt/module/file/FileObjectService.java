@@ -2,16 +2,15 @@ package com.example.sbt.module.file;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
 
 public interface FileObjectService {
 
-    FileObjectDTO uploadFile(MultipartFile file, String filePath) throws IOException;
+    FileObjectDTO uploadFile(MultipartFile file, String filePath);
 
-    FileObjectDTO uploadImage(MultipartFile file, String dirPath, Integer thumbnailWidth) throws IOException;
+    FileObjectDTO getFileById(UUID id);
 
-    FileObjectDTO uploadImage(MultipartFile file, String dirPath) throws IOException;
-
-    FileObjectDTO uploadImage(MultipartFile file) throws IOException;
+    void deleteFilesByIds(Set<UUID> ids);
 
 }

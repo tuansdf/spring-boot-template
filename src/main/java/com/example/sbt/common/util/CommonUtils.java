@@ -19,11 +19,11 @@ public class CommonUtils {
     }
 
     public static String coalesce(String... values) {
-        if (ArrayUtils.isEmpty(values)) return "";
+        if (ArrayUtils.isEmpty(values)) return null;
         for (String value : values) {
             if (StringUtils.isNotEmpty(value)) return value;
         }
-        return "";
+        return null;
     }
 
     public static Object coalesce(Object... values) {

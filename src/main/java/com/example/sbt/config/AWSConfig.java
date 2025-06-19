@@ -24,8 +24,7 @@ public class AWSConfig {
 
     @Bean
     public S3Client s3Client(AwsCredentials awsCredentials) {
-        return S3Client
-                .builder()
+        return S3Client.builder()
                 .region(Region.of(applicationProperties.getAwsRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
@@ -33,8 +32,7 @@ public class AWSConfig {
 
     @Bean
     public S3Presigner s3Presigner(AwsCredentials awsCredentials) {
-        return S3Presigner
-                .builder()
+        return S3Presigner.builder()
                 .region(Region.of(applicationProperties.getAwsRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();

@@ -1,13 +1,11 @@
 package com.example.sbt.module.file;
 
-import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.RandomUtils;
-import com.example.sbt.common.util.io.FileUtils;
-import com.example.sbt.common.util.io.ImageUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -15,36 +13,32 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(rollbackOn = Exception.class)
 public class FileObjectServiceImpl implements FileObjectService {
-
-    private static final int PRIMARY_WIDTH = 4000;
-    private static final int THUMBNAIL_WIDTH = 600;
-    private static final FileType[] IMAGE_FILE_TYPES = {FileType.JPEG, FileType.JPG, FileType.PNG, FileType.WEBP};
 
     private final CommonMapper commonMapper;
     private final UploadFileService uploadFileService;
     private final FileObjectRepository fileObjectRepository;
 
     @Override
-    public FileObjectDTO uploadFile(MultipartFile file, String dirPath) throws IOException {
+    public FileObjectDTO uploadFile(MultipartFile file, String dirPath) {
         if (file == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        if (StringUtils.isBlank(dirPath)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
+        dirPath = ConversionUtils.safeTrim(dirPath);
         String extension = FilenameUtils.getExtension(file.getOriginalFilename());
         if (StringUtils.isBlank(extension)) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         UUID id = RandomUtils.Secure.generateTimeBasedUUID();
-        String filePath = dirPath.concat("/").concat(id.toString()).concat(".").concat(extension);
-        filePath = uploadFileService.uploadFile(file.getBytes(), filePath);
+        String fileName = id.toString().concat(".").concat(extension);
+        String filePath = dirPath.concat("/").concat(fileName);
+        filePath = uploadFileService.uploadFile(file, filePath, file.getOriginalFilename());
         if (filePath == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -55,73 +49,23 @@ public class FileObjectServiceImpl implements FileObjectService {
         result.setFileType(file.getContentType());
         result.setFileSize(file.getSize());
         result.setCreatedBy(RequestHolder.getContext().getUserId());
-        return commonMapper.toDTO(result);
+        return commonMapper.toDTO(fileObjectRepository.save(result));
     }
 
     @Override
-    public FileObjectDTO uploadImage(MultipartFile file, String dirPath, Integer thumbnailWidth) throws IOException {
-        if (file == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-        if (!FileUtils.validateFileType(file, IMAGE_FILE_TYPES)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
-        if (StringUtils.isBlank(extension)) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
-        }
-        dirPath = ConversionUtils.safeTrim(dirPath);
-        UUID id = RandomUtils.Secure.generateTimeBasedUUID();
-        String filePath = dirPath.concat("/").concat(id.toString()).concat(".").concat(extension);
-
-        String fileName = file.getOriginalFilename();
-        String fileType = file.getContentType();
-        long fileSize = file.getSize();
-        byte[] fileBytes = file.getBytes();
-        {
-            byte[] compressedFileBytes = ImageUtils.compressImageToBytes(fileBytes,
-                    ImageUtils.Options.builder().width(PRIMARY_WIDTH).format(extension).quality(0.8F).build());
-            if (compressedFileBytes != null && compressedFileBytes.length > 0) {
-                fileSize = compressedFileBytes.length;
-                fileBytes = compressedFileBytes;
-            }
-        }
-        filePath = uploadFileService.uploadFile(fileBytes, filePath);
-        if (filePath == null) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        String thumbnailPath = null;
-        if (thumbnailWidth != null && thumbnailWidth > 0) {
-            String thumbnailFilePath = dirPath.concat("/").concat(id.toString()).concat("_thumbnail.").concat(FileType.JPG.getExtension());
-            byte[] compressedFileBytes = ImageUtils.compressImageToBytes(fileBytes,
-                    ImageUtils.Options.builder().width(thumbnailWidth).format(FileType.JPG.getExtension()).quality(0.8F).build());
-            if (compressedFileBytes != null && compressedFileBytes.length > 0) {
-                thumbnailPath = uploadFileService.uploadFile(compressedFileBytes, thumbnailFilePath);
-            }
-        }
-
-        FileObject result = new FileObject();
-        result.setId(id);
-        result.setFilePath(filePath);
-        result.setPreviewFilePath(thumbnailPath);
-        result.setFileName(fileName);
-        result.setFileType(fileType);
-        result.setFileSize(fileSize);
-        result.setCreatedBy(RequestHolder.getContext().getUserId());
-        result = fileObjectRepository.save(result);
-        return commonMapper.toDTO(result);
+    public FileObjectDTO getFileById(UUID id) {
+        FileObjectDTO result = fileObjectRepository.findTopByIdAndCreatedBy(id, RequestHolder.getContext().getUserId()).map(commonMapper::toDTO).orElse(null);
+        if (result == null) return null;
+        result.setFileUrl(uploadFileService.createPresignedGetUrl(result.getFilePath(), null));
+        result.setPreviewFileUrl(uploadFileService.createPresignedGetUrl(result.getPreviewFilePath(), null));
+        return result;
     }
 
     @Override
-    public FileObjectDTO uploadImage(MultipartFile file, String dirPath) throws IOException {
-        return uploadImage(file, dirPath, THUMBNAIL_WIDTH);
-    }
-
-    @Override
-    public FileObjectDTO uploadImage(MultipartFile file) throws IOException {
-        return uploadImage(file, "", THUMBNAIL_WIDTH);
+    public void deleteFilesByIds(Set<UUID> ids) {
+        Set<String> filePaths = fileObjectRepository.findAllPathsByIdInAndCreatedBy(ids, RequestHolder.getContext().getUserId());
+        fileObjectRepository.deleteAllByIdInAndCreatedBy(ids, RequestHolder.getContext().getUserId());
+        uploadFileService.deleteFiles(filePaths);
     }
 
 }

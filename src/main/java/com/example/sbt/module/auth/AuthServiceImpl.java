@@ -139,7 +139,7 @@ public class AuthServiceImpl implements AuthService {
         user = userRepository.save(user);
 
         TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId(), false);
-        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail());
+        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail(), "");
         emailService.sendActivateAccountEmail(user.getEmail(), name, tokenDTO.getValue(), user.getId());
     }
 
@@ -167,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
         if (userDTO == null) return;
         tokenService.deactivatePastTokens(userDTO.getId(), CommonType.RESET_PASSWORD);
         TokenDTO tokenDTO = tokenService.createResetPasswordToken(userDTO.getId());
-        String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail());
+        String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail(), "");
         emailService.sendResetPasswordEmail(userDTO.getEmail(), name, tokenDTO.getValue(), userDTO.getId());
     }
 
@@ -243,7 +243,7 @@ public class AuthServiceImpl implements AuthService {
         if (userDTO == null || !CommonStatus.PENDING.equals(userDTO.getStatus())) return;
         tokenService.deactivatePastTokens(userDTO.getId(), CommonType.ACTIVATE_ACCOUNT);
         TokenDTO tokenDTO = tokenService.createActivateAccountToken(userDTO.getId(), false);
-        String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail());
+        String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail(), "");
         emailService.sendActivateAccountEmail(userDTO.getEmail(), name, tokenDTO.getValue(), userDTO.getId());
     }
 

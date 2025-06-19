@@ -22,10 +22,10 @@ public class FileObjectController {
 
     private final FileObjectService fileObjectService;
 
-    @PostMapping("/images")
+    @PostMapping
     @Secured(PermissionCode.SYSTEM_ADMIN)
     public ResponseEntity<CommonResponse<Object>> uploadImage(@RequestParam MultipartFile file) throws IOException {
-        fileObjectService.uploadImage(file);
+        fileObjectService.uploadFile(file, null);
         return ResponseEntity.ok(new CommonResponse<>());
     }
 

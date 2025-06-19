@@ -37,7 +37,7 @@ public class RedisStreamConfig {
 
     @PostConstruct
     public void setup() {
-        String hostname = CommonUtils.coalesce(System.getenv("HOSTNAME"), System.getenv("COMPUTERNAME"));
+        String hostname = CommonUtils.coalesce(System.getenv("HOSTNAME"), System.getenv("COMPUTERNAME"), "");
         String consumerName = "consumer-" + hostname;
 
         List<CreateSubscriptionRequest<?>> requests = new ArrayList<>();

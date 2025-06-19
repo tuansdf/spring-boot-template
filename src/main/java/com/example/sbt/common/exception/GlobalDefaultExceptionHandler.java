@@ -13,11 +13,20 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 @ControllerAdvice
 public class GlobalDefaultExceptionHandler {
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<CommonResponse<Object>> handleMaxSizeException() {
+        CommonResponse<Object> response = new CommonResponse<>();
+        response.setStatus(HttpStatus.PAYLOAD_TOO_LARGE.value());
+        response.setMessage("File size exceeds the maximum allowed limit!");
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(response);
+    }
 
     /**
      * Missing request body exception
@@ -27,7 +36,6 @@ public class GlobalDefaultExceptionHandler {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setMessage("Request body is missing or invalid");
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -39,7 +47,6 @@ public class GlobalDefaultExceptionHandler {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setMessage("Missing required parameter: ".concat(ex.getParameterName()));
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -51,7 +58,6 @@ public class GlobalDefaultExceptionHandler {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setMessage("Invalid value for parameter: ".concat(ex.getName()));
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -60,7 +66,6 @@ public class GlobalDefaultExceptionHandler {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.NOT_FOUND.value());
         response.setMessage("Endpoint not found: ".concat(servletRequest.getMethod()).concat(" ").concat(servletRequest.getServletPath()));
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
@@ -69,7 +74,6 @@ public class GlobalDefaultExceptionHandler {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.NOT_FOUND.value());
         response.setMessage("Endpoint not found: ".concat(servletRequest.getMethod()).concat(" ").concat(servletRequest.getServletPath()));
-
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
@@ -78,7 +82,6 @@ public class GlobalDefaultExceptionHandler {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setMessage(HttpStatus.FORBIDDEN.getReasonPhrase());
-
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
