@@ -7,7 +7,6 @@ import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.io.FileUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,7 @@ public class FileObjectServiceImpl implements FileObjectService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         dirPath = ConversionUtils.safeTrim(dirPath);
-        String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+        String extension = FileUtils.getFileExtension(file.getOriginalFilename());
         if (StringUtils.isBlank(extension)) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }

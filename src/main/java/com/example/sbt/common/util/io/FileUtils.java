@@ -17,9 +17,11 @@ import java.util.regex.Pattern;
 public class FileUtils {
 
     private static final int MAX_FILE_NAME_LENGTH = 255;
-    private static final Pattern FORBIDDEN_CHARS = Pattern.compile("[^a-zA-Z0-9\\-._ ]");
+    private static final String PATH_SEPARATOR = "/";
+    private static final String EXTENSION_SEPARATOR = ".";
+    private static final Pattern UNSAFE_CHARS = Pattern.compile("[^a-zA-Z0-9\\-._ ]");
+    private static final Pattern MARK_CHARS = Pattern.compile("\\p{M}");
     private static final Pattern LEADING_TRAILING_CHARS = Pattern.compile("^[._ ]+|[._ ]+$");
-    private static final Pattern DIA_CHARS = Pattern.compile("\\p{M}");
 
     public static void writeFile(byte[] bytes, String outputPath) {
         if (bytes == null) return;
@@ -29,6 +31,13 @@ public class FileUtils {
         } catch (Exception e) {
             log.error("writeFile ", e);
         }
+    }
+
+    public static String getFileExtension(String fileName) {
+        if (StringUtils.isBlank(fileName)) return "";
+        int dotIndex = fileName.lastIndexOf(EXTENSION_SEPARATOR);
+        if (dotIndex < 0 || dotIndex == fileName.length() - 1) return "";
+        return fileName.substring(dotIndex + 1);
     }
 
     public static boolean validateFileType(MultipartFile file, FileType... fileTypes) {
@@ -42,7 +51,7 @@ public class FileUtils {
             return false;
         }
         for (FileType fileType : fileTypes) {
-            String extension = FilenameUtils.getExtension(file.getOriginalFilename());
+            String extension = getFileExtension(file.getOriginalFilename());
             if (fileType.getExtension().equals(extension) && fileType.getMimeType().equals(file.getContentType())) {
                 return true;
             }
@@ -57,27 +66,33 @@ public class FileUtils {
         }
         fileName = fileName.trim();
         if (fileName.length() <= maxLength) return fileName;
-        String extension = FilenameUtils.getExtension(fileName);
+        String extension = getFileExtension(fileName);
         if (StringUtils.isBlank(extension)) {
             return fileName.substring(0, maxLength);
         }
-        extension = extension.trim();
-        return fileName.substring(0, maxLength - extension.length()).concat(".").concat(extension);
+        return fileName.substring(0, maxLength - extension.length()).concat(extension.trim());
     }
 
     public static String cleanFilePath(String filePath) {
         return ConversionUtils.safeTrim(StringUtils.strip(filePath
-                .replaceAll("\\s*/\\s*", "/")
-                .replaceAll("/+", "/"), "/"));
+                .replaceAll("\\s*/\\s*", PATH_SEPARATOR)
+                .replaceAll("/+", PATH_SEPARATOR), PATH_SEPARATOR));
     }
 
     public static String cleanFileName(String fileName) {
         if (StringUtils.isBlank(fileName)) return "";
-        String result = FilenameUtils.normalize(fileName);
-        result = DIA_CHARS.matcher(Normalizer.normalize(result, Normalizer.Form.NFKD)).replaceAll("");
-        result = FORBIDDEN_CHARS.matcher(result).replaceAll("_");
-        result = LEADING_TRAILING_CHARS.matcher(result).replaceAll("");
-        return result.trim();
+        fileName = FilenameUtils.normalize(fileName);
+        fileName = Normalizer.normalize(fileName, Normalizer.Form.NFKD);
+        fileName = fileName.replace("đ", "d");
+        fileName = fileName.replace("Đ", "D");
+        fileName = MARK_CHARS.matcher(fileName).replaceAll("");
+        fileName = UNSAFE_CHARS.matcher(fileName).replaceAll("_");
+        fileName = LEADING_TRAILING_CHARS.matcher(fileName).replaceAll("");
+        String extension = getFileExtension(fileName);
+        if (StringUtils.isNotBlank(extension)) {
+            fileName = fileName.substring(0, fileName.length() - extension.length()).concat(extension.trim());
+        }
+        return fileName.trim();
     }
 
 }

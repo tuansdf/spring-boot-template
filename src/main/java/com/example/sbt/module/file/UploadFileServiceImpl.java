@@ -7,7 +7,6 @@ import com.example.sbt.common.util.io.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ContentDisposition;
 import org.springframework.stereotype.Service;
@@ -43,7 +42,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             if (file == null || StringUtils.isBlank(originalFileName)) return null;
             dirPath = ConversionUtils.safeTrim(dirPath);
             originalFileName = FileUtils.truncateFileName(FileUtils.cleanFileName(originalFileName), null);
-            String extension = FilenameUtils.getExtension(originalFileName);
+            String extension = FileUtils.getFileExtension(originalFileName);
             String fileName = RandomUtils.Secure.generateUUID().toString();
             if (StringUtils.isNotBlank(extension)) {
                 fileName = fileName.concat(EXTENSION_SEPARATOR).concat(extension);
@@ -67,7 +66,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             if (file == null || StringUtils.isBlank(originalFileName)) return null;
             dirPath = ConversionUtils.safeTrim(dirPath);
             originalFileName = FileUtils.truncateFileName(FileUtils.cleanFileName(originalFileName), null);
-            String extension = FilenameUtils.getExtension(originalFileName);
+            String extension = FileUtils.getFileExtension(originalFileName);
             String fileName = RandomUtils.Secure.generateUUID().toString();
             if (StringUtils.isNotBlank(extension)) {
                 fileName = fileName.concat(EXTENSION_SEPARATOR).concat(extension);
