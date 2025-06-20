@@ -5,27 +5,30 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 @Slf4j
 public class ImageUtils {
 
-    public static void compressImage(BufferedImage input, OutputStream output, Options options) throws IOException {
+    public static void compressImage(InputStream input, OutputStream output, Options options) throws IOException {
         if (input == null || output == null) return;
-        var builder = Thumbnails.of(input);
-        if (options.getWidth() != null && input.getWidth() > options.getWidth()) {
+        BufferedImage image = ImageIO.read(input);
+        var builder = Thumbnails.of(image);
+        if (options.getWidth() != null && image.getWidth() > options.getWidth()) {
             builder = builder.width(options.getWidth());
         } else {
-            builder = builder.width(input.getWidth());
+            builder = builder.width(image.getWidth());
         }
-        if (options.getHeight() != null && input.getHeight() > options.getHeight()) {
+        if (options.getHeight() != null && image.getHeight() > options.getHeight()) {
             builder = builder.height(options.getHeight());
         } else {
-            builder = builder.height(input.getHeight());
+            builder = builder.height(image.getHeight());
         }
         if (options.getQuality() != null) {
             builder = builder.outputQuality(options.getQuality());
@@ -38,11 +41,11 @@ public class ImageUtils {
         builder.toOutputStream(output);
     }
 
-    public static byte[] compressImageToBytes(String inputPath, Options options) {
-        if (StringUtils.isBlank(inputPath)) return null;
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            BufferedImage image = ImageIO.read(Paths.get(inputPath).toFile());
-            compressImage(image, outputStream, options);
+    public static byte[] compressImageToBytes(MultipartFile file, Options options) {
+        if (file == null) return null;
+        try (InputStream inputStream = file.getInputStream();
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            compressImage(inputStream, outputStream, options);
             return outputStream.toByteArray();
         } catch (Exception e) {
             log.error("compressImageToBytes ", e);
@@ -52,10 +55,9 @@ public class ImageUtils {
 
     public static byte[] compressImageToBytes(byte[] bytes, Options options) {
         if (bytes == null || bytes.length == 0) return null;
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+        try (InputStream inputStream = new ByteArrayInputStream(bytes);
              ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            BufferedImage image = ImageIO.read(inputStream);
-            compressImage(image, outputStream, options);
+            compressImage(inputStream, outputStream, options);
             return outputStream.toByteArray();
         } catch (Exception e) {
             log.error("compressImageToBytes ", e);
@@ -63,12 +65,24 @@ public class ImageUtils {
         }
     }
 
-    public static void compressImageWriteFile(String inputPath, String outputPath, Options options) {
-        if (StringUtils.isBlank(inputPath) || StringUtils.isBlank(outputPath)) return;
-        try (FileOutputStream outputStream = new FileOutputStream(outputPath);
+    public static byte[] compressImageToBytes(String filePath, Options options) {
+        if (StringUtils.isBlank(filePath)) return null;
+        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath));
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            compressImage(inputStream, outputStream, options);
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            log.error("compressImageToBytes ", e);
+            return null;
+        }
+    }
+
+    public static void compressImageWriteFile(String filePath, String outputPath, Options options) {
+        if (StringUtils.isBlank(filePath) || StringUtils.isBlank(outputPath)) return;
+        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath));
+             FileOutputStream outputStream = new FileOutputStream(outputPath);
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
-            BufferedImage image = ImageIO.read(Paths.get(inputPath).toFile());
-            compressImage(image, bufferedOutputStream, options);
+            compressImage(inputStream, bufferedOutputStream, options);
         } catch (Exception e) {
             log.error("compressImageWriteFile ", e);
         }

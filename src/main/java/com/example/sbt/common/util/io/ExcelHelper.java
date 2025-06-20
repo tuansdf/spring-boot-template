@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -159,7 +160,7 @@ public class ExcelHelper {
     }
 
     public static Workbook toWorkbook(String filePath) {
-        try (FileInputStream inputStream = new FileInputStream(Paths.get(filePath).toFile())) {
+        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
             return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
         } catch (Exception e) {
             log.error("toWorkbook ", e);
@@ -168,7 +169,7 @@ public class ExcelHelper {
     }
 
     public static Workbook toWorkbook(byte[] bytes) {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes)) {
+        try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
             return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
         } catch (Exception e) {
             log.error("toWorkbook ", e);

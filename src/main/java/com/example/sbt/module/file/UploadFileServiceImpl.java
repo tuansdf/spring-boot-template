@@ -18,6 +18,7 @@ import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
@@ -76,7 +77,9 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .contentDisposition(ContentDisposition.attachment().filename(originalFileName).build().toString())
                     .key(filePath);
-            s3Client.putObject(putObjectRequestBuilder.build(), RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+            try (InputStream inputStream = file.getInputStream()) {
+                s3Client.putObject(putObjectRequestBuilder.build(), RequestBody.fromInputStream(inputStream, file.getSize()));
+            }
             return filePath;
         } catch (Exception e) {
             log.error("uploadFile ", e);

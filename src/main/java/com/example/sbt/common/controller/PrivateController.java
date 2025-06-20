@@ -107,9 +107,9 @@ public class PrivateController {
     }
 
     @GetMapping("/excel/import")
-    public String testImportExcel(@RequestParam String inputPath) {
+    public String testImportExcel(@RequestParam String filePath) {
         List<UserDTO> items = new ArrayList<>();
-        try (Workbook workbook = ExcelHelper.toWorkbook(inputPath)) {
+        try (Workbook workbook = ExcelHelper.toWorkbook(filePath)) {
             if (workbook == null) return null;
             List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
             int rowSize = header.size();
@@ -146,9 +146,9 @@ public class PrivateController {
     }
 
     @GetMapping("/csv/import")
-    public String testImportCsv(@RequestParam String inputPath) {
+    public String testImportCsv(@RequestParam String filePath) {
         List<UserDTO> items = new ArrayList<>();
-        CSVHelper.Import.processTemplate(inputPath, csvParser -> {
+        CSVHelper.Import.processTemplate(filePath, csvParser -> {
             List<String> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
             int rowSize = header.size();
             if (!ListUtils.isEqualList(header, csvParser.getHeaderNames())) {
@@ -255,12 +255,12 @@ public class PrivateController {
 
     @GetMapping(value = "/image/compress", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object image(
-            @RequestParam String inputPath,
+            @RequestParam String filePath,
             @RequestParam(required = false) Integer width,
             @RequestParam(required = false) Integer height,
             @RequestParam(required = false) String format,
             @RequestParam(required = false) Float quality) {
-        ImageUtils.compressImageWriteFile(inputPath, ".temp/compressed-" + DateUtils.currentEpochMillis() + ".jpg",
+        ImageUtils.compressImageWriteFile(filePath, ".temp/compressed-" + DateUtils.currentEpochMillis() + ".jpg",
                 ImageUtils.Options.builder().width(width).height(height).quality(quality).format(format).build());
         return "OK";
     }
