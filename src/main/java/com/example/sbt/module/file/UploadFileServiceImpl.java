@@ -142,7 +142,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             if (CollectionUtils.isEmpty(filePaths)) return;
             List<ObjectIdentifier> objectIds = filePaths.stream()
                     .map(key -> ObjectIdentifier.builder().key(key).build())
-                    .collect(Collectors.toList());
+                    .toList();
             DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .delete(Delete.builder().objects(objectIds).build())

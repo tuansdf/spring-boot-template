@@ -18,6 +18,8 @@ public class FileUtils {
 
     private static final int MAX_FILE_NAME_LENGTH = 255;
     private static final Pattern FORBIDDEN_CHARS = Pattern.compile("[^a-zA-Z0-9\\-._ ]");
+    private static final Pattern LEADING_TRAILING_CHARS = Pattern.compile("^[._ ]+|[._ ]+$");
+    private static final Pattern DIA_CHARS = Pattern.compile("\\p{M}");
 
     public static void writeFile(byte[] bytes, String outputPath) {
         if (bytes == null) return;
@@ -54,13 +56,13 @@ public class FileUtils {
             maxLength = MAX_FILE_NAME_LENGTH;
         }
         fileName = fileName.trim();
-        if (fileName.length() <= MAX_FILE_NAME_LENGTH) return fileName;
+        if (fileName.length() <= maxLength) return fileName;
         String extension = FilenameUtils.getExtension(fileName);
         if (StringUtils.isBlank(extension)) {
-            return fileName.substring(0, MAX_FILE_NAME_LENGTH);
+            return fileName.substring(0, maxLength);
         }
         extension = extension.trim();
-        return fileName.substring(0, MAX_FILE_NAME_LENGTH - extension.length()).concat(".").concat(extension);
+        return fileName.substring(0, maxLength - extension.length()).concat(".").concat(extension);
     }
 
     public static String cleanFilePath(String filePath) {
@@ -72,9 +74,9 @@ public class FileUtils {
     public static String cleanFileName(String fileName) {
         if (StringUtils.isBlank(fileName)) return "";
         String result = FilenameUtils.normalize(fileName);
-        result = Normalizer.normalize(result, Normalizer.Form.NFKD).replaceAll("\\p{M}", "");
+        result = DIA_CHARS.matcher(Normalizer.normalize(result, Normalizer.Form.NFKD)).replaceAll("");
         result = FORBIDDEN_CHARS.matcher(result).replaceAll("_");
-        result = result.replaceAll("^[._ ]+|[._ ]+$", "");
+        result = LEADING_TRAILING_CHARS.matcher(result).replaceAll("");
         return result.trim();
     }
 
