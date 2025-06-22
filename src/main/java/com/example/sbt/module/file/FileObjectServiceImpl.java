@@ -3,11 +3,9 @@ package com.example.sbt.module.file;
 import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
-import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.io.FileUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,9 +27,8 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (file == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        dirPath = ConversionUtils.safeTrim(dirPath);
-        String extension = FileUtils.getFileExtension(file.getOriginalFilename());
-        if (StringUtils.isBlank(extension)) {
+        boolean isFileValid = FileUtils.validateFileType(file, null);
+        if (!isFileValid) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         String filePath = uploadFileService.uploadFile(file, dirPath, file.getOriginalFilename());

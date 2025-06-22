@@ -3,19 +3,24 @@ package com.example.sbt.common.util.io;
 import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.util.ConversionUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.text.Normalizer;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Slf4j
 public class FileUtils {
 
+    private static final Tika tika = new Tika();
+    private static final List<FileType> SUPPORTED_FILE_TYPES = Arrays.asList(FileType.values());
     private static final int MAX_FILE_NAME_LENGTH = 255;
     private static final String PATH_SEPARATOR = "/";
     private static final String EXTENSION_SEPARATOR = ".";
@@ -40,21 +45,26 @@ public class FileUtils {
         return fileName.substring(dotIndex + 1);
     }
 
-    public static boolean validateFileType(MultipartFile file, FileType... fileTypes) {
-        if (ArrayUtils.isEmpty(fileTypes)) {
-            return false;
+    public static boolean validateFileType(MultipartFile file, List<FileType> fileTypes) {
+        if (file == null || file.isEmpty()) return false;
+        if (CollectionUtils.isEmpty(fileTypes)) {
+            fileTypes = SUPPORTED_FILE_TYPES;
         }
-        if (StringUtils.isBlank(file.getOriginalFilename())) {
-            return false;
-        }
-        if (StringUtils.isBlank(file.getContentType())) {
-            return false;
-        }
-        for (FileType fileType : fileTypes) {
-            String extension = getFileExtension(file.getOriginalFilename());
-            if (fileType.getExtension().equals(extension) && fileType.getMimeType().equals(file.getContentType())) {
-                return true;
+        try {
+            FileType fileTypeByMimeType = FileType.fromMimeType(file.getContentType());
+            if (fileTypeByMimeType == null) return false;
+
+            FileType fileTypeByExtension = FileType.fromExtension(getFileExtension(file.getOriginalFilename()));
+            if (!fileTypeByMimeType.equals(fileTypeByExtension)) return false;
+
+            FileType detectedFileType = FileType.fromMimeType(tika.detect(file.getInputStream()));
+            if (detectedFileType == null || !detectedFileType.equals(fileTypeByMimeType)) return false;
+
+            for (FileType fileType : fileTypes) {
+                if (detectedFileType.equals(fileType)) return true;
             }
+        } catch (Exception e) {
+            return false;
         }
         return false;
     }
@@ -64,13 +74,12 @@ public class FileUtils {
         if (maxLength == null || maxLength <= 0) {
             maxLength = MAX_FILE_NAME_LENGTH;
         }
-        fileName = fileName.trim();
         if (fileName.length() <= maxLength) return fileName;
         String extension = getFileExtension(fileName);
-        if (StringUtils.isBlank(extension)) {
+        if (StringUtils.isEmpty(extension)) {
             return fileName.substring(0, maxLength);
         }
-        return fileName.substring(0, maxLength - extension.length()).concat(extension.trim());
+        return fileName.substring(0, maxLength - extension.length()).concat(extension);
     }
 
     public static String cleanFilePath(String filePath) {
@@ -90,7 +99,7 @@ public class FileUtils {
         fileName = LEADING_TRAILING_CHARS.matcher(fileName).replaceAll("");
         String extension = getFileExtension(fileName);
         if (StringUtils.isNotBlank(extension)) {
-            fileName = fileName.substring(0, fileName.length() - extension.length()).concat(extension.trim());
+            fileName = fileName.substring(0, fileName.length() - extension.length()).concat(extension.trim().toLowerCase());
         }
         return fileName.trim();
     }

@@ -1,10 +1,25 @@
 package com.example.sbt.common.constant;
 
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
+@Getter
 public enum FileType {
     PNG("png", "image/png"),
     JPEG("jpeg", "image/jpeg"),
-    JPG("jpg", "image/jpeg"),
-    WEBP("webp", "image/webp");
+    WEBP("webp", "image/webp"),
+    GIF("gif", "image/gif"),
+    DOCX("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+    DOC("doc", "application/msword"),
+    XLS("xls", "application/vnd.ms-excel"),
+    XLSX("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    PPT("ppt", "application/vnd.ms-powerpoint"),
+    PPTX("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"),
+    PDF("pdf", "application/pdf"),
+    MP3("mp3", "audio/mpeg"),
+    MP4("mp4", "video/mp4"),
+    TXT("txt", "text/plain"),
+    CSV("csv", "text/csv");
 
     private final String extension;
     private final String mimeType;
@@ -15,8 +30,13 @@ public enum FileType {
     }
 
     public static FileType fromExtension(String extension) {
+        if (StringUtils.isBlank(extension)) return null;
+        extension = extension.toLowerCase();
+        if ("jpg".equals(extension)) {
+            extension = "jpeg";
+        }
         for (FileType fileType : FileType.values()) {
-            if (fileType.extension.equalsIgnoreCase(extension)) {
+            if (fileType.extension.equals(extension)) {
                 return fileType;
             }
         }
@@ -24,19 +44,14 @@ public enum FileType {
     }
 
     public static FileType fromMimeType(String mimeType) {
+        if (StringUtils.isBlank(mimeType)) return null;
+        mimeType = mimeType.toLowerCase();
         for (FileType fileType : FileType.values()) {
-            if (fileType.mimeType.equalsIgnoreCase(mimeType)) {
+            if (fileType.mimeType.equals(mimeType)) {
                 return fileType;
             }
         }
         return null;
     }
 
-    public String getExtension() {
-        return extension;
-    }
-
-    public String getMimeType() {
-        return mimeType;
-    }
 }

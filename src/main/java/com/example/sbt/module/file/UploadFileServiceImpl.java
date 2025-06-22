@@ -31,6 +31,7 @@ public class UploadFileServiceImpl implements UploadFileService {
 
     private static final String PATH_SEPARATOR = "/";
     private static final String EXTENSION_SEPARATOR = ".";
+    private static final int MAX_FILE_NAME_LENGTH = 255;
     private static final long DEFAULT_PRESIGNED_SECONDS = 24L * 60L * 60L;
 
     private final ApplicationProperties applicationProperties;
@@ -66,7 +67,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         try {
             if (file == null || StringUtils.isBlank(originalFileName)) return null;
             dirPath = ConversionUtils.safeTrim(dirPath);
-            originalFileName = FileUtils.truncateFileName(FileUtils.cleanFileName(originalFileName), null);
+            originalFileName = FileUtils.truncateFileName(FileUtils.cleanFileName(originalFileName), MAX_FILE_NAME_LENGTH);
             String extension = FileUtils.getFileExtension(originalFileName);
             String fileName = RandomUtils.Secure.generateUUID().toString();
             if (StringUtils.isNotBlank(extension)) {

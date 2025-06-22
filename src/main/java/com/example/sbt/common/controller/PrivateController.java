@@ -1,8 +1,10 @@
 package com.example.sbt.common.controller;
 
 import com.example.sbt.common.constant.CommonStatus;
+import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.exception.CustomException;
+import com.example.sbt.common.exception.ValidationException;
 import com.example.sbt.common.util.*;
 import com.example.sbt.common.util.io.CSVHelper;
 import com.example.sbt.common.util.io.ExcelHelper;
@@ -218,9 +220,13 @@ public class PrivateController {
     public String bench() {
         for (int i = 0; i < 1_000_000; i++) {
             RandomUtils.Secure.generateUUID();
+            RandomUtils.Secure.generateUUID().toString();
             RandomUtils.Insecure.generateUUID();
+            RandomUtils.Insecure.generateUUID().toString();
             RandomUtils.Secure.generateTimeBasedUUID();
+            RandomUtils.Secure.generateTimeBasedUUID().toString();
             RandomUtils.Insecure.generateTimeBasedUUID();
+            RandomUtils.Insecure.generateTimeBasedUUID().toString();
             RandomUtils.Secure.generateString(8);
             RandomUtils.Insecure.generateString(8);
             RandomUtils.Secure.generateString(16);
@@ -236,6 +242,9 @@ public class PrivateController {
             DateUtils.currentEpochMillis();
             DateUtils.currentEpochMicros();
             DateUtils.currentEpochNanos();
+            ConversionUtils.toString(DateUtils.currentEpochMillis());
+            ConversionUtils.toString(DateUtils.currentEpochMicros());
+            ConversionUtils.toString(DateUtils.currentEpochNanos());
         }
         return "OK";
     }
@@ -299,6 +308,25 @@ public class PrivateController {
     @GetMapping(value = "/text/clean-file-name", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object testCleanFileName(@RequestBody TestBody body) {
         return FileUtils.cleanFileName(body.text());
+    }
+
+    @GetMapping(value = "/exception/validation", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Object testValidationException() {
+        throw new ValidationException(List.of("Invalid A", "Invalid B", "Invalid C"));
+    }
+
+    @GetMapping(value = "/files/validate-type", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testFilesValidateType(@RequestParam MultipartFile file, @RequestParam String fileType) {
+        return ConversionUtils.toString(FileUtils.validateFileType(file, Lists.newArrayList(FileType.fromExtension(fileType))));
+    }
+
+    @GetMapping(value = "/files/validate-type/bench", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testFilesValidateTypeBench(@RequestParam MultipartFile file) {
+        List<FileType> fileTypes = List.of(FileType.PNG, FileType.WEBP, FileType.JPEG);
+        for (int i = 0; i < 10_000; i++) {
+            FileUtils.validateFileType(file, fileTypes);
+        }
+        return "OK";
     }
 
     public record TestBody(String text) {
