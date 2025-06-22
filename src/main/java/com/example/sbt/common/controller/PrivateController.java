@@ -35,6 +35,7 @@ import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
+@Secured({PermissionCode.SYSTEM_ADMIN})
 @RestController
 @RequestMapping("/testing")
 public class PrivateController {
@@ -45,7 +46,6 @@ public class PrivateController {
     private final UploadFileService uploadFileService;
 
     @GetMapping("/health")
-    @Secured({PermissionCode.SYSTEM_ADMIN})
     public String check() {
         return "OK";
     }
