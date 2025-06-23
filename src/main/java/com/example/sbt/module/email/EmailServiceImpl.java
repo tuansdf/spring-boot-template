@@ -60,15 +60,15 @@ public class EmailServiceImpl implements EmailService {
         }
         if (StringUtils.isNotBlank(requestDTO.getStatus())) {
             builder.append(" and e.status = :status ");
-            params.put("status", requestDTO.getStatus());
+            params.put("status", requestDTO.getStatus().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and e.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
             builder.append(" and e.created_at <= :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by e.created_at desc, e.id asc ");

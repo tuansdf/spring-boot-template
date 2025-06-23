@@ -161,11 +161,11 @@ public class UserServiceImpl implements UserService {
             }
             if (requestDTO.getCreatedAtFrom() != null) {
                 builder.append(" and u.created_at >= :createdAtFrom ");
-                params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+                params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
             }
             if (requestDTO.getCreatedAtTo() != null) {
                 builder.append(" and u.created_at <= :createdAtTo ");
-                params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+                params.put("createdAtTo", requestDTO.getCreatedAtTo());
             }
             if (!isCount) {
                 builder.append(" order by u.username asc, u.id asc ");

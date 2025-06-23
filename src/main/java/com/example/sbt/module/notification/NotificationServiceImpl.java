@@ -57,15 +57,15 @@ public class NotificationServiceImpl implements NotificationService {
         }
         if (StringUtils.isNotBlank(requestDTO.getStatus())) {
             builder.append(" and n.status = :status ");
-            params.put("status", requestDTO.getStatus());
+            params.put("status", requestDTO.getStatus().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and n.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
             builder.append(" and n.created_at <= :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by n.created_at desc, n.id asc ");

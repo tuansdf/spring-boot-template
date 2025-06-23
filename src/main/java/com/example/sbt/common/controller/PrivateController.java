@@ -295,7 +295,7 @@ public class PrivateController {
 
     @GetMapping(value = "/s3/presigned/put", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object testS3PresignedPut(@RequestParam String extension) {
-        return fileObjectService.createPendingFileUpload("", FileType.fromExtension(extension));
+        return fileObjectService.createPendingFileUpload("", extension);
     }
 
     @GetMapping(value = "/s3/delete", produces = MediaType.TEXT_PLAIN_VALUE)

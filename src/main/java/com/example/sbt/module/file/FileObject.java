@@ -1,12 +1,11 @@
 package com.example.sbt.module.file;
 
+import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -22,6 +21,19 @@ import java.util.UUID;
                 @Index(name = "file_object_created_by_idx", columnList = "created_by"),
         }
 )
+@SqlResultSetMapping(name = ResultSetName.FILE_SEARCH, classes = {
+        @ConstructorResult(targetClass = FileObjectDTO.class, columns = {
+                @ColumnResult(name = "id", type = UUID.class),
+                @ColumnResult(name = "file_path", type = String.class),
+                @ColumnResult(name = "preview_file_path", type = String.class),
+                @ColumnResult(name = "file_name", type = String.class),
+                @ColumnResult(name = "file_type", type = String.class),
+                @ColumnResult(name = "file_size", type = Long.class),
+                @ColumnResult(name = "created_by", type = UUID.class),
+                @ColumnResult(name = "created_at", type = Instant.class),
+                @ColumnResult(name = "updated_at", type = Instant.class),
+        })
+})
 public class FileObject extends BaseEntity {
 
     @Column(name = "file_path", columnDefinition = "text")

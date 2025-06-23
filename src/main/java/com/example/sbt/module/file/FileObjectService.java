@@ -1,5 +1,6 @@
 package com.example.sbt.module.file;
 
+import com.example.sbt.common.dto.PaginationData;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
@@ -18,5 +19,7 @@ public interface FileObjectService {
     FileObjectDTO getFileById(UUID id);
 
     void deleteFilesByIds(Set<UUID> ids);
+
+    PaginationData<FileObjectDTO> search(SearchFileRequestDTO requestDTO, boolean isCount);
 
 }

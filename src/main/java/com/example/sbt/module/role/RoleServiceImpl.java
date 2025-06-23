@@ -146,15 +146,15 @@ public class RoleServiceImpl implements RoleService {
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
             builder.append(" and r.code = :code ");
-            params.put("code", requestDTO.getCode());
+            params.put("code", requestDTO.getCode().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and r.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
             builder.append(" and r.created_at <= :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by r.code asc, r.id asc ");

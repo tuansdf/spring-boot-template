@@ -14,7 +14,7 @@ Authorization: Bearer {{access_token}}
 
 ###
 
-GET {{base_url}}/v1/permissions/search
+GET {{base_url}}/v1/files/search?orderBy=file_size&orderDirection=asc&fileSizeFrom=1&fileSizeTo=1000000000&createdAtFrom=2023-01-01T00:00:00Z&createdAtTo=2028-12-31T23:59:59Z&fileType=image/jpeg
 Authorization: Bearer {{access_token}}
 
 ###

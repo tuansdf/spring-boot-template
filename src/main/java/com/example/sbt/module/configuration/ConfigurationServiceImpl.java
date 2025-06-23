@@ -136,19 +136,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
             builder.append(" and c.code = :code ");
-            params.put("code", requestDTO.getCode());
+            params.put("code", requestDTO.getCode().trim());
         }
         if (StringUtils.isNotBlank(requestDTO.getStatus())) {
             builder.append(" and c.status = :status ");
-            params.put("status", requestDTO.getStatus());
+            params.put("status", requestDTO.getStatus().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and c.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
             builder.append(" and c.created_at <= :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by c.code asc, c.id asc ");

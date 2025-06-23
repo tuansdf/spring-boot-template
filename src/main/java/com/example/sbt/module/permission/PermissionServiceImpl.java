@@ -163,15 +163,15 @@ public class PermissionServiceImpl implements PermissionService {
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
             builder.append(" and p.code = :code ");
-            params.put("code", requestDTO.getCode());
+            params.put("code", requestDTO.getCode().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and p.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
             builder.append(" and p.created_at <= :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo().truncatedTo(SQLHelper.MIN_TIME_PRECISION));
+            params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by p.code asc, p.id asc ");

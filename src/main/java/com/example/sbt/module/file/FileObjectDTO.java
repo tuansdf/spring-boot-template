@@ -25,8 +25,20 @@ public class FileObjectDTO {
     private String fileName;
     private String fileType;
     private Long fileSize;
-    private String createdBy;
+    private UUID createdBy;
     private Instant createdAt;
     private Instant updatedAt;
+
+    public FileObjectDTO(UUID id, String filePath, String previewFilePath, String fileName, String fileType, Long fileSize, UUID createdBy, Instant createdAt, Instant updatedAt) {
+        this.id = id;
+        this.filePath = filePath;
+        this.previewFilePath = previewFilePath;
+        this.fileName = fileName;
+        this.fileType = fileType;
+        this.fileSize = fileSize;
+        this.createdBy = createdBy;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
 }

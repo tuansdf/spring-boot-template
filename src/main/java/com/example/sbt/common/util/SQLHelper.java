@@ -4,13 +4,10 @@ import com.example.sbt.common.dto.PaginationData;
 import jakarta.persistence.Query;
 import org.apache.commons.collections4.MapUtils;
 
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.Map;
 
 public class SQLHelper {
 
-    public static final TemporalUnit MIN_TIME_PRECISION = ChronoUnit.MICROS;
     public static final long DEFAULT_PAGE_NUMBER = 1;
     public static final long DEFAULT_PAGE_SIZE = 10;
 
