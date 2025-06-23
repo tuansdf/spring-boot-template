@@ -30,15 +30,15 @@ public class FileObjectController {
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
-    @PostMapping("/temp")
-    public ResponseEntity<CommonResponse<FileObjectTempDTO>> createTempUpload(@RequestBody TemporaryUploadRequest request) {
-        var result = fileObjectService.createTempUploadFile(request.mimeType());
+    @PostMapping("/temporary")
+    public ResponseEntity<CommonResponse<FileObjectPendingDTO>> createPendingFileUpload(@RequestBody TemporaryUploadRequest request) {
+        var result = fileObjectService.createPendingFileUpload(request.mimeType());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
-    @PostMapping("/temp/{id}")
-    public ResponseEntity<CommonResponse<FileObjectDTO>> saveTempUpload(@PathVariable UUID id) {
-        var result = fileObjectService.saveTempUploadFile(id);
+    @PostMapping("/temporary/{id}")
+    public ResponseEntity<CommonResponse<FileObjectDTO>> savePendingFileUpload(@PathVariable UUID id) {
+        var result = fileObjectService.savePendingFileUpload(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 

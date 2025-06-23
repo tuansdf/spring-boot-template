@@ -12,11 +12,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileObjectTempDTO {
+public class FileObjectPendingDTO {
 
     private UUID id;
     private String filePath;
-    private String uploadFileUrl;
+    private String fileUploadUrl;
     private String fileName;
     private String fileType;
     private UUID createdBy;

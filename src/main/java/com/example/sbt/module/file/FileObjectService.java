@@ -1,6 +1,5 @@
 package com.example.sbt.module.file;
 
-import com.example.sbt.common.constant.FileType;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
@@ -10,11 +9,11 @@ public interface FileObjectService {
 
     FileObjectDTO uploadFile(MultipartFile file, String filePath);
 
-    FileObjectTempDTO createTempUploadFile(String dirPath, FileType fileType);
+    FileObjectPendingDTO createPendingFileUpload(String mimeType, String dirPath);
 
-    FileObjectTempDTO createTempUploadFile(String mimeType);
+    FileObjectPendingDTO createPendingFileUpload(String mimeType);
 
-    FileObjectDTO saveTempUploadFile(UUID id);
+    FileObjectDTO savePendingFileUpload(UUID id);
 
     FileObjectDTO getFileById(UUID id);
 

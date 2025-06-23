@@ -149,6 +149,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
                     .contentType(fileType.getMimeType())
+                    .ifNoneMatch("*")
                     .build();
             PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
                     .signatureDuration(Duration.ofSeconds(seconds))

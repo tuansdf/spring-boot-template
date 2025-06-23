@@ -7,8 +7,8 @@ import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.SendEmailRequest;
 import com.example.sbt.module.file.FileObject;
 import com.example.sbt.module.file.FileObjectDTO;
-import com.example.sbt.module.file.FileObjectTemp;
-import com.example.sbt.module.file.FileObjectTempDTO;
+import com.example.sbt.module.file.FileObjectPending;
+import com.example.sbt.module.file.FileObjectPendingDTO;
 import com.example.sbt.module.loginaudit.LoginAudit;
 import com.example.sbt.module.loginaudit.LoginAuditDTO;
 import com.example.sbt.module.notification.Notification;
@@ -89,8 +89,8 @@ public interface CommonMapper {
 
     FileObject toEntity(FileObjectDTO v);
 
-    FileObjectTempDTO toDTO(FileObjectTemp v);
+    FileObjectPendingDTO toDTO(FileObjectPending v);
 
-    FileObjectTemp toEntity(FileObjectTempDTO v);
+    FileObjectPending toEntity(FileObjectPendingDTO v);
 
 }

@@ -8,6 +8,7 @@ import com.example.sbt.common.util.io.FileUtils;
 import com.google.common.collect.Lists;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional(rollbackOn = Exception.class)
@@ -24,7 +26,7 @@ public class FileObjectServiceImpl implements FileObjectService {
     private final CommonMapper commonMapper;
     private final UploadFileService uploadFileService;
     private final FileObjectRepository fileObjectRepository;
-    private final FileObjectTempRepository fileObjectTempRepository;
+    private final FileObjectPendingRepository fileObjectPendingRepository;
 
     @Override
     public FileObjectDTO uploadFile(MultipartFile file, String dirPath) {
@@ -49,58 +51,61 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public FileObjectTempDTO createTempUploadFile(String dirPath, FileType fileType) {
-        ObjectKey objectKey = uploadFileService.createPresignedPutUrl(dirPath, fileType);
-        if (objectKey == null) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        FileObjectTemp result = new FileObjectTemp();
-        result.setFilePath(objectKey.getFilePath());
-        result.setUploadFileUrl(objectKey.getFileUrl());
-        result.setFileType(fileType.getMimeType());
-        result.setFileName(objectKey.getFileName());
-        result.setCreatedBy(RequestHolder.getContext().getUserId());
-        return commonMapper.toDTO(fileObjectTempRepository.save(result));
-    }
-
-    @Override
-    public FileObjectTempDTO createTempUploadFile(String mimeType) {
+    public FileObjectPendingDTO createPendingFileUpload(String mimeType, String dirPath) {
         FileType fileType = FileType.fromMimeType(mimeType);
         if (fileType == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        return createTempUploadFile(null, fileType);
+        ObjectKey objectKey = uploadFileService.createPresignedPutUrl(dirPath, fileType);
+        if (objectKey == null) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        FileObjectPending result = new FileObjectPending();
+        result.setFilePath(objectKey.getFilePath());
+        result.setFileType(fileType.getMimeType());
+        result.setFileName(objectKey.getFileName());
+        result.setCreatedBy(RequestHolder.getContext().getUserId());
+        FileObjectPendingDTO dto = commonMapper.toDTO(fileObjectPendingRepository.save(result));
+        dto.setFileUploadUrl(objectKey.getFileUrl());
+        return dto;
     }
 
     @Override
-    public FileObjectDTO saveTempUploadFile(UUID id) {
-        FileObjectTempDTO tempDTO = fileObjectTempRepository.findTopByIdAndCreatedBy(id, RequestHolder.getContext().getUserId()).map(commonMapper::toDTO).orElse(null);
-        if (tempDTO == null) {
+    public FileObjectPendingDTO createPendingFileUpload(String mimeType) {
+        return createPendingFileUpload(mimeType, null);
+    }
+
+    @Override
+    public FileObjectDTO savePendingFileUpload(UUID id) {
+        FileObjectPendingDTO pendingDTO = fileObjectPendingRepository.findTopByIdAndCreatedBy(id, RequestHolder.getContext().getUserId()).map(commonMapper::toDTO).orElse(null);
+        if (pendingDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        FileType fileType = FileType.fromMimeType(tempDTO.getFileType());
+        FileType fileType = FileType.fromMimeType(pendingDTO.getFileType());
         if (fileType == null) {
-            uploadFileService.deleteFile(tempDTO.getFilePath());
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        byte[] headerBytes = uploadFileService.getFileHeaderBytes(tempDTO.getFilePath());
+        HeadObjectResponse metadata = uploadFileService.getFileMetadata(pendingDTO.getFilePath());
+        if (metadata == null || metadata.contentLength() <= 0) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        byte[] headerBytes = uploadFileService.getFileHeaderBytes(pendingDTO.getFilePath());
         if (headerBytes == null || headerBytes.length == 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         boolean isFileValid = FileUtils.validateFileType(headerBytes, Lists.newArrayList(fileType));
         if (!isFileValid) {
-            uploadFileService.deleteFile(tempDTO.getFilePath());
+            uploadFileService.deleteFile(pendingDTO.getFilePath());
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        HeadObjectResponse metadata = uploadFileService.getFileMetadata(tempDTO.getFilePath());
         FileObject result = new FileObject();
-        result.setFileName(tempDTO.getFileName());
+        result.setFileName(pendingDTO.getFileName());
         result.setFileSize(metadata.contentLength());
-        result.setFilePath(tempDTO.getFilePath());
-        result.setFileType(tempDTO.getFileType());
-        result.setCreatedBy(tempDTO.getCreatedBy());
+        result.setFilePath(pendingDTO.getFilePath());
+        result.setFileType(pendingDTO.getFileType());
+        result.setCreatedBy(pendingDTO.getCreatedBy());
         result = fileObjectRepository.save(result);
-        fileObjectTempRepository.deleteById(tempDTO.getId());
+        fileObjectPendingRepository.deleteById(pendingDTO.getId());
         return commonMapper.toDTO(result);
     }
 
