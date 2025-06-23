@@ -27,7 +27,7 @@ public class FileUtils {
     private static final String EXTENSION_SEPARATOR = ".";
     private static final Pattern UNSAFE_CHARS = Pattern.compile("[^a-zA-Z0-9\\-._ ]");
     private static final Pattern MARK_CHARS = Pattern.compile("\\p{M}");
-    private static final Pattern LEADING_TRAILING_CHARS = Pattern.compile("^[._ ]+|[._ ]+$");
+    private static final Pattern LEADING_TRAILING_CHARS = Pattern.compile("^[. ]+|[. ]+$");
 
     public static void writeFile(byte[] bytes, String outputPath) {
         if (bytes == null) return;
@@ -44,6 +44,28 @@ public class FileUtils {
         int dotIndex = fileName.lastIndexOf(EXTENSION_SEPARATOR);
         if (dotIndex < 0 || dotIndex == fileName.length() - 1) return "";
         return fileName.substring(dotIndex + 1);
+    }
+
+    public static boolean validateFileType(byte[] file, List<FileType> fileTypes) {
+        if (file == null || file.length == 0) return false;
+        if (CollectionUtils.isEmpty(fileTypes)) {
+            fileTypes = SUPPORTED_FILE_TYPES;
+        }
+        try {
+            FileType detectedFileType = FileType.fromMimeType(tika.detect(file));
+            if (detectedFileType == null) return false;
+
+            for (FileType fileType : fileTypes) {
+                if (detectedFileType.equals(fileType)) return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
+    public static boolean validateFileType(byte[] file) {
+        return validateFileType(file, null);
     }
 
     public static boolean validateFileType(MultipartFile file, List<FileType> fileTypes) {
@@ -73,6 +95,10 @@ public class FileUtils {
         return false;
     }
 
+    public static boolean validateFileType(MultipartFile file) {
+        return validateFileType(file, null);
+    }
+
     public static String truncateFileName(String fileName, Integer maxLength) {
         if (StringUtils.isBlank(fileName)) return "";
         if (maxLength == null || maxLength <= 0) {
@@ -84,6 +110,10 @@ public class FileUtils {
             return fileName.substring(0, maxLength);
         }
         return fileName.substring(0, maxLength - extension.length()).concat(extension);
+    }
+
+    public static String truncateFileName(String fileName) {
+        return truncateFileName(fileName, null);
     }
 
     public static String cleanFilePath(String filePath) {
