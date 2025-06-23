@@ -7,13 +7,17 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
 public class CSVHelper {
+
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     public static class Export {
         public static void processTemplate(Writer writer, List<String> header, Consumer<CSVPrinter> bodyFn) {
@@ -26,7 +30,7 @@ public class CSVHelper {
 
         public static byte[] processTemplateToBytes(List<String> header, Consumer<CSVPrinter> bodyFn) {
             try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                 OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+                 OutputStreamWriter writer = new OutputStreamWriter(outputStream, DEFAULT_CHARSET)) {
                 processTemplate(writer, header, bodyFn);
                 return outputStream.toByteArray();
             } catch (Exception e) {
@@ -35,10 +39,9 @@ public class CSVHelper {
             }
         }
 
-        public static void processTemplateWriteFile(String outputPath, List<String> header, Consumer<CSVPrinter> bodyFn) {
-            try (FileWriter writer = new FileWriter(outputPath, StandardCharsets.UTF_8);
-                 BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
-                processTemplate(bufferedWriter, header, bodyFn);
+        public static void processTemplateWriteFile(String filePath, List<String> header, Consumer<CSVPrinter> bodyFn) {
+            try (Writer writer = Files.newBufferedWriter(Paths.get(filePath), DEFAULT_CHARSET)) {
+                processTemplate(writer, header, bodyFn);
             } catch (Exception e) {
                 log.error("processTemplateWriteFile ", e);
             }
@@ -55,7 +58,7 @@ public class CSVHelper {
         }
 
         public static void processTemplate(String filePath, Consumer<CSVParser> bodyFn) {
-            try (FileReader reader = new FileReader(Paths.get(filePath).toFile())) {
+            try (Reader reader = Files.newBufferedReader(Paths.get(filePath), DEFAULT_CHARSET)) {
                 processTemplate(reader, bodyFn);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
@@ -64,7 +67,8 @@ public class CSVHelper {
 
         public static void processTemplate(byte[] bytes, Consumer<CSVParser> bodyFn) {
             try (ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, DEFAULT_CHARSET);
+                 BufferedReader reader = new BufferedReader(inputStreamReader)) {
                 processTemplate(reader, bodyFn);
             } catch (Exception e) {
                 log.error("processTemplate ", e);
@@ -72,7 +76,9 @@ public class CSVHelper {
         }
 
         public static void processTemplate(MultipartFile file, Consumer<CSVParser> bodyFn) {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+            try (InputStream inputStream = file.getInputStream();
+                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream, DEFAULT_CHARSET);
+                 BufferedReader reader = new BufferedReader(inputStreamReader)) {
                 processTemplate(reader, bodyFn);
             } catch (Exception e) {
                 log.error("processTemplate ", e);

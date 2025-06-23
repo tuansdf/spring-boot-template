@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +58,10 @@ public class FileUtils {
             FileType fileTypeByExtension = FileType.fromExtension(getFileExtension(file.getOriginalFilename()));
             if (!fileTypeByMimeType.equals(fileTypeByExtension)) return false;
 
-            FileType detectedFileType = FileType.fromMimeType(tika.detect(file.getInputStream()));
+            FileType detectedFileType = null;
+            try (InputStream inputStream = file.getInputStream()) {
+                detectedFileType = FileType.fromMimeType(tika.detect(inputStream));
+            }
             if (detectedFileType == null || !detectedFileType.equals(fileTypeByMimeType)) return false;
 
             for (FileType fileType : fileTypes) {

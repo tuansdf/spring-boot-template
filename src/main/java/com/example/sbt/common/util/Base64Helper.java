@@ -3,12 +3,14 @@ package com.example.sbt.common.util;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @Slf4j
 public class Base64Helper {
 
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final Base64.Encoder encoder = Base64.getEncoder();
     private static final Base64.Decoder decoder = Base64.getDecoder();
     private static final Base64.Encoder urlEncoder = Base64.getUrlEncoder().withoutPadding();
@@ -27,7 +29,7 @@ public class Base64Helper {
     public static String encode(String input) {
         try {
             if (input == null) return null;
-            return encode(input.getBytes(StandardCharsets.UTF_8));
+            return encode(input.getBytes(DEFAULT_CHARSET));
         } catch (Exception e) {
             log.error("base64 encode ", e);
             return null;
@@ -47,7 +49,7 @@ public class Base64Helper {
     public static String urlEncode(String input) {
         try {
             if (input == null) return null;
-            return urlEncode(input.getBytes(StandardCharsets.UTF_8));
+            return urlEncode(input.getBytes(DEFAULT_CHARSET));
         } catch (Exception e) {
             log.error("base64url encode ", e);
             return null;
@@ -68,7 +70,7 @@ public class Base64Helper {
         try {
             byte[] result = decode(input);
             if (result == null) return null;
-            return new String(result, StandardCharsets.UTF_8);
+            return new String(result, DEFAULT_CHARSET);
         } catch (Exception e) {
             log.error("base64 decode to string ", e);
             return null;
@@ -89,7 +91,7 @@ public class Base64Helper {
         try {
             byte[] result = urlDecode(input);
             if (result == null) return null;
-            return new String(result, StandardCharsets.UTF_8);
+            return new String(result, DEFAULT_CHARSET);
         } catch (Exception e) {
             log.error("base64url decode to string ", e);
             return null;
