@@ -1,4 +1,4 @@
-package com.example.sbt.module.remoteconfig.dto;
+package com.example.sbt.module.configuration.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchRemoteConfigRequestDTO {
+public class SearchConfigurationRequestDTO {
 
     private Long pageNumber;
     private Long pageSize;

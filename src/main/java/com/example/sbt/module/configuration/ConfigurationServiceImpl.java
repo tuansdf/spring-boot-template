@@ -1,4 +1,4 @@
-package com.example.sbt.module.remoteconfig;
+package com.example.sbt.module.configuration;
 
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.Constants;
@@ -9,8 +9,8 @@ import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.SQLHelper;
-import com.example.sbt.module.remoteconfig.dto.RemoteConfigDTO;
-import com.example.sbt.module.remoteconfig.dto.SearchRemoteConfigRequestDTO;
+import com.example.sbt.module.configuration.dto.ConfigurationDTO;
+import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -27,57 +27,57 @@ import java.util.*;
 @RequiredArgsConstructor
 @Service
 @Transactional(rollbackOn = Exception.class)
-public class RemoteConfigServiceImpl implements RemoteConfigService {
+public class ConfigurationServiceImpl implements ConfigurationService {
 
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
-    private final RemoteConfigRepository remoteConfigRepository;
-    private final RemoteConfigValidator remoteConfigValidator;
+    private final ConfigurationRepository configurationRepository;
+    private final ConfigurationValidator configurationValidator;
     private final StringRedisTemplate redisTemplate;
 
     private void setValueToKVByCode(String code, String value) {
         if (StringUtils.isBlank(code)) return;
         if (value == null) value = Constants.NULL;
-        String kvKey = KVKey.REMOTE_CONFIG_VALUE_BY_CODE.concat(code);
+        String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
         redisTemplate.opsForValue().set(kvKey, value);
     }
 
     private String getValueFromKVByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
-        String kvKey = KVKey.REMOTE_CONFIG_VALUE_BY_CODE.concat(code);
+        String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
         return ConversionUtils.toString(redisTemplate.opsForValue().get(kvKey));
     }
 
     @Override
-    public RemoteConfigDTO save(RemoteConfigDTO requestDTO) {
-        remoteConfigValidator.cleanRequest(requestDTO);
-        remoteConfigValidator.validateUpdate(requestDTO);
-        RemoteConfig result = null;
+    public ConfigurationDTO save(ConfigurationDTO requestDTO) {
+        configurationValidator.cleanRequest(requestDTO);
+        configurationValidator.validateUpdate(requestDTO);
+        Configuration result = null;
         if (requestDTO.getId() != null) {
-            result = remoteConfigRepository.findById(requestDTO.getId()).orElse(null);
+            result = configurationRepository.findById(requestDTO.getId()).orElse(null);
         }
         if (result == null) {
-            remoteConfigValidator.validateCreate(requestDTO);
-            result = new RemoteConfig();
+            configurationValidator.validateCreate(requestDTO);
+            result = new Configuration();
             result.setCode(requestDTO.getCode());
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
         result.setStatus(requestDTO.getStatus());
-        result = remoteConfigRepository.save(result);
+        result = configurationRepository.save(result);
         setValueToKVByCode(result.getCode(), result.getValue());
         return commonMapper.toDTO(result);
     }
 
     @Override
-    public RemoteConfigDTO findOneById(UUID id) {
+    public ConfigurationDTO findOneById(UUID id) {
         if (id == null) return null;
-        return commonMapper.toDTO(remoteConfigRepository.findById(id).orElse(null));
+        return commonMapper.toDTO(configurationRepository.findById(id).orElse(null));
     }
 
     @Override
-    public RemoteConfigDTO findOneByIdOrThrow(UUID id) {
-        RemoteConfigDTO result = findOneById(id);
+    public ConfigurationDTO findOneByIdOrThrow(UUID id) {
+        ConfigurationDTO result = findOneById(id);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
@@ -85,14 +85,14 @@ public class RemoteConfigServiceImpl implements RemoteConfigService {
     }
 
     @Override
-    public RemoteConfigDTO findOneByCode(String code) {
+    public ConfigurationDTO findOneByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
-        return commonMapper.toDTO(remoteConfigRepository.findTopByCode(code).orElse(null));
+        return commonMapper.toDTO(configurationRepository.findTopByCode(code).orElse(null));
     }
 
     @Override
-    public RemoteConfigDTO findOneByCodeOrThrow(String code) {
-        RemoteConfigDTO result = findOneByCode(code);
+    public ConfigurationDTO findOneByCodeOrThrow(String code) {
+        ConfigurationDTO result = findOneByCode(code);
         if (result == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
@@ -105,7 +105,7 @@ public class RemoteConfigServiceImpl implements RemoteConfigService {
         String result = getValueFromKVByCode(code);
         if (Constants.NULL.equals(result)) return null;
         if (result == null) {
-            result = remoteConfigRepository.findTopValueByCodeAndStatus(code, CommonStatus.ACTIVE);
+            result = configurationRepository.findTopValueByCodeAndStatus(code, CommonStatus.ACTIVE);
             setValueToKVByCode(code, result);
         }
         return result;
@@ -115,51 +115,51 @@ public class RemoteConfigServiceImpl implements RemoteConfigService {
     public Map<String, String> findPublicValues(Set<String> codes) {
         // TODO: get/set kv
         Map<String, String> result = new HashMap<>();
-        List<RemoteConfig> remoteConfigs = remoteConfigRepository.findAllByCodeInAndStatusAndIsPublic(codes, CommonStatus.ACTIVE, true);
-        for (RemoteConfig remoteConfig : remoteConfigs) {
-            result.put(remoteConfig.getCode(), remoteConfig.getValue());
+        List<Configuration> configurations = configurationRepository.findAllByCodeInAndStatusAndIsPublic(codes, CommonStatus.ACTIVE, true);
+        for (Configuration configuration : configurations) {
+            result.put(configuration.getCode(), configuration.getValue());
         }
         return result;
     }
 
     @Override
-    public PaginationData<RemoteConfigDTO> search(SearchRemoteConfigRequestDTO requestDTO, boolean isCount) {
-        PaginationData<RemoteConfigDTO> result = executeSearch(requestDTO, true);
+    public PaginationData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCount) {
+        PaginationData<ConfigurationDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
         }
         return result;
     }
 
-    private PaginationData<RemoteConfigDTO> executeSearch(SearchRemoteConfigRequestDTO requestDTO, boolean isCount) {
-        PaginationData<RemoteConfigDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+    private PaginationData<ConfigurationDTO> executeSearch(SearchConfigurationRequestDTO requestDTO, boolean isCount) {
+        PaginationData<ConfigurationDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select rc.* ");
+            builder.append(" select c.* ");
         }
-        builder.append(" from remote_config rc ");
+        builder.append(" from configuration c ");
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
-            builder.append(" and rc.code = :code ");
+            builder.append(" and c.code = :code ");
             params.put("code", requestDTO.getCode().trim());
         }
         if (StringUtils.isNotBlank(requestDTO.getStatus())) {
-            builder.append(" and rc.status = :status ");
+            builder.append(" and c.status = :status ");
             params.put("status", requestDTO.getStatus().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
-            builder.append(" and rc.created_at >= :createdAtFrom ");
+            builder.append(" and c.created_at >= :createdAtFrom ");
             params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and rc.created_at <= :createdAtTo ");
+            builder.append(" and c.created_at <= :createdAtTo ");
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
-            builder.append(" order by rc.code asc, rc.id asc ");
+            builder.append(" order by c.code asc, c.id asc ");
             builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
@@ -169,9 +169,9 @@ public class RemoteConfigServiceImpl implements RemoteConfigService {
             result.setTotalItems(count);
             result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.REMOTE_CONFIG_SEARCH);
+            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.CONFIGURATION_SEARCH);
             SQLHelper.setParams(query, params);
-            List<RemoteConfigDTO> items = query.getResultList();
+            List<ConfigurationDTO> items = query.getResultList();
             result.setItems(items);
         }
         return result;

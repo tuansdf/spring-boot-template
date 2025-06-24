@@ -1,10 +1,10 @@
-package com.example.sbt.module.remoteconfig;
+package com.example.sbt.module.configuration;
 
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.module.remoteconfig.dto.RemoteConfigDTO;
-import com.example.sbt.module.remoteconfig.dto.SearchRemoteConfigRequestDTO;
+import com.example.sbt.module.configuration.dto.ConfigurationDTO;
+import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,41 +19,41 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/remote-configs")
-public class RemoteConfigController {
+@RequestMapping("/v1/configurations")
+public class ConfigurationController {
 
-    private final RemoteConfigService remoteConfigService;
+    private final ConfigurationService configurationService;
 
     @GetMapping("/values")
     public ResponseEntity<CommonResponse<Map<String, String>>> findValues(@RequestParam Set<String> codes) {
-        var result = remoteConfigService.findPublicValues(codes);
+        var result = configurationService.findPublicValues(codes);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/code/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<RemoteConfigDTO>> findOneByCode(@PathVariable String code) {
-        var result = remoteConfigService.findOneByCodeOrThrow(code);
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(@PathVariable String code) {
+        var result = configurationService.findOneByCodeOrThrow(code);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<RemoteConfigDTO>> findOneById(@PathVariable UUID id) {
-        var result = remoteConfigService.findOneByIdOrThrow(id);
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneById(@PathVariable UUID id) {
+        var result = configurationService.findOneByIdOrThrow(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PutMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<RemoteConfigDTO>> save(@RequestBody RemoteConfigDTO requestDTO) {
-        var result = remoteConfigService.save(requestDTO);
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> save(@RequestBody ConfigurationDTO requestDTO) {
+        var result = configurationService.save(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PaginationData<RemoteConfigDTO>>> search(
+    public ResponseEntity<CommonResponse<PaginationData<ConfigurationDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String code,
@@ -61,7 +61,7 @@ public class RemoteConfigController {
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
-        var requestDTO = SearchRemoteConfigRequestDTO.builder()
+        var requestDTO = SearchConfigurationRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .code(code)
@@ -69,7 +69,7 @@ public class RemoteConfigController {
                 .createdAtTo(createdAtTo)
                 .createdAtFrom(createdAtFrom)
                 .build();
-        var result = remoteConfigService.search(requestDTO, count);
+        var result = configurationService.search(requestDTO, count);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 

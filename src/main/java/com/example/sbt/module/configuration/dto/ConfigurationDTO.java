@@ -1,4 +1,4 @@
-package com.example.sbt.module.remoteconfig.dto;
+package com.example.sbt.module.configuration.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RemoteConfigDTO {
+public class ConfigurationDTO {
 
     private UUID id;
     private String code;
