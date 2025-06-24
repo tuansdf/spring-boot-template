@@ -7,7 +7,7 @@ import com.example.sbt.common.util.RandomUtils;
 import com.example.sbt.common.util.io.FileUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ContentDisposition;
 import org.springframework.stereotype.Service;
@@ -59,13 +59,11 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public String uploadFile(byte[] file, String dirPath, String fileName) {
+    public String uploadFile(byte[] file, String dirPath, String originalFileName) {
         try {
             if (file == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, fileName);
-            if (StringUtils.isBlank(objectKey.getOriginalFileName())
-                    || StringUtils.isBlank(objectKey.getFileName())
-                    || StringUtils.isBlank(objectKey.getFilePath())) {
+            ObjectKey objectKey = cleanObjectKey(dirPath, originalFileName);
+            if (StringUtils.isBlank(objectKey.getFileName()) || StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -82,18 +80,15 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public String uploadFile(MultipartFile file, String dirPath, String fileName) {
+    public String uploadFile(MultipartFile file, String dirPath, String originalFileName) {
         try {
             if (file == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, fileName);
-            if (StringUtils.isBlank(objectKey.getOriginalFileName())
-                    || StringUtils.isBlank(objectKey.getFileName())
-                    || StringUtils.isBlank(objectKey.getFilePath())) {
+            ObjectKey objectKey = cleanObjectKey(dirPath, originalFileName);
+            if (StringUtils.isBlank(objectKey.getFileName()) || StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
-                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFileName(), StandardCharsets.UTF_8).build().toString())
                     .key(objectKey.getFilePath())
                     .build();
             try (InputStream inputStream = file.getInputStream()) {
@@ -138,9 +133,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         try {
             if (fileType == null) return null;
             ObjectKey objectKey = cleanObjectKey(dirPath, "_".concat(EXTENSION_SEPARATOR).concat(fileType.getExtension()));
-            if (StringUtils.isBlank(objectKey.getOriginalFileName())
-                    || StringUtils.isBlank(objectKey.getFileName())
-                    || StringUtils.isBlank(objectKey.getFilePath())) {
+            if (StringUtils.isBlank(objectKey.getFileName()) || StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
             if (seconds == null || seconds <= 0L) {

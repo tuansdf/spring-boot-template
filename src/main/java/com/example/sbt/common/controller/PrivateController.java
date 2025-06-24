@@ -219,6 +219,7 @@ public class PrivateController {
     @GetMapping(value = "/random/bench", produces = MediaType.TEXT_PLAIN_VALUE)
     public String bench() {
         for (int i = 0; i < 1_000_000; i++) {
+            UUID.randomUUID();
             RandomUtils.Secure.generateUUID();
             RandomUtils.Secure.generateUUID().toString();
             RandomUtils.Insecure.generateUUID();

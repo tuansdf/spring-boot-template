@@ -13,6 +13,7 @@ import com.example.sbt.module.loginaudit.LoginAudit;
 import com.example.sbt.module.loginaudit.LoginAuditDTO;
 import com.example.sbt.module.notification.Notification;
 import com.example.sbt.module.notification.dto.NotificationDTO;
+import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.permission.Permission;
 import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.role.dto.RoleDTO;
@@ -71,9 +72,9 @@ public interface CommonMapper {
 
     NotificationDTO clone(NotificationDTO v);
 
-    SendEmailRequest toSendEmailRequest(EmailDTO v);
+    SendNotificationRequest toSendRequest(NotificationDTO v);
 
-    SendEmailRequest toSendEmailRequest(Email v);
+    SendEmailRequest toSendRequest(EmailDTO v);
 
     UserDevice toEntity(UserDeviceDTO v);
 

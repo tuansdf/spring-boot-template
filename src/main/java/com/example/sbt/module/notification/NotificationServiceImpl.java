@@ -13,9 +13,9 @@ import com.example.sbt.event.publisher.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import com.example.sbt.module.notification.dto.NotificationStatsDTO;
 import com.example.sbt.module.notification.dto.SearchNotificationRequestDTO;
+import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.userdevice.UserDeviceService;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -133,13 +133,9 @@ public class NotificationServiceImpl implements NotificationService {
     public void executeSend(NotificationDTO notificationDTO) throws FirebaseMessagingException {
         if (notificationDTO == null || !CommonStatus.PENDING.equals(notificationDTO.getSendStatus())) return;
         Set<String> tokens = userDeviceService.findAllTokensByUserId(notificationDTO.getUserId());
-        for (String token : tokens) {
-            sendNotificationService.send(Message.builder()
-                    .setToken(token)
-                    .putData("title", notificationDTO.getTitle())
-                    .putData("body", notificationDTO.getContent())
-                    .build());
-        }
+        SendNotificationRequest request = commonMapper.toSendRequest(notificationDTO);
+        request.setTokens(tokens);
+        sendNotificationService.send(request);
         notificationDTO.setSendStatus(CommonStatus.SENT);
         notificationRepository.save(commonMapper.toEntity(notificationDTO));
         log.info("Notification {} sent", ConversionUtils.safeToString(notificationDTO.getId()));

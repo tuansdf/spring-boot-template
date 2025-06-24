@@ -135,7 +135,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void executeSend(EmailDTO email) throws MessagingException {
         if (email == null || !CommonStatus.PENDING.equals(email.getSendStatus())) return;
-        sendEmailService.send(commonMapper.toSendEmailRequest(email));
+        sendEmailService.send(commonMapper.toSendRequest(email));
         email.setStatus(CommonStatus.SENT);
         emailRepository.save(commonMapper.toEntity(email));
         log.info("Email {} sent", ConversionUtils.safeToString(email.getId()));
