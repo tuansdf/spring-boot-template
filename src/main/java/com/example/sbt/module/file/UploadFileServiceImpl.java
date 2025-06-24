@@ -21,6 +21,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             }
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
-                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFileName()).build().toString())
+                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFileName(), StandardCharsets.UTF_8).build().toString())
                     .key(objectKey.getFilePath())
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file));
@@ -92,7 +93,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             }
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
-                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFileName()).build().toString())
+                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFileName(), StandardCharsets.UTF_8).build().toString())
                     .key(objectKey.getFilePath())
                     .build();
             try (InputStream inputStream = file.getInputStream()) {
@@ -199,9 +200,14 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .build();
             return s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
         } catch (Exception e) {
-            log.error("getFile ", e);
+            log.error("getFileHeaderBytes ", e);
             return null;
         }
+    }
+
+    @Override
+    public byte[] getFileHeaderBytes(String filePath) {
+        return getFileHeaderBytes(filePath, null);
     }
 
     @Override
@@ -219,11 +225,6 @@ public class UploadFileServiceImpl implements UploadFileService {
             log.error("getFileMetadata ", e);
             return null;
         }
-    }
-
-    @Override
-    public byte[] getFileHeaderBytes(String filePath) {
-        return getFileHeaderBytes(filePath, null);
     }
 
     @Override
