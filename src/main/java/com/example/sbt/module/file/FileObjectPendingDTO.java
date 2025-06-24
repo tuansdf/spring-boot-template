@@ -20,6 +20,7 @@ public class FileObjectPendingDTO {
     private String fileName;
     private String fileType;
     private UUID createdBy;
+    private Instant expiresAt;
     private Instant createdAt;
     private Instant updatedAt;
 

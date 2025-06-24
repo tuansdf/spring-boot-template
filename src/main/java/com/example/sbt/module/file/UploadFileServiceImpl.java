@@ -150,7 +150,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
                     .contentType(fileType.getMimeType())
-                    .ifNoneMatch("*")
+                    .ifNoneMatch("*") // api clients need to include this header: If-None-Match: *
                     .build();
             PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
                     .signatureDuration(Duration.ofSeconds(seconds))

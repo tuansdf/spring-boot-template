@@ -5,6 +5,7 @@ import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestHolder;
 import com.example.sbt.common.exception.CustomException;
+import com.example.sbt.common.exception.NoRollbackException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.SQLHelper;
@@ -21,12 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
+import java.time.Instant;
 import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Transactional(rollbackOn = Exception.class)
+@Transactional(rollbackOn = Exception.class, dontRollbackOn = NoRollbackException.class)
 public class FileObjectServiceImpl implements FileObjectService {
 
     private final CommonMapper commonMapper;
@@ -59,11 +61,12 @@ public class FileObjectServiceImpl implements FileObjectService {
 
     @Override
     public FileObjectPendingDTO createPendingFileUpload(String mimeType, String dirPath) {
+        final long EXPIRES_SECONDS = 10L * 60L;
         FileType fileType = FileType.fromMimeType(mimeType);
         if (fileType == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        ObjectKey objectKey = uploadFileService.createPresignedPutUrl(dirPath, fileType);
+        ObjectKey objectKey = uploadFileService.createPresignedPutUrl(dirPath, fileType, EXPIRES_SECONDS);
         if (objectKey == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -71,6 +74,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         result.setFilePath(objectKey.getFilePath());
         result.setFileType(fileType.getMimeType());
         result.setFileName(objectKey.getFileName());
+        result.setExpiresAt(Instant.now().plusSeconds(EXPIRES_SECONDS));
         result.setCreatedBy(RequestHolder.getContext().getUserId());
         FileObjectPendingDTO dto = commonMapper.toDTO(fileObjectPendingRepository.save(result));
         dto.setFileUploadUrl(objectKey.getFileUrl());
@@ -80,6 +84,11 @@ public class FileObjectServiceImpl implements FileObjectService {
     @Override
     public FileObjectPendingDTO createPendingFileUpload(String mimeType) {
         return createPendingFileUpload(mimeType, null);
+    }
+
+    private void deletePendingFileUpload(UUID id, String filePath) {
+        fileObjectPendingRepository.deleteById(id);
+        uploadFileService.deleteFile(filePath);
     }
 
     @Override
@@ -102,8 +111,8 @@ public class FileObjectServiceImpl implements FileObjectService {
         }
         boolean isFileValid = FileUtils.validateFileType(headerBytes, Lists.newArrayList(fileType));
         if (!isFileValid) {
-            uploadFileService.deleteFile(pendingDTO.getFilePath());
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            deletePendingFileUpload(id, pendingDTO.getFilePath());
+            throw new NoRollbackException(HttpStatus.BAD_REQUEST);
         }
         FileObject result = new FileObject();
         result.setFileName(pendingDTO.getFileName());
