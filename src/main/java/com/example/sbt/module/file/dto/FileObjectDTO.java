@@ -1,4 +1,4 @@
-package com.example.sbt.module.file;
+package com.example.sbt.module.file.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

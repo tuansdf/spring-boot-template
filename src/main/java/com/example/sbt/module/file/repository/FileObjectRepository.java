@@ -1,5 +1,6 @@
-package com.example.sbt.module.file;
+package com.example.sbt.module.file.repository;
 
+import com.example.sbt.module.file.entity.FileObject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

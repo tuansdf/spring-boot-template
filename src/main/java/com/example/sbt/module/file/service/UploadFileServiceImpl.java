@@ -1,10 +1,11 @@
-package com.example.sbt.module.file;
+package com.example.sbt.module.file.service;
 
 import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.RandomUtils;
 import com.example.sbt.common.util.io.FileUtils;
+import com.example.sbt.module.file.dto.ObjectKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;

@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -12,9 +14,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@RedisHash("configuration")
 public class ConfigurationDTO {
 
     private UUID id;
+    @Id
     private String code;
     private String value;
     private String description;

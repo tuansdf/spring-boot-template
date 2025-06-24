@@ -1,4 +1,4 @@
-package com.example.sbt.module.file;
+package com.example.sbt.module.file.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

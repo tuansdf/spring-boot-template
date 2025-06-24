@@ -1,8 +1,6 @@
 package com.example.sbt.module.configuration;
 
 import com.example.sbt.common.constant.CommonStatus;
-import com.example.sbt.common.constant.Constants;
-import com.example.sbt.common.constant.KVKey;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.exception.CustomException;
@@ -17,7 +15,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -32,21 +29,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final ConfigurationRepository configurationRepository;
+    private final ConfigurationKVRepository configurationKVRepository;
     private final ConfigurationValidator configurationValidator;
-    private final StringRedisTemplate redisTemplate;
-
-    private void setValueToKVByCode(String code, String value) {
-        if (StringUtils.isBlank(code)) return;
-        if (value == null) value = Constants.NULL;
-        String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
-        redisTemplate.opsForValue().set(kvKey, value);
-    }
-
-    private String getValueFromKVByCode(String code) {
-        if (StringUtils.isBlank(code)) return null;
-        String kvKey = KVKey.CONFIGURATION_VALUE_BY_CODE.concat(code);
-        return ConversionUtils.toString(redisTemplate.opsForValue().get(kvKey));
-    }
 
     @Override
     public ConfigurationDTO save(ConfigurationDTO requestDTO) {
@@ -65,8 +49,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         result.setDescription(requestDTO.getDescription());
         result.setStatus(requestDTO.getStatus());
         result = configurationRepository.save(result);
-        setValueToKVByCode(result.getCode(), result.getValue());
-        return commonMapper.toDTO(result);
+        ConfigurationDTO resultDTO = commonMapper.toDTO(result);
+        configurationKVRepository.save(resultDTO);
+        return resultDTO;
     }
 
     @Override
@@ -87,7 +72,15 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public ConfigurationDTO findOneByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
-        return commonMapper.toDTO(configurationRepository.findTopByCode(code).orElse(null));
+        ConfigurationDTO result = configurationKVRepository.findById(code).orElse(null);
+        if (result != null) {
+            return result;
+        }
+        result = commonMapper.toDTO(configurationRepository.findTopByCode(code).orElse(null));
+        if (result != null) {
+            configurationKVRepository.save(result);
+        }
+        return result;
     }
 
     @Override
@@ -102,22 +95,20 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public String findValueByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
-        String result = getValueFromKVByCode(code);
-        if (Constants.NULL.equals(result)) return null;
-        if (result == null) {
-            result = configurationRepository.findTopValueByCodeAndStatus(code, CommonStatus.ACTIVE);
-            setValueToKVByCode(code, result);
-        }
-        return result;
+        ConfigurationDTO result = findOneByCode(code);
+        if (result == null || !CommonStatus.ACTIVE.equals(result.getStatus())) return null;
+        return ConversionUtils.safeToString(result.getValue());
     }
 
     @Override
     public Map<String, String> findPublicValues(Set<String> codes) {
-        // TODO: get/set kv
         Map<String, String> result = new HashMap<>();
-        List<Configuration> configurations = configurationRepository.findAllByCodeInAndStatusAndIsPublic(codes, CommonStatus.ACTIVE, true);
-        for (Configuration configuration : configurations) {
-            result.put(configuration.getCode(), configuration.getValue());
+        for (String code : codes) {
+            if (StringUtils.isBlank(code)) continue;
+            ConfigurationDTO configurationDTO = findOneByCode(code);
+            if (configurationDTO == null) continue;
+            if (!ConversionUtils.safeToBoolean(configurationDTO.getIsPublic())) continue;
+            result.put(code, ConversionUtils.safeToString(configurationDTO.getValue()));
         }
         return result;
     }

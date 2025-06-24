@@ -15,6 +15,11 @@ Authorization: Bearer {{access_token}}
 
 ###
 
+GET {{base_url}}/v1/configurations/values?keys=
+Authorization: Bearer {{access_token}}
+
+###
+
 GET {{base_url}}/v1/configurations/search
 Authorization: Bearer {{access_token}}
 

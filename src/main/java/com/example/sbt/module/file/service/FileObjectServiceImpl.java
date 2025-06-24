@@ -1,4 +1,4 @@
-package com.example.sbt.module.file;
+package com.example.sbt.module.file.service;
 
 import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.constant.ResultSetName;
@@ -10,6 +10,14 @@ import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.SQLHelper;
 import com.example.sbt.common.util.io.FileUtils;
+import com.example.sbt.module.file.dto.FileObjectDTO;
+import com.example.sbt.module.file.dto.FileObjectPendingDTO;
+import com.example.sbt.module.file.dto.ObjectKey;
+import com.example.sbt.module.file.dto.SearchFileRequestDTO;
+import com.example.sbt.module.file.entity.FileObject;
+import com.example.sbt.module.file.entity.FileObjectPending;
+import com.example.sbt.module.file.repository.FileObjectPendingRepository;
+import com.example.sbt.module.file.repository.FileObjectRepository;
 import com.google.common.collect.Lists;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
