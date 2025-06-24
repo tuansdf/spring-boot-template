@@ -1,4 +1,4 @@
-package com.example.sbt.module.configuration;
+package com.example.sbt.module.remoteconfig;
 
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.exception.CustomException;
@@ -6,7 +6,7 @@ import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.LocaleHelper.LocaleKey;
 import com.example.sbt.common.util.ValidationUtils;
-import com.example.sbt.module.configuration.dto.ConfigurationDTO;
+import com.example.sbt.module.remoteconfig.dto.RemoteConfigDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -15,20 +15,20 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
-public class ConfigurationValidator {
+public class RemoteConfigValidator {
 
     private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
 
-    private final ConfigurationRepository configurationRepository;
+    private final RemoteConfigRepository remoteConfigRepository;
 
-    public void cleanRequest(ConfigurationDTO requestDTO) {
+    public void cleanRequest(RemoteConfigDTO requestDTO) {
         if (requestDTO == null) return;
         requestDTO.setCode(ConversionUtils.safeTrim(requestDTO.getCode()).toUpperCase());
         requestDTO.setDescription(ConversionUtils.safeTrim(requestDTO.getDescription()));
         requestDTO.setValue(ConversionUtils.safeToString(requestDTO.getCode()));
     }
 
-    public void validateUpdate(ConfigurationDTO requestDTO) {
+    public void validateUpdate(RemoteConfigDTO requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
         }
@@ -46,7 +46,7 @@ public class ConfigurationValidator {
         }
     }
 
-    public void validateCreate(ConfigurationDTO requestDTO) {
+    public void validateCreate(RemoteConfigDTO requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
         }
@@ -57,7 +57,7 @@ public class ConfigurationValidator {
         if (codeError != null) {
             throw new CustomException(codeError);
         }
-        if (configurationRepository.existsByCode(requestDTO.getCode())) {
+        if (remoteConfigRepository.existsByCode(requestDTO.getCode())) {
             throw new CustomException(LocaleHelper.getMessage("form.error.duplicated", new LocaleKey("field.code")));
         }
     }

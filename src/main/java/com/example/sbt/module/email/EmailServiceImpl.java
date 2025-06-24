@@ -9,10 +9,10 @@ import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.SQLHelper;
 import com.example.sbt.event.publisher.SendEmailEventPublisher;
-import com.example.sbt.module.configuration.ConfigurationService;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.EmailStatsDTO;
 import com.example.sbt.module.email.dto.SearchEmailRequestDTO;
+import com.example.sbt.module.remoteconfig.RemoteConfigService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -40,7 +40,7 @@ public class EmailServiceImpl implements EmailService {
     private final EmailRepository emailRepository;
     private final SendEmailEventPublisher sendEmailEventPublisher;
     private final SendEmailService sendEmailService;
-    private final ConfigurationService configurationService;
+    private final RemoteConfigService remoteConfigService;
     private final EntityManager entityManager;
 
     private PaginationData<EmailDTO> executeSearch(SearchEmailRequestDTO requestDTO, boolean isCount) {
@@ -167,7 +167,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
         throttleSend(userId, CommonType.ACTIVATE_ACCOUNT, "auth.activate_account_email_sent");
-        String url = configurationService.findValueByCode(ConfigurationCode.ACTIVATE_ACCOUNT_URL);
+        String url = remoteConfigService.findValueByCode(RemoteConfigCode.ACTIVATE_ACCOUNT_URL);
         if (StringUtils.isBlank(url)) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }

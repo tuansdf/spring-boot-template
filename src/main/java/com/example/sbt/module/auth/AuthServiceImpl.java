@@ -3,14 +3,14 @@ package com.example.sbt.module.auth;
 import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.CommonType;
-import com.example.sbt.common.constant.ConfigurationCode;
+import com.example.sbt.common.constant.RemoteConfigCode;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.TOTPHelper;
 import com.example.sbt.module.auth.dto.*;
-import com.example.sbt.module.configuration.ConfigurationService;
+import com.example.sbt.module.remoteconfig.RemoteConfigService;
 import com.example.sbt.module.email.EmailService;
 import com.example.sbt.module.jwt.JWTService;
 import com.example.sbt.module.jwt.dto.JWTPayload;
@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
     private final RoleService roleService;
     private final TokenService tokenService;
     private final EmailService emailService;
-    private final ConfigurationService configurationService;
+    private final RemoteConfigService remoteConfigService;
     private final UserRepository userRepository;
     private final AuthValidator authValidator;
     private final NotificationService notificationService;
@@ -119,7 +119,7 @@ public class AuthServiceImpl implements AuthService {
     public void register(RegisterRequestDTO requestDTO) {
         authValidator.validateRegister(requestDTO);
 
-        Boolean isRegistrationEnabled = ConversionUtils.toBoolean(configurationService.findValueByCode(ConfigurationCode.REGISTRATION_ENABLED));
+        Boolean isRegistrationEnabled = ConversionUtils.toBoolean(remoteConfigService.findValueByCode(RemoteConfigCode.REGISTRATION_ENABLED));
         if (isRegistrationEnabled != null && !isRegistrationEnabled) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }

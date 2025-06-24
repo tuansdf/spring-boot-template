@@ -1,8 +1,8 @@
-package com.example.sbt.module.configuration;
+package com.example.sbt.module.remoteconfig;
 
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.entity.BaseEntity;
-import com.example.sbt.module.configuration.dto.ConfigurationDTO;
+import com.example.sbt.module.remoteconfig.dto.RemoteConfigDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,16 +18,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "configuration",
+        name = "remote_config",
         uniqueConstraints = {
-                @UniqueConstraint(name = "configuration_code_idx", columnNames = "code"),
+                @UniqueConstraint(name = "remote_config_code_idx", columnNames = "code"),
         },
         indexes = {
-                @Index(name = "configuration_created_at_idx", columnList = "created_at"),
+                @Index(name = "remote_config_created_at_idx", columnList = "created_at"),
         }
 )
-@SqlResultSetMapping(name = ResultSetName.CONFIGURATION_SEARCH, classes = {
-        @ConstructorResult(targetClass = ConfigurationDTO.class, columns = {
+@SqlResultSetMapping(name = ResultSetName.REMOTE_CONFIG_SEARCH, classes = {
+        @ConstructorResult(targetClass = RemoteConfigDTO.class, columns = {
                 @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "code", type = String.class),
                 @ColumnResult(name = "value", type = String.class),
@@ -37,7 +37,7 @@ import java.util.UUID;
                 @ColumnResult(name = "updated_at", type = Instant.class),
         })
 })
-public class Configuration extends BaseEntity {
+public class RemoteConfig extends BaseEntity {
 
     @Column(name = "code", updatable = false)
     private String code;

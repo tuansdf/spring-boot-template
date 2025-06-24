@@ -1,7 +1,7 @@
 package com.example.sbt.common.mapper;
 
-import com.example.sbt.module.configuration.Configuration;
-import com.example.sbt.module.configuration.dto.ConfigurationDTO;
+import com.example.sbt.module.remoteconfig.RemoteConfig;
+import com.example.sbt.module.remoteconfig.dto.RemoteConfigDTO;
 import com.example.sbt.module.email.Email;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.SendEmailRequest;
@@ -48,11 +48,11 @@ public interface CommonMapper {
 
     RoleDTO clone(RoleDTO v);
 
-    Configuration toEntity(ConfigurationDTO v);
+    RemoteConfig toEntity(RemoteConfigDTO v);
 
-    ConfigurationDTO toDTO(Configuration v);
+    RemoteConfigDTO toDTO(RemoteConfig v);
 
-    ConfigurationDTO clone(ConfigurationDTO v);
+    RemoteConfigDTO clone(RemoteConfigDTO v);
 
     Token toEntity(TokenDTO v);
 
