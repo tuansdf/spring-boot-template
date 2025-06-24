@@ -19,6 +19,7 @@ public class RemoteConfigDTO {
     private String value;
     private String description;
     private String status;
+    private Boolean isPublic;
     private Instant createdAt;
     private Instant updatedAt;
 

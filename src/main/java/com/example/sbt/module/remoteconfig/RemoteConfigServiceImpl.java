@@ -21,10 +21,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -110,6 +107,17 @@ public class RemoteConfigServiceImpl implements RemoteConfigService {
         if (result == null) {
             result = remoteConfigRepository.findTopValueByCodeAndStatus(code, CommonStatus.ACTIVE);
             setValueToKVByCode(code, result);
+        }
+        return result;
+    }
+
+    @Override
+    public Map<String, String> findPublicValues(Set<String> codes) {
+        // TODO: get/set kv
+        Map<String, String> result = new HashMap<>();
+        List<RemoteConfig> remoteConfigs = remoteConfigRepository.findAllByCodeInAndStatusAndIsPublic(codes, CommonStatus.ACTIVE, true);
+        for (RemoteConfig remoteConfig : remoteConfigs) {
+            result.put(remoteConfig.getCode(), remoteConfig.getValue());
         }
         return result;
     }

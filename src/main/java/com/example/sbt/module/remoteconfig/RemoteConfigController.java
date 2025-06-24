@@ -12,6 +12,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -21,6 +23,12 @@ import java.util.UUID;
 public class RemoteConfigController {
 
     private final RemoteConfigService remoteConfigService;
+
+    @GetMapping("/values")
+    public ResponseEntity<CommonResponse<Map<String, String>>> findValues(@RequestParam Set<String> codes) {
+        var result = remoteConfigService.findPublicValues(codes);
+        return ResponseEntity.ok(new CommonResponse<>(result));
+    }
 
     @GetMapping("/code/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})

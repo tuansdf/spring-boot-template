@@ -4,6 +4,8 @@ import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.module.remoteconfig.dto.RemoteConfigDTO;
 import com.example.sbt.module.remoteconfig.dto.SearchRemoteConfigRequestDTO;
 
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public interface RemoteConfigService {
@@ -19,6 +21,8 @@ public interface RemoteConfigService {
     RemoteConfigDTO findOneByCodeOrThrow(String code);
 
     String findValueByCode(String code);
+
+    Map<String, String> findPublicValues(Set<String> codes);
 
     PaginationData<RemoteConfigDTO> search(SearchRemoteConfigRequestDTO requestDTO, boolean isCount);
 

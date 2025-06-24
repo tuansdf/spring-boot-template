@@ -33,6 +33,7 @@ import java.util.UUID;
                 @ColumnResult(name = "value", type = String.class),
                 @ColumnResult(name = "description", type = String.class),
                 @ColumnResult(name = "status", type = String.class),
+                @ColumnResult(name = "is_public", type = Boolean.class),
                 @ColumnResult(name = "created_at", type = Instant.class),
                 @ColumnResult(name = "updated_at", type = Instant.class),
         })
@@ -47,5 +48,7 @@ public class RemoteConfig extends BaseEntity {
     private String description;
     @Column(name = "status")
     private String status;
+    @Column(name = "is_public")
+    private Boolean isPublic;
 
 }
