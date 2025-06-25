@@ -1,7 +1,6 @@
 package com.example.sbt.config;
 
 import com.example.sbt.common.constant.EventKey;
-import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.event.dto.SendEmailEventRequest;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
 import com.example.sbt.event.listener.SendEmailEventListener;
@@ -21,6 +20,8 @@ import org.springframework.data.redis.stream.StreamListener;
 import org.springframework.data.redis.stream.StreamMessageListenerContainer;
 import org.springframework.data.redis.stream.Subscription;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,8 @@ public class RedisStreamConfig {
     private final RedisConnectionFactory connectionFactory;
 
     @PostConstruct
-    public void setup() {
-        String hostname = CommonUtils.coalesce(System.getenv("HOSTNAME"), System.getenv("COMPUTERNAME"), "");
+    public void setup() throws UnknownHostException {
+        String hostname = InetAddress.getLocalHost().getHostName();
         String consumerName = "consumer-" + hostname;
 
         List<CreateSubscriptionRequest<?>> requests = new ArrayList<>();
