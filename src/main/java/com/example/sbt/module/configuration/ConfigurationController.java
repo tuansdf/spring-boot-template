@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,17 +29,10 @@ public class ConfigurationController {
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
-    @GetMapping("/code/{code}")
+    @GetMapping("/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(@PathVariable String code) {
         var result = configurationService.findOneByCodeOrThrow(code);
-        return ResponseEntity.ok(new CommonResponse<>(result));
-    }
-
-    @GetMapping("/{id}")
-    @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneById(@PathVariable UUID id) {
-        var result = configurationService.findOneByIdOrThrow(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 

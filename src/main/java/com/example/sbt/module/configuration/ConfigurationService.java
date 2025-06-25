@@ -6,15 +6,10 @@ import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 public interface ConfigurationService {
 
     ConfigurationDTO save(ConfigurationDTO requestDTO);
-
-    ConfigurationDTO findOneById(UUID id);
-
-    ConfigurationDTO findOneByIdOrThrow(UUID id);
 
     ConfigurationDTO findOneByCode(String code);
 

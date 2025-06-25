@@ -1,16 +1,10 @@
-@id=
 @code=
 @value=
 @description=
 
 ###
 
-GET {{base_url}}/v1/configurations/code/{{code}}
-Authorization: Bearer {{access_token}}
-
-###
-
-GET {{base_url}}/v1/configurations/{{id}}
+GET {{base_url}}/v1/configurations/{{code}}
 Authorization: Bearer {{access_token}}
 
 ###

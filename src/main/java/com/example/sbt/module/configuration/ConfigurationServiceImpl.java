@@ -14,11 +14,15 @@ import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ import java.util.*;
 @Transactional(rollbackOn = Exception.class)
 public class ConfigurationServiceImpl implements ConfigurationService {
 
+    private static final int MAX_PUBLIC_CODES = 10;
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final ConfigurationRepository configurationRepository;
@@ -48,25 +53,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
         result.setStatus(requestDTO.getStatus());
+        result.setIsPublic(ConversionUtils.safeToBoolean(requestDTO.getIsPublic()));
         result = configurationRepository.save(result);
         ConfigurationDTO resultDTO = commonMapper.toDTO(result);
         configurationKVRepository.save(resultDTO);
         return resultDTO;
-    }
-
-    @Override
-    public ConfigurationDTO findOneById(UUID id) {
-        if (id == null) return null;
-        return commonMapper.toDTO(configurationRepository.findById(id).orElse(null));
-    }
-
-    @Override
-    public ConfigurationDTO findOneByIdOrThrow(UUID id) {
-        ConfigurationDTO result = findOneById(id);
-        if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
-        return result;
     }
 
     @Override
@@ -94,20 +85,33 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     public String findValueByCode(String code) {
-        if (StringUtils.isBlank(code)) return null;
+        if (StringUtils.isBlank(code)) {
+            return null;
+        }
         ConfigurationDTO result = findOneByCode(code);
-        if (result == null || !CommonStatus.ACTIVE.equals(result.getStatus())) return null;
+        if (result == null || !CommonStatus.ACTIVE.equals(result.getStatus())) {
+            return null;
+        }
         return ConversionUtils.safeToString(result.getValue());
     }
 
     @Override
     public Map<String, String> findPublicValues(Set<String> codes) {
+        if (CollectionUtils.isEmpty(codes) || codes.size() > MAX_PUBLIC_CODES) {
+            return null;
+        }
         Map<String, String> result = new HashMap<>();
         for (String code : codes) {
-            if (StringUtils.isBlank(code)) continue;
+            if (StringUtils.isBlank(code)) {
+                continue;
+            }
             ConfigurationDTO configurationDTO = findOneByCode(code);
-            if (configurationDTO == null) continue;
-            if (!ConversionUtils.safeToBoolean(configurationDTO.getIsPublic())) continue;
+            if (configurationDTO == null) {
+                continue;
+            }
+            if (!ConversionUtils.safeToBoolean(configurationDTO.getIsPublic())) {
+                continue;
+            }
             result.put(code, ConversionUtils.safeToString(configurationDTO.getValue()));
         }
         return result;
