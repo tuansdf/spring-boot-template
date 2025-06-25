@@ -29,7 +29,7 @@ Content-Type: application/json
 
 ###
 
-POST {{base_url}}/open/v1/auth/forgot-password
+POST {{base_url}}/open/v1/auth/reset-password/request
 Content-Type: application/json
 
 {
@@ -61,7 +61,7 @@ GET {{base_url}}/open/v1/auth/account/activate?token={{activate_token}}
 
 ###
 
-POST {{base_url}}/open/v1/auth/account/request-activate
+POST {{base_url}}/open/v1/auth/account/activate/request
 Content-Type: application/json
 
 {

@@ -145,7 +145,7 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationDTO sendNewComerNotification(UUID userId) {
         NotificationDTO notificationDTO = NotificationDTO.builder()
                 .title(LocaleHelper.getMessage("notification.new_comer_title", applicationProperties.getApplicationName()))
-                .content(LocaleHelper.getMessage("notification.new_comer_content"))
+                .body(LocaleHelper.getMessage("notification.new_comer_content"))
                 .userId(userId)
                 .build();
         return triggerSend(notificationDTO);

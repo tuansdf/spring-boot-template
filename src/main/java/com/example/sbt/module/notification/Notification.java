@@ -29,7 +29,7 @@ import java.util.UUID;
                 @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "user_id", type = UUID.class),
                 @ColumnResult(name = "title", type = String.class),
-                @ColumnResult(name = "content", type = String.class),
+                @ColumnResult(name = "body", type = String.class),
                 @ColumnResult(name = "data", type = String.class),
                 @ColumnResult(name = "topic", type = String.class),
                 @ColumnResult(name = "retry_count", type = Integer.class),
@@ -46,8 +46,8 @@ public class Notification extends BaseEntity {
     private UUID userId;
     @Column(name = "title", columnDefinition = "text")
     private String title;
-    @Column(name = "content", columnDefinition = "text")
-    private String content;
+    @Column(name = "body", columnDefinition = "text")
+    private String body;
     @Column(name = "data", columnDefinition = "text")
     private String data;
     @Column(name = "retry_count")

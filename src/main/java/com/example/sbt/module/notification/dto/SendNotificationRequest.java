@@ -14,7 +14,7 @@ import java.util.Set;
 public class SendNotificationRequest {
 
     private String title;
-    private String content;
+    private String body;
     private String data;
     private String topic;
     private Set<String> tokens;

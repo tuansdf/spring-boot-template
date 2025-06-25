@@ -12,11 +12,12 @@ import com.example.sbt.common.util.io.FileUtils;
 import com.example.sbt.common.util.io.ImageUtils;
 import com.example.sbt.module.file.service.FileObjectService;
 import com.example.sbt.module.file.service.UploadFileService;
+import com.example.sbt.module.notification.SendNotificationService;
+import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.google.common.collect.Lists;
-import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.common.collect.Sets;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.google.firebase.messaging.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
@@ -43,7 +44,7 @@ import java.util.*;
 public class PrivateController {
 
     private final StringRedisTemplate redisTemplate;
-    private final FirebaseMessaging firebaseMessaging;
+    private final SendNotificationService sendNotificationService;
     private final FileObjectService fileObjectService;
     private final UploadFileService uploadFileService;
 
@@ -275,11 +276,22 @@ public class PrivateController {
         return "OK";
     }
 
-    @GetMapping(value = "/push-notification", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testPushNotification(@RequestParam String token) throws FirebaseMessagingException {
-        firebaseMessaging.send(Message.builder()
-                .setToken(token)
-                .putData("hello", "world")
+    @GetMapping(value = "/notification/send", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testNotificationSend(@RequestParam String token, @RequestParam(required = false) String topic) throws FirebaseMessagingException {
+        sendNotificationService.sendAsync(SendNotificationRequest.builder()
+                .title("notification title")
+                .body("notification content")
+                .topic(topic)
+                .tokens(Sets.newHashSet(token))
+                .build());
+        return "OK";
+    }
+
+    @GetMapping(value = "/notification/subscribe-topic", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testNotificationSubscribeTopic(@RequestParam String token, @RequestParam String topic) throws FirebaseMessagingException {
+        sendNotificationService.subscribeTopicAsync(SendNotificationRequest.builder()
+                .topic(topic)
+                .tokens(Sets.newHashSet(token))
                 .build());
         return "OK";
     }

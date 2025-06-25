@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class SendNotificationServiceImpl implements SendNotificationService {
                     .setTopic(request.getTopic())
                     .setNotification(Notification.builder()
                             .setTitle(request.getTitle())
-                            .setBody(request.getContent())
+                            .setBody(request.getBody())
                             .build())
                     .build();
             firebaseMessaging.send(message);
@@ -48,11 +49,17 @@ public class SendNotificationServiceImpl implements SendNotificationService {
                     .addAllTokens(tokens.subList(i, to))
                     .setNotification(Notification.builder()
                             .setTitle(request.getTitle())
-                            .setBody(request.getContent())
+                            .setBody(request.getBody())
                             .build())
                     .build();
             firebaseMessaging.sendEachForMulticast(message);
         }
+    }
+
+    @Async
+    @Override
+    public void sendAsync(SendNotificationRequest request) throws FirebaseMessagingException {
+        send(request);
     }
 
     @Override
@@ -68,6 +75,12 @@ public class SendNotificationServiceImpl implements SendNotificationService {
             int to = Math.min(i + TOKEN_BATCH_SIZE, tokenSize);
             firebaseMessaging.subscribeToTopic(tokens.subList(i, to), request.getTopic());
         }
+    }
+
+    @Async
+    @Override
+    public void subscribeTopicAsync(SendNotificationRequest request) throws FirebaseMessagingException {
+        subscribeTopic(request);
     }
 
 }

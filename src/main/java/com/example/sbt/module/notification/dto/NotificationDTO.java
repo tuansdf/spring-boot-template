@@ -18,7 +18,7 @@ public class NotificationDTO {
     private UUID id;
     private UUID userId;
     private String title;
-    private String content;
+    private String body;
     private String data;
     private String topic;
     @JsonIgnore
