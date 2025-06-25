@@ -87,14 +87,14 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public JWTPayload createActivateAccountJwt(UUID tokenId, boolean isReactivate) {
+    public JWTPayload createActivateAccountJwt(UUID tokenId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
         jwtPayload.setSubject(tokenId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtActivateAccountLifetime()));
-        jwtPayload.setType(CommonType.toIndex(isReactivate ? CommonType.REACTIVATE_ACCOUNT : CommonType.ACTIVATE_ACCOUNT));
+        jwtPayload.setType(CommonType.toIndex(CommonType.ACTIVATE_ACCOUNT));
         jwtPayload.setValue(create(jwtPayload));
         return jwtPayload;
     }

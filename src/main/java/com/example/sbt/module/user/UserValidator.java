@@ -17,7 +17,7 @@ import java.util.List;
 @Component
 public class UserValidator {
 
-    private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE, CommonStatus.PENDING);
+    private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
 
     public void validateUpdate(UserDTO requestDTO) {
         if (requestDTO == null) {

@@ -13,7 +13,7 @@ public interface AuthService {
 
     void changePassword(ChangePasswordRequestDTO requestDTO, UUID userId);
 
-    void forgotPassword(ForgotPasswordRequestDTO requestDTO);
+    void requestResetPassword(RequestResetPasswordRequestDTO requestDTO);
 
     void resetPassword(ResetPasswordRequestDTO requestDTO);
 

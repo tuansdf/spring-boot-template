@@ -60,5 +60,7 @@ public class User extends BaseEntity {
     private String name;
     @Column(name = "status")
     private String status;
+    @Column(name = "is_verified")
+    private Boolean isVerified;
 
 }

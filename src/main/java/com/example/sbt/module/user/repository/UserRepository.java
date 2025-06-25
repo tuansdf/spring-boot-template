@@ -24,11 +24,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     boolean existsByEmail(String email);
 
-    Optional<User> findTopByIdAndStatus(UUID id, String status);
+    boolean existsByIdAndStatus(UUID id, String status);
 
-    @Modifying
-    @Query(value = "update _user set password = :password, updated_at = now() where id = :userId", nativeQuery = true)
-    void updatePasswordByUserId(UUID userId, String password);
+    Optional<User> findTopByIdAndStatus(UUID id, String status);
 
     @Modifying
     @Query(value = "update _user set status = :status, updated_at = now() where id = :userId", nativeQuery = true)

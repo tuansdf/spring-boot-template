@@ -34,8 +34,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -135,34 +133,34 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(requestDTO.getEmail());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
-        user.setStatus(CommonStatus.PENDING);
+        user.setStatus(CommonStatus.INACTIVE);
+        user.setIsVerified(false);
         user = userRepository.save(user);
 
-        TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId(), false);
+        TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
         String name = CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail(), "");
         emailService.sendActivateAccountEmail(user.getEmail(), name, tokenDTO.getValue(), user.getId());
     }
 
     @Override
     public void changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
-        User user = userOptional.get();
         boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getOldPassword(), user.getPassword());
         if (!isPasswordCorrect) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         user = userRepository.save(user);
-        tokenService.deactivatePastTokens(user.getId(), CommonType.REFRESH_TOKEN);
+        tokenService.deactivatePastTokens(user.getId());
     }
 
 
     @Override
-    public void forgotPassword(ForgotPasswordRequestDTO requestDTO) {
-        authValidator.validateForgotPassword(requestDTO);
+    public void requestResetPassword(RequestResetPasswordRequestDTO requestDTO) {
+        authValidator.validateRequestResetPassword(requestDTO);
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
         if (userDTO == null) return;
         tokenService.deactivatePastTokens(userDTO.getId(), CommonType.RESET_PASSWORD);
@@ -187,15 +185,13 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !CommonType.RESET_PASSWORD.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(tokenDTO.getOwnerId(), CommonStatus.ACTIVE);
-        if (userOptional.isEmpty()) {
+        User user = userRepository.findTopByIdAndStatus(tokenDTO.getOwnerId(), CommonStatus.ACTIVE).orElse(null);
+        if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        User user = userOptional.get();
         user.setPassword(passwordEncoder.encode(requestDTO.getNewPassword()));
         userRepository.save(user);
-        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), List.of(CommonType.RESET_PASSWORD,
-                CommonType.REFRESH_TOKEN, CommonType.ACTIVATE_ACCOUNT, CommonType.REACTIVATE_ACCOUNT));
+        tokenService.deactivatePastTokens(tokenDTO.getOwnerId());
     }
 
     private AuthDTO createAuthResponse(UUID userId, Set<String> permissionCodes) {
@@ -225,8 +221,8 @@ public class AuthServiceImpl implements AuthService {
         if (tokenDTO == null || !CommonType.REFRESH_TOKEN.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(ConversionUtils.toUUID(tokenDTO.getOwnerId()), CommonStatus.ACTIVE);
-        if (userOptional.isEmpty()) {
+        boolean isUserValid = userRepository.existsByIdAndStatus(ConversionUtils.toUUID(tokenDTO.getOwnerId()), CommonStatus.ACTIVE);
+        if (isUserValid) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         Set<String> permissions = permissionService.findAllCodesByUserId(tokenDTO.getOwnerId());
@@ -242,7 +238,7 @@ public class AuthServiceImpl implements AuthService {
         UserDTO userDTO = userService.findOneByEmail(requestDTO.getEmail());
         if (userDTO == null || !CommonStatus.PENDING.equals(userDTO.getStatus())) return;
         tokenService.deactivatePastTokens(userDTO.getId(), CommonType.ACTIVATE_ACCOUNT);
-        TokenDTO tokenDTO = tokenService.createActivateAccountToken(userDTO.getId(), false);
+        TokenDTO tokenDTO = tokenService.createActivateAccountToken(userDTO.getId());
         String name = CommonUtils.coalesce(userDTO.getName(), userDTO.getUsername(), userDTO.getEmail(), "");
         emailService.sendActivateAccountEmail(userDTO.getEmail(), name, tokenDTO.getValue(), userDTO.getId());
     }
@@ -257,37 +253,36 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         String tokenType = CommonType.fromIndex(jwtPayload.getType());
-        List<String> validTypes = List.of(CommonType.ACTIVATE_ACCOUNT, CommonType.REACTIVATE_ACCOUNT);
-        if (!validTypes.contains(tokenType)) {
+        if (!CommonType.ACTIVATE_ACCOUNT.equals(tokenType)) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         UUID tokenId = ConversionUtils.toUUID(jwtPayload.getSubject());
         TokenDTO tokenDTO = tokenService.findOneActiveById(tokenId);
-        if (tokenDTO == null || !validTypes.contains(tokenDTO.getType())) {
+        if (tokenDTO == null || !CommonType.ACTIVATE_ACCOUNT.equals(tokenDTO.getType())) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UserDTO user = userService.findOneById(tokenDTO.getOwnerId());
+        User user = userRepository.findById(tokenDTO.getOwnerId()).orElse(null);
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        List<String> validStatus = List.of(CommonStatus.PENDING, CommonStatus.INACTIVE);
-        if (!validStatus.contains(user.getStatus())) {
+        if (!CommonStatus.INACTIVE.equals(user.getStatus())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        userRepository.updateStatusByUserId(tokenDTO.getOwnerId(), CommonStatus.ACTIVE);
-        tokenService.deactivatePastTokens(tokenDTO.getOwnerId(), tokenType);
-        if (CommonType.ACTIVATE_ACCOUNT.equals(tokenType)) {
+        user.setStatus(CommonStatus.ACTIVE);
+        user.setIsVerified(true);
+        user = userRepository.save(user);
+        tokenService.deactivatePastTokens(tokenDTO.getOwnerId());
+        if (!ConversionUtils.safeToBoolean(user.getIsVerified())) {
             notificationService.sendNewComerNotification(tokenDTO.getOwnerId());
         }
     }
 
     @Override
     public EnableOtpResponseDTO enableOtp(EnableOtpRequestDTO requestDTO, UUID userId) {
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
-        if (userOptional.isEmpty()) {
+        User user = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE).orElse(null);
+        if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        User user = userOptional.get();
         boolean isPasswordCorrect = passwordEncoder.matches(requestDTO.getPassword(), user.getPassword());
         if (!isPasswordCorrect) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -304,11 +299,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void confirmOtp(ConfirmOtpRequestDTO requestDTO, UUID userId) {
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
-        if (userOptional.isEmpty()) {
+        User user = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE).orElse(null);
+        if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        User user = userOptional.get();
         if (ConversionUtils.safeToBoolean(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -322,11 +316,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void disableOtp(DisableOtpRequestDTO requestDTO, UUID userId) {
-        Optional<User> userOptional = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE);
-        if (userOptional.isEmpty()) {
+        User user = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE).orElse(null);
+        if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        User user = userOptional.get();
         if (!ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }

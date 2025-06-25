@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -29,14 +28,13 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO findOneById(UUID id) {
-        Optional<Token> result = tokenRepository.findById(id);
-        return result.map(commonMapper::toDTO).orElse(null);
+        return tokenRepository.findById(id).map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
     public TokenDTO findOneActiveById(UUID id) {
-        Optional<Token> token = tokenRepository.findTopByIdAndStatusAndExpiresAtAfter(id, CommonStatus.ACTIVE, Instant.now());
-        return token.map(commonMapper::toDTO).orElse(null);
+        return tokenRepository.findTopByIdAndStatusAndExpiresAtAfter(id, CommonStatus.ACTIVE, Instant.now())
+                .map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -50,7 +48,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public void deactivatePastTokensByUserId(UUID userId) {
+    public void deactivatePastTokens(UUID userId) {
         tokenRepository.updateStatusByOwnerId(userId, CommonStatus.INACTIVE);
     }
 
@@ -89,9 +87,9 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenDTO createActivateAccountToken(UUID userId, boolean isReactivate) {
+    public TokenDTO createActivateAccountToken(UUID userId) {
         UUID id = RandomUtils.Secure.generateTimeBasedUUID();
-        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id, isReactivate);
+        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id);
 
         Token token = new Token();
         token.setId(id);

@@ -15,12 +15,12 @@ public interface TokenService {
 
     void deactivatePastTokens(UUID userId, List<String> types);
 
-    void deactivatePastTokensByUserId(UUID userId);
+    void deactivatePastTokens(UUID userId);
 
     TokenDTO createRefreshToken(UUID userId);
 
     TokenDTO createResetPasswordToken(UUID userId);
 
-    TokenDTO createActivateAccountToken(UUID userId, boolean isReactivate);
+    TokenDTO createActivateAccountToken(UUID userId);
 
 }

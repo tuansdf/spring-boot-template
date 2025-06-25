@@ -33,14 +33,14 @@ public class PublicAuthController {
         return ResponseEntity.ok(new CommonResponse<>(message));
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<CommonResponse<Object>> forgotPassword(@RequestBody ForgotPasswordRequestDTO requestDTO) {
-        authService.forgotPassword(requestDTO);
+    @PostMapping("/password/reset/request")
+    public ResponseEntity<CommonResponse<Object>> requestResetPassword(@RequestBody RequestResetPasswordRequestDTO requestDTO) {
+        authService.requestResetPassword(requestDTO);
         var message = LocaleHelper.getMessage("auth.reset_password_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message));
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping("/password/reset")
     public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequestDTO requestDTO) {
         authService.resetPassword(requestDTO);
         var message = LocaleHelper.getMessage("auth.reset_password_success");
@@ -67,7 +67,7 @@ public class PublicAuthController {
         return HTMLTemplate.createCenteredHtml(LocaleHelper.getMessage("email.activate_account_subject"), result);
     }
 
-    @PostMapping("/account/request-activate")
+    @PostMapping("/account/activate/request")
     public ResponseEntity<CommonResponse<Object>> requestActivateAccount(@RequestBody RequestActivateAccountRequestDTO requestDTO) {
         authService.requestActivateAccount(requestDTO);
         var message = LocaleHelper.getMessage("auth.activate_account_email_sent");

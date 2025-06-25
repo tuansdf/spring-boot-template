@@ -64,7 +64,7 @@ public class AuthValidator {
         }
     }
 
-    public void validateForgotPassword(ForgotPasswordRequestDTO requestDTO) {
+    public void validateRequestResetPassword(RequestResetPasswordRequestDTO requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(LocaleHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
         }

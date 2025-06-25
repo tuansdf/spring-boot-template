@@ -31,6 +31,7 @@ public class UserDTO {
     private String otpSecret;
     private Boolean otpEnabled;
     private String status;
+    private Boolean isVerified;
     private Instant createdAt;
     private Instant updatedAt;
 

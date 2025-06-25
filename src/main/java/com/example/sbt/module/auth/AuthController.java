@@ -41,7 +41,7 @@ public class AuthController {
     @PostMapping("/token/revoke")
     public ResponseEntity<CommonResponse<Object>> revokeAllTokens() {
         UUID userId = RequestHolder.getContext().getUserId();
-        tokenService.deactivatePastTokensByUserId(userId);
+        tokenService.deactivatePastTokens(userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }
 
