@@ -1,7 +1,7 @@
 package com.example.sbt.common.util;
 
+import com.example.sbt.common.dto.RequestContextData;
 import com.example.sbt.common.dto.RequestContext;
-import com.example.sbt.common.dto.RequestHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class AuthHelper {
 
     public static boolean hasAnyPermission(String... permissions) {
-        RequestContext context = RequestHolder.getContext();
+        RequestContextData context = RequestContext.get();
         if (CollectionUtils.isEmpty(context.getPermissions())) {
             return false;
         }

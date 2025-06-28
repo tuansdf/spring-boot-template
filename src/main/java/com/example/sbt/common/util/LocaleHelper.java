@@ -1,6 +1,6 @@
 package com.example.sbt.common.util;
 
-import com.example.sbt.common.dto.RequestHolder;
+import com.example.sbt.common.dto.RequestContext;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
@@ -24,7 +24,7 @@ public class LocaleHelper {
             return "";
         }
         if (locale == null) {
-            locale = RequestHolder.getContext().getLocale();
+            locale = RequestContext.get().getLocale();
         }
         try {
             if (ArrayUtils.isNotEmpty(args)) {
@@ -42,7 +42,7 @@ public class LocaleHelper {
 
     public static String getMessage(String code, Object... args) {
         try {
-            return getMessage(code, RequestHolder.getContext().getLocale(), args);
+            return getMessage(code, RequestContext.get().getLocale(), args);
         } catch (Exception e) {
             return code;
         }
@@ -58,7 +58,7 @@ public class LocaleHelper {
 
     public static String getMessage(String code) {
         try {
-            return getMessage(code, RequestHolder.getContext().getLocale());
+            return getMessage(code, RequestContext.get().getLocale());
         } catch (Exception e) {
             return code;
         }

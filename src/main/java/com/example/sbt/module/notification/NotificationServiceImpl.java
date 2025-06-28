@@ -4,7 +4,7 @@ import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.common.dto.RequestHolder;
+import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
@@ -107,7 +107,7 @@ public class NotificationServiceImpl implements NotificationService {
     public NotificationDTO findOneById(UUID id) {
         if (id == null) return null;
         Notification result = notificationRepository.findById(id).orElse(null);
-        if (result == null || result.getUserId() == null || result.getUserId().equals(RequestHolder.getContext().getUserId())) {
+        if (result == null || result.getUserId() == null || result.getUserId().equals(RequestContext.get().getUserId())) {
             return null;
         }
         if (CommonStatus.UNREAD.equals(result.getStatus())) {

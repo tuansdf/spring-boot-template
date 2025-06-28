@@ -11,7 +11,6 @@ public class CommonType {
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
     public static final String RESET_PASSWORD = "RESET_PASSWORD";
     public static final String ACTIVATE_ACCOUNT = "ACTIVATE_ACCOUNT";
-    public static final String REACTIVATE_ACCOUNT = "REACTIVATE_ACCOUNT";
 
     private static final Map<String, Integer> STRING_TO_INDEX;
     private static final List<String> STRINGS;
@@ -22,8 +21,7 @@ public class CommonType {
                 ACCESS_TOKEN,
                 REFRESH_TOKEN,
                 RESET_PASSWORD,
-                ACTIVATE_ACCOUNT,
-                REACTIVATE_ACCOUNT);
+                ACTIVATE_ACCOUNT);
         STRINGS_SIZE = STRINGS.size();
         Map<String, Integer> tempStringToIndex = new HashMap<>();
         for (int i = 0; i < STRINGS.size(); i++) {

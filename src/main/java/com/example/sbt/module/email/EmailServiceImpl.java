@@ -2,7 +2,7 @@ package com.example.sbt.module.email;
 
 import com.example.sbt.common.constant.*;
 import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.common.dto.RequestHolder;
+import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
@@ -110,7 +110,7 @@ public class EmailServiceImpl implements EmailService {
     public EmailDTO findOneById(UUID id) {
         if (id == null) return null;
         Email result = emailRepository.findById(id).orElse(null);
-        if (result == null || result.getUserId() == null || result.getUserId().equals(RequestHolder.getContext().getUserId())) {
+        if (result == null || result.getUserId() == null || result.getUserId().equals(RequestContext.get().getUserId())) {
             return null;
         }
         if (CommonStatus.UNREAD.equals(result.getStatus())) {

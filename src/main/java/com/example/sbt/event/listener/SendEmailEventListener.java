@@ -1,7 +1,7 @@
 package com.example.sbt.event.listener;
 
 import com.example.sbt.common.constant.EventKey;
-import com.example.sbt.common.dto.RequestHolder;
+import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.event.dto.SendEmailEventRequest;
 import com.example.sbt.module.email.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
     public void onMessage(ObjectRecord<String, SendEmailEventRequest> message) {
         try {
             SendEmailEventRequest request = message.getValue();
-            RequestHolder.setContext(request.getRequestContext());
+            RequestContext.set(request.getRequestContextData());
             log.info("SendEmailEventListener.start ");
 
             emailService.executeSend(request.getEmail());
@@ -37,7 +37,7 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
                 log.info("SendEmailEventListener.end ");
             } catch (Exception ignore) {
             }
-            RequestHolder.clear();
+            RequestContext.clear();
         }
     }
 

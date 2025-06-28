@@ -1,6 +1,6 @@
 package com.example.sbt.event.dto;
 
-import com.example.sbt.common.dto.RequestContext;
+import com.example.sbt.common.dto.RequestContextData;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Builder
 public class SendNotificationEventRequest implements Serializable {
 
-    private RequestContext requestContext;
+    private RequestContextData requestContextData;
     private NotificationDTO notification;
 
 }

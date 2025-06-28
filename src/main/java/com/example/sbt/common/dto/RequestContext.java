@@ -1,24 +1,39 @@
 package com.example.sbt.common.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.example.sbt.common.constant.MDCKey;
+import com.example.sbt.common.util.ConversionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.MDC;
 
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class RequestContext {
 
-    private String tenantId;
-    private String requestId;
-    private Locale locale;
-    private UUID userId;
-    private Set<String> permissions;
+    private static final ThreadLocal<RequestContextData> context = ThreadLocal.withInitial(() -> null);
+
+    public static RequestContextData get() {
+        RequestContextData result = context.get();
+        if (result == null) {
+            result = new RequestContextData();
+            context.set(result);
+        }
+        return result;
+    }
+
+    public static void set(RequestContextData input) {
+        context.set(input);
+        syncMDC();
+    }
+
+    public static void clear() {
+        context.remove();
+        MDC.clear();
+    }
+
+    public static void syncMDC() {
+        RequestContextData context = get();
+        String requestId = ConversionUtils.toString(context.getRequestId());
+        if (StringUtils.isNotEmpty(requestId)) {
+            MDC.put(MDCKey.REQUEST_ID, requestId);
+        }
+    }
 
 }
