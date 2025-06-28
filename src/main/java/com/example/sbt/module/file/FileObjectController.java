@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -26,7 +25,7 @@ public class FileObjectController {
     private final FileObjectService fileObjectService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<Object>> uploadImage(@RequestParam MultipartFile file) throws IOException {
+    public ResponseEntity<CommonResponse<Object>> uploadImage(@RequestParam MultipartFile file) {
         fileObjectService.uploadFile(file, null);
         return ResponseEntity.ok(new CommonResponse<>());
     }

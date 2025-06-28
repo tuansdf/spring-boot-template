@@ -6,7 +6,7 @@ RUN --mount=type=cache,id=gradle,target=/root/.gradle ./gradlew clean build --no
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-COPY --from=build /app/build/libs/sbt.jar sbt.jar
+COPY --from=build /app/build/libs/main.jar main.jar
 
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/sbt.jar"]
+ENTRYPOINT ["java", "-jar", "/app/main.jar"]

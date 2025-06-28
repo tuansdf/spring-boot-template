@@ -9,7 +9,7 @@ group = 'com.example'
 version = '0.0.1'
 
 bootJar {
-    archiveBaseName = 'sbt'
+    archiveBaseName = 'main'
     archiveVersion = ''
 }
 
