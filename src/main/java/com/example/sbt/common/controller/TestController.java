@@ -42,8 +42,8 @@ import java.util.*;
 @RequiredArgsConstructor
 @Secured({PermissionCode.SYSTEM_ADMIN})
 @RestController
-@RequestMapping("/testing")
-public class PrivateController {
+@RequestMapping("/test")
+public class TestController {
 
     private final StringRedisTemplate redisTemplate;
     private final SendNotificationService sendNotificationService;

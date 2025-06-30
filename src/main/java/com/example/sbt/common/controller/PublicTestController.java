@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/open/testing")
-public class PublicController {
+@RequestMapping("/open/test")
+public class PublicTestController {
 
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
