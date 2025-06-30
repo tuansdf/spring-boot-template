@@ -1,8 +1,8 @@
 package com.example.sbt.module.notification;
 
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
-import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.*;
+import com.google.firebase.messaging.Notification;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +10,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -39,14 +37,12 @@ public class SendNotificationServiceImpl implements SendNotificationService {
         }
 
         if (CollectionUtils.isEmpty(request.getTokens())) return;
-        List<String> tokens = request.getTokens().stream().filter(StringUtils::isNotBlank).toList();
-        if (CollectionUtils.isEmpty(tokens)) return;
 
-        int tokenSize = tokens.size();
+        int tokenSize = request.getTokens().size();
         for (int i = 0; i < tokenSize; i += TOKEN_BATCH_SIZE) {
             int to = Math.min(i + TOKEN_BATCH_SIZE, tokenSize);
             MulticastMessage message = MulticastMessage.builder()
-                    .addAllTokens(tokens.subList(i, to))
+                    .addAllTokens(request.getTokens().subList(i, to))
                     .setNotification(Notification.builder()
                             .setTitle(request.getTitle())
                             .setBody(request.getBody())
@@ -67,13 +63,11 @@ public class SendNotificationServiceImpl implements SendNotificationService {
         if (request == null || StringUtils.isBlank(request.getTopic())) return;
 
         if (CollectionUtils.isEmpty(request.getTokens())) return;
-        List<String> tokens = request.getTokens().stream().filter(StringUtils::isNotBlank).toList();
-        if (CollectionUtils.isEmpty(tokens)) return;
 
-        int tokenSize = tokens.size();
+        int tokenSize = request.getTokens().size();
         for (int i = 0; i < tokenSize; i += TOKEN_BATCH_SIZE) {
             int to = Math.min(i + TOKEN_BATCH_SIZE, tokenSize);
-            firebaseMessaging.subscribeToTopic(tokens.subList(i, to), request.getTopic());
+            firebaseMessaging.subscribeToTopic(request.getTokens().subList(i, to), request.getTopic());
         }
     }
 

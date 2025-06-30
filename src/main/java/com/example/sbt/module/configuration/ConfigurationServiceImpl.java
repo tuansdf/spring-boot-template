@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -96,7 +95,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public Map<String, String> findPublicValues(Set<String> codes) {
+    public Map<String, String> findPublicValues(List<String> codes) {
         if (CollectionUtils.isEmpty(codes) || codes.size() > MAX_PUBLIC_CODES) {
             return null;
         }

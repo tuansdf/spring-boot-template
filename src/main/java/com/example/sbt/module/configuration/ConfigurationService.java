@@ -4,8 +4,8 @@ import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface ConfigurationService {
 
@@ -17,7 +17,7 @@ public interface ConfigurationService {
 
     String findValueByCode(String code);
 
-    Map<String, String> findPublicValues(Set<String> codes);
+    Map<String, String> findPublicValues(List<String> codes);
 
     PaginationData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCount);
 

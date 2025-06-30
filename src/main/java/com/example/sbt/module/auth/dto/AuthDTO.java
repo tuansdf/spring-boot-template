@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -24,7 +24,7 @@ public class AuthDTO {
     private String username;
     private String email;
     private String name;
-    private Set<String> roles;
-    private Set<String> permissions;
+    private List<String> roles;
+    private List<String> permissions;
 
 }

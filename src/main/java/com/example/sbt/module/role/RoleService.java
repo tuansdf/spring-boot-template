@@ -5,14 +5,13 @@ import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.dto.SearchRoleRequestDTO;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public interface RoleService {
 
     RoleDTO save(RoleDTO roleDTO);
 
-    void setUserRoles(UUID userId, Set<UUID> roleIds);
+    void setUserRoles(UUID userId, List<UUID> roleIds);
 
     RoleDTO findOneById(UUID id);
 
@@ -22,7 +21,7 @@ public interface RoleService {
 
     RoleDTO findOneByCodeOrThrow(String code);
 
-    Set<String> findAllCodesByUserId(UUID userId);
+    List<String> findAllCodesByUserId(UUID userId);
 
     List<RoleDTO> findAllByUserId(UUID userId);
 

@@ -25,8 +25,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -236,10 +234,8 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public void deleteFiles(Set<String> filePaths) {
+    public void deleteFiles(List<String> filePaths) {
         try {
-            if (CollectionUtils.isEmpty(filePaths)) return;
-            filePaths = filePaths.stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet());
             if (CollectionUtils.isEmpty(filePaths)) return;
             List<ObjectIdentifier> objectIds = filePaths.stream()
                     .map(key -> ObjectIdentifier.builder().key(key).build())

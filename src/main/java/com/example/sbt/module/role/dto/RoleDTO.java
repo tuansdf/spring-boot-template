@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -21,8 +21,8 @@ public class RoleDTO {
     private String description;
     private Instant createdAt;
     private Instant updatedAt;
-    private Set<UUID> permissionIds;
-    private Set<String> permissionCodes;
+    private List<UUID> permissionIds;
+    private List<String> permissionCodes;
 
     public RoleDTO(UUID id, String code, String name, String description, Instant createdAt, Instant updatedAt) {
         this.id = id;

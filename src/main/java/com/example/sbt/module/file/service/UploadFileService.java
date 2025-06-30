@@ -5,7 +5,7 @@ import com.example.sbt.module.file.dto.ObjectKey;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
-import java.util.Set;
+import java.util.List;
 
 public interface UploadFileService {
 
@@ -31,6 +31,6 @@ public interface UploadFileService {
 
     void deleteFile(String filePath);
 
-    void deleteFiles(Set<String> filePaths);
+    void deleteFiles(List<String> filePaths);
 
 }

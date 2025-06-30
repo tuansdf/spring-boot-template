@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -33,7 +33,7 @@ public class JWTPayload {
     @JsonProperty(JWTPayloadKey.TYPE)
     private Integer type;
     @JsonProperty(JWTPayloadKey.PERMISSIONS)
-    private Set<Integer> permissions;
+    private List<Integer> permissions;
 
     @JsonIgnore
     private String value;
@@ -46,7 +46,7 @@ public class JWTPayload {
         if (subject != null) result.put(JWTPayloadKey.SUBJECT, subject);
         if (issuer != null) result.put(JWTPayloadKey.ISSUER, issuer);
         if (type != null) result.put(JWTPayloadKey.TYPE, type);
-        if (permissions != null) result.put(JWTPayloadKey.PERMISSIONS, permissions.stream().toList());
+        if (permissions != null) result.put(JWTPayloadKey.PERMISSIONS, permissions);
         return result;
     }
 

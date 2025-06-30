@@ -34,7 +34,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -99,8 +99,8 @@ public class AuthServiceImpl implements AuthService {
 
         loginAuditService.add(userDTO.getId(), true);
 
-        Set<String> permissions = permissionService.findAllCodesByUserId(userDTO.getId());
-        Set<String> roles = roleService.findAllCodesByUserId(userDTO.getId());
+        List<String> permissions = permissionService.findAllCodesByUserId(userDTO.getId());
+        List<String> roles = roleService.findAllCodesByUserId(userDTO.getId());
 
         AuthDTO responseDTO = createAuthResponse(userDTO.getId(), permissions);
         responseDTO.setUserId(userDTO.getId());
@@ -194,7 +194,7 @@ public class AuthServiceImpl implements AuthService {
         tokenService.deactivatePastTokens(tokenDTO.getOwnerId());
     }
 
-    private AuthDTO createAuthResponse(UUID userId, Set<String> permissionCodes) {
+    private AuthDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
         JWTPayload accessJwt = jwtService.createAccessJwt(userId, permissionCodes);
         TokenDTO refreshToken = tokenService.createRefreshToken(userId);
         return AuthDTO.builder()
@@ -225,7 +225,7 @@ public class AuthServiceImpl implements AuthService {
         if (isUserValid) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        Set<String> permissions = permissionService.findAllCodesByUserId(tokenDTO.getOwnerId());
+        List<String> permissions = permissionService.findAllCodesByUserId(tokenDTO.getOwnerId());
         JWTPayload accessJwt = jwtService.createAccessJwt(tokenDTO.getOwnerId(), permissions);
         return RefreshTokenResponseDTO.builder()
                 .accessToken(accessJwt.getValue())

@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -17,6 +17,6 @@ public class SendNotificationRequest {
     private String body;
     private String data;
     private String topic;
-    private Set<String> tokens;
+    private List<String> tokens;
 
 }

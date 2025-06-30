@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,9 +35,9 @@ public class UserDTO {
     private Instant createdAt;
     private Instant updatedAt;
 
-    private Set<UUID> roleIds;
-    private Set<String> roleCodes;
-    private Set<String> permissionCodes;
+    private List<UUID> roleIds;
+    private List<String> roleCodes;
+    private List<String> permissionCodes;
 
     // USER_SEARCH_CONTACT
     public UserDTO(UUID id, String username) {
@@ -59,27 +59,27 @@ public class UserDTO {
         setPermissionCodes(permissions);
     }
 
-    public void setRoleCodes(Set<String> roleCodes) {
+    public void setRoleCodes(List<String> roleCodes) {
         this.roleCodes = roleCodes;
     }
 
-    public void setPermissionCodes(Set<String> permissionCodes) {
+    public void setPermissionCodes(List<String> permissionCodes) {
         this.permissionCodes = permissionCodes;
     }
 
     public void setRoleCodes(String roles) {
         if (StringUtils.isBlank(roles)) {
-            this.roleCodes = new HashSet<>();
+            this.roleCodes = new ArrayList<>();
         } else {
-            this.roleCodes = Arrays.stream(roles.split(",")).map(ConversionUtils::safeTrim).collect(Collectors.toSet());
+            this.roleCodes = Arrays.stream(roles.split(",")).map(ConversionUtils::safeTrim).collect(Collectors.toCollection(ArrayList::new));
         }
     }
 
     public void setPermissionCodes(String permissions) {
         if (StringUtils.isBlank(permissions)) {
-            this.permissionCodes = new HashSet<>();
+            this.permissionCodes = new ArrayList<>();
         } else {
-            this.permissionCodes = Arrays.stream(permissions.split(",")).map(ConversionUtils::safeTrim).collect(Collectors.toSet());
+            this.permissionCodes = Arrays.stream(permissions.split(",")).map(ConversionUtils::safeTrim).collect(Collectors.toCollection(ArrayList::new));
         }
     }
 

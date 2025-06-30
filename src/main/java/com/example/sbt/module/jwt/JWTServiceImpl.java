@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -47,7 +47,7 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public JWTPayload createAccessJwt(UUID userId, Set<String> permissions) {
+    public JWTPayload createAccessJwt(UUID userId, List<String> permissions) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
         jwtPayload.setSubject(userId.toString());

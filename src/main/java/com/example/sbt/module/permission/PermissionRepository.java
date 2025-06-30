@@ -6,25 +6,24 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, UUID> {
 
     @Query(value = "select permission_id from role_permission where role_id = :roleId", nativeQuery = true)
-    Set<UUID> findAllIdsByRoleId(UUID roleId);
+    List<UUID> findAllIdsByRoleId(UUID roleId);
 
     @Query(value = "select p.code from role_permission rp " +
             "inner join permission p on (p.id = rp.permission_id) " +
             "where rp.role_id = :roleId", nativeQuery = true)
-    Set<String> findAllCodesByRoleId(UUID roleId);
+    List<String> findAllCodesByRoleId(UUID roleId);
 
     @Query(value = "select p.code from user_role ur " +
             "inner join role_permission rp on (rp.role_id = ur.role_id) " +
             "inner join permission p on (p.id = rp.permission_id) " +
             "where ur.user_id = :userId", nativeQuery = true)
-    Set<String> findAllCodesByUserId(UUID userId);
+    List<String> findAllCodesByUserId(UUID userId);
 
     @Query(value = "select p.* from role_permission rp " +
             "inner join permission p on (p.id = rp.permission_id) " +
@@ -41,6 +40,6 @@ public interface PermissionRepository extends JpaRepository<Permission, UUID> {
 
     boolean existsByCode(String code);
 
-    long countByIdIn(Set<UUID> ids);
+    long countByIdIn(List<UUID> ids);
 
 }

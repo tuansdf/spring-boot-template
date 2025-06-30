@@ -5,8 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -19,6 +19,6 @@ public class RequestContextData {
     private String requestId;
     private Locale locale;
     private UUID userId;
-    private Set<String> permissions;
+    private List<String> permissions;
 
 }

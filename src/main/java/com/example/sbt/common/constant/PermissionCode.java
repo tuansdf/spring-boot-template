@@ -3,7 +3,6 @@ package com.example.sbt.common.constant;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class PermissionCode {
 
@@ -46,19 +45,9 @@ public class PermissionCode {
         return indexes.stream().map(PermissionCode::fromIndex).toList();
     }
 
-    public static Set<String> fromIndexes(Set<Integer> indexes) {
-        if (CollectionUtils.isEmpty(indexes)) return new HashSet<>();
-        return indexes.stream().map(PermissionCode::fromIndex).collect(Collectors.toSet());
-    }
-
     public static List<Integer> toIndexes(List<String> codes) {
         if (CollectionUtils.isEmpty(codes)) return new ArrayList<>();
         return codes.stream().map(PermissionCode::toIndex).toList();
-    }
-
-    public static Set<Integer> toIndexes(Set<String> codes) {
-        if (CollectionUtils.isEmpty(codes)) return new HashSet<>();
-        return codes.stream().map(PermissionCode::toIndex).collect(Collectors.toSet());
     }
 
 }

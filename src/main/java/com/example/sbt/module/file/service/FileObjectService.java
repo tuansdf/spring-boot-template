@@ -6,7 +6,7 @@ import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.dto.SearchFileRequestDTO;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 public interface FileObjectService {
@@ -21,7 +21,7 @@ public interface FileObjectService {
 
     FileObjectDTO getFileById(UUID id);
 
-    void deleteFilesByIds(Set<UUID> ids);
+    void deleteFilesByIds(List<UUID> ids);
 
     PaginationData<FileObjectDTO> search(SearchFileRequestDTO requestDTO, boolean isCount);
 

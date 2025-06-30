@@ -52,19 +52,19 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public void setRolePermissions(UUID roleId, Set<UUID> permissionIds) {
+    public void setRolePermissions(UUID roleId, List<UUID> permissionIds) {
         if (roleId == null) return;
         if (CollectionUtils.isEmpty(permissionIds)) {
             rolePermissionRepository.deleteAllByRoleId(roleId);
             return;
         }
-        Set<UUID> existingIds = permissionRepository.findAllIdsByRoleId(roleId);
+        Set<UUID> existingIds = new HashSet<>(permissionRepository.findAllIdsByRoleId(roleId));
         Set<UUID> removeIds = new HashSet<>(existingIds);
-        removeIds.removeAll(permissionIds);
         Set<UUID> newIds = new HashSet<>(permissionIds);
+        removeIds.removeAll(newIds);
         newIds.removeAll(existingIds);
         if (CollectionUtils.isNotEmpty(removeIds)) {
-            rolePermissionRepository.deleteAllByRoleIdAndPermissionIdIn(roleId, removeIds);
+            rolePermissionRepository.deleteAllByRoleIdAndPermissionIdIn(roleId, new ArrayList<>(removeIds));
         }
         if (CollectionUtils.isNotEmpty(newIds)) {
             rolePermissionRepository.saveAll(newIds.stream().map(permissionId -> RolePermission.builder().roleId(roleId).permissionId(permissionId).build()).toList());
@@ -102,26 +102,26 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public Set<UUID> findAllIdsByRoleId(UUID roleId) {
-        if (roleId == null) return new HashSet<>();
-        Set<UUID> result = permissionRepository.findAllIdsByRoleId(roleId);
-        if (result == null) return new HashSet<>();
+    public List<UUID> findAllIdsByRoleId(UUID roleId) {
+        if (roleId == null) return new ArrayList<>();
+        List<UUID> result = permissionRepository.findAllIdsByRoleId(roleId);
+        if (result == null) return new ArrayList<>();
         return result;
     }
 
     @Override
-    public Set<String> findAllCodesByRoleId(UUID roleId) {
-        if (roleId == null) return new HashSet<>();
-        Set<String> result = permissionRepository.findAllCodesByRoleId(roleId);
-        if (result == null) return new HashSet<>();
+    public List<String> findAllCodesByRoleId(UUID roleId) {
+        if (roleId == null) return new ArrayList<>();
+        List<String> result = permissionRepository.findAllCodesByRoleId(roleId);
+        if (result == null) return new ArrayList<>();
         return result;
     }
 
     @Override
-    public Set<String> findAllCodesByUserId(UUID userId) {
-        if (userId == null) return new HashSet<>();
-        Set<String> result = permissionRepository.findAllCodesByUserId(userId);
-        if (result == null) return new HashSet<>();
+    public List<String> findAllCodesByUserId(UUID userId) {
+        if (userId == null) return new ArrayList<>();
+        List<String> result = permissionRepository.findAllCodesByUserId(userId);
+        if (result == null) return new ArrayList<>();
         return result;
     }
 

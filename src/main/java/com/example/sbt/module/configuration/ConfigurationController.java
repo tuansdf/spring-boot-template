@@ -12,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class ConfigurationController {
 
     @GetMapping("/values")
     public ResponseEntity<CommonResponse<Map<String, String>>> findValues(@RequestParam Set<String> keys) {
-        var result = configurationService.findPublicValues(keys);
+        var result = configurationService.findPublicValues(new ArrayList<>(keys));
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 

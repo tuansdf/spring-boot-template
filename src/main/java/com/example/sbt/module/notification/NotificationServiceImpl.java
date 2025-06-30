@@ -24,7 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -132,7 +135,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void executeSend(NotificationDTO notificationDTO) throws FirebaseMessagingException {
         if (notificationDTO == null || !CommonStatus.PENDING.equals(notificationDTO.getSendStatus())) return;
-        Set<String> tokens = userDeviceService.findAllTokensByUserId(notificationDTO.getUserId());
+        List<String> tokens = userDeviceService.findAllTokensByUserId(notificationDTO.getUserId());
         SendNotificationRequest request = commonMapper.toSendRequest(notificationDTO);
         request.setTokens(tokens);
         sendNotificationService.send(request);

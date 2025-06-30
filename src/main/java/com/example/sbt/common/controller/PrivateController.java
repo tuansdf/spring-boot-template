@@ -16,9 +16,8 @@ import com.example.sbt.module.notification.SendNotificationService;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -282,7 +281,7 @@ public class PrivateController {
                 .title("notification title")
                 .body("notification content")
                 .topic(topic)
-                .tokens(Sets.newHashSet(token))
+                .tokens(Lists.newArrayList(token))
                 .build());
         return "OK";
     }
@@ -291,7 +290,7 @@ public class PrivateController {
     public Object testNotificationSubscribeTopic(@RequestParam String token, @RequestParam String topic) throws FirebaseMessagingException {
         sendNotificationService.subscribeTopicAsync(SendNotificationRequest.builder()
                 .topic(topic)
-                .tokens(Sets.newHashSet(token))
+                .tokens(Lists.newArrayList(token))
                 .build());
         return "OK";
     }
@@ -312,7 +311,7 @@ public class PrivateController {
     }
 
     @GetMapping(value = "/s3/delete", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testS3Delete(@RequestParam Set<UUID> ids) {
+    public Object testS3Delete(@RequestParam List<UUID> ids) {
         fileObjectService.deleteFilesByIds(ids);
         return "OK";
     }
@@ -325,7 +324,13 @@ public class PrivateController {
 
     @GetMapping(value = "/text/clean-file-name", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object testCleanFileName(@RequestBody TestBody body) {
-        return FileUtils.cleanFileName(body.text());
+        return FileUtils.cleanFileName(body.getText());
+    }
+
+    @GetMapping(value = "/text/tostring", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object testToString(@RequestBody TestBody body) {
+        log.info("body: {}", body);
+        return "OK";
     }
 
     @GetMapping(value = "/exception/validation", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -347,7 +352,13 @@ public class PrivateController {
         return "OK";
     }
 
-    public record TestBody(String text) {
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class TestBody {
+        private String text;
+        private Map<String, Long> mapStringLong;
     }
 
 }

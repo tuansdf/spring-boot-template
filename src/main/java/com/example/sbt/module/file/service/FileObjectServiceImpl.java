@@ -31,7 +31,10 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -143,8 +146,8 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public void deleteFilesByIds(Set<UUID> ids) {
-        Set<String> filePaths = fileObjectRepository.findAllPathsByIdInAndCreatedBy(ids, RequestContext.get().getUserId());
+    public void deleteFilesByIds(List<UUID> ids) {
+        List<String> filePaths = fileObjectRepository.findAllPathsByIdInAndCreatedBy(ids, RequestContext.get().getUserId());
         fileObjectRepository.deleteAllByIdInAndCreatedBy(ids, RequestContext.get().getUserId());
         uploadFileService.deleteFiles(filePaths);
     }

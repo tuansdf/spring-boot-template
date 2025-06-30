@@ -5,14 +5,13 @@ import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.permission.dto.SearchPermissionRequestDTO;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public interface PermissionService {
 
     PermissionDTO save(PermissionDTO permissionDTO);
 
-    void setRolePermissions(UUID roleId, Set<UUID> permissionIds);
+    void setRolePermissions(UUID roleId, List<UUID> permissionIds);
 
     PermissionDTO findOneById(UUID id);
 
@@ -22,11 +21,11 @@ public interface PermissionService {
 
     PermissionDTO findOneByCodeOrThrow(String code);
 
-    Set<UUID> findAllIdsByRoleId(UUID roleId);
+    List<UUID> findAllIdsByRoleId(UUID roleId);
 
-    Set<String> findAllCodesByRoleId(UUID roleId);
+    List<String> findAllCodesByRoleId(UUID roleId);
 
-    Set<String> findAllCodesByUserId(UUID userId);
+    List<String> findAllCodesByUserId(UUID userId);
 
     List<PermissionDTO> findAllByRoleId(UUID roleId);
 

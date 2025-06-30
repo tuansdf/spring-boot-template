@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -19,6 +18,6 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, UU
     @Query(value = "select value from configuration where code = :code and status = :status order by id asc limit 1", nativeQuery = true)
     String findTopValueByCodeAndStatus(String code, String status);
 
-    List<Configuration> findAllByCodeInAndStatusAndIsPublic(Set<String> codes, String status, Boolean isPublic);
+    List<Configuration> findAllByCodeInAndStatusAndIsPublic(List<String> codes, String status, Boolean isPublic);
 
 }

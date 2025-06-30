@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,8 +51,8 @@ public class UserDeviceServiceImpl implements UserDeviceService {
     }
 
     @Override
-    public Set<String> findAllTokensByUserId(UUID userId) {
-        if (userId == null) return new HashSet<>();
+    public List<String> findAllTokensByUserId(UUID userId) {
+        if (userId == null) return new ArrayList<>();
         return userDeviceRepository.findAllTokensByUserId(userId);
     }
 

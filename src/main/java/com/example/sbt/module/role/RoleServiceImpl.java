@@ -59,19 +59,19 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public void setUserRoles(UUID userId, Set<UUID> roleIds) {
+    public void setUserRoles(UUID userId, List<UUID> roleIds) {
         if (userId == null) return;
         if (CollectionUtils.isEmpty(roleIds)) {
             userRoleRepository.deleteAllByUserId(userId);
             return;
         }
-        Set<UUID> existingIds = roleRepository.findAllIdsByUserId(userId);
+        Set<UUID> existingIds = new HashSet<>(roleRepository.findAllIdsByUserId(userId));
         Set<UUID> removeIds = new HashSet<>(existingIds);
-        removeIds.removeAll(roleIds);
         Set<UUID> newIds = new HashSet<>(roleIds);
+        removeIds.removeAll(newIds);
         newIds.removeAll(existingIds);
         if (CollectionUtils.isNotEmpty(removeIds)) {
-            userRoleRepository.deleteAllByUserIdAndRoleIdIn(userId, removeIds);
+            userRoleRepository.deleteAllByUserIdAndRoleIdIn(userId, new ArrayList<>(removeIds));
         }
         if (CollectionUtils.isNotEmpty(newIds)) {
             userRoleRepository.saveAll(newIds.stream().map(roleId -> UserRole.builder().userId(userId).roleId(roleId).build()).toList());
@@ -109,10 +109,10 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Set<String> findAllCodesByUserId(UUID userId) {
-        if (userId == null) return new HashSet<>();
-        Set<String> result = roleRepository.findAllCodesByUserId(userId);
-        if (result == null) return new HashSet<>();
+    public List<String> findAllCodesByUserId(UUID userId) {
+        if (userId == null) return new ArrayList<>();
+        List<String> result = roleRepository.findAllCodesByUserId(userId);
+        if (result == null) return new ArrayList<>();
         return result;
     }
 
