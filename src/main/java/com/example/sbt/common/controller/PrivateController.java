@@ -99,7 +99,7 @@ public class PrivateController {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
         CSVHelper.Export.processTemplateWriteFile(exportPath,
-                List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At"),
+                List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"),
                 csvPrinter -> {
                     try {
                         int idx = 1;
@@ -118,7 +118,7 @@ public class PrivateController {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
         try (CSVWriter writer = new CSVWriter(new FileWriter(exportPath))) {
-            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At"};
+            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
             writer.writeNext(header);
             int idx = 1;
             for (var item : data) {
@@ -182,21 +182,20 @@ public class PrivateController {
     public String testImportCsv(@RequestParam String filePath) {
         List<UserDTO> items = new ArrayList<>();
         CSVHelper.Import.processTemplate(filePath, csvParser -> {
-            List<String> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
-            int rowSize = header.size();
+            List<String> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp");
             if (!ListUtils.isEqualList(header, csvParser.getHeaderNames())) {
                 throw new CustomException("Invalid template");
             }
             for (var item : csvParser) {
-                List<String> data = CommonUtils.padRight(item.stream().toList(), rowSize);
+                List<String> data = item.stream().toList();
                 UserDTO temp = UserDTO.builder()
-                        .id(ConversionUtils.toUUID(data.get(1)))
-                        .username(ConversionUtils.toString(data.get(2)))
-                        .email(ConversionUtils.toString(data.get(3)))
-                        .name(ConversionUtils.toString(data.get(4)))
-                        .status(ConversionUtils.toString(data.get(5)))
-                        .createdAt(DateUtils.toInstant(data.get(6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .updatedAt(DateUtils.toInstant(data.get(7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .id(ConversionUtils.toUUID(CommonUtils.get(data, 1)))
+                        .username(ConversionUtils.toString(CommonUtils.get(data, 2)))
+                        .email(ConversionUtils.toString(CommonUtils.get(data, 3)))
+                        .name(ConversionUtils.toString(CommonUtils.get(data, 4)))
+                        .status(ConversionUtils.toString(CommonUtils.get(data, 5)))
+                        .createdAt(DateUtils.toInstant(CommonUtils.get(data, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .updatedAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                         .build();
                 items.add(temp);
             }
@@ -209,26 +208,24 @@ public class PrivateController {
     public String testImportOpenCsv(@RequestParam String filePath) {
         List<UserDTO> items = new ArrayList<>();
         try (CSVReader reader = new CSVReader(Files.newBufferedReader(Path.of(filePath)))) {
-            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At"};
-            int rowSize = header.length;
+            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
             boolean isHeader = true;
-            for (var item : reader) {
+            for (var data : reader) {
                 if (isHeader) {
-                    if (!Arrays.equals(header, item)) {
+                    if (!Arrays.equals(header, data)) {
                         throw new CustomException("Invalid template");
                     }
                     isHeader = false;
                     continue;
                 }
-                List<String> data = CommonUtils.padRight(item.stream().toList(), rowSize);
                 UserDTO temp = UserDTO.builder()
-                        .id(ConversionUtils.toUUID(data.get(1)))
-                        .username(ConversionUtils.toString(data.get(2)))
-                        .email(ConversionUtils.toString(data.get(3)))
-                        .name(ConversionUtils.toString(data.get(4)))
-                        .status(ConversionUtils.toString(data.get(5)))
-                        .createdAt(DateUtils.toInstant(data.get(6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .updatedAt(DateUtils.toInstant(data.get(7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .id(ConversionUtils.toUUID(CommonUtils.get(data, 1)))
+                        .username(ConversionUtils.toString(CommonUtils.get(data, 2)))
+                        .email(ConversionUtils.toString(CommonUtils.get(data, 3)))
+                        .name(ConversionUtils.toString(CommonUtils.get(data, 4)))
+                        .status(ConversionUtils.toString(CommonUtils.get(data, 5)))
+                        .createdAt(DateUtils.toInstant(CommonUtils.get(data, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .updatedAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                         .build();
                 items.add(temp);
             }

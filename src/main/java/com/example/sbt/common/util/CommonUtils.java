@@ -65,4 +65,22 @@ public class CommonUtils {
         return result;
     }
 
+    public static String[] padRight(String[] array, int size) {
+        return padRight(array, size, null);
+    }
+
+    public static <T> T get(T[] items, int index) {
+        if (items == null || index < 0 || index >= items.length) {
+            return null;
+        }
+        return items[index];
+    }
+
+    public static <T> T get(List<T> items, int index) {
+        if (items == null || index < 0 || index >= items.size()) {
+            return null;
+        }
+        return items.get(index);
+    }
+
 }
