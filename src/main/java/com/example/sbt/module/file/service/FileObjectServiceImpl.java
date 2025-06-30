@@ -18,7 +18,6 @@ import com.example.sbt.module.file.entity.FileObject;
 import com.example.sbt.module.file.entity.FileObjectPending;
 import com.example.sbt.module.file.repository.FileObjectPendingRepository;
 import com.example.sbt.module.file.repository.FileObjectRepository;
-import com.google.common.collect.Lists;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -120,7 +119,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (headerBytes == null || headerBytes.length == 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        boolean isFileValid = FileUtils.validateFileType(headerBytes, Lists.newArrayList(fileType));
+        boolean isFileValid = FileUtils.validateFileType(headerBytes, List.of(fileType));
         if (!isFileValid) {
             deletePendingFileUpload(id, pendingDTO.getFilePath());
             throw new NoRollbackException(HttpStatus.BAD_REQUEST);
@@ -193,8 +192,8 @@ public class FileObjectServiceImpl implements FileObjectService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
-            List<String> orderBys = Lists.newArrayList("created_at", "file_type", "file_size");
-            List<String> orderDirections = Lists.newArrayList("asc", "desc");
+            List<String> orderBys = List.of("created_at", "file_type", "file_size");
+            List<String> orderDirections = List.of("asc", "desc");
             if (orderBys.contains(requestDTO.getOrderBy())) {
                 builder.append(" order by fo.").append(requestDTO.getOrderBy()).append(" ");
                 if (orderDirections.contains(requestDTO.getOrderDirection())) {

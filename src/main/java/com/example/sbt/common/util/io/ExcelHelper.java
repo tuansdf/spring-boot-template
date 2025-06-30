@@ -36,13 +36,13 @@ public class ExcelHelper {
     }
 
     public static byte[] toBytes(Workbook workbook) {
-        if (workbook == null) return new byte[0];
+        if (workbook == null) return null;
         try (workbook; ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             workbook.write(outputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
             log.error("toBytes ", e);
-            return new byte[0];
+            return null;
         }
     }
 

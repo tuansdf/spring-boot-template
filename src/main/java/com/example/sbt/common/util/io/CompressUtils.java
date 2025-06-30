@@ -22,7 +22,7 @@ public class CompressUtils {
             }
         } catch (Exception e) {
             log.error("compressGzip ", e);
-            return new byte[0];
+            return null;
         }
     }
 

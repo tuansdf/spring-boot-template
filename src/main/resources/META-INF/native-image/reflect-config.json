@@ -8,11 +8,5 @@
     "allDeclaredConstructors": true,
     "allDeclaredMethods": true,
     "allDeclaredFields": true
-  },
-  {
-    "name": "com.google.common.util.concurrent.AbstractFuture$Waiter",
-    "allDeclaredConstructors": true,
-    "allDeclaredFields": true,
-    "allDeclaredMethods": true
   }
 ]

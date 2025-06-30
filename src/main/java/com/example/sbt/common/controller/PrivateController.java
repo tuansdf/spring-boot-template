@@ -6,7 +6,6 @@ import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.exception.ValidationException;
 import com.example.sbt.common.util.*;
-import com.example.sbt.common.util.io.CSVHelper;
 import com.example.sbt.common.util.io.ExcelHelper;
 import com.example.sbt.common.util.io.FileUtils;
 import com.example.sbt.common.util.io.ImageUtils;
@@ -15,7 +14,6 @@ import com.example.sbt.module.file.service.UploadFileService;
 import com.example.sbt.module.notification.SendNotificationService;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.user.dto.UserDTO;
-import com.google.common.collect.Lists;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -35,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -86,7 +84,7 @@ public class PrivateController {
             ExcelHelper.setRowCellValues(sheet, 0, header);
             int idx = 1;
             for (var item : data) {
-                ExcelHelper.setRowCellValues(sheet, idx, Lists.newArrayList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
+                ExcelHelper.setRowCellValues(sheet, idx, Arrays.asList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
                 idx++;
             }
             ExcelHelper.writeFile(workbook, exportPath);
@@ -96,25 +94,6 @@ public class PrivateController {
 
     @GetMapping("/csv/export")
     public String testExportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
-        List<UserDTO> data = createData(total);
-        String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
-        CSVHelper.Export.processTemplateWriteFile(exportPath,
-                List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"),
-                csvPrinter -> {
-                    try {
-                        int idx = 1;
-                        for (var item : data) {
-                            csvPrinter.printRecord(Lists.newArrayList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
-                            idx++;
-                        }
-                    } catch (Exception ignored) {
-                    }
-                });
-        return "OK";
-    }
-
-    @GetMapping("/csv/open/export")
-    public String testExportOpenCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
         try (CSVWriter writer = new CSVWriter(new FileWriter(exportPath))) {
@@ -134,7 +113,7 @@ public class PrivateController {
                 idx++;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("test import ", e);
         }
         return "OK";
     }
@@ -145,74 +124,12 @@ public class PrivateController {
         try (Workbook workbook = ExcelHelper.toWorkbook(filePath)) {
             if (workbook == null) return null;
             List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
-            int rowSize = header.size();
             Sheet sheet = workbook.getSheetAt(0);
-            int idx = 0;
-            for (var row : sheet) {
-                try {
-                    if (idx == 0) {
-                        if (!ListUtils.isEqualList(header, ExcelHelper.getRowCellValues(row))) {
-                            throw new CustomException("Invalid template");
-                        }
-                        continue;
-                    }
-                    List<Object> data = CommonUtils.padRight(ExcelHelper.getRowCellValues(row), rowSize);
-                    UserDTO temp = UserDTO.builder()
-                            .id(ConversionUtils.toUUID(data.get(1)))
-                            .username(ConversionUtils.toString(data.get(2)))
-                            .email(ConversionUtils.toString(data.get(3)))
-                            .name(ConversionUtils.toString(data.get(4)))
-                            .status(ConversionUtils.toString(data.get(5)))
-                            .createdAt(DateUtils.toInstant(data.get(6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                            .updatedAt(DateUtils.toInstant(data.get(7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                            .build();
-                    items.add(temp);
-                } finally {
-                    idx++;
-                }
-            }
-        } catch (Exception e) {
-            log.error("test import ", e);
-        }
-        log.info("items: {}", items.subList(0, Math.min(items.size(), 100)));
-        return "OK";
-    }
-
-    @GetMapping("/csv/import")
-    public String testImportCsv(@RequestParam String filePath) {
-        List<UserDTO> items = new ArrayList<>();
-        CSVHelper.Import.processTemplate(filePath, csvParser -> {
-            List<String> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp");
-            if (!ListUtils.isEqualList(header, csvParser.getHeaderNames())) {
-                throw new CustomException("Invalid template");
-            }
-            for (var item : csvParser) {
-                List<String> data = item.stream().toList();
-                UserDTO temp = UserDTO.builder()
-                        .id(ConversionUtils.toUUID(CommonUtils.get(data, 1)))
-                        .username(ConversionUtils.toString(CommonUtils.get(data, 2)))
-                        .email(ConversionUtils.toString(CommonUtils.get(data, 3)))
-                        .name(ConversionUtils.toString(CommonUtils.get(data, 4)))
-                        .status(ConversionUtils.toString(CommonUtils.get(data, 5)))
-                        .createdAt(DateUtils.toInstant(CommonUtils.get(data, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .updatedAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .build();
-                items.add(temp);
-            }
-        });
-        log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
-        return "OK";
-    }
-
-    @GetMapping("/csv/open/import")
-    public String testImportOpenCsv(@RequestParam String filePath) {
-        List<UserDTO> items = new ArrayList<>();
-        try (CSVReader reader = new CSVReader(Files.newBufferedReader(Path.of(filePath)))) {
-            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
             boolean isHeader = true;
-            for (var data : reader) {
+            for (var row : sheet) {
+                List<Object> data = ExcelHelper.getRowCellValues(row);
                 if (isHeader) {
-                    if (!Arrays.equals(header, data)) {
+                    if (!ListUtils.isEqualList(header, data)) {
                         throw new CustomException("Invalid template");
                     }
                     isHeader = false;
@@ -229,7 +146,39 @@ public class PrivateController {
                         .build();
                 items.add(temp);
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
+            log.error("test import ", e);
+        }
+        log.info("items: {}", items.subList(0, Math.min(items.size(), 100)));
+        return "OK";
+    }
+
+    @GetMapping("/csv/import")
+    public String testImportCsv(@RequestParam String filePath) {
+        List<UserDTO> items = new ArrayList<>();
+        try (CSVReader reader = new CSVReader(Files.newBufferedReader(Paths.get(filePath)))) {
+            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
+            boolean isHeader = true;
+            for (var row : reader) {
+                if (isHeader) {
+                    if (!Arrays.equals(header, row)) {
+                        throw new CustomException("Invalid template");
+                    }
+                    isHeader = false;
+                    continue;
+                }
+                UserDTO temp = UserDTO.builder()
+                        .id(ConversionUtils.toUUID(CommonUtils.get(row, 1)))
+                        .username(ConversionUtils.toString(CommonUtils.get(row, 2)))
+                        .email(ConversionUtils.toString(CommonUtils.get(row, 3)))
+                        .name(ConversionUtils.toString(CommonUtils.get(row, 4)))
+                        .status(ConversionUtils.toString(CommonUtils.get(row, 5)))
+                        .createdAt(DateUtils.toInstant(CommonUtils.get(row, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .updatedAt(DateUtils.toInstant(CommonUtils.get(row, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .build();
+                items.add(temp);
+            }
+        } catch (Exception e) {
             log.error("test import ", e);
         }
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
@@ -343,7 +292,7 @@ public class PrivateController {
                 .title("notification title")
                 .body("notification content")
                 .topic(topic)
-                .tokens(Lists.newArrayList(token))
+                .tokens(Collections.singletonList(token))
                 .build());
         return "OK";
     }
@@ -352,7 +301,7 @@ public class PrivateController {
     public Object testNotificationSubscribeTopic(@RequestParam String token, @RequestParam String topic) throws FirebaseMessagingException {
         sendNotificationService.subscribeTopicAsync(SendNotificationRequest.builder()
                 .topic(topic)
-                .tokens(Lists.newArrayList(token))
+                .tokens(Collections.singletonList(token))
                 .build());
         return "OK";
     }
@@ -402,7 +351,7 @@ public class PrivateController {
 
     @GetMapping(value = "/files/validate-type", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object testFilesValidateType(@RequestParam MultipartFile file, @RequestParam String fileType) {
-        return ConversionUtils.toString(FileUtils.validateFileType(file, Lists.newArrayList(FileType.fromExtension(fileType))));
+        return ConversionUtils.toString(FileUtils.validateFileType(file, Collections.singletonList(FileType.fromExtension(fileType))));
     }
 
     @GetMapping(value = "/files/validate-type/bench", produces = MediaType.TEXT_PLAIN_VALUE)

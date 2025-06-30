@@ -2,10 +2,10 @@ package com.example.sbt.common.util;
 
 import com.fasterxml.uuid.Generators;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.security.SecureRandom;
+import java.util.HexFormat;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -32,7 +32,7 @@ public class RandomUtils {
         }
         byte[] randomBytes = new byte[length];
         random.nextBytes(randomBytes);
-        return Hex.encodeHexString(randomBytes);
+        return HexFormat.of().formatHex(randomBytes);
     }
 
     private static String generateString(Random random, char[] alphabet, int length) {

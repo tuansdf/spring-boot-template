@@ -2,17 +2,13 @@ package com.example.sbt.common.util;
 
 import com.example.sbt.common.util.LocaleHelper.LocaleKey;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.EmailValidator;
-import org.apache.commons.validator.routines.RegexValidator;
+
+import java.util.regex.Pattern;
 
 public class ValidationUtils {
 
     public static boolean isEmail(String input) {
-        return EmailValidator.getInstance().isValid(input);
-    }
-
-    public static boolean isPattern(String input, String pattern) {
-        return new RegexValidator(pattern).isValid(input);
+        return Regex.EMAIL.matcher(input).matches();
     }
 
     public static String validatePassword(String input) {
@@ -28,7 +24,7 @@ public class ValidationUtils {
         if (input.length() > 255) {
             return LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.code"), 255);
         }
-        if (!ValidationUtils.isPattern(input, Regex.CODE)) {
+        if (Regex.CODE.matcher(input).matches()) {
             return LocaleHelper.getMessage("form.error.invalid", new LocaleKey("field.code"));
         }
         return null;
@@ -53,15 +49,16 @@ public class ValidationUtils {
         if (input.length() > 64) {
             return LocaleHelper.getMessage("form.error.over_max_length", new LocaleKey("field.username"), 64);
         }
-        if (!isPattern(input, Regex.USERNAME)) {
+        if (Regex.USERNAME.matcher(input).matches()) {
             return LocaleHelper.getMessage("form.error.invalid", new LocaleKey("field.username"));
         }
         return null;
     }
 
     private static class Regex {
-        private static final String CODE = "^[a-zA-Z0-9]+(_?[a-zA-Z0-9]+)*$";
-        private static final String USERNAME = "^[a-zA-Z0-9]+(_?[a-zA-Z0-9]+)*$";
+        private static final Pattern EMAIL = Pattern.compile("^[\\w\\-.]+@([\\w\\-]+\\.)+[\\w-]{2,}$");
+        private static final Pattern USERNAME = Pattern.compile("^[a-zA-Z0-9]+(_?[a-zA-Z0-9]+)*$");
+        private static final Pattern CODE = Pattern.compile("^[a-zA-Z0-9]+(_?[a-zA-Z0-9]+)*$");
     }
 
 }
