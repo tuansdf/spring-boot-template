@@ -11,17 +11,17 @@ import java.util.zip.Deflater;
 @Slf4j
 public class CompressUtils {
 
-    public static byte[] toGzip(byte[] inputBytes) {
+    public static byte[] toGzip(byte[] bytes) {
         try {
             GzipParameters parameters = new GzipParameters();
             parameters.setCompressionLevel(Deflater.BEST_SPEED);
             try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                  OutputStream outputStream = new GzipCompressorOutputStream(byteArrayOutputStream, parameters)) {
-                outputStream.write(inputBytes);
+                outputStream.write(bytes);
                 return byteArrayOutputStream.toByteArray();
             }
         } catch (Exception e) {
-            log.error("compressGzip");
+            log.error("compressGzip ", e);
             return new byte[0];
         }
     }

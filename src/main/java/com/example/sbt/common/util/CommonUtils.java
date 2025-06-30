@@ -5,6 +5,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CommonUtils {
@@ -38,14 +40,29 @@ public class CommonUtils {
         if (list == null) {
             list = new ArrayList<>();
         }
-        while (list.size() < size) {
-            list.add(padValue);
+        int pads = size - list.size();
+        if (pads > 0) {
+            list.addAll(Collections.nCopies(pads, padValue));
         }
         return list;
     }
 
     public static <T> List<T> padRight(List<T> list, int size) {
         return padRight(list, size, null);
+    }
+
+    public static String[] padRight(String[] array, int size, String padValue) {
+        if (array == null) {
+            String[] result = new String[size];
+            Arrays.fill(result, padValue);
+            return result;
+        }
+        if (size - array.length > 0) {
+            return array;
+        }
+        String[] result = Arrays.copyOf(array, size);
+        Arrays.fill(result, array.length, size, padValue);
+        return result;
     }
 
 }

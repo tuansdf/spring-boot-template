@@ -17,6 +17,8 @@ import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.google.common.collect.Lists;
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
@@ -30,7 +32,10 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -108,6 +113,32 @@ public class PrivateController {
         return "OK";
     }
 
+    @GetMapping("/csv/open/export")
+    public String testExportOpenCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+        List<UserDTO> data = createData(total);
+        String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
+        try (CSVWriter writer = new CSVWriter(new FileWriter(exportPath))) {
+            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At"};
+            writer.writeNext(header);
+            int idx = 1;
+            for (var item : data) {
+                writer.writeNext(new String[]{
+                        ConversionUtils.toString(idx),
+                        ConversionUtils.toString(item.getId()),
+                        item.getUsername(),
+                        item.getEmail(),
+                        item.getName(),
+                        item.getStatus(),
+                        ConversionUtils.toString(item.getCreatedAt()),
+                        ConversionUtils.toString(item.getUpdatedAt())});
+                idx++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "OK";
+    }
+
     @GetMapping("/excel/import")
     public String testImportExcel(@RequestParam String filePath) {
         List<UserDTO> items = new ArrayList<>();
@@ -170,6 +201,40 @@ public class PrivateController {
                 items.add(temp);
             }
         });
+        log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
+        return "OK";
+    }
+
+    @GetMapping("/csv/open/import")
+    public String testImportOpenCsv(@RequestParam String filePath) {
+        List<UserDTO> items = new ArrayList<>();
+        try (CSVReader reader = new CSVReader(Files.newBufferedReader(Path.of(filePath)))) {
+            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At"};
+            int rowSize = header.length;
+            boolean isHeader = true;
+            for (var item : reader) {
+                if (isHeader) {
+                    if (!Arrays.equals(header, item)) {
+                        throw new CustomException("Invalid template");
+                    }
+                    isHeader = false;
+                    continue;
+                }
+                List<String> data = CommonUtils.padRight(item.stream().toList(), rowSize);
+                UserDTO temp = UserDTO.builder()
+                        .id(ConversionUtils.toUUID(data.get(1)))
+                        .username(ConversionUtils.toString(data.get(2)))
+                        .email(ConversionUtils.toString(data.get(3)))
+                        .name(ConversionUtils.toString(data.get(4)))
+                        .status(ConversionUtils.toString(data.get(5)))
+                        .createdAt(DateUtils.toInstant(data.get(6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .updatedAt(DateUtils.toInstant(data.get(7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .build();
+                items.add(temp);
+            }
+        } catch (IOException e) {
+            log.error("test import ", e);
+        }
         log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
