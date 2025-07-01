@@ -1,6 +1,6 @@
 package com.example.sbt.config;
 
-import com.example.sbt.common.filter.JWTFilter;
+import com.example.sbt.core.filter.JWTFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

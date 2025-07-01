@@ -1,10 +1,10 @@
 package com.example.sbt.module.auth;
 
-import com.example.sbt.common.exception.CustomException;
+import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.LocaleHelper;
-import com.example.sbt.common.util.LocaleHelper.LocaleKey;
-import com.example.sbt.common.util.ValidationUtils;
+import com.example.sbt.core.util.LocaleHelper;
+import com.example.sbt.core.util.LocaleHelper.LocaleKey;
+import com.example.sbt.core.util.ValidationUtils;
 import com.example.sbt.module.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

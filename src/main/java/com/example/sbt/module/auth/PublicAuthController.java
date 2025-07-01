@@ -1,8 +1,8 @@
 package com.example.sbt.module.auth;
 
-import com.example.sbt.common.util.ExceptionUtils;
-import com.example.sbt.common.util.HTMLTemplate;
-import com.example.sbt.common.util.LocaleHelper;
+import com.example.sbt.core.util.ExceptionUtils;
+import com.example.sbt.core.util.HTMLTemplate;
+import com.example.sbt.core.util.LocaleHelper;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.module.auth.dto.*;
 import lombok.RequiredArgsConstructor;

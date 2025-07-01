@@ -1,4 +1,4 @@
-package com.example.sbt.common.entity;
+package com.example.sbt.core.entity;
 
 import com.example.sbt.common.util.RandomUtils;
 import jakarta.persistence.Column;

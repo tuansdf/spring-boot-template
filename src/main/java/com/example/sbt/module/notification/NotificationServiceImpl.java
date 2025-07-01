@@ -1,9 +1,9 @@
 package com.example.sbt.module.notification;
 
-import com.example.sbt.common.mapper.CommonMapper;
+import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.LocaleHelper;
-import com.example.sbt.common.util.SQLHelper;
+import com.example.sbt.core.util.LocaleHelper;
+import com.example.sbt.core.util.SQLHelper;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.ResultSetName;

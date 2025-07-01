@@ -1,6 +1,6 @@
 package com.example.sbt.module.user.mapper;
 
-import com.example.sbt.common.mapper.CommonMapper;
+import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.permission.PermissionService;
 import com.example.sbt.module.role.RoleService;
 import com.example.sbt.module.user.dto.UserDTO;

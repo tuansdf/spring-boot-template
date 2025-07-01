@@ -1,4 +1,4 @@
-package com.example.sbt.common.exception;
+package com.example.sbt.core.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -1,6 +1,6 @@
-package com.example.sbt.common.util;
+package com.example.sbt.core.util;
 
-import com.example.sbt.common.util.LocaleHelper.LocaleKey;
+import com.example.sbt.core.util.LocaleHelper.LocaleKey;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.regex.Pattern;

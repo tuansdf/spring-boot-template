@@ -1,6 +1,6 @@
 package com.example.sbt.module.token;
 
-import com.example.sbt.common.mapper.CommonMapper;
+import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.common.util.RandomUtils;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;

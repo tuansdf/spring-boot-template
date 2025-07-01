@@ -1,6 +1,6 @@
-package com.example.sbt.common.util;
+package com.example.sbt.core.util;
 
-import com.example.sbt.common.exception.CustomException;
+import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.dto.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

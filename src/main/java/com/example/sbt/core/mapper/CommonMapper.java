@@ -1,4 +1,4 @@
-package com.example.sbt.common.mapper;
+package com.example.sbt.core.mapper;
 
 import com.example.sbt.module.configuration.Configuration;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;

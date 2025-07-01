@@ -1,6 +1,6 @@
-package com.example.sbt.common.exception;
+package com.example.sbt.core.exception;
 
-import com.example.sbt.common.util.ExceptionUtils;
+import com.example.sbt.core.util.ExceptionUtils;
 import com.example.sbt.core.dto.CommonResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

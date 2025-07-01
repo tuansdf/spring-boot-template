@@ -1,4 +1,4 @@
-package com.example.sbt.common.util;
+package com.example.sbt.core.util;
 
 import com.example.sbt.core.dto.RequestContext;
 import org.apache.commons.lang3.ArrayUtils;

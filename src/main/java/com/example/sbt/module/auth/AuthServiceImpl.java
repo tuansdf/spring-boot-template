@@ -1,9 +1,9 @@
 package com.example.sbt.module.auth;
 
-import com.example.sbt.common.exception.CustomException;
+import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.LocaleHelper;
+import com.example.sbt.core.util.LocaleHelper;
 import com.example.sbt.common.util.TOTPHelper;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;

@@ -1,6 +1,6 @@
 package com.example.sbt.module.user.entity;
 
-import com.example.sbt.common.entity.BaseEntity;
+import com.example.sbt.core.entity.BaseEntity;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.module.user.dto.UserDTO;
 import jakarta.persistence.*;
