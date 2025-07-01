@@ -1,6 +1,6 @@
 package com.example.sbt.core.entity;
 
-import com.example.sbt.common.util.RandomUtils;
+import com.example.sbt.shared.util.RandomUtils;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;

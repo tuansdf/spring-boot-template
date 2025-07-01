@@ -1,6 +1,6 @@
 package com.example.sbt.core.helper;
 
-import com.example.sbt.common.util.DateUtils;
+import com.example.sbt.shared.util.DateUtils;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.dto.JWTPayload;
 import com.example.sbt.core.dto.JWTPayloadKey;

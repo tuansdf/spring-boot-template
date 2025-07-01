@@ -1,4 +1,4 @@
-package com.example.sbt.common.util;
+package com.example.sbt.shared.util;
 
 import com.atlassian.onetime.core.TOTP;
 import com.atlassian.onetime.model.TOTPSecret;

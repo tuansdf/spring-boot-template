@@ -76,7 +76,8 @@ Content-Type: application/json
 
 {
   "oldPassword": "{{password}}",
-  "newPassword": "{{password}}"
+  "newPassword": "{{password}}",
+  "otpCode": "{{otp_code}}"
 }
 
 ###

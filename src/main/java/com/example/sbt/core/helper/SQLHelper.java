@@ -1,6 +1,6 @@
 package com.example.sbt.core.helper;
 
-import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.dto.PaginationData;
 import jakarta.persistence.Query;
 import org.apache.commons.collections4.MapUtils;

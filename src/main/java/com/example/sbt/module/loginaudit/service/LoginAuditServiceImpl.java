@@ -1,6 +1,6 @@
 package com.example.sbt.module.loginaudit.service;
 
-import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.loginaudit.dto.LoginAuditDTO;
 import com.example.sbt.module.loginaudit.entity.LoginAudit;

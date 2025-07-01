@@ -1,4 +1,4 @@
-package com.example.sbt.common.constant;
+package com.example.sbt.shared.constant;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;

@@ -1,6 +1,6 @@
 package com.example.sbt.core.dto;
 
-import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.constant.MDCKey;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;

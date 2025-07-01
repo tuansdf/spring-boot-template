@@ -1,6 +1,6 @@
 package com.example.sbt.module.user.service;
 
-import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;

@@ -1,8 +1,8 @@
 package com.example.sbt.module.file.service;
 
-import com.example.sbt.common.constant.FileType;
-import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.FileUtils;
+import com.example.sbt.shared.constant.FileType;
+import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.FileUtils;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContext;

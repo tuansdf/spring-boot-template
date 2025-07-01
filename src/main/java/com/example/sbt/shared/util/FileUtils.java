@@ -1,6 +1,6 @@
-package com.example.sbt.common.util;
+package com.example.sbt.shared.util;
 
-import com.example.sbt.common.constant.FileType;
+import com.example.sbt.shared.constant.FileType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;

@@ -1,6 +1,6 @@
 package com.example.sbt.module.auth.service;
 
-import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.dto.LocaleKey;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.LocaleHelper;

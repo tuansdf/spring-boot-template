@@ -1,4 +1,4 @@
-package com.example.sbt.common.util;
+package com.example.sbt.shared.util;
 
 import com.fasterxml.uuid.Generators;
 import lombok.extern.slf4j.Slf4j;

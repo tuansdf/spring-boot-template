@@ -1,6 +1,6 @@
 package com.example.sbt.module.file.service;
 
-import com.example.sbt.common.constant.FileType;
+import com.example.sbt.shared.constant.FileType;
 import com.example.sbt.module.file.dto.ObjectKey;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;

@@ -1,7 +1,7 @@
 package com.example.sbt.config;
 
-import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.DateUtils;
+import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
