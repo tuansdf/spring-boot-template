@@ -1,15 +1,15 @@
 package com.example.sbt.module.file.service;
 
 import com.example.sbt.common.constant.FileType;
-import com.example.sbt.common.constant.ResultSetName;
-import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.exception.NoRollbackException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.common.util.FileUtils;
 import com.example.sbt.common.util.SQLHelper;
-import com.example.sbt.common.util.io.FileUtils;
+import com.example.sbt.core.constant.ResultSetName;
+import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.dto.ObjectKey;

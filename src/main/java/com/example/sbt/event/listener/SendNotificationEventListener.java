@@ -1,7 +1,7 @@
 package com.example.sbt.event.listener;
 
-import com.example.sbt.common.constant.EventKey;
-import com.example.sbt.common.dto.RequestContext;
+import com.example.sbt.core.constant.EventKey;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
 import com.example.sbt.module.notification.NotificationService;
 import lombok.RequiredArgsConstructor;

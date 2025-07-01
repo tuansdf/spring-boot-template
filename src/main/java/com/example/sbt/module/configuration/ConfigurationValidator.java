@@ -1,11 +1,11 @@
 package com.example.sbt.module.configuration;
 
-import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.LocaleHelper.LocaleKey;
 import com.example.sbt.common.util.ValidationUtils;
+import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;

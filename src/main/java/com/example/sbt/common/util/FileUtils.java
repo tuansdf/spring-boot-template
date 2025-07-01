@@ -1,7 +1,6 @@
-package com.example.sbt.common.util.io;
+package com.example.sbt.common.util;
 
 import com.example.sbt.common.constant.FileType;
-import com.example.sbt.common.util.ConversionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;

@@ -1,14 +1,14 @@
 package com.example.sbt.module.auth;
 
-import com.example.sbt.common.constant.ApplicationProperties;
-import com.example.sbt.common.constant.CommonStatus;
-import com.example.sbt.common.constant.CommonType;
-import com.example.sbt.common.constant.ConfigurationCode;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.TOTPHelper;
+import com.example.sbt.core.constant.ApplicationProperties;
+import com.example.sbt.core.constant.CommonStatus;
+import com.example.sbt.core.constant.CommonType;
+import com.example.sbt.core.constant.ConfigurationCode;
 import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.configuration.ConfigurationService;
 import com.example.sbt.module.email.EmailService;

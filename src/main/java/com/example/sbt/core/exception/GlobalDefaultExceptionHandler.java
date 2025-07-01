@@ -1,7 +1,7 @@
 package com.example.sbt.common.exception;
 
-import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.util.ExceptionUtils;
+import com.example.sbt.core.dto.CommonResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

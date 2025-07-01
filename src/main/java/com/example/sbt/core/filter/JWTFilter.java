@@ -1,9 +1,9 @@
 package com.example.sbt.common.filter;
 
-import com.example.sbt.common.constant.CommonType;
-import com.example.sbt.common.constant.PermissionCode;
-import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.core.constant.CommonType;
+import com.example.sbt.core.constant.PermissionCode;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.jwt.JWTService;
 import com.example.sbt.module.jwt.dto.JWTPayload;
 import jakarta.servlet.FilterChain;

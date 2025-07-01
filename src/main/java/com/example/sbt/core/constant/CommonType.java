@@ -1,4 +1,4 @@
-package com.example.sbt.common.constant;
+package com.example.sbt.core.constant;
 
 import java.util.Collections;
 import java.util.HashMap;

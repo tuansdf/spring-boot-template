@@ -1,7 +1,7 @@
 package com.example.sbt.module.userdevice;
 
-import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.mapper.CommonMapper;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

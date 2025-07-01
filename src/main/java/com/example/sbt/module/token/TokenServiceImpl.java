@@ -1,9 +1,9 @@
 package com.example.sbt.module.token;
 
-import com.example.sbt.common.constant.CommonStatus;
-import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.RandomUtils;
+import com.example.sbt.core.constant.CommonStatus;
+import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.module.jwt.JWTService;
 import com.example.sbt.module.jwt.dto.JWTPayload;
 import com.example.sbt.module.token.dto.TokenDTO;

@@ -1,4 +1,4 @@
-package com.example.sbt.common.util.io;
+package com.example.sbt.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;

@@ -1,6 +1,6 @@
 package com.example.sbt.module.userdevice;
 
-import com.example.sbt.common.dto.CommonResponse;
+import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

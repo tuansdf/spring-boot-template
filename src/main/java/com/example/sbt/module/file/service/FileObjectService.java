@@ -1,6 +1,6 @@
 package com.example.sbt.module.file.service;
 
-import com.example.sbt.common.dto.PaginationData;
+import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.dto.SearchFileRequestDTO;

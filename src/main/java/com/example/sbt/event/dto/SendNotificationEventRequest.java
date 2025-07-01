@@ -1,6 +1,6 @@
 package com.example.sbt.event.dto;
 
-import com.example.sbt.common.dto.RequestContextData;
+import com.example.sbt.core.dto.RequestContextData;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

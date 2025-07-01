@@ -1,11 +1,11 @@
 package com.example.sbt.module.permission;
 
-import com.example.sbt.common.constant.ResultSetName;
-import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.SQLHelper;
+import com.example.sbt.core.constant.ResultSetName;
+import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.permission.dto.SearchPermissionRequestDTO;
 import com.example.sbt.module.role.entity.RolePermission;

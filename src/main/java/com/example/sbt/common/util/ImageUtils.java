@@ -1,4 +1,4 @@
-package com.example.sbt.common.util.io;
+package com.example.sbt.common.util;
 
 import lombok.Builder;
 import lombok.Data;

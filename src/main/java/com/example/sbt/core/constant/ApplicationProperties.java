@@ -1,4 +1,4 @@
-package com.example.sbt.common.constant;
+package com.example.sbt.core.constant;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

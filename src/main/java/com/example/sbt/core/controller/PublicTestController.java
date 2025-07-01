@@ -1,4 +1,4 @@
-package com.example.sbt.common.controller;
+package com.example.sbt.core.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

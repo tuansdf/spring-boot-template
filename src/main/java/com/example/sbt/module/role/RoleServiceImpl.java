@@ -1,10 +1,10 @@
 package com.example.sbt.module.role;
 
-import com.example.sbt.common.constant.ResultSetName;
-import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.exception.CustomException;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.SQLHelper;
+import com.example.sbt.core.constant.ResultSetName;
+import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.permission.PermissionService;
 import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.dto.SearchRoleRequestDTO;

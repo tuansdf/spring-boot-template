@@ -1,6 +1,6 @@
 package com.example.sbt.common.util;
 
-import com.example.sbt.common.dto.PaginationData;
+import com.example.sbt.core.dto.PaginationData;
 import jakarta.persistence.Query;
 import org.apache.commons.collections4.MapUtils;
 

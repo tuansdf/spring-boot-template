@@ -1,14 +1,14 @@
 package com.example.sbt.module.notification;
 
-import com.example.sbt.common.constant.ApplicationProperties;
-import com.example.sbt.common.constant.CommonStatus;
-import com.example.sbt.common.constant.ResultSetName;
-import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.LocaleHelper;
 import com.example.sbt.common.util.SQLHelper;
+import com.example.sbt.core.constant.ApplicationProperties;
+import com.example.sbt.core.constant.CommonStatus;
+import com.example.sbt.core.constant.ResultSetName;
+import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.event.publisher.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import com.example.sbt.module.notification.dto.NotificationStatsDTO;

@@ -1,6 +1,6 @@
 package com.example.sbt.module.role;
 
-import com.example.sbt.common.dto.PaginationData;
+import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.dto.SearchRoleRequestDTO;
 

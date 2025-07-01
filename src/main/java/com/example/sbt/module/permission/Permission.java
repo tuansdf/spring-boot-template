@@ -1,7 +1,7 @@
 package com.example.sbt.module.permission;
 
-import com.example.sbt.common.constant.ResultSetName;
 import com.example.sbt.common.entity.BaseEntity;
+import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.module.permission.dto.PermissionDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

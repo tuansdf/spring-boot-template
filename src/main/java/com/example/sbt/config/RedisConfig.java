@@ -1,6 +1,6 @@
 package com.example.sbt.config;
 
-import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.core.constant.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Bean;

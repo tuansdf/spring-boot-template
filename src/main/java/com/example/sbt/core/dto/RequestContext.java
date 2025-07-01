@@ -1,7 +1,7 @@
-package com.example.sbt.common.dto;
+package com.example.sbt.core.dto;
 
-import com.example.sbt.common.constant.MDCKey;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.core.constant.MDCKey;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 

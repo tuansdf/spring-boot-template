@@ -1,6 +1,6 @@
 package com.example.sbt.common.util;
 
-import com.example.sbt.common.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContext;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;

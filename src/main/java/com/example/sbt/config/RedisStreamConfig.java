@@ -1,6 +1,6 @@
 package com.example.sbt.config;
 
-import com.example.sbt.common.constant.EventKey;
+import com.example.sbt.core.constant.EventKey;
 import com.example.sbt.event.dto.SendEmailEventRequest;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
 import com.example.sbt.event.listener.SendEmailEventListener;

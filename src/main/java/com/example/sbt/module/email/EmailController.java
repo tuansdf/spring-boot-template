@@ -1,8 +1,8 @@
 package com.example.sbt.module.email;
 
-import com.example.sbt.common.dto.CommonResponse;
-import com.example.sbt.common.dto.PaginationData;
-import com.example.sbt.common.dto.RequestContext;
+import com.example.sbt.core.dto.CommonResponse;
+import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.EmailStatsDTO;
 import com.example.sbt.module.email.dto.SearchEmailRequestDTO;

@@ -3,7 +3,7 @@ package com.example.sbt.config;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.core.constant.ApplicationProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
