@@ -11,6 +11,7 @@ public class PermissionCode {
     public static final String CREATE_USER = "ROLE_P_CREATE_USER";
     public static final String UPDATE_USER = "ROLE_P_UPDATE_USER";
     public static final String DELETE_USER = "ROLE_P_DELETE_USER";
+    public static final String JOB_EXECUTION = "ROLE_P_JOB_EXECUTION";
 
     private static final Map<String, Integer> STRING_TO_INDEX;
     private static final List<String> STRINGS;
@@ -22,7 +23,8 @@ public class PermissionCode {
                 READ_USER,
                 CREATE_USER,
                 UPDATE_USER,
-                DELETE_USER);
+                DELETE_USER,
+                JOB_EXECUTION);
         STRINGS_SIZE = STRINGS.size();
         Map<String, Integer> tempStringToIndex = new HashMap<>();
         for (int i = 0; i < STRINGS.size(); i++) {

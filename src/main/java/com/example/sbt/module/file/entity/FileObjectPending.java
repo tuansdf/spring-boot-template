@@ -32,9 +32,9 @@ public class FileObjectPending extends BaseEntity {
     private String fileName;
     @Column(name = "file_type", columnDefinition = "text")
     private String fileType;
-    @Column(name = "expires_at")
+    @Column(name = "expires_at", updatable = false)
     private Instant expiresAt;
-    @Column(name = "created_by")
+    @Column(name = "created_by", updatable = false)
     private UUID createdBy;
 
 }

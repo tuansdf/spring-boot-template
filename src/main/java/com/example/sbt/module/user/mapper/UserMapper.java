@@ -1,8 +1,8 @@
 package com.example.sbt.module.user.mapper;
 
 import com.example.sbt.core.mapper.CommonMapper;
-import com.example.sbt.module.permission.PermissionService;
-import com.example.sbt.module.role.RoleService;
+import com.example.sbt.module.permission.service.PermissionService;
+import com.example.sbt.module.role.service.RoleService;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.entity.User;
 import lombok.RequiredArgsConstructor;

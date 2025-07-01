@@ -35,6 +35,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     private static final String EXTENSION_SEPARATOR = ".";
     private static final long DEFAULT_PRESIGN_GET_SECONDS = 24L * 60L * 60L;
     private static final long DEFAULT_PRESIGN_PUT_SECONDS = 10L * 60L;
+    private final int OBJECT_KEY_BATCH_SIZE = 500;
 
     private final ApplicationProperties applicationProperties;
     private final S3Client s3Client;
@@ -240,11 +241,15 @@ public class UploadFileServiceImpl implements UploadFileService {
             List<ObjectIdentifier> objectIds = filePaths.stream()
                     .map(key -> ObjectIdentifier.builder().key(key).build())
                     .toList();
-            DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
-                    .delete(Delete.builder().objects(objectIds).build())
-                    .build();
-            s3Client.deleteObjects(deleteObjectsRequest);
+            int size = objectIds.size();
+            for (int i = 0; i < size; i += OBJECT_KEY_BATCH_SIZE) {
+                int to = Math.max(i + OBJECT_KEY_BATCH_SIZE, size);
+                DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
+                        .bucket(applicationProperties.getAwsS3Bucket())
+                        .delete(Delete.builder().objects(objectIds.subList(i, to)).build())
+                        .build();
+                s3Client.deleteObjects(deleteObjectsRequest);
+            }
         } catch (Exception e) {
             log.error("deleteFiles ", e);
         }

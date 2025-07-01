@@ -4,6 +4,7 @@ import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.dto.SearchFileRequestDTO;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -13,15 +14,20 @@ public interface FileObjectService {
 
     FileObjectDTO uploadFile(MultipartFile file, String filePath);
 
-    FileObjectPendingDTO createPendingFileUpload(String mimeType, String dirPath);
+    FileObjectPendingDTO createPendingUpload(String mimeType, String dirPath);
 
-    FileObjectPendingDTO createPendingFileUpload(String mimeType);
+    FileObjectPendingDTO createPendingUpload(String mimeType);
 
-    FileObjectDTO savePendingFileUpload(UUID id);
+    FileObjectDTO savePendingUpload(UUID id);
 
     FileObjectDTO getFileById(UUID id);
 
-    void deleteFilesByIds(List<UUID> ids);
+    void deleteFilesByIds(List<UUID> ids, UUID userId);
+
+    void deleteExpiredPendingUpload();
+
+    @Async
+    void deleteExpiredPendingUploadAsync();
 
     PaginationData<FileObjectDTO> search(SearchFileRequestDTO requestDTO, boolean isCount);
 

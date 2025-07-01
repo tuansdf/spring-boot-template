@@ -1,29 +1,29 @@
 package com.example.sbt.core.mapper;
 
-import com.example.sbt.module.configuration.Configuration;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
-import com.example.sbt.module.email.Email;
+import com.example.sbt.module.configuration.entity.Configuration;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.SendEmailRequest;
+import com.example.sbt.module.email.entity.Email;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.entity.FileObject;
 import com.example.sbt.module.file.entity.FileObjectPending;
-import com.example.sbt.module.loginaudit.LoginAudit;
-import com.example.sbt.module.loginaudit.LoginAuditDTO;
-import com.example.sbt.module.notification.Notification;
+import com.example.sbt.module.loginaudit.dto.LoginAuditDTO;
+import com.example.sbt.module.loginaudit.entity.LoginAudit;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
-import com.example.sbt.module.permission.Permission;
+import com.example.sbt.module.notification.entity.Notification;
 import com.example.sbt.module.permission.dto.PermissionDTO;
+import com.example.sbt.module.permission.entity.Permission;
 import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.entity.Role;
-import com.example.sbt.module.token.Token;
 import com.example.sbt.module.token.dto.TokenDTO;
+import com.example.sbt.module.token.entity.Token;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.entity.User;
-import com.example.sbt.module.userdevice.UserDevice;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
+import com.example.sbt.module.userdevice.entity.UserDevice;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

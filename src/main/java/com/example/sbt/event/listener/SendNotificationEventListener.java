@@ -3,7 +3,7 @@ package com.example.sbt.event.listener;
 import com.example.sbt.core.constant.EventKey;
 import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
-import com.example.sbt.module.notification.NotificationService;
+import com.example.sbt.module.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.ObjectRecord;

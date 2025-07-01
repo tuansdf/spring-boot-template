@@ -4,13 +4,14 @@ import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.util.*;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.PermissionCode;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.exception.ValidationException;
 import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.module.file.service.FileObjectService;
 import com.example.sbt.module.file.service.UploadFileService;
-import com.example.sbt.module.notification.SendNotificationService;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
+import com.example.sbt.module.notification.service.SendNotificationService;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.opencsv.CSVReader;
@@ -38,7 +39,7 @@ import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
-@Secured({PermissionCode.SYSTEM_ADMIN})
+@Secured(PermissionCode.SYSTEM_ADMIN)
 @RestController
 @RequestMapping("/test")
 public class TestController {
@@ -317,12 +318,12 @@ public class TestController {
 
     @GetMapping(value = "/s3/presigned/put", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object testS3PresignedPut(@RequestParam String extension) {
-        return fileObjectService.createPendingFileUpload("", extension);
+        return fileObjectService.createPendingUpload("", extension);
     }
 
     @GetMapping(value = "/s3/delete", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object testS3Delete(@RequestParam List<UUID> ids) {
-        fileObjectService.deleteFilesByIds(ids);
+        fileObjectService.deleteFilesByIds(ids, RequestContext.get().getUserId());
         return "OK";
     }
 

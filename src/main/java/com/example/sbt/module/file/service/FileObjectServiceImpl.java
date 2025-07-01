@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
@@ -50,7 +51,7 @@ public class FileObjectServiceImpl implements FileObjectService {
 
     @Override
     public FileObjectDTO uploadFile(MultipartFile file, String dirPath) {
-        if (file == null) {
+        if (file == null || file.getSize() == 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         boolean isFileValid = FileUtils.validateFileType(file);
@@ -71,7 +72,7 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public FileObjectPendingDTO createPendingFileUpload(String mimeType, String dirPath) {
+    public FileObjectPendingDTO createPendingUpload(String mimeType, String dirPath) {
         final long EXPIRES_SECONDS = 10L * 60L;
         FileType fileType = FileType.fromMimeType(mimeType);
         if (fileType == null) {
@@ -93,17 +94,18 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public FileObjectPendingDTO createPendingFileUpload(String mimeType) {
-        return createPendingFileUpload(mimeType, null);
+    public FileObjectPendingDTO createPendingUpload(String mimeType) {
+        return createPendingUpload(mimeType, null);
     }
 
-    private void deletePendingFileUpload(UUID id, String filePath) {
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    private void deletePendingUpload(UUID id, String filePath) {
         fileObjectPendingRepository.deleteById(id);
         uploadFileService.deleteFile(filePath);
     }
 
     @Override
-    public FileObjectDTO savePendingFileUpload(UUID id) {
+    public FileObjectDTO savePendingUpload(UUID id) {
         FileObjectPendingDTO pendingDTO = fileObjectPendingRepository.findTopByIdAndCreatedBy(id, RequestContext.get().getUserId()).map(commonMapper::toDTO).orElse(null);
         if (pendingDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
@@ -122,7 +124,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         }
         boolean isFileValid = FileUtils.validateFileType(headerBytes, List.of(fileType));
         if (!isFileValid) {
-            deletePendingFileUpload(id, pendingDTO.getFilePath());
+            deletePendingUpload(id, pendingDTO.getFilePath());
             throw new NoRollbackException(HttpStatus.BAD_REQUEST);
         }
         FileObject result = new FileObject();
@@ -146,10 +148,24 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public void deleteFilesByIds(List<UUID> ids) {
-        List<String> filePaths = fileObjectRepository.findAllPathsByIdInAndCreatedBy(ids, RequestContext.get().getUserId());
-        fileObjectRepository.deleteAllByIdInAndCreatedBy(ids, RequestContext.get().getUserId());
+    public void deleteFilesByIds(List<UUID> ids, UUID userId) {
+        List<String> filePaths = fileObjectRepository.findAllFilePathsByIdInAndCreatedBy(ids, userId);
+        fileObjectRepository.deleteByIdInAndCreatedBy(ids, userId);
         uploadFileService.deleteFiles(filePaths);
+    }
+
+    @Override
+    public void deleteExpiredPendingUpload() {
+        Instant now = Instant.now();
+        List<String> filePaths = fileObjectPendingRepository.findAllFilePathsByExpiresAtBefore(now);
+        fileObjectPendingRepository.deleteByExpiresAtBefore(now);
+        uploadFileService.deleteFiles(filePaths);
+    }
+
+    @Async
+    @Override
+    public void deleteExpiredPendingUploadAsync() {
+        deleteExpiredPendingUpload();
     }
 
     @Override
