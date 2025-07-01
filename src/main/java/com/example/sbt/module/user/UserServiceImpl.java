@@ -100,27 +100,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO findOneByUsernameOrThrow(String username) {
-        UserDTO result = findOneByUsername(username);
-        if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
-        return result;
-    }
-
-    @Override
     public UserDTO findOneByEmail(String email) {
         if (StringUtils.isBlank(email)) return null;
         return userRepository.findTopByEmail(email).map(userMapper::toDTO).orElse(null);
-    }
-
-    @Override
-    public UserDTO findOneByEmailOrThrow(String email) {
-        UserDTO result = findOneByEmail(email);
-        if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
-        return result;
     }
 
     @Override

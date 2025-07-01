@@ -19,8 +19,9 @@ import java.util.UUID;
 @Table(
         name = "file_object_pending",
         indexes = {
-                @Index(name = "file_object_pending_created_at_idx", columnList = "created_at"),
                 @Index(name = "file_object_pending_created_by_idx", columnList = "created_by"),
+                @Index(name = "file_object_pending_expires_at_idx", columnList = "expires_at"),
+                @Index(name = "file_object_pending_created_at_idx", columnList = "created_at"),
         }
 )
 public class FileObjectPending extends BaseEntity {
@@ -31,9 +32,9 @@ public class FileObjectPending extends BaseEntity {
     private String fileName;
     @Column(name = "file_type", columnDefinition = "text")
     private String fileType;
-    @Column(name = "created_by")
-    private UUID createdBy;
     @Column(name = "expires_at")
     private Instant expiresAt;
+    @Column(name = "created_by")
+    private UUID createdBy;
 
 }

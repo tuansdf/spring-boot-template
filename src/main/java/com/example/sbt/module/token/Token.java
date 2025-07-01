@@ -21,14 +21,15 @@ import java.util.UUID;
 @Table(
         name = "token",
         indexes = {
-                @Index(name = "token_owner_id_idx", columnList = "owner_id"),
+                @Index(name = "token_user_id_idx", columnList = "user_id"),
+                @Index(name = "token_expires_at_idx", columnList = "expires_at"),
                 @Index(name = "token_created_at_idx", columnList = "created_at"),
         }
 )
 public class Token extends BaseEntity {
 
-    @Column(name = "owner_id", updatable = false)
-    private UUID ownerId;
+    @Column(name = "user_id", updatable = false)
+    private UUID userId;
     @Column(name = "expires_at")
     private Instant expiresAt;
     @Column(name = "type")

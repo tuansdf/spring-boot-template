@@ -18,8 +18,8 @@ import java.util.UUID;
 @Table(
         name = "file_object",
         indexes = {
-                @Index(name = "file_object_created_at_idx", columnList = "created_at"),
                 @Index(name = "file_object_created_by_idx", columnList = "created_by"),
+                @Index(name = "file_object_created_at_idx", columnList = "created_at"),
         }
 )
 @SqlResultSetMapping(name = ResultSetName.FILE_SEARCH, classes = {
@@ -47,7 +47,7 @@ public class FileObject extends BaseEntity {
     private String fileType;
     @Column(name = "file_size")
     private Long fileSize;
-    @Column(name = "created_by")
+    @Column(name = "created_by", updatable = false)
     private UUID createdBy;
 
 }

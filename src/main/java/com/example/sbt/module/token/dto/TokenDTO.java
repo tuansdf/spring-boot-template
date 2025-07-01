@@ -16,7 +16,7 @@ import java.util.UUID;
 public class TokenDTO {
 
     private UUID id;
-    private UUID ownerId;
+    private UUID userId;
     private String type;
     private String status;
     private Instant expiresAt;

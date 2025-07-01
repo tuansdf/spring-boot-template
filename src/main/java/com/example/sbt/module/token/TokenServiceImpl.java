@@ -1,5 +1,6 @@
 package com.example.sbt.module.token;
 
+import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.RandomUtils;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
@@ -10,6 +11,7 @@ import com.example.sbt.module.token.dto.TokenDTO;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -28,28 +30,50 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO findOneById(UUID id) {
+        if (id == null) return null;
         return tokenRepository.findById(id).map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
-    public TokenDTO findOneActiveById(UUID id) {
-        return tokenRepository.findTopByIdAndStatusAndExpiresAtAfter(id, CommonStatus.ACTIVE, Instant.now())
-                .map(commonMapper::toDTO).orElse(null);
+    public void deactivateByUserIdAndType(UUID userId, String type) {
+        tokenRepository.updateStatusByUserIdAndType(userId, type, CommonStatus.INACTIVE);
     }
 
     @Override
-    public void deactivatePastTokens(UUID userId, String type) {
-        tokenRepository.updateStatusByOwnerIdAndType(userId, type, CommonStatus.INACTIVE);
+    public void deactivateByUserIdAndTypes(UUID userId, List<String> types) {
+        tokenRepository.updateStatusByUserIdAndTypes(userId, types, CommonStatus.INACTIVE);
     }
 
     @Override
-    public void deactivatePastTokens(UUID userId, List<String> types) {
-        tokenRepository.updateStatusByOwnerIdAndTypes(userId, types, CommonStatus.INACTIVE);
+    public void deactivateByUserId(UUID userId) {
+        tokenRepository.updateStatusByUserId(userId, CommonStatus.INACTIVE);
     }
 
     @Override
-    public void deactivatePastTokens(UUID userId) {
-        tokenRepository.updateStatusByOwnerId(userId, CommonStatus.INACTIVE);
+    public TokenDTO findOneAndVerifyJwt(String jwt, String type) {
+        if (StringUtils.isBlank(jwt) || StringUtils.isBlank(type)) {
+            return null;
+        }
+        JWTPayload jwtPayload = jwtService.verify(jwt);
+        if (jwtPayload == null) {
+            return null;
+        }
+        String tokenType = CommonType.fromIndex(jwtPayload.getType());
+        if (!type.equals(tokenType)) {
+            return null;
+        }
+        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getSubject());
+        TokenDTO tokenDTO = findOneById(tokenId);
+        if (tokenDTO == null) {
+            return null;
+        }
+        if (!type.equals(tokenDTO.getType()) || !CommonStatus.ACTIVE.equals(tokenDTO.getStatus())) {
+            return null;
+        }
+        if (Instant.now().isAfter(tokenDTO.getExpiresAt())) {
+            return null;
+        }
+        return tokenDTO;
     }
 
     @Override
@@ -59,7 +83,7 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
-        token.setOwnerId(userId);
+        token.setUserId(userId);
         token.setExpiresAt(jwtPayload.getExpiresAt());
         token.setType(CommonType.REFRESH_TOKEN);
         token.setStatus(CommonStatus.ACTIVE);
@@ -76,7 +100,7 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
-        token.setOwnerId(userId);
+        token.setUserId(userId);
         token.setExpiresAt(jwtPayload.getExpiresAt());
         token.setType(CommonType.RESET_PASSWORD);
         token.setStatus(CommonStatus.ACTIVE);
@@ -93,7 +117,7 @@ public class TokenServiceImpl implements TokenService {
 
         Token token = new Token();
         token.setId(id);
-        token.setOwnerId(userId);
+        token.setUserId(userId);
         token.setExpiresAt(jwtPayload.getExpiresAt());
         token.setType(CommonType.ACTIVATE_ACCOUNT);
         token.setStatus(CommonStatus.ACTIVE);

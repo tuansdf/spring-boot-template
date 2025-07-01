@@ -18,6 +18,7 @@ import java.util.UUID;
                 @UniqueConstraint(name = "user_role_rel_idx", columnNames = {"user_id", "role_id"}),
         },
         indexes = {
+                @Index(name = "user_role_role_id_idx", columnList = "role_id"),
                 @Index(name = "user_role_created_at_idx", columnList = "created_at"),
         }
 )

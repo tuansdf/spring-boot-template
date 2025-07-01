@@ -16,11 +16,7 @@ public interface UserService {
 
     UserDTO findOneByUsername(String username);
 
-    UserDTO findOneByUsernameOrThrow(String username);
-
     UserDTO findOneByEmail(String email);
-
-    UserDTO findOneByEmailOrThrow(String email);
 
     PaginationData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount);
 

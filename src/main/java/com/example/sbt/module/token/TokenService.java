@@ -9,13 +9,13 @@ public interface TokenService {
 
     TokenDTO findOneById(UUID id);
 
-    TokenDTO findOneActiveById(UUID id);
+    void deactivateByUserIdAndType(UUID userId, String type);
 
-    void deactivatePastTokens(UUID userId, String type);
+    void deactivateByUserIdAndTypes(UUID userId, List<String> types);
 
-    void deactivatePastTokens(UUID userId, List<String> types);
+    void deactivateByUserId(UUID userId);
 
-    void deactivatePastTokens(UUID userId);
+    TokenDTO findOneAndVerifyJwt(String token, String type);
 
     TokenDTO createRefreshToken(UUID userId);
 
