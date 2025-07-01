@@ -1,7 +1,7 @@
 package com.example.sbt.module.notification;
 
-import com.example.sbt.core.entity.BaseEntity;
 import com.example.sbt.core.constant.ResultSetName;
+import com.example.sbt.core.entity.BaseEntity;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

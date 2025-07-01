@@ -1,7 +1,7 @@
 package com.example.sbt.module.loginaudit;
 
-import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.core.mapper.CommonMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,7 @@
 package com.example.sbt.module.file.entity;
 
-import com.example.sbt.core.entity.BaseEntity;
 import com.example.sbt.core.constant.ResultSetName;
+import com.example.sbt.core.entity.BaseEntity;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import jakarta.persistence.*;
 import lombok.*;
