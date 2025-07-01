@@ -155,9 +155,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) {
+        authValidator.validateChangePassword(requestDTO);
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        if (ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
+            if (StringUtils.isBlank(requestDTO.getOtpCode()) || !TOTPUtils.verify(requestDTO.getOtpCode(), user.getOtpSecret())) {
+                throw new CustomException(HttpStatus.UNAUTHORIZED);
+            }
         }
         boolean isPasswordCorrect = authHelper.verifyPassword(requestDTO.getOldPassword(), user.getPassword());
         if (!isPasswordCorrect) {

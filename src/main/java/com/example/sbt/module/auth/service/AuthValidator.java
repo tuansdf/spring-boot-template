@@ -6,6 +6,7 @@ import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.core.helper.ValidationHelper;
 import com.example.sbt.module.auth.dto.*;
+import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -105,6 +106,26 @@ public class AuthValidator {
             throw new CustomException(localeHelper.getMessage("form.error.required", new LocaleKey("field.password")));
         }
         String passwordError = validationHelper.validatePassword(requestDTO.getNewPassword());
+        if (passwordError != null) {
+            throw new CustomException(passwordError);
+        }
+    }
+
+    public void validateChangePassword(ChangePasswordRequestDTO requestDTO) {
+        if (requestDTO == null) {
+            throw new CustomException(localeHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+        }
+        if (StringUtils.isEmpty(requestDTO.getOldPassword())) {
+            throw new CustomException(localeHelper.getMessage("form.error.required", new LocaleKey("field.password")));
+        }
+        if (StringUtils.isEmpty(requestDTO.getNewPassword())) {
+            throw new CustomException(localeHelper.getMessage("form.error.required", new LocaleKey("field.password")));
+        }
+        String passwordError = validationHelper.validatePassword(requestDTO.getOldPassword());
+        if (passwordError != null) {
+            throw new CustomException(passwordError);
+        }
+        passwordError = validationHelper.validatePassword(requestDTO.getNewPassword());
         if (passwordError != null) {
             throw new CustomException(passwordError);
         }
