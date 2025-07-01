@@ -1,6 +1,5 @@
 package com.example.sbt.module.notification.service;
 
-import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.ResultSetName;
@@ -17,6 +16,7 @@ import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.notification.entity.Notification;
 import com.example.sbt.module.notification.repository.NotificationRepository;
 import com.example.sbt.module.userdevice.service.UserDeviceService;
+import com.example.sbt.shared.util.ConversionUtils;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;

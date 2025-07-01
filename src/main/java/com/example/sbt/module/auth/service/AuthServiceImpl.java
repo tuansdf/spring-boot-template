@@ -1,8 +1,5 @@
 package com.example.sbt.module.auth.service;
 
-import com.example.sbt.shared.util.CommonUtils;
-import com.example.sbt.shared.util.ConversionUtils;
-import com.example.sbt.shared.util.TOTPUtils;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
@@ -27,6 +24,9 @@ import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.repository.UserRepository;
 import com.example.sbt.module.user.service.UserService;
+import com.example.sbt.shared.util.CommonUtils;
+import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.TOTPUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

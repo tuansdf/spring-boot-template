@@ -1,7 +1,5 @@
 package com.example.sbt.module.token.service;
 
-import com.example.sbt.shared.util.ConversionUtils;
-import com.example.sbt.shared.util.RandomUtils;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.dto.JWTPayload;
@@ -9,6 +7,8 @@ import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.token.dto.TokenDTO;
 import com.example.sbt.module.token.entity.Token;
 import com.example.sbt.module.token.repository.TokenRepository;
+import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.RandomUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

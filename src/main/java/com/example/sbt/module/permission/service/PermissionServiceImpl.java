@@ -1,6 +1,5 @@
 package com.example.sbt.module.permission.service;
 
-import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
@@ -12,6 +11,7 @@ import com.example.sbt.module.permission.entity.Permission;
 import com.example.sbt.module.permission.repository.PermissionRepository;
 import com.example.sbt.module.role.entity.RolePermission;
 import com.example.sbt.module.role.repository.RolePermissionRepository;
+import com.example.sbt.shared.util.ConversionUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;

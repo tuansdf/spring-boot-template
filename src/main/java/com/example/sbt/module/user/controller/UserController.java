@@ -79,4 +79,20 @@ public class UserController {
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
+    @PostMapping("/export")
+    @Secured({PermissionCode.SYSTEM_ADMIN})
+    public ResponseEntity<byte[]> export(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+        var requestDTO = SearchUserRequestDTO.builder()
+                .username(username)
+                .email(email)
+                .status(status)
+                .build();
+        var result = userService.export(requestDTO);
+        return ResponseEntity.ok(result);
+    }
+
 }

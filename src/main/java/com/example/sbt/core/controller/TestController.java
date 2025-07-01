@@ -1,7 +1,5 @@
 package com.example.sbt.core.controller;
 
-import com.example.sbt.shared.constant.FileType;
-import com.example.sbt.common.util.*;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.RequestContext;
@@ -13,6 +11,7 @@ import com.example.sbt.module.file.service.UploadFileService;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.notification.service.SendNotificationService;
 import com.example.sbt.module.user.dto.UserDTO;
+import com.example.sbt.shared.constant.FileType;
 import com.example.sbt.shared.util.*;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.opencsv.CSVReader;
@@ -82,10 +81,10 @@ public class TestController {
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet();
             List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
-            ExcelUtils.setRowCellValues(sheet, 0, header);
+            ExcelUtils.setCellValues(sheet, 0, header);
             int idx = 1;
             for (var item : data) {
-                ExcelUtils.setRowCellValues(sheet, idx, Arrays.asList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
+                ExcelUtils.setCellValues(sheet, idx, Arrays.asList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
                 idx++;
             }
             ExcelUtils.writeFile(workbook, exportPath);

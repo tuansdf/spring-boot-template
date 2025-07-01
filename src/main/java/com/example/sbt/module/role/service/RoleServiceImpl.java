@@ -1,6 +1,5 @@
 package com.example.sbt.module.role.service;
 
-import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
@@ -13,6 +12,7 @@ import com.example.sbt.module.role.mapper.RoleMapper;
 import com.example.sbt.module.role.repository.RoleRepository;
 import com.example.sbt.module.user.entity.UserRole;
 import com.example.sbt.module.user.repository.UserRoleRepository;
+import com.example.sbt.shared.util.ConversionUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;

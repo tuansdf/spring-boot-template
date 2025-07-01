@@ -1,7 +1,7 @@
 package com.example.sbt.config;
 
-import com.example.sbt.shared.util.Base64Utils;
 import com.example.sbt.core.constant.ApplicationProperties;
+import com.example.sbt.shared.util.Base64Utils;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;

@@ -131,7 +131,7 @@ public class ExcelUtils {
         setCellValue(getCell(row, colIdx), value);
     }
 
-    public static void setRowCellValues(Row row, List<Object> objects) {
+    public static void setCellValues(Row row, List<Object> objects) {
         if (row == null || CollectionUtils.isEmpty(objects)) return;
         int i = 0;
         for (Object object : objects) {
@@ -140,7 +140,7 @@ public class ExcelUtils {
         }
     }
 
-    public static void setRowCellValues(Sheet sheet, Integer rowIdx, List<Object> objects) {
+    public static void setCellValues(Sheet sheet, Integer rowIdx, List<Object> objects) {
         if (sheet == null || rowIdx == null || CollectionUtils.isEmpty(objects)) return;
         Row row = getRow(sheet, rowIdx);
         if (row == null) return;
@@ -151,7 +151,7 @@ public class ExcelUtils {
         }
     }
 
-    public static <T> void setRowCellValues(Row row, T[] objects) {
+    public static <T> void setCellValues(Row row, T[] objects) {
         if (row == null || ArrayUtils.isEmpty(objects)) return;
         for (int i = 0; i < objects.length; i++) {
             setCellValue(row, i, ConversionUtils.safeToString(objects[i]));

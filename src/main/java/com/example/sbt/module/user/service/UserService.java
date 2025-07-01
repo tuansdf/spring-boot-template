@@ -20,4 +20,6 @@ public interface UserService {
 
     PaginationData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount);
 
+    byte[] export(SearchUserRequestDTO requestDTO);
+
 }

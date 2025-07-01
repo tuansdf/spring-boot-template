@@ -1,6 +1,5 @@
 package com.example.sbt.module.configuration.service;
 
-import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
@@ -12,6 +11,7 @@ import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
 import com.example.sbt.module.configuration.entity.Configuration;
 import com.example.sbt.module.configuration.repository.ConfigurationKVRepository;
 import com.example.sbt.module.configuration.repository.ConfigurationRepository;
+import com.example.sbt.shared.util.ConversionUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;

@@ -1,6 +1,5 @@
 package com.example.sbt.module.email.service;
 
-import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.core.constant.*;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContext;
@@ -15,6 +14,7 @@ import com.example.sbt.module.email.dto.EmailStatsDTO;
 import com.example.sbt.module.email.dto.SearchEmailRequestDTO;
 import com.example.sbt.module.email.entity.Email;
 import com.example.sbt.module.email.repository.EmailRepository;
+import com.example.sbt.shared.util.ConversionUtils;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
