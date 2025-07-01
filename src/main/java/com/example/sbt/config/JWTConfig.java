@@ -1,9 +1,9 @@
 package com.example.sbt.config;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.example.sbt.core.constant.ApplicationProperties;
+import com.nimbusds.jose.*;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +15,18 @@ public class JWTConfig {
     private final ApplicationProperties applicationProperties;
 
     @Bean
-    public Algorithm algorithm() {
-        return Algorithm.HMAC256(applicationProperties.getJwtSecret());
+    public JWSHeader jwtHeader() {
+        return new JWSHeader(JWSAlgorithm.HS256);
     }
 
     @Bean
-    public JWTVerifier jwtVerifier(Algorithm algorithm) {
-        return JWT.require(algorithm).build();
+    public JWSSigner jwtSigner() throws KeyLengthException {
+        return new MACSigner(applicationProperties.getJwtSecret().getBytes());
+    }
+
+    @Bean
+    public JWSVerifier jwsVerifier() throws JOSEException {
+        return new MACVerifier(applicationProperties.getJwtSecret().getBytes());
     }
 
 }

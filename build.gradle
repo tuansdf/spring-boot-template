@@ -57,7 +57,7 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
     implementation 'com.opencsv:opencsv:5.11.2'
     implementation 'com.github.pjfanning:excel-streaming-reader:5.0.3'
-    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'com.nimbusds:nimbus-jose-jwt:10.3'
     implementation 'com.atlassian:onetime:2.1.2'
     implementation 'net.coobird:thumbnailator:0.4.20'
 
