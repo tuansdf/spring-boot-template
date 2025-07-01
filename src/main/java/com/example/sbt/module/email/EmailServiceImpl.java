@@ -35,6 +35,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class EmailServiceImpl implements EmailService {
 
+    private final SQLHelper sqlHelper;
     private final LocaleHelper localeHelper;
     private final ApplicationProperties applicationProperties;
     private final CommonMapper commonMapper;
@@ -45,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
     private final EntityManager entityManager;
 
     private PaginationData<EmailDTO> executeSearch(SearchEmailRequestDTO requestDTO, boolean isCount) {
-        PaginationData<EmailDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationData<EmailDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -73,17 +74,17 @@ public class EmailServiceImpl implements EmailService {
         }
         if (!isCount) {
             builder.append(" order by e.created_at desc, e.id asc ");
-            builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
+            builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
+            result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.EMAIL_SEARCH);
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             List<EmailDTO> items = query.getResultList();
             result.setItems(items);
         }

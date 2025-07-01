@@ -4,13 +4,15 @@ import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.core.dto.RequestContextData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
 @Slf4j
+@Component
 public class AuthHelper {
 
-    public static boolean hasAnyPermission(String... permissions) {
+    public boolean hasAnyPermission(String... permissions) {
         RequestContextData context = RequestContext.get();
         if (CollectionUtils.isEmpty(context.getPermissions())) {
             return false;

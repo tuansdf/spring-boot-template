@@ -35,6 +35,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class NotificationServiceImpl implements NotificationService {
 
+    private final SQLHelper sqlHelper;
     private final LocaleHelper localeHelper;
     private final ApplicationProperties applicationProperties;
     private final CommonMapper commonMapper;
@@ -45,7 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final EntityManager entityManager;
 
     private PaginationData<NotificationDTO> executeSearch(SearchNotificationRequestDTO requestDTO, boolean isCount) {
-        PaginationData<NotificationDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationData<NotificationDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -73,17 +74,17 @@ public class NotificationServiceImpl implements NotificationService {
         }
         if (!isCount) {
             builder.append(" order by n.created_at desc, n.id asc ");
-            builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
+            builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
+            result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.NOTIFICATION_SEARCH);
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             List<NotificationDTO> items = query.getResultList();
             result.setItems(items);
         }

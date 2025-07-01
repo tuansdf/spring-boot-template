@@ -1,12 +1,12 @@
 package com.example.sbt.module.user;
 
-import com.example.sbt.core.exception.CustomException;
-import com.example.sbt.core.helper.AuthHelper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.core.exception.CustomException;
+import com.example.sbt.core.helper.AuthHelper;
+import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.module.role.RoleService;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
@@ -33,6 +33,8 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
 
+    private final SQLHelper sqlHelper;
+    private final AuthHelper authHelper;
     private final UserMapper userMapper;
     private final EntityManager entityManager;
     private final UserRepository userRepository;
@@ -64,7 +66,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isNotBlank(requestDTO.getName())) {
             user.setName(requestDTO.getName());
         }
-        boolean isAdmin = AuthHelper.hasAnyPermission(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER);
+        boolean isAdmin = authHelper.hasAnyPermission(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER);
         if (isAdmin) {
             if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
                 user.setStatus(requestDTO.getStatus());
@@ -131,7 +133,7 @@ public class UserServiceImpl implements UserService {
     }
 
     private PaginationData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount) {
-        PaginationData<UserDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -149,11 +151,11 @@ public class UserServiceImpl implements UserService {
             builder.append(" where 1=1 ");
             if (StringUtils.isNotBlank(requestDTO.getUsername())) {
                 builder.append(" and u.username ilike :username ");
-                params.put("username", SQLHelper.escapeLikePattern(requestDTO.getUsername()).concat("%"));
+                params.put("username", sqlHelper.escapeLikePattern(requestDTO.getUsername()).concat("%"));
             }
             if (StringUtils.isNotBlank(requestDTO.getEmail())) {
                 builder.append(" and u.email ilike :email ");
-                params.put("email", SQLHelper.escapeLikePattern(requestDTO.getEmail()).concat("%"));
+                params.put("email", sqlHelper.escapeLikePattern(requestDTO.getEmail()).concat("%"));
             }
             if (StringUtils.isNotBlank(requestDTO.getStatus())) {
                 builder.append(" and u.status = :status ");
@@ -169,7 +171,7 @@ public class UserServiceImpl implements UserService {
             }
             if (!isCount) {
                 builder.append(" order by u.username asc, u.id asc ");
-                builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
+                builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
             }
         }
         builder.append(" ) as filter on (filter.id = u.id) ");
@@ -183,13 +185,13 @@ public class UserServiceImpl implements UserService {
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
+            result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.USER_SEARCH);
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             List<UserDTO> items = query.getResultList();
             result.setItems(items);
         }

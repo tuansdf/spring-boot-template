@@ -1,15 +1,15 @@
 package com.example.sbt.module.file.service;
 
 import com.example.sbt.common.constant.FileType;
-import com.example.sbt.core.exception.CustomException;
-import com.example.sbt.core.exception.NoRollbackException;
-import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.FileUtils;
-import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.exception.CustomException;
+import com.example.sbt.core.exception.NoRollbackException;
+import com.example.sbt.core.helper.SQLHelper;
+import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.dto.ObjectKey;
@@ -41,6 +41,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class, dontRollbackOn = NoRollbackException.class)
 public class FileObjectServiceImpl implements FileObjectService {
 
+    private final SQLHelper sqlHelper;
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final UploadFileService uploadFileService;
@@ -161,7 +162,7 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     private PaginationData<FileObjectDTO> executeSearch(SearchFileRequestDTO requestDTO, boolean isCount) {
-        PaginationData<FileObjectDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationData<FileObjectDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -205,17 +206,17 @@ public class FileObjectServiceImpl implements FileObjectService {
             } else {
                 builder.append(" order by fo.id desc ");
             }
-            builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
+            builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
+            result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.FILE_SEARCH);
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             List<FileObjectDTO> items = query.getResultList();
             result.setItems(items);
         }

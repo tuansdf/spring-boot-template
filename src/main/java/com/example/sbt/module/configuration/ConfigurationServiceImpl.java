@@ -1,12 +1,12 @@
 package com.example.sbt.module.configuration;
 
-import com.example.sbt.core.exception.CustomException;
-import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.core.exception.CustomException;
+import com.example.sbt.core.helper.SQLHelper;
+import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
 import jakarta.persistence.EntityManager;
@@ -30,6 +30,8 @@ import java.util.Map;
 public class ConfigurationServiceImpl implements ConfigurationService {
 
     private static final int MAX_PUBLIC_CODES = 10;
+
+    private final SQLHelper sqlHelper;
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final ConfigurationRepository configurationRepository;
@@ -126,7 +128,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private PaginationData<ConfigurationDTO> executeSearch(SearchConfigurationRequestDTO requestDTO, boolean isCount) {
-        PaginationData<ConfigurationDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationData<ConfigurationDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -154,17 +156,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         if (!isCount) {
             builder.append(" order by c.code asc, c.id asc ");
-            builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
+            builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
+            result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.CONFIGURATION_SEARCH);
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             List<ConfigurationDTO> items = query.getResultList();
             result.setItems(items);
         }

@@ -1,10 +1,10 @@
 package com.example.sbt.module.role;
 
-import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.core.exception.CustomException;
+import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.module.permission.PermissionService;
 import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.dto.SearchRoleRequestDTO;
@@ -31,6 +31,7 @@ import java.util.*;
 @Transactional(rollbackOn = Exception.class)
 public class RoleServiceImpl implements RoleService {
 
+    private final SQLHelper sqlHelper;
     private final RoleMapper roleMapper;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
@@ -134,7 +135,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     private PaginationData<RoleDTO> executeSearch(SearchRoleRequestDTO requestDTO, boolean isCount) {
-        PaginationData<RoleDTO> result = SQLHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
+        PaginationData<RoleDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
@@ -158,17 +159,17 @@ public class RoleServiceImpl implements RoleService {
         }
         if (!isCount) {
             builder.append(" order by r.code asc, r.id asc ");
-            builder.append(SQLHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
+            builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
             result.setTotalItems(count);
-            result.setTotalPages(SQLHelper.toPages(count, result.getPageSize()));
+            result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
             Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.ROLE_SEARCH);
-            SQLHelper.setParams(query, params);
+            sqlHelper.setParams(query, params);
             List<RoleDTO> items = query.getResultList();
             result.setItems(items);
         }
