@@ -1,25 +1,22 @@
-package com.example.sbt.core.util;
+package com.example.sbt.core.helper;
 
+import com.example.sbt.core.dto.LocaleKey;
 import com.example.sbt.core.dto.RequestContext;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 
+@RequiredArgsConstructor
 @Component
-@Scope("singleton")
 public class LocaleHelper {
 
-    private static MessageSource messageSource;
+    private final MessageSource messageSource;
 
-    public LocaleHelper(MessageSource messageSource) {
-        LocaleHelper.messageSource = messageSource;
-    }
-
-    public static String getMessage(String code, Locale locale, Object... args) {
+    public String getMessage(String code, Locale locale, Object... args) {
         if (StringUtils.isEmpty(code)) {
             return "";
         }
@@ -40,7 +37,7 @@ public class LocaleHelper {
         }
     }
 
-    public static String getMessage(String code, Object... args) {
+    public String getMessage(String code, Object... args) {
         try {
             return getMessage(code, RequestContext.get().getLocale(), args);
         } catch (Exception e) {
@@ -48,7 +45,7 @@ public class LocaleHelper {
         }
     }
 
-    public static String getMessage(String code, Locale locale) {
+    public String getMessage(String code, Locale locale) {
         try {
             return getMessage(code, locale, (Object) null);
         } catch (Exception e) {
@@ -56,15 +53,12 @@ public class LocaleHelper {
         }
     }
 
-    public static String getMessage(String code) {
+    public String getMessage(String code) {
         try {
             return getMessage(code, RequestContext.get().getLocale());
         } catch (Exception e) {
             return code;
         }
-    }
-
-    public record LocaleKey(String arg) {
     }
 
 }

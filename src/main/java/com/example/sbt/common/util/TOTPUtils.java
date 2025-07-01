@@ -5,7 +5,7 @@ import com.atlassian.onetime.model.TOTPSecret;
 import com.atlassian.onetime.service.DefaultTOTPService;
 import com.atlassian.onetime.service.RandomSecretProvider;
 
-public class TOTPHelper {
+public class TOTPUtils {
 
     public static String generateSecret() {
         return new RandomSecretProvider().generateSecret().getBase32Encoded();

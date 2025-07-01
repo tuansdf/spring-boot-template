@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 @Slf4j
-public class Base64Helper {
+public class Base64Utils {
 
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final Base64.Encoder encoder = Base64.getEncoder();

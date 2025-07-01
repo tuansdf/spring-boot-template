@@ -1,4 +1,4 @@
-package com.example.sbt.core.util;
+package com.example.sbt.core.helper;
 
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.core.dto.PaginationData;

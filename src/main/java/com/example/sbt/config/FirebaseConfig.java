@@ -1,6 +1,6 @@
 package com.example.sbt.config;
 
-import com.example.sbt.common.util.Base64Helper;
+import com.example.sbt.common.util.Base64Utils;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -23,7 +23,7 @@ public class FirebaseConfig {
     @Bean
     public GoogleCredentials googleCredentials() {
         try {
-            byte[] firebaseServiceAccount = Base64Helper.urlDecode(applicationProperties.getFirebaseServiceAccount());
+            byte[] firebaseServiceAccount = Base64Utils.urlDecode(applicationProperties.getFirebaseServiceAccount());
             if (firebaseServiceAccount == null) {
                 log.error("Missing Firebase service account credentials");
                 return null;

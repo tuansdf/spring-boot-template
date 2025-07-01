@@ -1,9 +1,9 @@
 package com.example.sbt.module.user;
 
 import com.example.sbt.core.exception.CustomException;
-import com.example.sbt.core.util.AuthHelper;
+import com.example.sbt.core.helper.AuthHelper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.core.util.SQLHelper;
+import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;

@@ -1,9 +1,9 @@
 package com.example.sbt.module.auth;
 
-import com.example.sbt.core.util.ExceptionUtils;
-import com.example.sbt.core.util.HTMLTemplate;
-import com.example.sbt.core.util.LocaleHelper;
 import com.example.sbt.core.dto.CommonResponse;
+import com.example.sbt.core.helper.ExceptionHelper;
+import com.example.sbt.core.helper.HTMLTemplate;
+import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.module.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/open/v1/auth")
 public class PublicAuthController {
 
+    private final LocaleHelper localeHelper;
+    private final ExceptionHelper exceptionHelper;
     private final AuthService authService;
 
     @PostMapping("/login")
@@ -29,21 +31,21 @@ public class PublicAuthController {
     @PostMapping("/register")
     public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequestDTO requestDTO) {
         authService.register(requestDTO);
-        var message = LocaleHelper.getMessage("auth.activate_account_email_sent");
+        var message = localeHelper.getMessage("auth.activate_account_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message));
     }
 
     @PostMapping("/password/reset/request")
     public ResponseEntity<CommonResponse<Object>> requestResetPassword(@RequestBody RequestResetPasswordRequestDTO requestDTO) {
         authService.requestResetPassword(requestDTO);
-        var message = LocaleHelper.getMessage("auth.reset_password_email_sent");
+        var message = localeHelper.getMessage("auth.reset_password_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message));
     }
 
     @PostMapping("/password/reset")
     public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequestDTO requestDTO) {
         authService.resetPassword(requestDTO);
-        var message = LocaleHelper.getMessage("auth.reset_password_success");
+        var message = localeHelper.getMessage("auth.reset_password_success");
         return ResponseEntity.ok(new CommonResponse<>(message));
     }
 
@@ -55,22 +57,22 @@ public class PublicAuthController {
 
     @GetMapping(value = "/account/activate", produces = MediaType.TEXT_HTML_VALUE)
     public String activateAccount(@RequestParam(required = false) String token) {
-        String result = LocaleHelper.getMessage("common.error");
+        String result = localeHelper.getMessage("common.error");
         try {
             if (StringUtils.isNotEmpty(token)) {
                 authService.activateAccount(token);
-                result = LocaleHelper.getMessage("auth.activate_account_success");
+                result = localeHelper.getMessage("auth.activate_account_success");
             }
         } catch (Exception e) {
-            result = ExceptionUtils.toResponse(e).getMessage();
+            result = exceptionHelper.toResponse(e).getMessage();
         }
-        return HTMLTemplate.createCenteredHtml(LocaleHelper.getMessage("email.activate_account_subject"), result);
+        return HTMLTemplate.createCenteredHtml(localeHelper.getMessage("email.activate_account_subject"), result);
     }
 
     @PostMapping("/account/activate/request")
     public ResponseEntity<CommonResponse<Object>> requestActivateAccount(@RequestBody RequestActivateAccountRequestDTO requestDTO) {
         authService.requestActivateAccount(requestDTO);
-        var message = LocaleHelper.getMessage("auth.activate_account_email_sent");
+        var message = localeHelper.getMessage("auth.activate_account_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message));
     }
 

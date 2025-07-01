@@ -3,7 +3,7 @@ package com.example.sbt.module.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.sbt.common.util.Base64Helper;
+import com.example.sbt.common.util.Base64Utils;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.constant.PermissionCode;
@@ -103,7 +103,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload verify(String token) {
         try {
             String jwtPayloadBase64 = jwtVerifier.verify(token).getPayload();
-            String jwtPayloadJson = Base64Helper.urlDecodeToString(jwtPayloadBase64);
+            String jwtPayloadJson = Base64Utils.urlDecodeToString(jwtPayloadBase64);
             return objectMapper.readValue(jwtPayloadJson, JWTPayload.class);
         } catch (Exception e) {
             log.error("verify ", e);

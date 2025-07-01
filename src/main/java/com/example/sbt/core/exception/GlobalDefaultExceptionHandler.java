@@ -1,8 +1,9 @@
 package com.example.sbt.core.exception;
 
-import com.example.sbt.core.util.ExceptionUtils;
 import com.example.sbt.core.dto.CommonResponse;
+import com.example.sbt.core.helper.ExceptionHelper;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,11 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
+@RequiredArgsConstructor
 @ControllerAdvice
 public class GlobalDefaultExceptionHandler {
+
+    private final ExceptionHelper exceptionHelper;
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ResponseEntity<CommonResponse<Object>> handleMaxSizeException() {
@@ -87,13 +91,13 @@ public class GlobalDefaultExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<CommonResponse<Object>> handleMissingRequestBody(CustomException ex) {
-        return ExceptionUtils.toResponseEntity(ex);
+        return exceptionHelper.toResponseEntity(ex);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<Object>> defaultExceptionHandler(Exception e) {
         log.error("defaultExceptionHandler ", e);
-        return ExceptionUtils.toResponseEntity(e);
+        return exceptionHelper.toResponseEntity(e);
     }
 
 }

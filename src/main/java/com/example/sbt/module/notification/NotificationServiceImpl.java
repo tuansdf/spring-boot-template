@@ -1,14 +1,14 @@
 package com.example.sbt.module.notification;
 
-import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.core.util.LocaleHelper;
-import com.example.sbt.core.util.SQLHelper;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.helper.LocaleHelper;
+import com.example.sbt.core.helper.SQLHelper;
+import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.event.publisher.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import com.example.sbt.module.notification.dto.NotificationStatsDTO;
@@ -35,6 +35,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class NotificationServiceImpl implements NotificationService {
 
+    private final LocaleHelper localeHelper;
     private final ApplicationProperties applicationProperties;
     private final CommonMapper commonMapper;
     private final NotificationRepository notificationRepository;
@@ -109,8 +110,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO findOneById(UUID id) {
         if (id == null) return null;
-        Notification result = notificationRepository.findById(id).orElse(null);
-        if (result == null || result.getUserId() == null || result.getUserId().equals(RequestContext.get().getUserId())) {
+        Notification result = notificationRepository.findTopByIdAndUserId(id, RequestContext.get().getUserId()).orElse(null);
+        if (result == null) {
             return null;
         }
         if (CommonStatus.UNREAD.equals(result.getStatus())) {
@@ -126,9 +127,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDTO.setStatus(CommonStatus.UNREAD);
         notificationDTO.setSendStatus(CommonStatus.PENDING);
         NotificationDTO result = commonMapper.toDTO(notificationRepository.save(commonMapper.toEntity(notificationDTO)));
-
         sendNotificationEventPublisher.publish(notificationDTO);
-
         return result;
     }
 
@@ -147,8 +146,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO sendNewComerNotification(UUID userId) {
         NotificationDTO notificationDTO = NotificationDTO.builder()
-                .title(LocaleHelper.getMessage("notification.new_comer_title", applicationProperties.getApplicationName()))
-                .body(LocaleHelper.getMessage("notification.new_comer_content"))
+                .title(localeHelper.getMessage("notification.new_comer_title", applicationProperties.getApplicationName()))
+                .body(localeHelper.getMessage("notification.new_comer_content"))
                 .userId(userId)
                 .build();
         return triggerSend(notificationDTO);

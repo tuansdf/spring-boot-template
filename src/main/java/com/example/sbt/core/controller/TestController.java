@@ -1,12 +1,12 @@
 package com.example.sbt.core.controller;
 
 import com.example.sbt.common.constant.FileType;
-import com.example.sbt.core.exception.CustomException;
-import com.example.sbt.core.exception.ValidationException;
 import com.example.sbt.common.util.*;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.PermissionCode;
-import com.example.sbt.core.util.LocaleHelper;
+import com.example.sbt.core.exception.CustomException;
+import com.example.sbt.core.exception.ValidationException;
+import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.module.file.service.FileObjectService;
 import com.example.sbt.module.file.service.UploadFileService;
 import com.example.sbt.module.notification.SendNotificationService;
@@ -43,6 +43,7 @@ import java.util.*;
 @RequestMapping("/test")
 public class TestController {
 
+    private final LocaleHelper localeHelper;
     private final StringRedisTemplate redisTemplate;
     private final SendNotificationService sendNotificationService;
     private final FileObjectService fileObjectService;
@@ -79,13 +80,13 @@ public class TestController {
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet();
             List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
-            ExcelHelper.setRowCellValues(sheet, 0, header);
+            ExcelUtils.setRowCellValues(sheet, 0, header);
             int idx = 1;
             for (var item : data) {
-                ExcelHelper.setRowCellValues(sheet, idx, Arrays.asList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
+                ExcelUtils.setRowCellValues(sheet, idx, Arrays.asList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
                 idx++;
             }
-            ExcelHelper.writeFile(workbook, exportPath);
+            ExcelUtils.writeFile(workbook, exportPath);
         }
         return "OK";
     }
@@ -119,13 +120,13 @@ public class TestController {
     @GetMapping("/excel/import")
     public String testImportExcel(@RequestParam String filePath) {
         List<UserDTO> items = new ArrayList<>();
-        try (Workbook workbook = ExcelHelper.toWorkbook(filePath)) {
+        try (Workbook workbook = ExcelUtils.toWorkbook(filePath)) {
             if (workbook == null) return null;
             List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
             Sheet sheet = workbook.getSheetAt(0);
             boolean isHeader = true;
             for (var row : sheet) {
-                List<Object> data = ExcelHelper.getRowCellValues(row);
+                List<Object> data = ExcelUtils.getRowCellValues(row);
                 if (isHeader) {
                     if (!ListUtils.isEqualList(header, data)) {
                         throw new CustomException("Invalid template");
@@ -185,7 +186,7 @@ public class TestController {
 
     @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
     public String testI18n(@RequestParam String key) {
-        return LocaleHelper.getMessage(key);
+        return localeHelper.getMessage(key);
     }
 
     @GetMapping(value = "/redis", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -261,13 +262,13 @@ public class TestController {
 
     @GetMapping(value = "/totp/secret", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object testTotpSecret() {
-        return TOTPHelper.generateSecret();
+        return TOTPUtils.generateSecret();
     }
 
     @GetMapping(value = "/totp/verify", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object testTotpVerify(@RequestParam String secret) {
         for (int i = 0; i < 1_000_000; i++) {
-            TOTPHelper.verify("123456", secret);
+            TOTPUtils.verify("123456", secret);
         }
         return "OK";
     }

@@ -1,13 +1,13 @@
 package com.example.sbt.module.email;
 
-import com.example.sbt.core.exception.CustomException;
-import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.core.util.LocaleHelper;
-import com.example.sbt.core.util.SQLHelper;
 import com.example.sbt.core.constant.*;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.exception.CustomException;
+import com.example.sbt.core.helper.LocaleHelper;
+import com.example.sbt.core.helper.SQLHelper;
+import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.event.publisher.SendEmailEventPublisher;
 import com.example.sbt.module.configuration.ConfigurationService;
 import com.example.sbt.module.email.dto.EmailDTO;
@@ -35,6 +35,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class EmailServiceImpl implements EmailService {
 
+    private final LocaleHelper localeHelper;
     private final ApplicationProperties applicationProperties;
     private final CommonMapper commonMapper;
     private final EmailRepository emailRepository;
@@ -109,8 +110,8 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public EmailDTO findOneById(UUID id) {
         if (id == null) return null;
-        Email result = emailRepository.findById(id).orElse(null);
-        if (result == null || result.getUserId() == null || result.getUserId().equals(RequestContext.get().getUserId())) {
+        Email result = emailRepository.findTopByIdAndUserId(id, RequestContext.get().getUserId()).orElse(null);
+        if (result == null) {
             return null;
         }
         if (CommonStatus.UNREAD.equals(result.getStatus())) {
@@ -126,9 +127,7 @@ public class EmailServiceImpl implements EmailService {
         emailDTO.setStatus(CommonStatus.UNREAD);
         emailDTO.setSendStatus(CommonStatus.PENDING);
         EmailDTO result = commonMapper.toDTO(emailRepository.save(commonMapper.toEntity(emailDTO)));
-
         sendEmailEventPublisher.publish(result);
-
         return result;
     }
 
@@ -147,7 +146,7 @@ public class EmailServiceImpl implements EmailService {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (ConversionUtils.safeToBoolean(emailRepository.existsRecentByUserIdAndType(userId, type, Instant.now().minusSeconds(timeWindow)))) {
-            throw new CustomException(LocaleHelper.getMessage(messageKey), HttpStatus.OK);
+            throw new CustomException(localeHelper.getMessage(messageKey), HttpStatus.OK);
         }
     }
 
@@ -157,8 +156,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .userId(userId)
                 .toEmail(email)
-                .subject(LocaleHelper.getMessage("email.reset_password_subject"))
-                .body(LocaleHelper.getMessage("email.reset_password_content", name, token))
+                .subject(localeHelper.getMessage("email.reset_password_subject"))
+                .body(localeHelper.getMessage("email.reset_password_content", name, token))
                 .type(CommonType.RESET_PASSWORD)
                 .build();
         return triggerSend(emailDTO);
@@ -175,8 +174,8 @@ public class EmailServiceImpl implements EmailService {
         EmailDTO emailDTO = EmailDTO.builder()
                 .userId(userId)
                 .toEmail(email)
-                .subject(LocaleHelper.getMessage("email.activate_account_subject"))
-                .body(LocaleHelper.getMessage("email.activate_account_content", name, url))
+                .subject(localeHelper.getMessage("email.activate_account_subject"))
+                .body(localeHelper.getMessage("email.activate_account_content", name, url))
                 .type(CommonType.ACTIVATE_ACCOUNT)
                 .build();
         return triggerSend(emailDTO);

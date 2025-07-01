@@ -1,14 +1,14 @@
 package com.example.sbt.module.auth;
 
-import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.core.util.LocaleHelper;
-import com.example.sbt.common.util.TOTPHelper;
+import com.example.sbt.common.util.TOTPUtils;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.constant.ConfigurationCode;
+import com.example.sbt.core.exception.CustomException;
+import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.configuration.ConfigurationService;
 import com.example.sbt.module.email.EmailService;
@@ -43,6 +43,7 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class)
 public class AuthServiceImpl implements AuthService {
 
+    private final LocaleHelper localeHelper;
     private final ApplicationProperties applicationProperties;
     private final PasswordEncoder passwordEncoder;
     private final JWTService jwtService;
@@ -76,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
         if (maxAttempts != null && maxAttempts > 0 && timeWindow != null && timeWindow > 0) {
             long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(userDTO.getId(), Instant.now().minusSeconds(timeWindow));
             if (attempts >= maxAttempts) {
-                throw new CustomException(LocaleHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
+                throw new CustomException(localeHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
             }
         }
 
@@ -84,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
             if (StringUtils.isBlank(requestDTO.getOtpCode())) {
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
             }
-            boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), userDTO.getOtpSecret());
+            boolean isOtpCorrect = TOTPUtils.verify(requestDTO.getOtpCode(), userDTO.getOtpSecret());
             if (!isOtpCorrect) {
                 loginAuditService.add(userDTO.getId(), false);
                 throw new CustomException(HttpStatus.UNAUTHORIZED);
@@ -290,7 +291,7 @@ public class AuthServiceImpl implements AuthService {
         if (ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        String secret = TOTPHelper.generateSecret();
+        String secret = TOTPUtils.generateSecret();
         user.setOtpSecret(secret);
         user.setOtpEnabled(false);
         userRepository.save(user);
@@ -306,7 +307,7 @@ public class AuthServiceImpl implements AuthService {
         if (ConversionUtils.safeToBoolean(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), user.getOtpSecret());
+        boolean isOtpCorrect = TOTPUtils.verify(requestDTO.getOtpCode(), user.getOtpSecret());
         if (!isOtpCorrect) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -323,7 +324,7 @@ public class AuthServiceImpl implements AuthService {
         if (!ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        boolean isOtpCorrect = TOTPHelper.verify(requestDTO.getOtpCode(), user.getOtpSecret());
+        boolean isOtpCorrect = TOTPUtils.verify(requestDTO.getOtpCode(), user.getOtpSecret());
         if (!isOtpCorrect) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }

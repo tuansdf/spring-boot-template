@@ -1,4 +1,4 @@
-package com.example.sbt.core.util;
+package com.example.sbt.core.helper;
 
 public class HTMLTemplate {
 

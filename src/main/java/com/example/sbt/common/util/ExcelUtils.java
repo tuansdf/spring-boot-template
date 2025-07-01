@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-public class ExcelHelper {
+public class ExcelUtils {
 
     public static final int BUFFER_SIZE = 4096;
     public static final int ROW_CACHE_SIZE = 100;
