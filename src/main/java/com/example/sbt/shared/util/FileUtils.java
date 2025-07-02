@@ -54,7 +54,7 @@ public class FileUtils {
         return String.join(PATH_SEPARATOR, paths);
     }
 
-    public static FileType getFileType(byte[] file, List<FileType> fileTypes) {
+    public static FileType validateFileType(byte[] file, List<FileType> fileTypes) {
         if (file == null || file.length == 0) {
             return null;
         }
@@ -78,8 +78,8 @@ public class FileUtils {
         return null;
     }
 
-    public static FileType getFileType(byte[] file) {
-        return getFileType(file, null);
+    public static FileType validateFileType(byte[] file) {
+        return validateFileType(file, null);
     }
 
     public static boolean validateFileType(MultipartFile file, List<FileType> fileTypes) {

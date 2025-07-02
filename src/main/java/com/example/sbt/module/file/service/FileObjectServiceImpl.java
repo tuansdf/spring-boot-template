@@ -76,7 +76,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (file == null || file.length == 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        FileType fileType = FileUtils.getFileType(file);
+        FileType fileType = FileUtils.validateFileType(file);
         if (fileType == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -143,7 +143,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (headerBytes == null || headerBytes.length == 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        FileType validFileType = FileUtils.getFileType(headerBytes, List.of(fileType));
+        FileType validFileType = FileUtils.validateFileType(headerBytes, List.of(fileType));
         if (validFileType == null) {
             deletePendingUpload(id, pendingDTO.getFilePath());
             throw new NoRollbackException(HttpStatus.BAD_REQUEST);

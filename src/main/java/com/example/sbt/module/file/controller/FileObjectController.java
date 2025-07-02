@@ -26,8 +26,8 @@ public class FileObjectController {
 
     @PostMapping
     public ResponseEntity<CommonResponse<Object>> uploadImage(@RequestParam MultipartFile file) {
-        fileObjectService.uploadFile(file, null);
-        return ResponseEntity.ok(new CommonResponse<>());
+        var result = fileObjectService.uploadFile(file, null);
+        return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/{id}")
