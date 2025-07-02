@@ -19,7 +19,6 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
         basePackages = "com.example.sbt.module",
         includeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*KVRepository")
 )
-
 public class RedisConfig {
 
     private final ApplicationProperties applicationProperties;
