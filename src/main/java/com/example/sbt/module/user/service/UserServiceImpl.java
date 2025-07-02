@@ -6,14 +6,19 @@ import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.AuthHelper;
 import com.example.sbt.core.helper.SQLHelper;
+import com.example.sbt.module.file.dto.FileObjectDTO;
+import com.example.sbt.module.file.service.FileObjectService;
 import com.example.sbt.module.role.service.RoleService;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.mapper.UserMapper;
 import com.example.sbt.module.user.repository.UserRepository;
+import com.example.sbt.shared.constant.FileType;
 import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
 import com.example.sbt.shared.util.ExcelUtils;
+import com.example.sbt.shared.util.FileUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -27,6 +32,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
@@ -43,6 +49,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserValidator userValidator;
     private final RoleService roleService;
+    private final FileObjectService fileObjectService;
 
     private PaginationData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount) {
         PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
@@ -51,7 +58,7 @@ public class UserServiceImpl implements UserService {
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select u.*, ");
+            builder.append(" select u.id, u.username, u.email, u.name, u.verified, u.otp_enabled, u.status, u.created_at, u.updated_at, ");
             builder.append(" string_agg(distinct(r.code), ',') as roles, ");
             builder.append(" string_agg(distinct(p.code), ',') as permissions ");
         }
@@ -184,42 +191,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public byte[] export(SearchUserRequestDTO requestDTO) {
+    public FileObjectDTO export(SearchUserRequestDTO requestDTO) throws IOException {
         if (requestDTO == null) {
-            return null;
+            requestDTO = new SearchUserRequestDTO();
         }
         Instant now = Instant.now();
         requestDTO.setPageNumber(1L);
         requestDTO.setPageSize(Long.MAX_VALUE);
         requestDTO.setCreatedAtTo(now);
 
-        PaginationData<UserDTO> result = executeSearch(requestDTO, false);
-        List<UserDTO> items = result.getItems();
+        PaginationData<UserDTO> searchData = executeSearch(requestDTO, false);
+        List<UserDTO> items = searchData.getItems();
         if (CollectionUtils.isEmpty(items)) {
             return null;
         }
+        byte[] file = null;
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet();
-            List<Object> header = List.of("Username", "Email", "Name", "Is OTP Enabled", "Status", "Is Verified");
+            List<Object> header = List.of("Username", "Email", "Name", "Is OTP Enabled", "Is Verified", "Status");
             ExcelUtils.setCellValues(sheet, 0, header);
             int idx = 1;
             for (UserDTO item : items) {
-                List<Object> data = Arrays.asList(
-                        ConversionUtils.toString(item.getUsername()),
-                        item.getEmail(),
-                        item.getName(),
-                        item.getOtpEnabled(),
-                        item.getStatus(),
-                        item.getUsername()
-                );
-                ExcelUtils.setCellValues(sheet, idx++, data);
+                List<Object> data = Arrays.asList(item.getUsername(), item.getEmail(), item.getName(), item.getOtpEnabled(), item.getVerified(), item.getStatus());
+                ExcelUtils.setCellValues(sheet, idx, data);
                 idx++;
             }
-        } catch (Exception e) {
-            log.error("exportUser ", e);
+            file = ExcelUtils.toBytes(workbook);
+        }
+        if (file == null) {
             return null;
         }
-        return null;
+        String fileName = FileUtils.getFileName("user_".concat(ConversionUtils.safeToString(DateUtils.currentEpochMillis())), FileType.XLSX);
+        return fileObjectService.getFileUrls(fileObjectService.uploadFile(file, "", fileName));
     }
 
 }

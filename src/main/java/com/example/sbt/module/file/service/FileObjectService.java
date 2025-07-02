@@ -12,7 +12,9 @@ import java.util.UUID;
 
 public interface FileObjectService {
 
-    FileObjectDTO uploadFile(MultipartFile file, String filePath);
+    FileObjectDTO uploadFile(MultipartFile file, String dirPath);
+
+    FileObjectDTO uploadFile(byte[] file, String dirPath, String fileName);
 
     FileObjectPendingDTO createPendingUpload(String mimeType, String dirPath);
 
@@ -21,6 +23,8 @@ public interface FileObjectService {
     FileObjectDTO savePendingUpload(UUID id);
 
     FileObjectDTO getFileById(UUID id);
+
+    FileObjectDTO getFileUrls(FileObjectDTO dto);
 
     void deleteFilesByIds(List<UUID> ids, UUID userId);
 

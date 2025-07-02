@@ -45,26 +45,37 @@ public class FileUtils {
         return fileName.substring(dotIndex + 1);
     }
 
-    public static boolean validateFileType(byte[] file, List<FileType> fileTypes) {
-        if (file == null || file.length == 0) return false;
+    public static String getFileName(String name, FileType fileType) {
+        if (StringUtils.isBlank(name) || fileType == null) return "";
+        return name.concat(EXTENSION_SEPARATOR).concat(fileType.getExtension());
+    }
+
+    public static FileType getFileType(byte[] file, List<FileType> fileTypes) {
+        if (file == null || file.length == 0) {
+            return null;
+        }
         if (CollectionUtils.isEmpty(fileTypes)) {
             fileTypes = SUPPORTED_FILE_TYPES;
         }
         try {
             FileType detectedFileType = FileType.fromMimeType(tika.detect(file));
-            if (detectedFileType == null) return false;
+            if (detectedFileType == null) {
+                return null;
+            }
 
             for (FileType fileType : fileTypes) {
-                if (detectedFileType.equals(fileType)) return true;
+                if (detectedFileType.equals(fileType)) {
+                    return fileType;
+                }
             }
         } catch (Exception e) {
-            return false;
+            return null;
         }
-        return false;
+        return null;
     }
 
-    public static boolean validateFileType(byte[] file) {
-        return validateFileType(file, null);
+    public static FileType getFileType(byte[] file) {
+        return getFileType(file, null);
     }
 
     public static boolean validateFileType(MultipartFile file, List<FileType> fileTypes) {

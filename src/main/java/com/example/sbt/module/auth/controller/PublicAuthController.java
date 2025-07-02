@@ -9,6 +9,7 @@ import com.example.sbt.module.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,21 +34,21 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequestDTO requestDTO) {
         authService.register(requestDTO);
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
-        return ResponseEntity.ok(new CommonResponse<>(message));
+        return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
     @PostMapping("/password/reset/request")
     public ResponseEntity<CommonResponse<Object>> requestResetPassword(@RequestBody RequestResetPasswordRequestDTO requestDTO) {
         authService.requestResetPassword(requestDTO);
         var message = localeHelper.getMessage("auth.reset_password_email_sent");
-        return ResponseEntity.ok(new CommonResponse<>(message));
+        return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
     @PostMapping("/password/reset")
     public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequestDTO requestDTO) {
         authService.resetPassword(requestDTO);
         var message = localeHelper.getMessage("auth.reset_password_success");
-        return ResponseEntity.ok(new CommonResponse<>(message));
+        return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
     @PostMapping("/token/refresh")
@@ -74,7 +75,7 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<Object>> requestActivateAccount(@RequestBody RequestActivateAccountRequestDTO requestDTO) {
         authService.requestActivateAccount(requestDTO);
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
-        return ResponseEntity.ok(new CommonResponse<>(message));
+        return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
 }

@@ -47,9 +47,9 @@ public class ExcelUtils {
 
     public static Sheet getSheet(Workbook workbook) {
         if (workbook == null) return null;
-        Sheet result = workbook.getSheetAt(0);
+        Sheet result = workbook.getSheet(DEFAULT_SHEET);
         if (result == null) {
-            result = workbook.createSheet();
+            result = workbook.createSheet(DEFAULT_SHEET);
         }
         return result;
     }
@@ -108,6 +108,7 @@ public class ExcelUtils {
     public static void setCellValue(Cell cell, Object value) {
         if (cell == null || value == null) return;
         switch (value) {
+            case Boolean v -> cell.setCellValue(v);
             case String v -> cell.setCellValue(v);
             case Double v -> cell.setCellValue(v);
             case Integer v -> cell.setCellValue(v);
@@ -116,8 +117,8 @@ public class ExcelUtils {
                 Double vDouble = ConversionUtils.toDouble(v);
                 if (vDouble != null) cell.setCellValue(vDouble);
             }
-            case Boolean v -> cell.setCellValue(v);
-            default -> cell.setCellValue(value.toString());
+            default -> {
+            }
         }
     }
 

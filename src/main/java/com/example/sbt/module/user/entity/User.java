@@ -31,6 +31,8 @@ import java.util.UUID;
                 @ColumnResult(name = "username", type = String.class),
                 @ColumnResult(name = "email", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
+                @ColumnResult(name = "verified", type = Boolean.class),
+                @ColumnResult(name = "otp_enabled", type = Boolean.class),
                 @ColumnResult(name = "status", type = String.class),
                 @ColumnResult(name = "created_at", type = Instant.class),
                 @ColumnResult(name = "updated_at", type = Instant.class),
@@ -50,17 +52,17 @@ public class User extends BaseEntity {
     private String username;
     @Column(name = "email")
     private String email;
-    @Column(name = "password")
-    private String password;
-    @Column(name = "otp_secret")
-    private String otpSecret;
-    @Column(name = "otp_enabled")
-    private Boolean otpEnabled;
     @Column(name = "name")
     private String name;
+    @Column(name = "password")
+    private String password;
+    @Column(name = "verified")
+    private Boolean verified;
+    @Column(name = "otp_enabled")
+    private Boolean otpEnabled;
+    @Column(name = "otp_secret")
+    private String otpSecret;
     @Column(name = "status")
     private String status;
-    @Column(name = "is_verified")
-    private Boolean isVerified;
 
 }

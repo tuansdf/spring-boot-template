@@ -21,6 +21,7 @@ public class RoleDTO {
     private String description;
     private Instant createdAt;
     private Instant updatedAt;
+
     private List<UUID> permissionIds;
     private List<String> permissionCodes;
 

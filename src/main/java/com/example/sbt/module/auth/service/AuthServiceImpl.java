@@ -145,7 +145,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
         user.setStatus(CommonStatus.INACTIVE);
-        user.setIsVerified(false);
+        user.setVerified(false);
         user = userRepository.save(user);
 
         TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
@@ -251,10 +251,10 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         user.setStatus(CommonStatus.ACTIVE);
-        user.setIsVerified(true);
+        user.setVerified(true);
         user = userRepository.save(user);
         tokenService.deactivateByUserId(tokenDTO.getUserId());
-        if (!ConversionUtils.safeToBoolean(user.getIsVerified())) {
+        if (!ConversionUtils.safeToBoolean(user.getVerified())) {
             notificationService.sendNewComerNotification(tokenDTO.getUserId());
         }
     }

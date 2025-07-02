@@ -72,6 +72,28 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
+    public FileObjectDTO uploadFile(byte[] file, String dirPath, String fileName) {
+        if (file == null || file.length == 0) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        FileType fileType = FileUtils.getFileType(file);
+        if (fileType == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        String filePath = uploadFileService.uploadFile(file, dirPath, fileName);
+        if (filePath == null) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        FileObject result = new FileObject();
+        result.setFilePath(filePath);
+        result.setFileName(FileUtils.truncateFileName(fileName));
+        result.setFileType(fileType.getMimeType());
+        result.setFileSize(ConversionUtils.safeToLong(file.length));
+        result.setCreatedBy(RequestContext.get().getUserId());
+        return commonMapper.toDTO(fileObjectRepository.save(result));
+    }
+
+    @Override
     public FileObjectPendingDTO createPendingUpload(String mimeType, String dirPath) {
         final long EXPIRES_SECONDS = 10L * 60L;
         FileType fileType = FileType.fromMimeType(mimeType);
@@ -98,7 +120,6 @@ public class FileObjectServiceImpl implements FileObjectService {
         return createPendingUpload(mimeType, null);
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     private void deletePendingUpload(UUID id, String filePath) {
         fileObjectPendingRepository.deleteById(id);
         uploadFileService.deleteFile(filePath);
@@ -122,8 +143,8 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (headerBytes == null || headerBytes.length == 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        boolean isFileValid = FileUtils.validateFileType(headerBytes, List.of(fileType));
-        if (!isFileValid) {
+        FileType validFileType = FileUtils.getFileType(headerBytes, List.of(fileType));
+        if (validFileType == null) {
             deletePendingUpload(id, pendingDTO.getFilePath());
             throw new NoRollbackException(HttpStatus.BAD_REQUEST);
         }
@@ -145,6 +166,14 @@ public class FileObjectServiceImpl implements FileObjectService {
         result.setFileUrl(uploadFileService.createPresignedGetUrl(result.getFilePath()));
         result.setPreviewFileUrl(uploadFileService.createPresignedGetUrl(result.getPreviewFilePath()));
         return result;
+    }
+
+    @Override
+    public FileObjectDTO getFileUrls(FileObjectDTO dto) {
+        if (dto == null) return null;
+        dto.setFileUrl(uploadFileService.createPresignedGetUrl(dto.getFilePath()));
+        dto.setPreviewFileUrl(uploadFileService.createPresignedGetUrl(dto.getPreviewFilePath()));
+        return dto;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -55,7 +57,7 @@ public class UserController {
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PaginationData<UserDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
@@ -81,18 +83,13 @@ public class UserController {
 
     @PostMapping("/export")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<byte[]> export(
-            @RequestParam(required = false) String username,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+    public ResponseEntity<CommonResponse<FileObjectDTO>> export(
+            @RequestParam(required = false) String status) throws IOException {
         var requestDTO = SearchUserRequestDTO.builder()
-                .username(username)
-                .email(email)
                 .status(status)
                 .build();
         var result = userService.export(requestDTO);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
 }
