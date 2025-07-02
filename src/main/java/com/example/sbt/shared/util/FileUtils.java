@@ -4,6 +4,7 @@ import com.example.sbt.shared.constant.FileType;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +47,11 @@ public class FileUtils {
     public static String getFileName(String name, FileType fileType) {
         if (StringUtils.isBlank(name) || fileType == null) return "";
         return name.concat(EXTENSION_SEPARATOR).concat(fileType.getExtension());
+    }
+
+    public static String getFilePath(String... paths) {
+        if (ArrayUtils.isEmpty(paths)) return "";
+        return String.join(PATH_SEPARATOR, paths);
     }
 
     public static FileType getFileType(byte[] file, List<FileType> fileTypes) {
@@ -125,9 +131,12 @@ public class FileUtils {
     }
 
     public static String cleanFilePath(String filePath) {
-        return ConversionUtils.safeTrim(StringUtils.strip(filePath
-                .replaceAll("\\s*/\\s*", PATH_SEPARATOR)
-                .replaceAll("/+", PATH_SEPARATOR), PATH_SEPARATOR));
+        if (StringUtils.isBlank(filePath)) return "";
+        filePath = FilenameUtils.normalize(filePath);
+        filePath = filePath.replaceAll("\\s*/\\s*", PATH_SEPARATOR);
+        filePath = filePath.replaceAll("/+", PATH_SEPARATOR);
+        filePath = StringUtils.strip(filePath, PATH_SEPARATOR);
+        return filePath.trim();
     }
 
     public static String cleanFileName(String fileName) {

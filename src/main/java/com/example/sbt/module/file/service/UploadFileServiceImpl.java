@@ -31,8 +31,6 @@ import java.util.List;
 @Service
 public class UploadFileServiceImpl implements UploadFileService {
 
-    private static final String PATH_SEPARATOR = "/";
-    private static final String EXTENSION_SEPARATOR = ".";
     private static final long DEFAULT_PRESIGN_GET_SECONDS = 24L * 60L * 60L;
     private static final long DEFAULT_PRESIGN_PUT_SECONDS = 10L * 60L;
     private final int OBJECT_KEY_BATCH_SIZE = 500;
@@ -41,15 +39,20 @@ public class UploadFileServiceImpl implements UploadFileService {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
-    private ObjectKey cleanObjectKey(String dirPath, String originalFileName) {
+    private ObjectKey cleanObjectKey(String dirPath, String originalFileName, FileType fileType) {
         dirPath = ConversionUtils.safeTrim(dirPath);
         originalFileName = FileUtils.truncateFileName(FileUtils.cleanFileName(originalFileName));
-        String extension = FileUtils.getFileExtension(originalFileName);
-        String fileName = RandomUtils.Secure.generateUUID().toString();
-        if (StringUtils.isNotBlank(extension)) {
-            fileName = fileName.concat(EXTENSION_SEPARATOR).concat(extension);
+        if (fileType == null) {
+            fileType = FileType.fromExtension(FileUtils.getFileExtension(originalFileName));
         }
-        String filePath = FileUtils.cleanFilePath(dirPath.concat(PATH_SEPARATOR).concat(fileName));
+        String fileName = RandomUtils.Secure.generateUUID().toString();
+        if (fileType != null) {
+            fileName = FileUtils.getFileName(fileName, fileType);
+        }
+        if (StringUtils.isBlank(originalFileName)) {
+            originalFileName = fileName;
+        }
+        String filePath = FileUtils.cleanFilePath(FileUtils.getFilePath(dirPath, fileName));
         return ObjectKey.builder()
                 .dirPath(dirPath)
                 .originalFileName(originalFileName)
@@ -62,14 +65,14 @@ public class UploadFileServiceImpl implements UploadFileService {
     public String uploadFile(byte[] file, String dirPath, String originalFileName) {
         try {
             if (file == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, originalFileName);
+            ObjectKey objectKey = cleanObjectKey(dirPath, originalFileName, null);
             if (StringUtils.isBlank(objectKey.getFileName()) || StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
-                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFileName(), StandardCharsets.UTF_8).build().toString())
                     .key(objectKey.getFilePath())
+                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFileName(), StandardCharsets.UTF_8).build().toString())
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file));
             return objectKey.getFilePath();
@@ -83,13 +86,14 @@ public class UploadFileServiceImpl implements UploadFileService {
     public String uploadFile(MultipartFile file, String dirPath, String originalFileName) {
         try {
             if (file == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, originalFileName);
+            ObjectKey objectKey = cleanObjectKey(dirPath, originalFileName, null);
             if (StringUtils.isBlank(objectKey.getFileName()) || StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
+                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFileName(), StandardCharsets.UTF_8).build().toString())
                     .build();
             try (InputStream inputStream = file.getInputStream()) {
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
@@ -132,7 +136,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     public ObjectKey createPresignedPutUrl(String dirPath, FileType fileType, Long seconds) {
         try {
             if (fileType == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, "_".concat(EXTENSION_SEPARATOR).concat(fileType.getExtension()));
+            ObjectKey objectKey = cleanObjectKey(dirPath, null, fileType);
             if (StringUtils.isBlank(objectKey.getFileName()) || StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
