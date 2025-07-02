@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -24,8 +23,7 @@ public class FileUtils {
     private static final int MAX_FILE_NAME_LENGTH = 255;
     private static final String PATH_SEPARATOR = "/";
     private static final String EXTENSION_SEPARATOR = ".";
-    private static final Pattern UNSAFE_CHARS = Pattern.compile("[^a-zA-Z0-9\\-._ ]");
-    private static final Pattern MARK_CHARS = Pattern.compile("\\p{M}");
+    private static final Pattern UNSAFE_CHARS = Pattern.compile("[^\\p{L}\\p{N}\\-_., ()\\[\\]]");
     private static final Pattern LEADING_TRAILING_CHARS = Pattern.compile("^[. ]+|[. ]+$");
 
     public static void writeFile(byte[] bytes, String outputPath) {
@@ -135,16 +133,8 @@ public class FileUtils {
     public static String cleanFileName(String fileName) {
         if (StringUtils.isBlank(fileName)) return "";
         fileName = FilenameUtils.normalize(fileName);
-        fileName = Normalizer.normalize(fileName, Normalizer.Form.NFKD);
-        fileName = fileName.replace("đ", "d");
-        fileName = fileName.replace("Đ", "D");
-        fileName = MARK_CHARS.matcher(fileName).replaceAll("");
         fileName = UNSAFE_CHARS.matcher(fileName).replaceAll("_");
         fileName = LEADING_TRAILING_CHARS.matcher(fileName).replaceAll("");
-        String extension = getFileExtension(fileName);
-        if (StringUtils.isNotBlank(extension)) {
-            fileName = fileName.substring(0, fileName.length() - extension.length()).concat(extension.trim().toLowerCase());
-        }
         return fileName.trim();
     }
 

@@ -36,6 +36,8 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -333,12 +335,7 @@ public class TestController {
         return "OK";
     }
 
-    @GetMapping(value = "/text/clean-file-name", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testCleanFileName(@RequestBody TestBody body) {
-        return FileUtils.cleanFileName(body.getText());
-    }
-
-    @GetMapping(value = "/text/tostring", produces = MediaType.TEXT_PLAIN_VALUE)
+    @GetMapping(value = "/text/to-string", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object testToString(@RequestBody TestBody body) {
         log.info("body: {}", body);
         return "OK";
@@ -363,12 +360,25 @@ public class TestController {
         return "OK";
     }
 
+    @GetMapping(value = "/text/regex", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Object testRegex(@RequestBody TestBody body) {
+        Map<String, Object> result = new HashMap<>();
+        Matcher matcher = Pattern.compile(body.getRegex()).matcher(body.getText());
+        result.put("replace", matcher.replaceAll(body.getReplaceWith()));
+        result.put("match", matcher.matches());
+        result.put("normalize-path", FilenameUtils.normalize(body.getText()));
+        result.put("clean-file-name", FileUtils.cleanFileName(body.getText()));
+        return result;
+    }
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @Builder
     public static class TestBody {
         private String text;
+        private String regex;
+        private String replaceWith;
         private Map<String, Long> mapStringLong;
     }
 
