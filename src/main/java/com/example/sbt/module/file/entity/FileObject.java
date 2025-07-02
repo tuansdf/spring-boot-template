@@ -27,7 +27,7 @@ import java.util.UUID;
                 @ColumnResult(name = "id", type = UUID.class),
                 @ColumnResult(name = "file_path", type = String.class),
                 @ColumnResult(name = "preview_file_path", type = String.class),
-                @ColumnResult(name = "file_name", type = String.class),
+                @ColumnResult(name = "filename", type = String.class),
                 @ColumnResult(name = "file_type", type = String.class),
                 @ColumnResult(name = "file_size", type = Long.class),
                 @ColumnResult(name = "created_by", type = UUID.class),
@@ -41,8 +41,8 @@ public class FileObject extends BaseEntity {
     private String filePath;
     @Column(name = "preview_file_path", columnDefinition = "text")
     private String previewFilePath;
-    @Column(name = "file_name", columnDefinition = "text")
-    private String fileName;
+    @Column(name = "filename", columnDefinition = "text")
+    private String filename;
     @Column(name = "file_type", columnDefinition = "text")
     private String fileType;
     @Column(name = "file_size")

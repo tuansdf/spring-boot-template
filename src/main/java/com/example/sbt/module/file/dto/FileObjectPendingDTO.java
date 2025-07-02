@@ -17,7 +17,7 @@ public class FileObjectPendingDTO {
     private UUID id;
     private String filePath;
     private String fileUploadUrl;
-    private String fileName;
+    private String filename;
     private String fileType;
     private UUID createdBy;
     private Instant expiresAt;

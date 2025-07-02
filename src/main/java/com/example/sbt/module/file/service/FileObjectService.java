@@ -14,7 +14,7 @@ public interface FileObjectService {
 
     FileObjectDTO uploadFile(MultipartFile file, String dirPath);
 
-    FileObjectDTO uploadFile(byte[] file, String dirPath, String fileName);
+    FileObjectDTO uploadFile(byte[] file, String dirPath, String filename);
 
     FileObjectPendingDTO createPendingUpload(String mimeType, String dirPath);
 

@@ -28,8 +28,8 @@ public class FileObjectPending extends BaseEntity {
 
     @Column(name = "file_path", columnDefinition = "text")
     private String filePath;
-    @Column(name = "file_name", columnDefinition = "text")
-    private String fileName;
+    @Column(name = "filename", columnDefinition = "text")
+    private String filename;
     @Column(name = "file_type", columnDefinition = "text")
     private String fileType;
     @Column(name = "expires_at", updatable = false)

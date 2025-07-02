@@ -367,7 +367,7 @@ public class TestController {
         result.put("replace", matcher.replaceAll(body.getReplaceWith()));
         result.put("match", matcher.matches());
         result.put("normalize-path", FilenameUtils.normalize(body.getText()));
-        result.put("clean-file-name", FileUtils.cleanFileName(body.getText()));
+        result.put("clean-file-name", FileUtils.cleanFilename(body.getText()));
         return result;
     }
 

@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface UploadFileService {
 
-    String uploadFile(byte[] file, String filePath, String fileName);
+    String uploadFile(byte[] file, String filePath, String filename);
 
-    String uploadFile(MultipartFile file, String filePath, String fileName);
+    String uploadFile(MultipartFile file, String filePath, String filename);
 
     String createPresignedGetUrl(String filePath, Long seconds);
 

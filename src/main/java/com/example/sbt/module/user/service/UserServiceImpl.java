@@ -221,8 +221,8 @@ public class UserServiceImpl implements UserService {
         if (file == null) {
             return null;
         }
-        String fileName = FileUtils.getFileName("user_".concat(ConversionUtils.safeToString(DateUtils.currentEpochMillis())), FileType.XLSX);
-        return fileObjectService.getFileUrls(fileObjectService.uploadFile(file, "", fileName));
+        String filename = FileUtils.getFilename("user_".concat(ConversionUtils.safeToString(DateUtils.currentEpochMillis())), FileType.XLSX);
+        return fileObjectService.getFileUrls(fileObjectService.uploadFile(file, "", filename));
     }
 
 }

@@ -37,14 +37,14 @@ public class FileUtils {
         }
     }
 
-    public static String getFileExtension(String fileName) {
-        if (StringUtils.isBlank(fileName)) return "";
-        int dotIndex = fileName.lastIndexOf(EXTENSION_SEPARATOR);
-        if (dotIndex < 0 || dotIndex == fileName.length() - 1) return "";
-        return fileName.substring(dotIndex + 1);
+    public static String getFileExtension(String filename) {
+        if (StringUtils.isBlank(filename)) return "";
+        int dotIndex = filename.lastIndexOf(EXTENSION_SEPARATOR);
+        if (dotIndex < 0 || dotIndex == filename.length() - 1) return "";
+        return filename.substring(dotIndex + 1);
     }
 
-    public static String getFileName(String name, FileType fileType) {
+    public static String getFilename(String name, FileType fileType) {
         if (StringUtils.isBlank(name) || fileType == null) return "";
         return name.concat(EXTENSION_SEPARATOR).concat(fileType.getExtension());
     }
@@ -113,21 +113,21 @@ public class FileUtils {
         return validateFileType(file, null);
     }
 
-    public static String truncateFileName(String fileName, Integer maxLength) {
-        if (StringUtils.isBlank(fileName)) return "";
+    public static String truncateFilename(String filename, Integer maxLength) {
+        if (StringUtils.isBlank(filename)) return "";
         if (maxLength == null || maxLength <= 0) {
             maxLength = MAX_FILE_NAME_LENGTH;
         }
-        if (fileName.length() <= maxLength) return fileName;
-        String extension = getFileExtension(fileName);
+        if (filename.length() <= maxLength) return filename;
+        String extension = getFileExtension(filename);
         if (StringUtils.isEmpty(extension)) {
-            return fileName.substring(0, maxLength);
+            return filename.substring(0, maxLength);
         }
-        return fileName.substring(0, maxLength - extension.length()).concat(extension);
+        return filename.substring(0, maxLength - extension.length()).concat(extension);
     }
 
-    public static String truncateFileName(String fileName) {
-        return truncateFileName(fileName, null);
+    public static String truncateFilename(String filename) {
+        return truncateFilename(filename, null);
     }
 
     public static String cleanFilePath(String filePath) {
@@ -139,12 +139,12 @@ public class FileUtils {
         return filePath.trim();
     }
 
-    public static String cleanFileName(String fileName) {
-        if (StringUtils.isBlank(fileName)) return "";
-        fileName = FilenameUtils.normalize(fileName);
-        fileName = UNSAFE_CHARS.matcher(fileName).replaceAll("_");
-        fileName = LEADING_TRAILING_CHARS.matcher(fileName).replaceAll("");
-        return fileName.trim();
+    public static String cleanFilename(String filename) {
+        if (StringUtils.isBlank(filename)) return "";
+        filename = FilenameUtils.normalize(filename);
+        filename = UNSAFE_CHARS.matcher(filename).replaceAll("_");
+        filename = LEADING_TRAILING_CHARS.matcher(filename).replaceAll("");
+        return filename.trim();
     }
 
 }

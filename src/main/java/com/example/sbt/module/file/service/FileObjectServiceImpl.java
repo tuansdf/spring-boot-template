@@ -64,7 +64,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         }
         FileObject result = new FileObject();
         result.setFilePath(filePath);
-        result.setFileName(FileUtils.truncateFileName(file.getOriginalFilename()));
+        result.setFilename(FileUtils.truncateFilename(file.getOriginalFilename()));
         result.setFileType(file.getContentType());
         result.setFileSize(file.getSize());
         result.setCreatedBy(RequestContext.get().getUserId());
@@ -72,7 +72,7 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public FileObjectDTO uploadFile(byte[] file, String dirPath, String fileName) {
+    public FileObjectDTO uploadFile(byte[] file, String dirPath, String filename) {
         if (file == null || file.length == 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -80,13 +80,13 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (fileType == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        String filePath = uploadFileService.uploadFile(file, dirPath, fileName);
+        String filePath = uploadFileService.uploadFile(file, dirPath, filename);
         if (filePath == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         FileObject result = new FileObject();
         result.setFilePath(filePath);
-        result.setFileName(FileUtils.truncateFileName(fileName));
+        result.setFilename(FileUtils.truncateFilename(filename));
         result.setFileType(fileType.getMimeType());
         result.setFileSize(ConversionUtils.safeToLong(file.length));
         result.setCreatedBy(RequestContext.get().getUserId());
@@ -107,7 +107,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         FileObjectPending result = new FileObjectPending();
         result.setFilePath(objectKey.getFilePath());
         result.setFileType(fileType.getMimeType());
-        result.setFileName(objectKey.getFileName());
+        result.setFilename(objectKey.getFilename());
         result.setExpiresAt(Instant.now().plusSeconds(EXPIRES_SECONDS));
         result.setCreatedBy(RequestContext.get().getUserId());
         FileObjectPendingDTO dto = commonMapper.toDTO(fileObjectPendingRepository.save(result));
@@ -149,7 +149,7 @@ public class FileObjectServiceImpl implements FileObjectService {
             throw new NoRollbackException(HttpStatus.BAD_REQUEST);
         }
         FileObject result = new FileObject();
-        result.setFileName(pendingDTO.getFileName());
+        result.setFilename(pendingDTO.getFilename());
         result.setFileSize(metadata.contentLength());
         result.setFilePath(pendingDTO.getFilePath());
         result.setFileType(pendingDTO.getFileType());
