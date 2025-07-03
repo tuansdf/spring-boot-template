@@ -276,18 +276,6 @@ public class TestController {
         return "OK";
     }
 
-    @GetMapping(value = "/image/compress", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object image(
-            @RequestParam String filePath,
-            @RequestParam(required = false) Integer width,
-            @RequestParam(required = false) Integer height,
-            @RequestParam(required = false) String format,
-            @RequestParam(required = false) Float quality) {
-        ImageUtils.compressImageWriteFile(filePath, ".temp/compressed-" + DateUtils.currentEpochMillis() + ".jpg",
-                ImageUtils.Options.builder().width(width).height(height).quality(quality).format(format).build());
-        return "OK";
-    }
-
     @GetMapping(value = "/notification/send", produces = MediaType.TEXT_PLAIN_VALUE)
     public Object testNotificationSend(@RequestParam String token, @RequestParam(required = false) String topic) throws FirebaseMessagingException {
         sendNotificationService.sendAsync(SendNotificationRequest.builder()
