@@ -55,6 +55,10 @@ public class UserServiceImpl implements UserService {
         PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
+        String orderBy = "";
+        if (!isCount) {
+            orderBy = sqlHelper.toOrderBy("u.", requestDTO.getOrderBy(), requestDTO.getOrderDirection(), "u.id asc", List.of("username", "email"));
+        }
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
@@ -68,13 +72,29 @@ public class UserServiceImpl implements UserService {
             builder.append(" select u.id ");
             builder.append(" from _user u ");
             builder.append(" where 1=1 ");
+            if (requestDTO.getId() != null) {
+                builder.append(" and u.id = :id ");
+                params.put("id", requestDTO.getId());
+            }
             if (StringUtils.isNotBlank(requestDTO.getUsername())) {
-                builder.append(" and u.username ilike :username ");
-                params.put("username", sqlHelper.escapeLikePattern(requestDTO.getUsername()).concat("%"));
+                builder.append(" and u.username = :username ");
+                params.put("username", requestDTO.getUsername());
             }
             if (StringUtils.isNotBlank(requestDTO.getEmail())) {
-                builder.append(" and u.email ilike :email ");
-                params.put("email", sqlHelper.escapeLikePattern(requestDTO.getEmail()).concat("%"));
+                builder.append(" and u.email = :email ");
+                params.put("email", requestDTO.getEmail());
+            }
+            if (requestDTO.getIdFrom() != null) {
+                builder.append(" and u.id > :idFrom ");
+                params.put("idFrom", requestDTO.getIdFrom());
+            }
+            if (StringUtils.isNotBlank(requestDTO.getUsernameFrom())) {
+                builder.append(" and u.username > :usernameFrom ");
+                params.put("usernameFrom", requestDTO.getUsernameFrom());
+            }
+            if (StringUtils.isNotBlank(requestDTO.getEmailFrom())) {
+                builder.append(" and u.email > :emailFrom ");
+                params.put("emailFrom", requestDTO.getEmailFrom());
             }
             if (StringUtils.isNotBlank(requestDTO.getStatus())) {
                 builder.append(" and u.status = :status ");
@@ -89,7 +109,7 @@ public class UserServiceImpl implements UserService {
                 params.put("createdAtTo", requestDTO.getCreatedAtTo());
             }
             if (!isCount) {
-                builder.append(" order by u.username asc, u.id asc ");
+                builder.append(orderBy);
                 builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
             }
         }
@@ -100,7 +120,7 @@ public class UserServiceImpl implements UserService {
             builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
             builder.append(" left join permission p on (p.id = rp.permission_id) ");
             builder.append(" group by u.id ");
-            builder.append(" order by u.username asc, u.id asc ");
+            builder.append(orderBy);
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
@@ -165,8 +185,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneById(UUID userId) {
-        if (userId == null) return null;
-        return userRepository.findById(userId).map(userMapper::toDTO).orElse(null);
+        if (userId == null) {
+            return null;
+        }
+        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().id(userId).build(), false).getItems();
+        if (CollectionUtils.isEmpty(result)) {
+            return null;
+        }
+        return result.getFirst();
     }
 
     @Override
@@ -180,48 +206,68 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneByUsername(String username) {
-        if (StringUtils.isBlank(username)) return null;
-        return userRepository.findTopByUsername(username).map(userMapper::toDTO).orElse(null);
+        if (StringUtils.isBlank(username)) {
+            return null;
+        }
+        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().username(username).build(), false).getItems();
+        if (CollectionUtils.isEmpty(result)) {
+            return null;
+        }
+        return result.getFirst();
     }
 
     @Override
     public UserDTO findOneByEmail(String email) {
-        if (StringUtils.isBlank(email)) return null;
-        return userRepository.findTopByEmail(email).map(userMapper::toDTO).orElse(null);
+        if (StringUtils.isBlank(email)) {
+            return null;
+        }
+        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().email(email).build(), false).getItems();
+        if (CollectionUtils.isEmpty(result)) {
+            return null;
+        }
+        return result.getFirst();
     }
 
     @Override
     public FileObjectDTO export(SearchUserRequestDTO requestDTO) throws IOException {
+        long MAX_ITEMS = 1000000L;
         if (requestDTO == null) {
-            requestDTO = new SearchUserRequestDTO();
+            throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         Instant now = Instant.now();
         requestDTO.setPageNumber(1L);
-        requestDTO.setPageSize(Long.MAX_VALUE);
+        requestDTO.setPageSize(MAX_ITEMS);
         requestDTO.setCreatedAtTo(now);
 
         PaginationData<UserDTO> searchData = executeSearch(requestDTO, false);
-        List<UserDTO> items = searchData.getItems();
-        if (CollectionUtils.isEmpty(items)) {
+        if (CollectionUtils.isEmpty(searchData.getItems())) {
             return null;
         }
         byte[] file = null;
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet();
-            List<Object> header = List.of("Username", "Email", "Name", "Is OTP Enabled", "Is Verified", "Status");
+            List<Object> header = List.of("Username", "Email", "Name", "Is OTP Enabled", "Is Verified", "Status", "Roles", "Permissions");
             ExcelUtils.setCellValues(sheet, 0, header);
             int idx = 1;
-            for (UserDTO item : items) {
-                List<Object> data = Arrays.asList(item.getUsername(), item.getEmail(), item.getName(), item.getOtpEnabled(), item.getVerified(), item.getStatus());
+            for (UserDTO item : searchData.getItems()) {
+                List<Object> data = Arrays.asList(
+                        item.getUsername(),
+                        item.getEmail(),
+                        item.getName(),
+                        item.getOtpEnabled(),
+                        item.getVerified(),
+                        item.getStatus(),
+                        String.join(",", item.getRoleCodes()),
+                        String.join(",", item.getPermissionCodes()));
                 ExcelUtils.setCellValues(sheet, idx, data);
                 idx++;
             }
             file = ExcelUtils.toBytes(workbook);
         }
-        if (file == null) {
-            return null;
+        if (file == null || file.length == 0) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String filename = FileUtils.getFilename("user_".concat(ConversionUtils.safeToString(DateUtils.currentEpochMillis())), FileType.XLSX);
+        String filename = FileUtils.getFilename("EXPORT_USERS_".concat(ConversionUtils.safeToString(DateUtils.toEpochSeconds(now))), FileType.XLSX);
         return fileObjectService.getFileUrls(fileObjectService.uploadFile(file, "", filename));
     }
 

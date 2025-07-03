@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -133,7 +134,7 @@ public class PermissionServiceImpl implements PermissionService {
         if (roleId == null) return new ArrayList<>();
         List<Permission> result = permissionRepository.findAllByRoleId(roleId);
         if (result == null) return new ArrayList<>();
-        return result.stream().map(commonMapper::toDTO).toList();
+        return result.stream().map(commonMapper::toDTO).collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -141,7 +142,7 @@ public class PermissionServiceImpl implements PermissionService {
         if (userId == null) return new ArrayList<>();
         List<Permission> result = permissionRepository.findAllByUserId(userId);
         if (result == null) return new ArrayList<>();
-        return result.stream().map(commonMapper::toDTO).toList();
+        return result.stream().map(commonMapper::toDTO).collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override

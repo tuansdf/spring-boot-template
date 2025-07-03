@@ -57,7 +57,7 @@ public class UserController {
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<PaginationData<UserDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
@@ -67,6 +67,8 @@ public class UserController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
+            @RequestParam(required = false) String orderBy,
+            @RequestParam(required = false) String orderDirection,
             @RequestParam(required = false, defaultValue = "false") Boolean count) {
         var requestDTO = SearchUserRequestDTO.builder()
                 .pageNumber(pageNumber)
@@ -76,6 +78,8 @@ public class UserController {
                 .status(status)
                 .createdAtTo(createdAtTo)
                 .createdAtFrom(createdAtFrom)
+                .orderBy(orderBy)
+                .orderDirection(orderDirection)
                 .build();
         var result = userService.search(requestDTO, count);
         return ResponseEntity.ok(new CommonResponse<>(result));

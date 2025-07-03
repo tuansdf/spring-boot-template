@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -122,7 +123,7 @@ public class RoleServiceImpl implements RoleService {
         if (userId == null) return new ArrayList<>();
         List<Role> result = roleRepository.findAllByUserId(userId);
         if (result == null) return new ArrayList<>();
-        return result.stream().map(roleMapper::toDTO).toList();
+        return result.stream().map(roleMapper::toDTO).collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override

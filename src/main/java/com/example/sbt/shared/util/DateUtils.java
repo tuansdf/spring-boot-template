@@ -1,12 +1,25 @@
 package com.example.sbt.shared.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+@Slf4j
 public class DateUtils {
+
+    public static long toEpochSeconds(Instant instant) {
+        if (instant == null) {
+            instant = Instant.now();
+        }
+        return instant.getEpochSecond();
+    }
+
+    public static long currentEpochSeconds() {
+        return toEpochSeconds(null);
+    }
 
     public static long toEpochMillis(Instant instant) {
         if (instant == null) {
@@ -142,16 +155,6 @@ public class DateUtils {
 
     public static Instant toInstant(Object input) {
         return toInstant(input, null, null);
-    }
-
-    public static class Format {
-        public static final String DATE_TIME_FE = "dd/MM/yyyy HH:mm:ss";
-    }
-
-    public static class Formatter {
-        public static final DateTimeFormatter ID = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
-        public static final DateTimeFormatter DATE_TIME_BE = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
-        public static final DateTimeFormatter DATE_TIME_FE = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
     }
 
 }
