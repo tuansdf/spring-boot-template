@@ -4,12 +4,14 @@ import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +25,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/users")
 public class UserController {
-
+    private final LocaleHelper localeHelper;
     private final UserService userService;
 
     @GetMapping("/me")
@@ -35,13 +37,17 @@ public class UserController {
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<UserDTO>> findOne(@PathVariable UUID id) {
+    public ResponseEntity<CommonResponse<UserDTO>> findOne(
+            @PathVariable UUID id
+    ) {
         var result = userService.findOneByIdOrThrow(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PatchMapping("/me")
-    public ResponseEntity<CommonResponse<UserDTO>> updateProfile(@RequestBody UserDTO requestDTO) {
+    public ResponseEntity<CommonResponse<UserDTO>> updateProfile(
+            @RequestBody UserDTO requestDTO
+    ) {
         requestDTO.setId(RequestContext.get().getUserId());
         var result = userService.updateProfile(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
@@ -51,7 +57,8 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<UserDTO>> updateProfileById(
             @PathVariable UUID id,
-            @RequestBody UserDTO requestDTO) {
+            @RequestBody UserDTO requestDTO
+    ) {
         requestDTO.setId(id);
         var result = userService.updateProfile(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
@@ -69,7 +76,8 @@ public class UserController {
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false) String orderBy,
             @RequestParam(required = false) String orderDirection,
-            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+            @RequestParam(required = false, defaultValue = "false") Boolean count
+    ) {
         var requestDTO = SearchUserRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
@@ -88,12 +96,13 @@ public class UserController {
     @PostMapping("/export")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<FileObjectDTO>> export(
-            @RequestParam(required = false) String status) throws IOException {
+            @RequestParam(required = false) String status
+    ) throws IOException {
         var requestDTO = SearchUserRequestDTO.builder()
                 .status(status)
                 .build();
-        var result = userService.export(requestDTO);
-        return ResponseEntity.ok(new CommonResponse<>(result));
+        userService.triggerExport(requestDTO);
+        var message = localeHelper.getMessage("user.task.export.enqueued");
+        return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
-
 }

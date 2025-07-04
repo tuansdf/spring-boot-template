@@ -1,8 +1,10 @@
 package com.example.sbt.config;
 
 import com.example.sbt.core.constant.EventKey;
+import com.example.sbt.event.dto.ExportUserEventRequest;
 import com.example.sbt.event.dto.SendEmailEventRequest;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
+import com.example.sbt.event.listener.ExportUserEventListener;
 import com.example.sbt.event.listener.SendEmailEventListener;
 import com.example.sbt.event.listener.SendNotificationEventListener;
 import jakarta.annotation.PostConstruct;
@@ -31,10 +33,11 @@ import java.util.List;
 @Configuration
 public class RedisStreamConfig {
 
+    private final RedisConnectionFactory connectionFactory;
     private final StringRedisTemplate redisTemplate;
     private final SendEmailEventListener sendEmailEventListener;
     private final SendNotificationEventListener sendNotificationEventListener;
-    private final RedisConnectionFactory connectionFactory;
+    private final ExportUserEventListener exportUserEventListener;
 
     @PostConstruct
     public void setup() throws UnknownHostException {
@@ -44,6 +47,7 @@ public class RedisStreamConfig {
         List<CreateSubscriptionRequest<?>> requests = new ArrayList<>();
         requests.add(new CreateSubscriptionRequest<>(sendEmailEventListener, SendEmailEventRequest.class, EventKey.SEND_EMAIL.concat("_group"), EventKey.SEND_EMAIL));
         requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationEventRequest.class, EventKey.SEND_NOTIFICATION.concat("_group"), EventKey.SEND_NOTIFICATION));
+        requests.add(new CreateSubscriptionRequest<>(exportUserEventListener, ExportUserEventRequest.class, EventKey.EXPORT_USER.concat("_group"), EventKey.EXPORT_USER));
         List<Subscription> subscriptions = new ArrayList<>();
 
         for (CreateSubscriptionRequest<?> request : requests) {

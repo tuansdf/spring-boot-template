@@ -20,7 +20,7 @@ public class SendEmailEventPublisher {
 
     public void publish(EmailDTO email) {
         SendEmailEventRequest request = SendEmailEventRequest.builder()
-                .requestContextData(RequestContext.get())
+                .requestContext(RequestContext.get())
                 .email(email)
                 .build();
         ObjectRecord<String, SendEmailEventRequest> data = StreamRecords.newRecord()

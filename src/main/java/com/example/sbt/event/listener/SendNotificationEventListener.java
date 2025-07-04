@@ -23,7 +23,7 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
     public void onMessage(ObjectRecord<String, SendNotificationEventRequest> message) {
         try {
             SendNotificationEventRequest request = message.getValue();
-            RequestContext.set(request.getRequestContextData());
+            RequestContext.set(request.getRequestContext());
             log.info("SendNotificationEventListener.start ");
 
             notificationService.executeSend(request.getNotification());
@@ -33,7 +33,6 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
             try {
                 redisTemplate.opsForStream().acknowledge(EventKey.SEND_NOTIFICATION, message);
                 redisTemplate.opsForStream().delete(EventKey.SEND_NOTIFICATION, message.getId());
-
                 log.info("SendNotificationEventListener.end ");
             } catch (Exception ignore) {
             }

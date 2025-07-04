@@ -6,6 +6,11 @@ import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.AuthHelper;
 import com.example.sbt.core.helper.SQLHelper;
+import com.example.sbt.event.publisher.ExportUserEventPublisher;
+import com.example.sbt.module.backgroundtask.constant.BackgroundTaskStatus;
+import com.example.sbt.module.backgroundtask.constant.BackgroundTaskType;
+import com.example.sbt.module.backgroundtask.dto.BackgroundTaskDTO;
+import com.example.sbt.module.backgroundtask.service.BackgroundTaskService;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.service.FileObjectService;
 import com.example.sbt.module.role.service.RoleService;
@@ -41,7 +46,6 @@ import java.util.*;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
-
     private final SQLHelper sqlHelper;
     private final AuthHelper authHelper;
     private final UserMapper userMapper;
@@ -50,26 +54,27 @@ public class UserServiceImpl implements UserService {
     private final UserValidator userValidator;
     private final RoleService roleService;
     private final FileObjectService fileObjectService;
+    private final ExportUserEventPublisher exportUserEventPublisher;
+    private final BackgroundTaskService backgroundTaskService;
 
-    private PaginationData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount) {
+    private PaginationData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount, boolean isAll) {
         PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
-        String orderBy = "";
+        String orderBy = sqlHelper.toOrderBy("u.", requestDTO.getOrderBy(), requestDTO.getOrderDirection(), "u.id asc", List.of("username", "email"));
         if (!isCount) {
-            orderBy = sqlHelper.toOrderBy("u.", requestDTO.getOrderBy(), requestDTO.getOrderDirection(), "u.id asc", List.of("username", "email"));
-        }
-        if (isCount) {
-            builder.append(" select count(*) ");
-        } else {
             builder.append(" select u.id, u.username, u.email, u.name, u.verified, u.otp_enabled, u.status, u.created_at, u.updated_at, ");
             builder.append(" string_agg(distinct(r.code), ',') as roles, ");
             builder.append(" string_agg(distinct(p.code), ',') as permissions ");
+            builder.append(" from _user u ");
+            builder.append(" inner join ( ");
         }
-        builder.append(" from _user u ");
-        builder.append(" inner join ( ");
         {
-            builder.append(" select u.id ");
+            if (isCount) {
+                builder.append(" select count(*) ");
+            } else {
+                builder.append(" select u.id ");
+            }
             builder.append(" from _user u ");
             builder.append(" where 1=1 ");
             if (requestDTO.getId() != null) {
@@ -110,11 +115,13 @@ public class UserServiceImpl implements UserService {
             }
             if (!isCount) {
                 builder.append(orderBy);
+            }
+            if (!isAll) {
                 builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
             }
         }
-        builder.append(" ) as filter on (filter.id = u.id) ");
         if (!isCount) {
+            builder.append(" ) as filter on (filter.id = u.id) ");
             builder.append(" left join user_role ur on (ur.user_id = u.id) ");
             builder.append(" left join role r on (r.id = ur.role_id) ");
             builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
@@ -139,9 +146,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PaginationData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount) {
-        PaginationData<UserDTO> result = executeSearch(requestDTO, true);
+        PaginationData<UserDTO> result = executeSearch(requestDTO, true, true);
         if (!isCount && result.getTotalItems() > 0) {
-            result.setItems(executeSearch(requestDTO, false).getItems());
+            result.setItems(executeSearch(requestDTO, false, false).getItems());
         }
         return result;
     }
@@ -188,7 +195,7 @@ public class UserServiceImpl implements UserService {
         if (userId == null) {
             return null;
         }
-        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().id(userId).build(), false).getItems();
+        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().id(userId).build(), false, false).getItems();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         }
@@ -209,7 +216,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isBlank(username)) {
             return null;
         }
-        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().username(username).build(), false).getItems();
+        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().username(username).build(), false, false).getItems();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         }
@@ -221,7 +228,7 @@ public class UserServiceImpl implements UserService {
         if (StringUtils.isBlank(email)) {
             return null;
         }
-        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().email(email).build(), false).getItems();
+        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().email(email).build(), false, false).getItems();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         }
@@ -229,17 +236,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public FileObjectDTO export(SearchUserRequestDTO requestDTO) throws IOException {
-        long MAX_ITEMS = 1000000L;
+    public void triggerExport(SearchUserRequestDTO requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
+        long MAX_ITEMS = 1000000L;
         Instant now = Instant.now();
         requestDTO.setPageNumber(1L);
         requestDTO.setPageSize(MAX_ITEMS);
         requestDTO.setCreatedAtTo(now);
+        long totalItems = executeSearch(requestDTO, true, false).getTotalItems();
+        if (totalItems <= 0) {
+            throw new CustomException(HttpStatus.NOT_FOUND);
+        }
+        BackgroundTaskDTO taskDTO = backgroundTaskService.init(BackgroundTaskType.EXPORT_USER);
+        exportUserEventPublisher.publish(taskDTO.getId(), requestDTO);
+    }
 
-        PaginationData<UserDTO> searchData = executeSearch(requestDTO, false);
+    @Override
+    public void handleExportTask(UUID backgroundTaskId, SearchUserRequestDTO requestDTO) {
+        try {
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.PROCESSING);
+            FileObjectDTO fileObjectDTO = export(requestDTO);
+            if (fileObjectDTO == null) {
+                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, fileObjectDTO.getId());
+        } catch (Exception e) {
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.FAILED);
+        }
+    }
+
+    private FileObjectDTO export(SearchUserRequestDTO requestDTO) throws IOException {
+        if (requestDTO == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        PaginationData<UserDTO> searchData = executeSearch(requestDTO, false, false);
         if (CollectionUtils.isEmpty(searchData.getItems())) {
             return null;
         }
@@ -267,8 +299,7 @@ public class UserServiceImpl implements UserService {
         if (file == null || file.length == 0) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String filename = FileUtils.getFilename("EXPORT_USERS_".concat(ConversionUtils.safeToString(DateUtils.toEpochSeconds(now))), FileType.XLSX);
+        String filename = FileUtils.getFilename("EXPORT_USERS_".concat(ConversionUtils.safeToString(DateUtils.currentEpochMillis())), FileType.XLSX);
         return fileObjectService.getFileUrls(fileObjectService.uploadFile(file, "", filename));
     }
-
 }

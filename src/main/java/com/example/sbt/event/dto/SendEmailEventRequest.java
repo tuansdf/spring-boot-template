@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Builder
 public class SendEmailEventRequest implements Serializable {
 
-    private RequestContextData requestContextData;
+    private RequestContextData requestContext;
     private EmailDTO email;
 
 }
