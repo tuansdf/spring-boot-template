@@ -16,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class UserValidator {
-
     private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
 
     private final LocaleHelper localeHelper;
@@ -44,5 +43,4 @@ public class UserValidator {
             throw new CustomException(localeHelper.getMessage("form.error.invalid", new LocaleKey("field.status")));
         }
     }
-
 }

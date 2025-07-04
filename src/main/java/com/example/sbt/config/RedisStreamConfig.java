@@ -32,7 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Configuration
 public class RedisStreamConfig {
-
     private final RedisConnectionFactory connectionFactory;
     private final StringRedisTemplate redisTemplate;
     private final SendEmailEventListener sendEmailEventListener;
@@ -95,5 +94,4 @@ public class RedisStreamConfig {
             String streamName
     ) {
     }
-
 }

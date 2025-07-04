@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class ExceptionHelper {
-
     private final LocaleHelper localeHelper;
 
     public <T> CommonResponse<T> toResponse(Exception e) {
@@ -34,5 +33,4 @@ public class ExceptionHelper {
         CommonResponse<T> response = toResponse(e);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
-
 }

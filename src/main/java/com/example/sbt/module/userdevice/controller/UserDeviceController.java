@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/user-devices")
 public class UserDeviceController {
-
     private final UserDeviceService userDeviceService;
 
     @PutMapping
@@ -24,5 +23,4 @@ public class UserDeviceController {
         var result = userDeviceService.save(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
-
 }

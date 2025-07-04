@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class SendNotificationServiceImpl implements SendNotificationService {
-
     private final int TOKEN_BATCH_SIZE = 500;
     private final FirebaseMessaging firebaseMessaging;
 
@@ -75,5 +74,4 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     public void subscribeTopicAsync(SendNotificationRequest request) throws FirebaseMessagingException {
         subscribeTopic(request);
     }
-
 }

@@ -6,7 +6,6 @@ import java.time.Instant;
 import java.util.UUID;
 
 public interface LoginAuditService {
-
     void add(LoginAuditDTO audit);
 
     void add(UUID userId, boolean isSuccess);

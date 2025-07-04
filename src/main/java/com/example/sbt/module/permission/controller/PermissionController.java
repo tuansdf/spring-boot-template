@@ -20,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/permissions")
 public class PermissionController {
-
     private final PermissionService permissionService;
 
     @GetMapping("/code/{code}")
@@ -63,5 +62,4 @@ public class PermissionController {
         var result = permissionService.search(requestDTO, count);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
-
 }

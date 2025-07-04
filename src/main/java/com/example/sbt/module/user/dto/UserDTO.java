@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Builder
 public class UserDTO {
-
     private UUID id;
     private String username;
     private String email;
@@ -78,5 +77,4 @@ public class UserDTO {
         if (StringUtils.isBlank(permissions)) return;
         this.permissionCodes = Arrays.stream(permissions.split(",")).map(ConversionUtils::safeTrim).collect(Collectors.toCollection(ArrayList::new));
     }
-
 }

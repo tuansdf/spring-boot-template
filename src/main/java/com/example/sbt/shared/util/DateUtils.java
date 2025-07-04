@@ -9,7 +9,6 @@ import java.util.Date;
 
 @Slf4j
 public class DateUtils {
-
     public static long toEpochSeconds(Instant instant) {
         if (instant == null) {
             instant = Instant.now();
@@ -156,5 +155,4 @@ public class DateUtils {
     public static Instant toInstant(Object input) {
         return toInstant(input, null, null);
     }
-
 }

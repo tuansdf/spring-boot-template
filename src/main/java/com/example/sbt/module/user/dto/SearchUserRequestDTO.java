@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class SearchUserRequestDTO {
-
     private Long pageNumber;
     private Long pageSize;
     private UUID id;
@@ -27,5 +26,4 @@ public class SearchUserRequestDTO {
     private Instant createdAtTo;
     private String orderBy;
     private String orderDirection;
-
 }

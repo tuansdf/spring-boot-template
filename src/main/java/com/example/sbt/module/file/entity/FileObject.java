@@ -36,7 +36,6 @@ import java.util.UUID;
         })
 })
 public class FileObject extends BaseEntity {
-
     @Column(name = "file_path", columnDefinition = "text")
     private String filePath;
     @Column(name = "preview_file_path", columnDefinition = "text")
@@ -49,5 +48,4 @@ public class FileObject extends BaseEntity {
     private Long fileSize;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
-
 }

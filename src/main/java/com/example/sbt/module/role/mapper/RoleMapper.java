@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class RoleMapper {
-
     private final CommonMapper commonMapper;
     private final PermissionService permissionService;
 
@@ -20,5 +19,4 @@ public class RoleMapper {
         result.setPermissionCodes(permissionService.findAllCodesByRoleId(result.getId()));
         return result;
     }
-
 }

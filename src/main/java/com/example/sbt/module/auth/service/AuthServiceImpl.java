@@ -43,7 +43,6 @@ import java.util.UUID;
 @Service
 @Transactional(rollbackOn = Exception.class, dontRollbackOn = NoRollbackException.class)
 public class AuthServiceImpl implements AuthService {
-
     private final ApplicationProperties applicationProperties;
     private final UserRepository userRepository;
     private final AuthHelper authHelper;
@@ -317,5 +316,4 @@ public class AuthServiceImpl implements AuthService {
         user.setOtpEnabled(false);
         userRepository.save(user);
     }
-
 }

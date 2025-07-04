@@ -9,7 +9,6 @@ import jakarta.mail.MessagingException;
 import java.util.UUID;
 
 public interface EmailService {
-
     PaginationData<EmailDTO> search(SearchEmailRequestDTO requestDTO, boolean isCount);
 
     EmailStatsDTO getStatsByUser(UUID userId);
@@ -23,5 +22,4 @@ public interface EmailService {
     EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID userId);
 
     EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId);
-
 }

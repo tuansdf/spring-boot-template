@@ -42,7 +42,6 @@ import java.util.UUID;
         })
 })
 public class Email extends BaseEntity {
-
     @Column(name = "user_id", updatable = false)
     private UUID userId;
     @Column(name = "to_email", columnDefinition = "text")
@@ -63,5 +62,4 @@ public class Email extends BaseEntity {
     private String sendStatus;
     @Column(name = "is_html")
     private Boolean isHtml;
-
 }

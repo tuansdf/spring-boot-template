@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-
     Optional<User> findTopByUsername(String username);
 
     Optional<User> findTopByEmail(String email);
@@ -36,5 +35,4 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query(value = "select status from _user where id = :userId order by id asc limit 1", nativeQuery = true)
     String findTopStatusByUserId(UUID userId);
-
 }

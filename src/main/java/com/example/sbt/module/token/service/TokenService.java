@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TokenService {
-
     TokenDTO findOneById(UUID id);
 
     void deactivateByUserIdAndType(UUID userId, String type);
@@ -28,5 +27,4 @@ public interface TokenService {
     TokenDTO createResetPasswordToken(UUID userId);
 
     TokenDTO createActivateAccountToken(UUID userId);
-
 }

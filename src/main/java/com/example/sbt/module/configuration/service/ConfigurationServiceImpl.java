@@ -31,7 +31,6 @@ import java.util.Map;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class ConfigurationServiceImpl implements ConfigurationService {
-
     private static final int MAX_PUBLIC_CODES = 10;
 
     private final SQLHelper sqlHelper;
@@ -175,5 +174,4 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         return result;
     }
-
 }

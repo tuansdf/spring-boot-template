@@ -14,8 +14,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class SendEmailEventRequest implements Serializable {
-
     private RequestContextData requestContext;
     private EmailDTO email;
-
 }

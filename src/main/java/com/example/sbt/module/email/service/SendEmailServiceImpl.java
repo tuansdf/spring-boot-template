@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class SendEmailServiceImpl implements SendEmailService {
-
     private final JavaMailSender mailSender;
 
     @Override
@@ -37,5 +36,4 @@ public class SendEmailServiceImpl implements SendEmailService {
     public void sendAsync(SendEmailRequest request) throws MessagingException {
         send(request);
     }
-
 }

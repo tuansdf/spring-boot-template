@@ -36,7 +36,6 @@ import java.util.UUID;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class EmailServiceImpl implements EmailService {
-
     private final SQLHelper sqlHelper;
     private final LocaleHelper localeHelper;
     private final ApplicationProperties applicationProperties;
@@ -183,5 +182,4 @@ public class EmailServiceImpl implements EmailService {
                 .build();
         return triggerSend(emailDTO);
     }
-
 }

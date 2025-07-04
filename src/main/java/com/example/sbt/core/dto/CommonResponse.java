@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 @Builder
 public class CommonResponse<T> {
-
     private String message;
     @Builder.Default
     private int status = HttpStatus.OK.value();
@@ -32,5 +31,4 @@ public class CommonResponse<T> {
         this.status = status.value();
         this.message = message;
     }
-
 }

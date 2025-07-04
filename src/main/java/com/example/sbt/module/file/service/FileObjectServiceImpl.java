@@ -41,7 +41,6 @@ import java.util.UUID;
 @Service
 @Transactional(rollbackOn = Exception.class, dontRollbackOn = NoRollbackException.class)
 public class FileObjectServiceImpl implements FileObjectService {
-
     private final SQLHelper sqlHelper;
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
@@ -267,5 +266,4 @@ public class FileObjectServiceImpl implements FileObjectService {
         }
         return result;
     }
-
 }

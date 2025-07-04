@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class UserDeviceServiceImpl implements UserDeviceService {
-
     private final CommonMapper commonMapper;
     private final UserDeviceRepository userDeviceRepository;
 
@@ -57,5 +56,4 @@ public class UserDeviceServiceImpl implements UserDeviceService {
         if (userId == null) return new ArrayList<>();
         return userDeviceRepository.findAllTokensByUserId(userId);
     }
-
 }

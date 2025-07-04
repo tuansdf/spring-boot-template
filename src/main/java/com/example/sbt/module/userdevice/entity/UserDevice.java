@@ -25,10 +25,8 @@ import java.util.UUID;
         }
 )
 public class UserDevice extends BaseEntity {
-
     @Column(name = "user_id", updatable = false)
     private UUID userId;
     @Column(name = "fcm_token")
     private String fcmToken;
-
 }

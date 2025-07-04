@@ -10,7 +10,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ValidationException extends CustomException {
-
     private final List<String> errors;
 
     public ValidationException(List<String> errors) {
@@ -25,5 +24,4 @@ public class ValidationException extends CustomException {
         }
         return String.join(", ", errors);
     }
-
 }

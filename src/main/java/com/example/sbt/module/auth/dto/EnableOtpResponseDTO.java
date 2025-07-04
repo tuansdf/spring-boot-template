@@ -10,7 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class EnableOtpResponseDTO {
-
     private String otpSecret;
-
 }

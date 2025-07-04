@@ -14,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class TokenDTO {
-
     private UUID id;
     private UUID userId;
     private String type;
@@ -25,5 +24,4 @@ public class TokenDTO {
 
     @JsonIgnore
     private String value;
-
 }

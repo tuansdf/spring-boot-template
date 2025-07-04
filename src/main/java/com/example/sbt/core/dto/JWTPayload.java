@@ -17,7 +17,6 @@ import java.util.Map;
 @NoArgsConstructor
 @Builder
 public class JWTPayload {
-
     @JsonProperty(JWTPayloadKey.ISSUED_AT)
     private Instant issuedAt;
     @JsonProperty(JWTPayloadKey.NOT_BEFORE)
@@ -48,5 +47,4 @@ public class JWTPayload {
         if (permissions != null) result.put(JWTPayloadKey.PERMISSIONS, permissions);
         return result;
     }
-
 }

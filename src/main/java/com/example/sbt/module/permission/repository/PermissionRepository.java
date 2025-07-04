@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, UUID> {
-
     @Query(value = "select permission_id from role_permission where role_id = :roleId", nativeQuery = true)
     List<UUID> findAllIdsByRoleId(UUID roleId);
 
@@ -42,5 +41,4 @@ public interface PermissionRepository extends JpaRepository<Permission, UUID> {
     boolean existsByCode(String code);
 
     long countByIdIn(List<UUID> ids);
-
 }

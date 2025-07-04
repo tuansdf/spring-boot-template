@@ -36,10 +36,8 @@ import java.util.UUID;
         })
 })
 public class Permission extends BaseEntity {
-
     @Column(name = "code", updatable = false)
     private String code;
     @Column(name = "name")
     private String name;
-
 }

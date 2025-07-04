@@ -22,7 +22,6 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @Component
 public class JWTHelper {
-
     private final ApplicationProperties applicationProperties;
     private final ObjectMapper objectMapper;
     private final JWSHeader jwsHeader;
@@ -84,5 +83,4 @@ public class JWTHelper {
             return null;
         }
     }
-
 }

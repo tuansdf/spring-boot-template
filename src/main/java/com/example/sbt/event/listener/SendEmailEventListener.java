@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class SendEmailEventListener implements StreamListener<String, ObjectRecord<String, SendEmailEventRequest>> {
-
     private final EmailService emailService;
     private final StringRedisTemplate redisTemplate;
 
@@ -39,5 +38,4 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
             RequestContext.clear();
         }
     }
-
 }

@@ -10,7 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RequestActivateAccountRequestDTO {
-
     private String email;
-
 }

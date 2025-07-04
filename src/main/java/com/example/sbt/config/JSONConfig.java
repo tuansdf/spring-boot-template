@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class JSONConfig {
-
     @Getter
     private static final ObjectMapper objectMapper;
 
@@ -28,5 +27,4 @@ public class JSONConfig {
     public ObjectMapper getObjectMapperConfig() {
         return objectMapper;
     }
-
 }

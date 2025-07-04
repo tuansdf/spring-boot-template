@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class FileObjectPendingDTO {
-
     private UUID id;
     private String filePath;
     private String fileUploadUrl;
@@ -23,5 +22,4 @@ public class FileObjectPendingDTO {
     private Instant expiresAt;
     private Instant createdAt;
     private Instant updatedAt;
-
 }

@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class PermissionServiceImpl implements PermissionService {
-
     private final SQLHelper sqlHelper;
     private final CommonMapper commonMapper;
     private final PermissionRepository permissionRepository;
@@ -195,5 +194,4 @@ public class PermissionServiceImpl implements PermissionService {
         }
         return result;
     }
-
 }

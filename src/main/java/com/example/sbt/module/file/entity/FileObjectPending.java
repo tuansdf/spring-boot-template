@@ -25,7 +25,6 @@ import java.util.UUID;
         }
 )
 public class FileObjectPending extends BaseEntity {
-
     @Column(name = "file_path", columnDefinition = "text")
     private String filePath;
     @Column(name = "filename", columnDefinition = "text")
@@ -36,5 +35,4 @@ public class FileObjectPending extends BaseEntity {
     private Instant expiresAt;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
-
 }

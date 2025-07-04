@@ -27,7 +27,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class JWTFilter extends OncePerRequestFilter {
-
     private static final String AUTHORIZATION_START_WITH = "Bearer ";
     private static final int TOKEN_START_AT = AUTHORIZATION_START_WITH.length();
 
@@ -66,5 +65,4 @@ public class JWTFilter extends OncePerRequestFilter {
 
         chain.doFilter(servletRequest, servletResponse);
     }
-
 }

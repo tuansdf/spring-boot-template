@@ -21,7 +21,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/files")
 public class FileObjectController {
-
     private final FileObjectService fileObjectService;
 
     @PostMapping
@@ -78,5 +77,4 @@ public class FileObjectController {
 
     public record TemporaryUploadRequest(String mimeType) {
     }
-
 }

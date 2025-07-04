@@ -13,7 +13,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 @Configuration
 public class LocaleConfig {
-
     @Bean
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver resolver = new AcceptHeaderLocaleResolver();
@@ -28,5 +27,4 @@ public class LocaleConfig {
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
-
 }

@@ -6,7 +6,6 @@ import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
 import java.util.UUID;
 
 public interface AuthService {
-
     AuthDTO login(LoginRequestDTO requestDTO);
 
     void register(RegisterRequestDTO requestDTO);
@@ -28,5 +27,4 @@ public interface AuthService {
     void confirmOtp(ConfirmOtpRequestDTO requestDTO, UUID userId);
 
     void disableOtp(DisableOtpRequestDTO requestDTO, UUID userId);
-
 }

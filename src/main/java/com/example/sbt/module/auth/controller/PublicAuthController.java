@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/open/v1/auth")
 public class PublicAuthController {
-
     private final LocaleHelper localeHelper;
     private final ExceptionHelper exceptionHelper;
     private final AuthService authService;
@@ -77,5 +76,4 @@ public class PublicAuthController {
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
-
 }

@@ -20,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/emails")
 public class EmailController {
-
     private final EmailService emailService;
 
     @GetMapping("/search")
@@ -54,5 +53,4 @@ public class EmailController {
         var result = emailService.getStatsByUser(RequestContext.get().getUserId());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
-
 }

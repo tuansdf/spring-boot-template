@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 @Getter
 @Component
 public class ApplicationProperties {
-
     @Value("${custom.app-name}")
     private String applicationName;
     @Value("${custom.app-version}")
@@ -55,5 +54,4 @@ public class ApplicationProperties {
     private Integer loginTimeWindow;
     @Value("${custom.email.throttle-time-window}")
     private Integer emailThrottleTimeWindow;
-
 }

@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class SearchFileRequestDTO {
-
     private Long pageNumber;
     private Long pageSize;
     private String fileType;
@@ -24,5 +23,4 @@ public class SearchFileRequestDTO {
     private String orderBy;
     private String orderDirection;
     private UUID createdBy;
-
 }

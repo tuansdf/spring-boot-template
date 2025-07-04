@@ -20,7 +20,6 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
         includeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = ".*KVRepository")
 )
 public class RedisConfig {
-
     private final ApplicationProperties applicationProperties;
 
     @Bean
@@ -43,5 +42,4 @@ public class RedisConfig {
         template.setConnectionFactory(redisConnectionFactory);
         return template;
     }
-
 }

@@ -10,7 +10,6 @@ import java.util.zip.Deflater;
 
 @Slf4j
 public class CompressUtils {
-
     public static byte[] toGzip(byte[] bytes) {
         try {
             GzipParameters parameters = new GzipParameters();
@@ -25,5 +24,4 @@ public class CompressUtils {
             return null;
         }
     }
-
 }

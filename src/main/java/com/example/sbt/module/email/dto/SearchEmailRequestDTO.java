@@ -13,12 +13,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class SearchEmailRequestDTO {
-
     private Long pageNumber;
     private Long pageSize;
     private UUID userId;
     private String status;
     private Instant createdAtFrom;
     private Instant createdAtTo;
-
 }

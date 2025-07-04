@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class SendEmailEventPublisher {
-
     private final StringRedisTemplate redisTemplate;
 
     public void publish(EmailDTO email) {
@@ -28,5 +27,4 @@ public class SendEmailEventPublisher {
                 .withStreamKey(EventKey.SEND_EMAIL);
         redisTemplate.opsForStream().add(data);
     }
-
 }

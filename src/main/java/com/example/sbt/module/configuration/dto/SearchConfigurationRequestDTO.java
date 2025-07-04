@@ -12,12 +12,10 @@ import java.time.Instant;
 @NoArgsConstructor
 @Builder
 public class SearchConfigurationRequestDTO {
-
     private Long pageNumber;
     private Long pageSize;
     private String code;
     private String status;
     private Instant createdAtFrom;
     private Instant createdAtTo;
-
 }

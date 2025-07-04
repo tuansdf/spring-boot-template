@@ -26,7 +26,6 @@ import java.util.UUID;
         }
 )
 public class BackgroundTask extends BaseEntity {
-
     @Column(name = "file_id")
     private UUID fileId;
     @Column(name = "type")
@@ -37,5 +36,4 @@ public class BackgroundTask extends BaseEntity {
     private String errorMessage;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
-
 }

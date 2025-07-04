@@ -20,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/notifications")
 public class NotificationController {
-
     private final NotificationService notificationService;
 
     @GetMapping("/search")
@@ -54,5 +53,4 @@ public class NotificationController {
         var result = notificationService.getStatsByUser(RequestContext.get().getUserId());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
-
 }

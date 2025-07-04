@@ -20,8 +20,6 @@ import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.entity.Role;
 import com.example.sbt.module.token.dto.TokenDTO;
 import com.example.sbt.module.token.entity.Token;
-import com.example.sbt.module.user.dto.UserDTO;
-import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import com.example.sbt.module.userdevice.entity.UserDevice;
 import org.mapstruct.Mapper;
@@ -29,13 +27,6 @@ import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface CommonMapper {
-
-    User toEntity(UserDTO v);
-
-    UserDTO toDTO(User v);
-
-    UserDTO clone(UserDTO v);
-
     Permission toEntity(PermissionDTO v);
 
     PermissionDTO toDTO(Permission v);
@@ -93,5 +84,4 @@ public interface CommonMapper {
     FileObjectPendingDTO toDTO(FileObjectPending v);
 
     FileObjectPending toEntity(FileObjectPendingDTO v);
-
 }

@@ -1,7 +1,6 @@
 package com.example.sbt.core.helper;
 
 public class HTMLTemplate {
-
     public static String createCenteredHtml(String title, String message) {
         StringBuilder builder = new StringBuilder();
         builder.append("<!DOCTYPE html>");
@@ -31,5 +30,4 @@ public class HTMLTemplate {
         builder.append("</html>");
         return builder.toString();
     }
-
 }

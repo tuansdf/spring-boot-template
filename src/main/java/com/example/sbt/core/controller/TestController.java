@@ -45,7 +45,6 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/test")
 public class TestController {
-
     private final LocaleHelper localeHelper;
     private final StringRedisTemplate redisTemplate;
     private final SendNotificationService sendNotificationService;
@@ -369,5 +368,4 @@ public class TestController {
         private String replaceWith;
         private Map<String, Long> mapStringLong;
     }
-
 }

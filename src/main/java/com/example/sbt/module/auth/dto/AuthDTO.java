@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class AuthDTO {
-
     private String accessToken;
     private String refreshToken;
     private String token;
@@ -26,5 +25,4 @@ public class AuthDTO {
     private String name;
     private List<String> roles;
     private List<String> permissions;
-
 }

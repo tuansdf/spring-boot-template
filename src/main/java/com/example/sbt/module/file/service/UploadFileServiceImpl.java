@@ -30,7 +30,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class UploadFileServiceImpl implements UploadFileService {
-
     private static final long DEFAULT_PRESIGN_GET_SECONDS = 24L * 60L * 60L;
     private static final long DEFAULT_PRESIGN_PUT_SECONDS = 10L * 60L;
     private final int OBJECT_KEY_BATCH_SIZE = 500;
@@ -258,5 +257,4 @@ public class UploadFileServiceImpl implements UploadFileService {
             log.error("deleteFiles ", e);
         }
     }
-
 }

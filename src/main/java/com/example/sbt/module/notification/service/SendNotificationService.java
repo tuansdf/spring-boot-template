@@ -5,7 +5,6 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import org.springframework.scheduling.annotation.Async;
 
 public interface SendNotificationService {
-
     void send(SendNotificationRequest request) throws FirebaseMessagingException;
 
     @Async
@@ -15,5 +14,4 @@ public interface SendNotificationService {
 
     @Async
     void subscribeTopicAsync(SendNotificationRequest request) throws FirebaseMessagingException;
-
 }

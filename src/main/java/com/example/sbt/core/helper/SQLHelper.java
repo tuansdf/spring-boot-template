@@ -13,7 +13,6 @@ import java.util.Map;
 
 @Component
 public class SQLHelper {
-
     public static final long DEFAULT_PAGE_NUMBER = 1;
     public static final long DEFAULT_PAGE_SIZE = 10;
     public static final List<String> ORDER_DIRECTIONS = List.of("asc", "desc");
@@ -75,5 +74,4 @@ public class SQLHelper {
                 .replace("[", "\\[")
                 .replace("]", "\\]");
     }
-
 }

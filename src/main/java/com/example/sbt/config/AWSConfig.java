@@ -14,7 +14,6 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 @RequiredArgsConstructor
 @Configuration
 public class AWSConfig {
-
     private final ApplicationProperties applicationProperties;
 
     @Bean
@@ -37,5 +36,4 @@ public class AWSConfig {
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }
-
 }

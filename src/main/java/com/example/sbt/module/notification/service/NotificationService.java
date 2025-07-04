@@ -9,7 +9,6 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import java.util.UUID;
 
 public interface NotificationService {
-
     PaginationData<NotificationDTO> search(SearchNotificationRequestDTO requestDTO, boolean isCount);
 
     NotificationStatsDTO getStatsByUser(UUID userId);
@@ -21,5 +20,4 @@ public interface NotificationService {
     void executeSend(NotificationDTO notificationDTO) throws FirebaseMessagingException;
 
     NotificationDTO sendNewComerNotification(UUID userId);
-
 }

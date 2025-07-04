@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class SendNotificationEventListener implements StreamListener<String, ObjectRecord<String, SendNotificationEventRequest>> {
-
     private final NotificationService notificationService;
     private final StringRedisTemplate redisTemplate;
 
@@ -39,5 +38,4 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
             RequestContext.clear();
         }
     }
-
 }

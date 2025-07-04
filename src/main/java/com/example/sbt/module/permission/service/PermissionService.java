@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PermissionService {
-
     PermissionDTO save(PermissionDTO permissionDTO);
 
     void setRolePermissions(UUID roleId, List<UUID> permissionIds);
@@ -32,5 +31,4 @@ public interface PermissionService {
     List<PermissionDTO> findAllByUserId(UUID userId);
 
     PaginationData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount);
-
 }

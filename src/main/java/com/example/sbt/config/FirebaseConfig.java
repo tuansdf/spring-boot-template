@@ -17,7 +17,6 @@ import java.io.ByteArrayInputStream;
 @RequiredArgsConstructor
 @Configuration
 public class FirebaseConfig {
-
     private final ApplicationProperties applicationProperties;
 
     @Bean
@@ -51,5 +50,4 @@ public class FirebaseConfig {
         if (firebaseApp == null) return null;
         return FirebaseMessaging.getInstance(firebaseApp);
     }
-
 }

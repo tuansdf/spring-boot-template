@@ -14,7 +14,6 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 @Component
 public class AuthHelper {
-
     private final PasswordEncoder passwordEncoder;
 
     public String hashPassword(String password) {
@@ -32,5 +31,4 @@ public class AuthHelper {
         }
         return Arrays.stream(permissions).anyMatch(x -> context.getPermissions().contains(x));
     }
-
 }

@@ -41,7 +41,6 @@ import java.util.UUID;
         })
 })
 public class Notification extends BaseEntity {
-
     @Column(name = "user_id", updatable = false)
     private UUID userId;
     @Column(name = "title", columnDefinition = "text")
@@ -60,5 +59,4 @@ public class Notification extends BaseEntity {
     private String status;
     @Column(name = "send_status")
     private String sendStatus;
-
 }

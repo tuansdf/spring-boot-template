@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class SendNotificationEventPublisher {
-
     private final StringRedisTemplate redisTemplate;
 
     public void publish(NotificationDTO notification) {
@@ -28,5 +27,4 @@ public class SendNotificationEventPublisher {
                 .withStreamKey(EventKey.SEND_NOTIFICATION);
         redisTemplate.opsForStream().add(data);
     }
-
 }

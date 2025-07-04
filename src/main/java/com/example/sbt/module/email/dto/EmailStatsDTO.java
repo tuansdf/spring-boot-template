@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class EmailStatsDTO {
-
     private Long totalUnread;
     private Long totalRead;
-
 }

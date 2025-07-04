@@ -13,11 +13,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class LoginAuditDTO {
-
     private UUID id;
     private UUID userId;
     private Boolean isSuccess;
     private Instant createdAt;
     private Instant updatedAt;
-
 }

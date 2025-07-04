@@ -23,10 +23,8 @@ import java.util.UUID;
         }
 )
 public class RolePermission extends BaseEntity {
-
     @Column(name = "role_id", updatable = false)
     private UUID roleId;
     @Column(name = "permission_id", updatable = false)
     private UUID permissionId;
-
 }

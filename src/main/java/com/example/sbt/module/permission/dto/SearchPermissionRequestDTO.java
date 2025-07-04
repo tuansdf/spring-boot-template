@@ -12,11 +12,9 @@ import java.time.Instant;
 @NoArgsConstructor
 @Builder
 public class SearchPermissionRequestDTO {
-
     private Long pageNumber;
     private Long pageSize;
     private String code;
     private Instant createdAtFrom;
     private Instant createdAtTo;
-
 }

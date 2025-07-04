@@ -14,8 +14,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class SendNotificationEventRequest implements Serializable {
-
     private RequestContextData requestContext;
     private NotificationDTO notification;
-
 }

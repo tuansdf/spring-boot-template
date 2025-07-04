@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/open/test")
 public class PublicTestController {
-
     @GetMapping(value = "/health", produces = MediaType.TEXT_PLAIN_VALUE)
     public String check() {
         return "OK";
     }
-
 }

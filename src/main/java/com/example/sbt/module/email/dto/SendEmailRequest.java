@@ -10,11 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class SendEmailRequest {
-
     private String toEmail;
     private String ccEmail;
     private String subject;
     private String body;
     private Boolean isHtml;
-
 }

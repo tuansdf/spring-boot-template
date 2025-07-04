@@ -13,7 +13,6 @@ import java.util.UUID;
 
 @Repository
 public interface TokenRepository extends JpaRepository<Token, UUID> {
-
     @Modifying
     @Query(value = "update token set status = :status, updated_at = now() " +
             "where user_id = :userId and type = :type and status <> :status", nativeQuery = true)
@@ -32,5 +31,4 @@ public interface TokenRepository extends JpaRepository<Token, UUID> {
     Optional<Token> findTopByIdAndStatusAndExpiresAtAfter(UUID tokenId, String status, Instant now);
 
     void deleteByExpiresAtBefore(Instant expiresAt);
-
 }

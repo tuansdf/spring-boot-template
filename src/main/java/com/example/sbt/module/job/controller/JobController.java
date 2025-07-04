@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/jobs")
 public class JobController {
-
     private final TokenService tokenService;
     private final FileObjectService fileObjectService;
 
@@ -33,5 +32,4 @@ public class JobController {
         fileObjectService.deleteExpiredPendingUploadAsync();
         return ResponseEntity.ok(new CommonResponse<>());
     }
-
 }

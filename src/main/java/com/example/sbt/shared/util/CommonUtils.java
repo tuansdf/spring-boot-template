@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class CommonUtils {
-
     public static <T> T getValue(Tuple tuple, String name, Class<T> tClass) {
         try {
             if (tuple.get(name) == null) return null;
@@ -82,5 +81,4 @@ public class CommonUtils {
         }
         return items.get(index);
     }
-
 }

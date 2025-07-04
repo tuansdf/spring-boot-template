@@ -14,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class NotificationDTO {
-
     private UUID id;
     private UUID userId;
     private String title;
@@ -29,5 +28,4 @@ public class NotificationDTO {
     private String sendStatus;
     private Instant createdAt;
     private Instant updatedAt;
-
 }

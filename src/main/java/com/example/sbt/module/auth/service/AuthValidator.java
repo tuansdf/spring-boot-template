@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class AuthValidator {
-
     private final LocaleHelper localeHelper;
     private final ValidationHelper validationHelper;
 
@@ -130,5 +129,4 @@ public class AuthValidator {
             throw new CustomException(passwordError);
         }
     }
-
 }

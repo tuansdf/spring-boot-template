@@ -16,7 +16,6 @@ import java.util.UUID;
 @Builder
 @RedisHash("configuration")
 public class ConfigurationDTO {
-
     private UUID id;
     @Id
     private String code;
@@ -26,5 +25,4 @@ public class ConfigurationDTO {
     private Boolean isPublic;
     private Instant createdAt;
     private Instant updatedAt;
-
 }

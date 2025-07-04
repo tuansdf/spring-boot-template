@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class ConfigurationValidator {
-
     private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
 
     private final LocaleHelper localeHelper;
@@ -64,5 +63,4 @@ public class ConfigurationValidator {
             throw new CustomException(localeHelper.getMessage("form.error.duplicated", new LocaleKey("field.code")));
         }
     }
-
 }

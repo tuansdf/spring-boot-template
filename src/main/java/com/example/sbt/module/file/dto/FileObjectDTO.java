@@ -14,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class FileObjectDTO {
-
     private UUID id;
     @JsonIgnore
     private String filePath;
@@ -40,5 +39,4 @@ public class FileObjectDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
 }

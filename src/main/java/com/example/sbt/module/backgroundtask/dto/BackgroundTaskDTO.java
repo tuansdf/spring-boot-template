@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class BackgroundTaskDTO {
-
     private UUID id;
     private UUID fileId;
     private String type;
@@ -22,5 +21,4 @@ public class BackgroundTaskDTO {
     private UUID createdBy;
     private Instant createdAt;
     private Instant updatedAt;
-
 }

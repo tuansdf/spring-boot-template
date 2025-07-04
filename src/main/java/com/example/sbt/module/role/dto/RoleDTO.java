@@ -14,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class RoleDTO {
-
     private UUID id;
     private String code;
     private String name;
@@ -33,5 +32,4 @@ public class RoleDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-
 }

@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @Configuration
 public class JWTConfig {
-
     private final ApplicationProperties applicationProperties;
 
     @Bean
@@ -28,5 +27,4 @@ public class JWTConfig {
     public JWSVerifier jwsVerifier() throws JOSEException {
         return new MACVerifier(applicationProperties.getJwtSecret().getBytes());
     }
-
 }

@@ -22,7 +22,6 @@ import java.util.Set;
 @RestController
 @RequestMapping("/v1/configurations")
 public class ConfigurationController {
-
     private final ConfigurationService configurationService;
 
     @GetMapping("/values")
@@ -66,5 +65,4 @@ public class ConfigurationController {
         var result = configurationService.search(requestDTO, count);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
-
 }

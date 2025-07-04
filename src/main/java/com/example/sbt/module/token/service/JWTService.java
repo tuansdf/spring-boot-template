@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JWTService {
-
     JWTPayload createAccessJwt(UUID userId, List<String> permissions);
 
     JWTPayload createRefreshJwt(UUID tokenId);
@@ -16,5 +15,4 @@ public interface JWTService {
     JWTPayload createActivateAccountJwt(UUID tokenId);
 
     JWTPayload verify(String token);
-
 }

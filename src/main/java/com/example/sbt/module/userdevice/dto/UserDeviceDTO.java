@@ -13,11 +13,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class UserDeviceDTO {
-
     private UUID id;
     private UUID userId;
     private String fcmToken;
     private Instant createdAt;
     private Instant updatedAt;
-
 }

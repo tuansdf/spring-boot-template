@@ -18,7 +18,6 @@ import java.util.UUID;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class LoginAuditServiceImpl implements LoginAuditService {
-
     private final CommonMapper commonMapper;
     private final LoginAuditRepository loginAuditRepository;
 
@@ -42,5 +41,4 @@ public class LoginAuditServiceImpl implements LoginAuditService {
     public long countRecentlyFailedAttemptsByUserId(UUID userId, Instant fromTime) {
         return ConversionUtils.safeToLong(loginAuditRepository.countRecentlyFailedAttemptsByUserId(userId, fromTime));
     }
-
 }

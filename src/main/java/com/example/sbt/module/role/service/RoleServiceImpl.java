@@ -31,7 +31,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class RoleServiceImpl implements RoleService {
-
     private final SQLHelper sqlHelper;
     private final RoleMapper roleMapper;
     private final RoleRepository roleRepository;
@@ -176,5 +175,4 @@ public class RoleServiceImpl implements RoleService {
         }
         return result;
     }
-
 }

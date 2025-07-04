@@ -12,11 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class SendNotificationRequest {
-
     private String title;
     private String body;
     private String data;
     private String topic;
     private List<String> tokens;
-
 }

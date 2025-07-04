@@ -22,7 +22,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/auth")
 public class AuthController {
-
     private final TokenService tokenService;
     private final AuthService authService;
 
@@ -66,5 +65,4 @@ public class AuthController {
         authService.disableOtp(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }
-
 }

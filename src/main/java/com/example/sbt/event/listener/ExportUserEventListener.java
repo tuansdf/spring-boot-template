@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class ExportUserEventListener implements StreamListener<String, ObjectRecord<String, ExportUserEventRequest>> {
-
     private final StringRedisTemplate redisTemplate;
     private final UserService userService;
 
@@ -39,5 +38,4 @@ public class ExportUserEventListener implements StreamListener<String, ObjectRec
             RequestContext.clear();
         }
     }
-
 }

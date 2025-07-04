@@ -18,7 +18,6 @@ import java.util.regex.Pattern;
 
 @Slf4j
 public class FileUtils {
-
     private static final Tika tika = new Tika();
     private static final List<FileType> SUPPORTED_FILE_TYPES = Arrays.asList(FileType.values());
     private static final int MAX_FILE_NAME_LENGTH = 255;
@@ -146,5 +145,4 @@ public class FileUtils {
         filename = LEADING_TRAILING_CHARS.matcher(filename).replaceAll("");
         return filename.trim();
     }
-
 }

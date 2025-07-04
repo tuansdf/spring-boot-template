@@ -20,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/roles")
 public class RoleController {
-
     private final RoleService roleService;
 
     @GetMapping("/code/{code}")
@@ -63,5 +62,4 @@ public class RoleController {
         var result = roleService.search(requestDTO, count);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
-
 }

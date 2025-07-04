@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 public class CommonType {
-
     public static final String ACCESS_TOKEN = "ACCESS_TOKEN";
     public static final String REFRESH_TOKEN = "REFRESH_TOKEN";
     public static final String RESET_PASSWORD = "RESET_PASSWORD";
@@ -38,5 +37,4 @@ public class CommonType {
     public static Integer toIndex(String input) {
         return STRING_TO_INDEX.get(input);
     }
-
 }

@@ -13,7 +13,6 @@ import java.util.Locale;
 @RequiredArgsConstructor
 @Component
 public class LocaleHelper {
-
     private final MessageSource messageSource;
 
     public String getMessage(String code, Locale locale, Object... args) {
@@ -60,5 +59,4 @@ public class LocaleHelper {
             return code;
         }
     }
-
 }

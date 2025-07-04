@@ -39,7 +39,6 @@ import java.util.UUID;
         })
 })
 public class Configuration extends BaseEntity {
-
     @Column(name = "code", updatable = false)
     private String code;
     @Column(name = "value", columnDefinition = "text")
@@ -50,5 +49,4 @@ public class Configuration extends BaseEntity {
     private String status;
     @Column(name = "is_public")
     private Boolean isPublic;
-
 }

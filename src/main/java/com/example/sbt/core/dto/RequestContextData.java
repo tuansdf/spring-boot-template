@@ -14,11 +14,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class RequestContextData {
-
     private String tenantId;
     private String requestId;
     private Locale locale;
     private UUID userId;
     private List<String> permissions;
-
 }

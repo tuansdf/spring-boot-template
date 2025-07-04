@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserDeviceService {
-
     UserDeviceDTO save(UserDeviceDTO userDeviceDTO);
 
     UserDeviceDTO findOneById(UUID id);
@@ -14,5 +13,4 @@ public interface UserDeviceService {
     List<UserDeviceDTO> findAllByUserId(UUID userId);
 
     List<String> findAllTokensByUserId(UUID userId);
-
 }

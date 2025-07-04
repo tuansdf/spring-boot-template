@@ -21,7 +21,6 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RequiredArgsConstructor
 @ControllerAdvice
 public class GlobalDefaultExceptionHandler {
-
     private final ExceptionHelper exceptionHelper;
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
@@ -99,5 +98,4 @@ public class GlobalDefaultExceptionHandler {
         log.error("defaultExceptionHandler ", e);
         return exceptionHelper.toResponseEntity(e);
     }
-
 }

@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class DisableOtpRequestDTO {
-
     private String otpCode;
     private String password;
-
 }

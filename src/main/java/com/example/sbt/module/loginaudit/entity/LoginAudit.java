@@ -22,10 +22,8 @@ import java.util.UUID;
         }
 )
 public class LoginAudit extends BaseEntity {
-
     @Column(name = "user_id", updatable = false)
     private UUID userId;
     @Column(name = "is_success")
     private Boolean isSuccess;
-
 }

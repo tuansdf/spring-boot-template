@@ -17,7 +17,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class JWTServiceImpl implements JWTService {
-
     private final ApplicationProperties applicationProperties;
     private final JWTHelper jwtHelper;
 
@@ -78,5 +77,4 @@ public class JWTServiceImpl implements JWTService {
     public JWTPayload verify(String token) {
         return jwtHelper.verify(token);
     }
-
 }

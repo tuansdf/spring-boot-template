@@ -14,7 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class EmailDTO {
-
     private UUID id;
     private UUID userId;
     private String toEmail;
@@ -31,5 +30,4 @@ public class EmailDTO {
     private Boolean isHtml;
     private Instant createdAt;
     private Instant updatedAt;
-
 }

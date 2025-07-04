@@ -12,12 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class PaginationData<T> {
-
     private long pageNumber;
     private long pageSize;
     private long totalPages;
     private long totalItems;
 
     private List<T> items;
-
 }

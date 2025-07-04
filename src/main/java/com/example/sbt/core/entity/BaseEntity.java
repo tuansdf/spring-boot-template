@@ -18,7 +18,6 @@ import java.util.UUID;
 @Setter
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
-
     @Id
     @Column(name = "id")
     private UUID id;
@@ -38,5 +37,4 @@ public abstract class BaseEntity implements Serializable {
             id = RandomUtils.Secure.generateTimeBasedUUID();
         }
     }
-
 }

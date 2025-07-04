@@ -47,7 +47,6 @@ import java.util.UUID;
         })
 })
 public class User extends BaseEntity {
-
     @Column(name = "username")
     private String username;
     @Column(name = "email")
@@ -64,5 +63,4 @@ public class User extends BaseEntity {
     private String otpSecret;
     @Column(name = "status")
     private String status;
-
 }

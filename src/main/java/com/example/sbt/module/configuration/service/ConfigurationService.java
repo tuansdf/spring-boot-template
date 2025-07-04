@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface ConfigurationService {
-
     ConfigurationDTO save(ConfigurationDTO requestDTO);
 
     ConfigurationDTO findOneByCode(String code);
@@ -20,5 +19,4 @@ public interface ConfigurationService {
     Map<String, String> findPublicValues(List<String> codes);
 
     PaginationData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCount);
-
 }

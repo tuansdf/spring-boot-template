@@ -27,7 +27,6 @@ import java.util.UUID;
         }
 )
 public class Token extends BaseEntity {
-
     @Column(name = "user_id", updatable = false)
     private UUID userId;
     @Column(name = "expires_at")
@@ -36,5 +35,4 @@ public class Token extends BaseEntity {
     private String type;
     @Column(name = "status")
     private String status;
-
 }

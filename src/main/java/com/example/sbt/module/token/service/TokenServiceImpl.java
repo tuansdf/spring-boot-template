@@ -25,7 +25,6 @@ import java.util.UUID;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class TokenServiceImpl implements TokenService {
-
     private final CommonMapper commonMapper;
     private final TokenRepository tokenRepository;
     private final JWTService jwtService;
@@ -139,5 +138,4 @@ public class TokenServiceImpl implements TokenService {
         result.setValue(jwtPayload.getValue());
         return result;
     }
-
 }

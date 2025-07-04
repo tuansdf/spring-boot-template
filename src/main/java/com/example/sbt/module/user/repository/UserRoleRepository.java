@@ -9,9 +9,7 @@ import java.util.UUID;
 
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, UUID> {
-
     void deleteAllByUserId(UUID userId);
 
     void deleteAllByUserIdAndRoleIdIn(UUID userId, List<UUID> roleIds);
-
 }

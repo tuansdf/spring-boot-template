@@ -50,5 +50,4 @@ public enum FileType {
         }
         return null;
     }
-
 }

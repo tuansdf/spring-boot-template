@@ -3,7 +3,6 @@ package com.example.sbt.shared.util;
 import java.util.UUID;
 
 public class ConversionUtils {
-
     public static String toString(Object input) {
         try {
             if (input == null) return null;
@@ -151,5 +150,4 @@ public class ConversionUtils {
             return null;
         }
     }
-
 }

@@ -36,7 +36,6 @@ import java.util.UUID;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class NotificationServiceImpl implements NotificationService {
-
     private final SQLHelper sqlHelper;
     private final LocaleHelper localeHelper;
     private final ApplicationProperties applicationProperties;
@@ -155,5 +154,4 @@ public class NotificationServiceImpl implements NotificationService {
                 .build();
         return triggerSend(notificationDTO);
     }
-
 }

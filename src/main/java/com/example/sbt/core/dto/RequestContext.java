@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 
 public class RequestContext {
-
     private static final ThreadLocal<RequestContextData> context = ThreadLocal.withInitial(() -> null);
 
     public static RequestContextData get() {
@@ -35,5 +34,4 @@ public class RequestContext {
             MDC.put(MDCKey.REQUEST_ID, requestId);
         }
     }
-
 }

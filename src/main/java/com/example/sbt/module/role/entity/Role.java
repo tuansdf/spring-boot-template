@@ -37,12 +37,10 @@ import java.util.UUID;
         })
 })
 public class Role extends BaseEntity {
-
     @Column(name = "code", updatable = false)
     private String code;
     @Column(name = "name")
     private String name;
     @Column(name = "description", columnDefinition = "text")
     private String description;
-
 }

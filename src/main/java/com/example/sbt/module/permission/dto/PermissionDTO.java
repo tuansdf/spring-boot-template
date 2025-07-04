@@ -13,11 +13,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class PermissionDTO {
-
     private UUID id;
     private String code;
     private String name;
     private Instant createdAt;
     private Instant updatedAt;
-
 }

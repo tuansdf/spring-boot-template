@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, UUID> {
-
     @Query(value = "select role_id from user_role where user_id = :userId", nativeQuery = true)
     List<UUID> findAllIdsByUserId(UUID userId);
 
@@ -30,5 +29,4 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
     boolean existsByCode(String code);
 
     long countByIdIn(List<UUID> ids);
-
 }

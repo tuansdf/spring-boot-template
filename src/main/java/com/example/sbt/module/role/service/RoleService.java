@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface RoleService {
-
     RoleDTO save(RoleDTO roleDTO);
 
     void setUserRoles(UUID userId, List<UUID> roleIds);
@@ -26,5 +25,4 @@ public interface RoleService {
     List<RoleDTO> findAllByUserId(UUID userId);
 
     PaginationData<RoleDTO> search(SearchRoleRequestDTO requestDTO, boolean isCount);
-
 }

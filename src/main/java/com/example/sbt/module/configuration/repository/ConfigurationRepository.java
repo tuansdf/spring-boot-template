@@ -11,7 +11,6 @@ import java.util.UUID;
 
 @Repository
 public interface ConfigurationRepository extends JpaRepository<Configuration, UUID> {
-
     boolean existsByCode(String code);
 
     Optional<Configuration> findTopByCode(String code);
@@ -20,5 +19,4 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, UU
     String findTopValueByCodeAndStatus(String code, String status);
 
     List<Configuration> findAllByCodeInAndStatusAndIsPublic(List<String> codes, String status, Boolean isPublic);
-
 }

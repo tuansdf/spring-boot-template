@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class NoRollbackException extends CustomException {
-
     public NoRollbackException(HttpStatus status) {
         super(status);
     }
@@ -19,5 +18,4 @@ public class NoRollbackException extends CustomException {
     public NoRollbackException(String message, HttpStatus status) {
         super(message, status);
     }
-
 }

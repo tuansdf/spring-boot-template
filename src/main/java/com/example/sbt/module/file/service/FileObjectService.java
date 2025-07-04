@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface FileObjectService {
-
     FileObjectDTO uploadFile(MultipartFile file, String dirPath);
 
     FileObjectDTO uploadFile(byte[] file, String dirPath, String filename);
@@ -34,5 +33,4 @@ public interface FileObjectService {
     void deleteExpiredPendingUploadAsync();
 
     PaginationData<FileObjectDTO> search(SearchFileRequestDTO requestDTO, boolean isCount);
-
 }

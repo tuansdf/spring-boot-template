@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class PermissionValidator {
-
     private final LocaleHelper localeHelper;
     private final ValidationHelper validationHelper;
     private final PermissionRepository permissionRepository;
@@ -53,5 +52,4 @@ public class PermissionValidator {
             throw new CustomException(localeHelper.getMessage("form.error.duplicated", new LocaleKey("field.code")));
         }
     }
-
 }

@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 public class RandomUtils {
-
     private static final String DEFAULT_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final char[] DEFAULT_ALPHABET_CHARS = DEFAULT_ALPHABET.toCharArray();
 
@@ -91,5 +90,4 @@ public class RandomUtils {
             return RandomUtils.generateString(ThreadLocalRandom.current(), DEFAULT_ALPHABET_CHARS, length);
         }
     }
-
 }

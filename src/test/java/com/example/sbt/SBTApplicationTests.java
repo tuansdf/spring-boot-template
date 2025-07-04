@@ -9,5 +9,4 @@ class SBTApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }

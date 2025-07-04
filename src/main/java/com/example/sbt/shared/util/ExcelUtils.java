@@ -19,7 +19,6 @@ import java.util.List;
 
 @Slf4j
 public class ExcelUtils {
-
     public static final int BUFFER_SIZE = 4096;
     public static final int ROW_CACHE_SIZE = 100;
     private static final String DEFAULT_SHEET = "Sheet1";
@@ -185,5 +184,4 @@ public class ExcelUtils {
             return null;
         }
     }
-
 }

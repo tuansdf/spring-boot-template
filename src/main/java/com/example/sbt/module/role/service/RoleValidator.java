@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class RoleValidator {
-
     private final LocaleHelper localeHelper;
     private final ValidationHelper validationHelper;
     private final RoleRepository roleRepository;
@@ -66,5 +65,4 @@ public class RoleValidator {
             throw new CustomException(localeHelper.getMessage("form.error.duplicated", new LocaleKey("field.code")));
         }
     }
-
 }

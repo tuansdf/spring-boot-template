@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Component
 public class ValidationHelper {
-
     private final LocaleHelper localeHelper;
 
     public boolean isEmail(String input) {
@@ -66,5 +65,4 @@ public class ValidationHelper {
         private static final Pattern USERNAME = Pattern.compile("^[a-zA-Z0-9]+(_?[a-zA-Z0-9]+)*$");
         private static final Pattern CODE = Pattern.compile("^[a-zA-Z0-9]+(_?[a-zA-Z0-9]+)*$");
     }
-
 }
