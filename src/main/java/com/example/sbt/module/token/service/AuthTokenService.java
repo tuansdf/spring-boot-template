@@ -1,13 +1,13 @@
 package com.example.sbt.module.token.service;
 
-import com.example.sbt.module.token.dto.TokenDTO;
+import com.example.sbt.module.token.dto.AuthTokenDTO;
 import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface TokenService {
-    TokenDTO findOneById(UUID id);
+public interface AuthTokenService {
+    AuthTokenDTO findOneById(UUID id);
 
     void deactivateByUserIdAndType(UUID userId, String type);
 
@@ -20,11 +20,11 @@ public interface TokenService {
     @Async
     void deleteExpiredTokensAsync();
 
-    TokenDTO findOneAndVerifyJwt(String token, String type);
+    AuthTokenDTO findOneAndVerifyJwt(String token, String type);
 
-    TokenDTO createRefreshToken(UUID userId);
+    AuthTokenDTO createRefreshToken(UUID userId);
 
-    TokenDTO createResetPasswordToken(UUID userId);
+    AuthTokenDTO createResetPasswordToken(UUID userId);
 
-    TokenDTO createActivateAccountToken(UUID userId);
+    AuthTokenDTO createActivateAccountToken(UUID userId);
 }

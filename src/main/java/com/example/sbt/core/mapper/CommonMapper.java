@@ -18,8 +18,8 @@ import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.permission.entity.Permission;
 import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.entity.Role;
-import com.example.sbt.module.token.dto.TokenDTO;
-import com.example.sbt.module.token.entity.Token;
+import com.example.sbt.module.token.dto.AuthTokenDTO;
+import com.example.sbt.module.token.entity.AuthToken;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import com.example.sbt.module.userdevice.entity.UserDevice;
 import org.mapstruct.Mapper;
@@ -45,11 +45,11 @@ public interface CommonMapper {
 
     ConfigurationDTO clone(ConfigurationDTO v);
 
-    Token toEntity(TokenDTO v);
+    AuthToken toEntity(AuthTokenDTO v);
 
-    TokenDTO toDTO(Token v);
+    AuthTokenDTO toDTO(AuthToken v);
 
-    TokenDTO clone(TokenDTO v);
+    AuthTokenDTO clone(AuthTokenDTO v);
 
     Email toEntity(EmailDTO v);
 

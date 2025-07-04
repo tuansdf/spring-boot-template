@@ -16,9 +16,9 @@ import com.example.sbt.module.loginaudit.service.LoginAuditService;
 import com.example.sbt.module.notification.service.NotificationService;
 import com.example.sbt.module.permission.service.PermissionService;
 import com.example.sbt.module.role.service.RoleService;
-import com.example.sbt.module.token.dto.TokenDTO;
+import com.example.sbt.module.token.dto.AuthTokenDTO;
 import com.example.sbt.module.token.service.JWTService;
-import com.example.sbt.module.token.service.TokenService;
+import com.example.sbt.module.token.service.AuthTokenService;
 import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.entity.User;
@@ -52,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
     private final JWTService jwtService;
     private final PermissionService permissionService;
     private final RoleService roleService;
-    private final TokenService tokenService;
+    private final AuthTokenService authTokenService;
     private final EmailService emailService;
     private final ConfigurationService configurationService;
     private final NotificationService notificationService;
@@ -60,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
     private AuthDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
         JWTPayload accessJwt = jwtService.createAccessJwt(userId, permissionCodes);
-        TokenDTO refreshToken = tokenService.createRefreshToken(userId);
+        AuthTokenDTO refreshToken = authTokenService.createRefreshToken(userId);
         return AuthDTO.builder()
                 .accessToken(accessJwt.getValue())
                 .refreshToken(refreshToken.getValue())
@@ -147,9 +147,9 @@ public class AuthServiceImpl implements AuthService {
         user.setVerified(false);
         user = userRepository.save(user);
 
-        TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
+        AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
         String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
-        emailService.sendActivateAccountEmail(user.getEmail(), name, tokenDTO.getValue(), user.getId());
+        emailService.sendActivateAccountEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
     }
 
     @Override
@@ -170,16 +170,16 @@ public class AuthServiceImpl implements AuthService {
         }
         user.setPassword(authHelper.hashPassword(requestDTO.getNewPassword()));
         user = userRepository.save(user);
-        tokenService.deactivateByUserId(user.getId());
+        authTokenService.deactivateByUserId(user.getId());
     }
 
     @Override
     public RefreshTokenResponseDTO refreshAccessToken(String refreshJwt) {
-        TokenDTO tokenDTO = tokenService.findOneAndVerifyJwt(refreshJwt, CommonType.REFRESH_TOKEN);
-        if (tokenDTO == null) {
+        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(refreshJwt, CommonType.REFRESH_TOKEN);
+        if (authTokenDTO == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        UUID userId = ConversionUtils.toUUID(tokenDTO.getUserId());
+        UUID userId = ConversionUtils.toUUID(authTokenDTO.getUserId());
         if (userId == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -187,8 +187,8 @@ public class AuthServiceImpl implements AuthService {
         if (isUserValid) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        List<String> permissions = permissionService.findAllCodesByUserId(tokenDTO.getUserId());
-        JWTPayload accessJwt = jwtService.createAccessJwt(tokenDTO.getUserId(), permissions);
+        List<String> permissions = permissionService.findAllCodesByUserId(authTokenDTO.getUserId());
+        JWTPayload accessJwt = jwtService.createAccessJwt(authTokenDTO.getUserId(), permissions);
         return RefreshTokenResponseDTO.builder()
                 .accessToken(accessJwt.getValue())
                 .build();
@@ -201,26 +201,26 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        tokenService.deactivateByUserIdAndType(user.getId(), CommonType.RESET_PASSWORD);
-        TokenDTO tokenDTO = tokenService.createResetPasswordToken(user.getId());
+        authTokenService.deactivateByUserIdAndType(user.getId(), CommonType.RESET_PASSWORD);
+        AuthTokenDTO authTokenDTO = authTokenService.createResetPasswordToken(user.getId());
         String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
-        emailService.sendResetPasswordEmail(user.getEmail(), name, tokenDTO.getValue(), user.getId());
+        emailService.sendResetPasswordEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
     }
 
     @Override
     public void resetPassword(ResetPasswordRequestDTO requestDTO) {
         authValidator.validateResetPassword(requestDTO);
-        TokenDTO tokenDTO = tokenService.findOneAndVerifyJwt(requestDTO.getToken(), CommonType.RESET_PASSWORD);
-        if (tokenDTO == null) {
+        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(requestDTO.getToken(), CommonType.RESET_PASSWORD);
+        if (authTokenDTO == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        User user = userRepository.findTopByIdAndStatus(tokenDTO.getUserId(), CommonStatus.ACTIVE).orElse(null);
+        User user = userRepository.findTopByIdAndStatus(authTokenDTO.getUserId(), CommonStatus.ACTIVE).orElse(null);
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
         user.setPassword(authHelper.hashPassword(requestDTO.getNewPassword()));
         userRepository.save(user);
-        tokenService.deactivateByUserId(tokenDTO.getUserId());
+        authTokenService.deactivateByUserId(authTokenDTO.getUserId());
     }
 
     @Override
@@ -230,19 +230,19 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        tokenService.deactivateByUserIdAndType(user.getId(), CommonType.ACTIVATE_ACCOUNT);
-        TokenDTO tokenDTO = tokenService.createActivateAccountToken(user.getId());
+        authTokenService.deactivateByUserIdAndType(user.getId(), CommonType.ACTIVATE_ACCOUNT);
+        AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
         String name = CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail(), "");
-        emailService.sendActivateAccountEmail(user.getEmail(), name, tokenDTO.getValue(), user.getId());
+        emailService.sendActivateAccountEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
     }
 
     @Override
     public void activateAccount(String jwt) {
-        TokenDTO tokenDTO = tokenService.findOneAndVerifyJwt(jwt, CommonType.ACTIVATE_ACCOUNT);
-        if (tokenDTO == null) {
+        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(jwt, CommonType.ACTIVATE_ACCOUNT);
+        if (authTokenDTO == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
-        User user = userRepository.findById(tokenDTO.getUserId()).orElse(null);
+        User user = userRepository.findById(authTokenDTO.getUserId()).orElse(null);
         if (user == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
@@ -252,9 +252,9 @@ public class AuthServiceImpl implements AuthService {
         user.setStatus(CommonStatus.ACTIVE);
         user.setVerified(true);
         user = userRepository.save(user);
-        tokenService.deactivateByUserId(tokenDTO.getUserId());
+        authTokenService.deactivateByUserId(authTokenDTO.getUserId());
         if (!ConversionUtils.safeToBoolean(user.getVerified())) {
-            notificationService.sendNewComerNotification(tokenDTO.getUserId());
+            notificationService.sendNewComerNotification(authTokenDTO.getUserId());
         }
     }
 

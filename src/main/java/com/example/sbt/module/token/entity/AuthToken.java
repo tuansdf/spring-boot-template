@@ -19,14 +19,14 @@ import java.util.UUID;
 @NoArgsConstructor
 @Entity
 @Table(
-        name = "token",
+        name = "auth_token",
         indexes = {
-                @Index(name = "token_user_id_idx", columnList = "user_id"),
-                @Index(name = "token_expires_at_idx", columnList = "expires_at"),
-                @Index(name = "token_created_at_idx", columnList = "created_at"),
+                @Index(name = "auth_token_user_id_idx", columnList = "user_id"),
+                @Index(name = "auth_token_expires_at_idx", columnList = "expires_at"),
+                @Index(name = "auth_token_created_at_idx", columnList = "created_at"),
         }
 )
-public class Token extends BaseEntity {
+public class AuthToken extends BaseEntity {
     @Column(name = "user_id", updatable = false)
     private UUID userId;
     @Column(name = "expires_at")

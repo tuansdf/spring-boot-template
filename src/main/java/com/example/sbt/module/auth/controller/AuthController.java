@@ -7,7 +7,7 @@ import com.example.sbt.module.auth.dto.ConfirmOtpRequestDTO;
 import com.example.sbt.module.auth.dto.DisableOtpRequestDTO;
 import com.example.sbt.module.auth.dto.EnableOtpRequestDTO;
 import com.example.sbt.module.auth.service.AuthService;
-import com.example.sbt.module.token.service.TokenService;
+import com.example.sbt.module.token.service.AuthTokenService;
 import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/v1/auth")
 public class AuthController {
-    private final TokenService tokenService;
+    private final AuthTokenService authTokenService;
     private final AuthService authService;
 
     @PatchMapping("/password")
@@ -41,7 +41,7 @@ public class AuthController {
     @PostMapping("/token/revoke")
     public ResponseEntity<CommonResponse<Object>> revokeAllTokens() {
         UUID userId = RequestContext.get().getUserId();
-        tokenService.deactivateByUserId(userId);
+        authTokenService.deactivateByUserId(userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }
 

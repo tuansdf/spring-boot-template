@@ -13,7 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TokenDTO {
+public class AuthTokenDTO {
     private UUID id;
     private UUID userId;
     private String type;

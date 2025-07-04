@@ -3,7 +3,7 @@ package com.example.sbt.module.job.controller;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.module.file.service.FileObjectService;
-import com.example.sbt.module.token.service.TokenService;
+import com.example.sbt.module.token.service.AuthTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/jobs")
 public class JobController {
-    private final TokenService tokenService;
+    private final AuthTokenService authTokenService;
     private final FileObjectService fileObjectService;
 
     @GetMapping("/tokens/delete-expired")
     public ResponseEntity<CommonResponse<Object>> deleteExpiredTokens() {
-        tokenService.deleteExpiredTokensAsync();
+        authTokenService.deleteExpiredTokensAsync();
         return ResponseEntity.ok(new CommonResponse<>());
     }
 

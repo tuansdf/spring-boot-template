@@ -4,9 +4,9 @@ import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.dto.JWTPayload;
 import com.example.sbt.core.mapper.CommonMapper;
-import com.example.sbt.module.token.dto.TokenDTO;
-import com.example.sbt.module.token.entity.Token;
-import com.example.sbt.module.token.repository.TokenRepository;
+import com.example.sbt.module.token.dto.AuthTokenDTO;
+import com.example.sbt.module.token.entity.AuthToken;
+import com.example.sbt.module.token.repository.AuthTokenRepository;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.RandomUtils;
 import jakarta.transaction.Transactional;
@@ -24,35 +24,35 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 @Transactional(rollbackOn = Exception.class)
-public class TokenServiceImpl implements TokenService {
+public class AuthTokenServiceImpl implements AuthTokenService {
     private final CommonMapper commonMapper;
-    private final TokenRepository tokenRepository;
+    private final AuthTokenRepository authTokenRepository;
     private final JWTService jwtService;
 
     @Override
-    public TokenDTO findOneById(UUID id) {
+    public AuthTokenDTO findOneById(UUID id) {
         if (id == null) return null;
-        return tokenRepository.findById(id).map(commonMapper::toDTO).orElse(null);
+        return authTokenRepository.findById(id).map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
     public void deactivateByUserIdAndType(UUID userId, String type) {
-        tokenRepository.updateStatusByUserIdAndType(userId, type, CommonStatus.INACTIVE);
+        authTokenRepository.updateStatusByUserIdAndType(userId, type, CommonStatus.INACTIVE);
     }
 
     @Override
     public void deactivateByUserIdAndTypes(UUID userId, List<String> types) {
-        tokenRepository.updateStatusByUserIdAndTypes(userId, types, CommonStatus.INACTIVE);
+        authTokenRepository.updateStatusByUserIdAndTypes(userId, types, CommonStatus.INACTIVE);
     }
 
     @Override
     public void deactivateByUserId(UUID userId) {
-        tokenRepository.updateStatusByUserId(userId, CommonStatus.INACTIVE);
+        authTokenRepository.updateStatusByUserId(userId, CommonStatus.INACTIVE);
     }
 
     @Override
     public void deleteExpiredTokens() {
-        tokenRepository.deleteByExpiresAtBefore(Instant.now());
+        authTokenRepository.deleteByExpiresAtBefore(Instant.now());
     }
 
     @Async
@@ -62,7 +62,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public TokenDTO findOneAndVerifyJwt(String jwt, String type) {
+    public AuthTokenDTO findOneAndVerifyJwt(String jwt, String type) {
         if (StringUtils.isBlank(jwt) || StringUtils.isBlank(type)) {
             return null;
         }
@@ -75,66 +75,66 @@ public class TokenServiceImpl implements TokenService {
             return null;
         }
         UUID tokenId = ConversionUtils.toUUID(jwtPayload.getSubject());
-        TokenDTO tokenDTO = findOneById(tokenId);
-        if (tokenDTO == null) {
+        AuthTokenDTO authTokenDTO = findOneById(tokenId);
+        if (authTokenDTO == null) {
             return null;
         }
-        if (!type.equals(tokenDTO.getType()) || !CommonStatus.ACTIVE.equals(tokenDTO.getStatus())) {
+        if (!type.equals(authTokenDTO.getType()) || !CommonStatus.ACTIVE.equals(authTokenDTO.getStatus())) {
             return null;
         }
-        if (Instant.now().isAfter(tokenDTO.getExpiresAt())) {
+        if (Instant.now().isAfter(authTokenDTO.getExpiresAt())) {
             return null;
         }
-        return tokenDTO;
+        return authTokenDTO;
     }
 
     @Override
-    public TokenDTO createRefreshToken(UUID userId) {
+    public AuthTokenDTO createRefreshToken(UUID userId) {
         UUID id = RandomUtils.secure().randomTimeBasedUUID();
         JWTPayload jwtPayload = jwtService.createRefreshJwt(id);
 
-        Token token = new Token();
-        token.setId(id);
-        token.setUserId(userId);
-        token.setExpiresAt(jwtPayload.getExpiresAt());
-        token.setType(CommonType.REFRESH_TOKEN);
-        token.setStatus(CommonStatus.ACTIVE);
+        AuthToken authToken = new AuthToken();
+        authToken.setId(id);
+        authToken.setUserId(userId);
+        authToken.setExpiresAt(jwtPayload.getExpiresAt());
+        authToken.setType(CommonType.REFRESH_TOKEN);
+        authToken.setStatus(CommonStatus.ACTIVE);
 
-        TokenDTO result = commonMapper.toDTO(tokenRepository.save(token));
+        AuthTokenDTO result = commonMapper.toDTO(authTokenRepository.save(authToken));
         result.setValue(jwtPayload.getValue());
         return result;
     }
 
     @Override
-    public TokenDTO createResetPasswordToken(UUID userId) {
+    public AuthTokenDTO createResetPasswordToken(UUID userId) {
         UUID id = RandomUtils.secure().randomTimeBasedUUID();
         JWTPayload jwtPayload = jwtService.createResetPasswordJwt(id);
 
-        Token token = new Token();
-        token.setId(id);
-        token.setUserId(userId);
-        token.setExpiresAt(jwtPayload.getExpiresAt());
-        token.setType(CommonType.RESET_PASSWORD);
-        token.setStatus(CommonStatus.ACTIVE);
+        AuthToken authToken = new AuthToken();
+        authToken.setId(id);
+        authToken.setUserId(userId);
+        authToken.setExpiresAt(jwtPayload.getExpiresAt());
+        authToken.setType(CommonType.RESET_PASSWORD);
+        authToken.setStatus(CommonStatus.ACTIVE);
 
-        TokenDTO result = commonMapper.toDTO(tokenRepository.save(token));
+        AuthTokenDTO result = commonMapper.toDTO(authTokenRepository.save(authToken));
         result.setValue(jwtPayload.getValue());
         return result;
     }
 
     @Override
-    public TokenDTO createActivateAccountToken(UUID userId) {
+    public AuthTokenDTO createActivateAccountToken(UUID userId) {
         UUID id = RandomUtils.secure().randomTimeBasedUUID();
         JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id);
 
-        Token token = new Token();
-        token.setId(id);
-        token.setUserId(userId);
-        token.setExpiresAt(jwtPayload.getExpiresAt());
-        token.setType(CommonType.ACTIVATE_ACCOUNT);
-        token.setStatus(CommonStatus.ACTIVE);
+        AuthToken authToken = new AuthToken();
+        authToken.setId(id);
+        authToken.setUserId(userId);
+        authToken.setExpiresAt(jwtPayload.getExpiresAt());
+        authToken.setType(CommonType.ACTIVATE_ACCOUNT);
+        authToken.setStatus(CommonStatus.ACTIVE);
 
-        TokenDTO result = commonMapper.toDTO(tokenRepository.save(token));
+        AuthTokenDTO result = commonMapper.toDTO(authTokenRepository.save(authToken));
         result.setValue(jwtPayload.getValue());
         return result;
     }
