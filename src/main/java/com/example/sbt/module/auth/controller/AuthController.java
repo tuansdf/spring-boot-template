@@ -1,6 +1,5 @@
 package com.example.sbt.module.auth.controller;
 
-import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.auth.dto.ConfirmOtpRequestDTO;
@@ -12,7 +11,6 @@ import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -26,7 +24,6 @@ public class AuthController {
     private final AuthService authService;
 
     @PatchMapping("/password")
-    @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<Object>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
         UUID userId = RequestContext.get().getUserId();
         authService.changePassword(requestDTO, userId);

@@ -291,8 +291,8 @@ public class UserServiceImpl implements UserService {
                         item.getUsername(),
                         item.getEmail(),
                         item.getName(),
-                        item.getOtpEnabled(),
-                        item.getVerified(),
+                        ConversionUtils.safeToBoolean(item.getOtpEnabled()),
+                        ConversionUtils.safeToBoolean(item.getVerified()),
                         item.getStatus(),
                         String.join(",", item.getRoleCodes()),
                         String.join(",", item.getPermissionCodes()));
