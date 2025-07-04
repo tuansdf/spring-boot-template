@@ -12,10 +12,6 @@ import java.util.regex.Pattern;
 public class ValidationHelper {
     private final LocaleHelper localeHelper;
 
-    public boolean isEmail(String input) {
-        return Regex.EMAIL.matcher(input).matches();
-    }
-
     public String validatePassword(String input) {
         if (StringUtils.isEmpty(input)) return null;
         if (input.length() < 12 || input.length() > 64) {
@@ -40,7 +36,7 @@ public class ValidationHelper {
         if (input.length() > 255) {
             return localeHelper.getMessage("form.error.over_max_length", new LocaleKey("field.email"), 255);
         }
-        if (!isEmail(input)) {
+        if (!Regex.EMAIL.matcher(input).matches()) {
             return localeHelper.getMessage("form.error.invalid", new LocaleKey("field.email"));
         }
         return null;
@@ -54,7 +50,7 @@ public class ValidationHelper {
         if (input.length() > 64) {
             return localeHelper.getMessage("form.error.over_max_length", new LocaleKey("field.username"), 64);
         }
-        if (Regex.USERNAME.matcher(input).matches()) {
+        if (!Regex.USERNAME.matcher(input).matches()) {
             return localeHelper.getMessage("form.error.invalid", new LocaleKey("field.username"));
         }
         return null;

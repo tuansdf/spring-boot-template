@@ -1,8 +1,8 @@
-@username=
-@email=
-@password=
+@username=user1
+@email=user1@example.com
+@password=passworddddd
 @otp_code=
-@activate_token=
+@activate_token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIwMTk3ZDY2ZS0zOTJhLTdmNTEtYjYwYi03MDkzZTM1MDUzNjAiLCJ0eXAiOjMsIm5iZiI6MTc1MTY0OTIzNywiZXhwIjoxNzUxNjQ5ODM3LCJpYXQiOjE3NTE2NDkyMzd9.a_X8CjqFLe924Iq3YMJNzsXHQaQMGZCNa6O9wkqFskU
 @reset_token=
 
 ###

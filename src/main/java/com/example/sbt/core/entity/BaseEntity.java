@@ -34,7 +34,7 @@ public abstract class BaseEntity implements Serializable {
         createdAt = now;
         updatedAt = now;
         if (id == null) {
-            id = RandomUtils.Secure.generateTimeBasedUUID();
+            id = RandomUtils.secure().generateTimeBasedUUID();
         }
     }
 }

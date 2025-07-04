@@ -90,7 +90,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO createRefreshToken(UUID userId) {
-        UUID id = RandomUtils.Secure.generateTimeBasedUUID();
+        UUID id = RandomUtils.secure().generateTimeBasedUUID();
         JWTPayload jwtPayload = jwtService.createRefreshJwt(id);
 
         Token token = new Token();
@@ -107,7 +107,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO createResetPasswordToken(UUID userId) {
-        UUID id = RandomUtils.Secure.generateTimeBasedUUID();
+        UUID id = RandomUtils.secure().generateTimeBasedUUID();
         JWTPayload jwtPayload = jwtService.createResetPasswordJwt(id);
 
         Token token = new Token();
@@ -124,7 +124,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public TokenDTO createActivateAccountToken(UUID userId) {
-        UUID id = RandomUtils.Secure.generateTimeBasedUUID();
+        UUID id = RandomUtils.secure().generateTimeBasedUUID();
         JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id);
 
         Token token = new Token();

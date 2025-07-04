@@ -62,11 +62,11 @@ public class TestController {
 
         for (int i = 0; i < total; i++) {
             UserDTO user = new UserDTO();
-            user.setId(RandomUtils.Insecure.generateTimeBasedUUID());
-            user.setUsername(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
-            user.setEmail(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
-            user.setName(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
-            user.setPassword(ConversionUtils.safeToString(RandomUtils.Insecure.generateTimeBasedUUID()));
+            user.setId(RandomUtils.insecure().generateTimeBasedUUID());
+            user.setUsername(ConversionUtils.safeToString(RandomUtils.insecure().generateTimeBasedUUID()));
+            user.setEmail(ConversionUtils.safeToString(RandomUtils.insecure().generateTimeBasedUUID()));
+            user.setName(ConversionUtils.safeToString(RandomUtils.insecure().generateTimeBasedUUID()));
+            user.setPassword(ConversionUtils.safeToString(RandomUtils.insecure().generateTimeBasedUUID()));
             user.setStatus(CommonStatus.ACTIVE);
             user.setCreatedAt(now.plusSeconds(i));
             user.setUpdatedAt(now.plusSeconds(i * 60L));
@@ -194,7 +194,7 @@ public class TestController {
     @GetMapping(value = "/redis", produces = MediaType.TEXT_PLAIN_VALUE)
     public String testRedis() {
         String key = "TEST_REDIS_KEY_" + DateUtils.currentEpochMillis();
-        redisTemplate.opsForValue().set(key, RandomUtils.Secure.generateTimeBasedUUID().toString());
+        redisTemplate.opsForValue().set(key, RandomUtils.secure().generateTimeBasedUUID().toString());
         log.info("{}: {}", key, redisTemplate.opsForValue().get(key));
         return "OK";
     }
@@ -202,26 +202,26 @@ public class TestController {
     @GetMapping("/random")
     public Object testRandom() {
         Map<String, Object> result = new HashMap<>();
-        result.put("Secure.generateUUID", RandomUtils.Secure.generateUUID());
-        result.put("Insecure.generateUUID", RandomUtils.Insecure.generateUUID());
-        result.put("Secure.generateTimeBasedUUID", RandomUtils.Secure.generateTimeBasedUUID());
-        result.put("Insecure.generateTimeBasedUUID", RandomUtils.Insecure.generateTimeBasedUUID());
-        result.put("Secure.generateString(4)", RandomUtils.Secure.generateString(4));
-        result.put("Insecure.generateString(4)", RandomUtils.Insecure.generateString(4));
-        result.put("Secure.generateString(8)", RandomUtils.Secure.generateString(8));
-        result.put("Insecure.generateString(8)", RandomUtils.Insecure.generateString(8));
-        result.put("Secure.generateString(16)", RandomUtils.Secure.generateString(16));
-        result.put("Insecure.generateString(16)", RandomUtils.Insecure.generateString(16));
-        result.put("Secure.generateHexString(4)", RandomUtils.Secure.generateHexString(4));
-        result.put("Insecure.generateHexString(4)", RandomUtils.Insecure.generateHexString(4));
-        result.put("Secure.generateHexString(8)", RandomUtils.Secure.generateHexString(8));
-        result.put("Insecure.generateHexString(8)", RandomUtils.Insecure.generateHexString(8));
-        result.put("Secure.generateHexString(16)", RandomUtils.Secure.generateHexString(16));
-        result.put("Insecure.generateHexString(16)", RandomUtils.Insecure.generateHexString(16));
-        result.put("Secure.generateOTP(8)", RandomUtils.Secure.generateOTP(8));
-        result.put("Insecure.generateOTP(8)", RandomUtils.Insecure.generateOTP(8));
-        result.put("Secure.generateOTP(16)", RandomUtils.Secure.generateOTP(16));
-        result.put("Insecure.generateOTP(16)", RandomUtils.Insecure.generateOTP(16));
+        result.put("Secure.generateUUID", RandomUtils.secure().generateUUID());
+        result.put("Insecure.generateUUID", RandomUtils.insecure().generateUUID());
+        result.put("Secure.generateTimeBasedUUID", RandomUtils.secure().generateTimeBasedUUID());
+        result.put("Insecure.generateTimeBasedUUID", RandomUtils.insecure().generateTimeBasedUUID());
+        result.put("Secure.generateString(4)", RandomUtils.secure().generateString(4));
+        result.put("Insecure.generateString(4)", RandomUtils.insecure().generateString(4));
+        result.put("Secure.generateString(8)", RandomUtils.secure().generateString(8));
+        result.put("Insecure.generateString(8)", RandomUtils.insecure().generateString(8));
+        result.put("Secure.generateString(16)", RandomUtils.secure().generateString(16));
+        result.put("Insecure.generateString(16)", RandomUtils.insecure().generateString(16));
+        result.put("Secure.generateHexString(4)", RandomUtils.secure().generateHexString(4));
+        result.put("Insecure.generateHexString(4)", RandomUtils.insecure().generateHexString(4));
+        result.put("Secure.generateHexString(8)", RandomUtils.secure().generateHexString(8));
+        result.put("Insecure.generateHexString(8)", RandomUtils.insecure().generateHexString(8));
+        result.put("Secure.generateHexString(16)", RandomUtils.secure().generateHexString(16));
+        result.put("Insecure.generateHexString(16)", RandomUtils.insecure().generateHexString(16));
+        result.put("Secure.generateOTP(8)", RandomUtils.secure().generateOTP(8));
+        result.put("Insecure.generateOTP(8)", RandomUtils.insecure().generateOTP(8));
+        result.put("Secure.generateOTP(16)", RandomUtils.secure().generateOTP(16));
+        result.put("Insecure.generateOTP(16)", RandomUtils.insecure().generateOTP(16));
         result.put("DateUtils.currentEpochMillis", DateUtils.currentEpochMillis());
         result.put("DateUtils.currentEpochMicros", DateUtils.currentEpochMicros());
         result.put("DateUtils.currentEpochNanos", DateUtils.currentEpochNanos());
@@ -232,26 +232,26 @@ public class TestController {
     public String bench() {
         for (int i = 0; i < 1_000_000; i++) {
             UUID.randomUUID();
-            RandomUtils.Secure.generateUUID();
-            RandomUtils.Secure.generateUUID().toString();
-            RandomUtils.Insecure.generateUUID();
-            RandomUtils.Insecure.generateUUID().toString();
-            RandomUtils.Secure.generateTimeBasedUUID();
-            RandomUtils.Secure.generateTimeBasedUUID().toString();
-            RandomUtils.Insecure.generateTimeBasedUUID();
-            RandomUtils.Insecure.generateTimeBasedUUID().toString();
-            RandomUtils.Secure.generateString(8);
-            RandomUtils.Insecure.generateString(8);
-            RandomUtils.Secure.generateString(16);
-            RandomUtils.Insecure.generateString(16);
-            RandomUtils.Secure.generateHexString(8);
-            RandomUtils.Insecure.generateHexString(8);
-            RandomUtils.Secure.generateHexString(16);
-            RandomUtils.Insecure.generateHexString(16);
-            RandomUtils.Secure.generateOTP(8);
-            RandomUtils.Insecure.generateOTP(8);
-            RandomUtils.Secure.generateOTP(16);
-            RandomUtils.Insecure.generateOTP(16);
+            RandomUtils.secure().generateUUID();
+            RandomUtils.secure().generateUUID().toString();
+            RandomUtils.insecure().generateUUID();
+            RandomUtils.insecure().generateUUID().toString();
+            RandomUtils.secure().generateTimeBasedUUID();
+            RandomUtils.secure().generateTimeBasedUUID().toString();
+            RandomUtils.insecure().generateTimeBasedUUID();
+            RandomUtils.insecure().generateTimeBasedUUID().toString();
+            RandomUtils.secure().generateString(8);
+            RandomUtils.insecure().generateString(8);
+            RandomUtils.secure().generateString(16);
+            RandomUtils.insecure().generateString(16);
+            RandomUtils.secure().generateHexString(8);
+            RandomUtils.insecure().generateHexString(8);
+            RandomUtils.secure().generateHexString(16);
+            RandomUtils.insecure().generateHexString(16);
+            RandomUtils.secure().generateOTP(8);
+            RandomUtils.insecure().generateOTP(8);
+            RandomUtils.secure().generateOTP(16);
+            RandomUtils.insecure().generateOTP(16);
             DateUtils.currentEpochMillis();
             DateUtils.currentEpochMicros();
             DateUtils.currentEpochNanos();

@@ -22,8 +22,8 @@ import com.example.sbt.module.token.service.TokenService;
 import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.entity.User;
+import com.example.sbt.module.user.mapper.UserMapper;
 import com.example.sbt.module.user.repository.UserRepository;
-import com.example.sbt.module.user.service.UserService;
 import com.example.sbt.shared.util.CommonUtils;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.TOTPUtils;
@@ -48,8 +48,8 @@ public class AuthServiceImpl implements AuthService {
     private final AuthHelper authHelper;
     private final LocaleHelper localeHelper;
     private final AuthValidator authValidator;
+    private final UserMapper userMapper;
     private final JWTService jwtService;
-    private final UserService userService;
     private final PermissionService permissionService;
     private final RoleService roleService;
     private final TokenService tokenService;
@@ -71,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthDTO login(LoginRequestDTO requestDTO) {
         authValidator.validateLogin(requestDTO);
 
-        UserDTO userDTO = userService.findOneByUsername(requestDTO.getUsername());
+        UserDTO userDTO = userRepository.findTopByUsername(requestDTO.getUsername()).map(userMapper::toDTO).orElse(null);
         if (userDTO == null) {
             throw new CustomException(HttpStatus.UNAUTHORIZED);
         }
