@@ -26,7 +26,7 @@ public class RequestResponseLoggingFilter implements Filter {
         HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
 
         try {
-            RequestContext.get().setRequestId(ConversionUtils.safeToString(RandomUtils.insecure().generateHexString(8)));
+            RequestContext.get().setRequestId(ConversionUtils.safeToString(RandomUtils.insecure().randomHexString(8)));
             RequestContext.get().setLocale(httpServletRequest.getLocale());
             RequestContext.get().setTenantId(httpServletRequest.getHeader(HTTPHeader.X_TENANT_ID));
             RequestContext.syncMDC();

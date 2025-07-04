@@ -39,7 +39,7 @@ public class RandomUtils {
         return SECURE_UTILS;
     }
 
-    private static String generateHexString(Random random, int length) {
+    private static String randomHexString(Random random, int length) {
         if (random == null) {
             random = SECURE_RANDOM;
         }
@@ -51,7 +51,7 @@ public class RandomUtils {
         return Hex.encodeHexString(randomBytes);
     }
 
-    private static String generateString(Random random, char[] alphabet, int length) {
+    private static String randomString(Random random, char[] alphabet, int length) {
         if (random == null) {
             random = SECURE_RANDOM;
         }
@@ -64,23 +64,23 @@ public class RandomUtils {
         return RandomStringUtils.random(length, 0, alphabet.length, true, true, alphabet, random);
     }
 
-    public UUID generateUUID() {
+    public UUID randomUUID() {
         return Generators.randomBasedGenerator(randomSupplier.get()).generate();
     }
 
-    public UUID generateTimeBasedUUID() {
+    public UUID randomTimeBasedUUID() {
         return Generators.timeBasedEpochRandomGenerator(randomSupplier.get()).generate();
     }
 
-    public String generateHexString(int length) {
-        return RandomUtils.generateHexString(randomSupplier.get(), length);
+    public String randomHexString(int length) {
+        return RandomUtils.randomHexString(randomSupplier.get(), length);
     }
 
     public String generateOTP(int length) {
-        return RandomUtils.generateString(randomSupplier.get(), OTP_ALPHABET_CHARS, length);
+        return RandomUtils.randomString(randomSupplier.get(), OTP_ALPHABET_CHARS, length);
     }
 
-    public String generateString(int length) {
-        return RandomUtils.generateString(randomSupplier.get(), DEFAULT_ALPHABET_CHARS, length);
+    public String randomString(int length) {
+        return RandomUtils.randomString(randomSupplier.get(), DEFAULT_ALPHABET_CHARS, length);
     }
 }

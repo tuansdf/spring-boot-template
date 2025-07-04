@@ -44,7 +44,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         if (fileType == null) {
             fileType = FileType.fromExtension(FileUtils.getFileExtension(originalFilename));
         }
-        String filename = RandomUtils.secure().generateUUID().toString();
+        String filename = RandomUtils.secure().randomUUID().toString();
         if (fileType != null) {
             filename = FileUtils.getFilename(filename, fileType);
         }
