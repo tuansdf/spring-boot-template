@@ -60,8 +60,6 @@ public class JWTFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         RequestContext.get().setUserId(ConversionUtils.toUUID(jwtPayload.getSubject()));
-        RequestContext.get().setPermissions(permissions);
-        RequestContext.syncMDC();
 
         chain.doFilter(servletRequest, servletResponse);
     }

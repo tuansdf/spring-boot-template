@@ -8,13 +8,17 @@ import java.util.UUID;
 public interface BackgroundTaskService {
     BackgroundTaskDTO init(String type);
 
+    BackgroundTaskDTO findOneRecentByCacheKey(String cacheKey, String type);
+
     BackgroundTaskDTO findOneById(UUID id);
 
     BackgroundTaskDTO findOneByIdOrThrow(UUID id);
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
-    void updateStatus(UUID id, String status, UUID fileId);
+    void updateStatus(UUID id, String status, UUID fileId, String cacheKey);
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
-    void updateStatus(UUID id, String status);
+    void updateStatusWithTrans(UUID id, String status, UUID fileId, String cacheKey);
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    void updateStatusWithTrans(UUID id, String status);
 }

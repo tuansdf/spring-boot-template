@@ -6,7 +6,9 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface BackgroundTaskMapper {
-    BackgroundTaskDTO toDTO(BackgroundTask user);
+    BackgroundTaskDTO toDTO(BackgroundTask v);
 
-    BackgroundTask toEntity(BackgroundTaskDTO user);
+    BackgroundTask toEntity(BackgroundTaskDTO v);
+
+    BackgroundTask clone(BackgroundTask v);
 }

@@ -1,6 +1,9 @@
 package com.example.sbt.shared.util;
 
+import com.example.sbt.core.helper.JSONHelper;
 import jakarta.persistence.Tuple;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,5 +83,18 @@ public class CommonUtils {
             return null;
         }
         return items.get(index);
+    }
+
+    public static <T> String hashObject(T input) {
+        try {
+            if (input == null) {
+                return null;
+            }
+            byte[] json = JSONHelper.Mapper.HASHING.writeValueAsBytes(input);
+            byte[] hash = DigestUtils.sha256(json);
+            return Base64.encodeBase64URLSafeString(hash);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

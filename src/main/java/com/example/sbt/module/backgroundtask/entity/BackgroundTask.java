@@ -22,12 +22,15 @@ import java.util.UUID;
         indexes = {
                 @Index(name = "background_task_created_by_idx", columnList = "created_by"),
                 @Index(name = "background_task_file_id_idx", columnList = "file_id"),
+                @Index(name = "background_task_cache_key_idx", columnList = "cache_key"),
                 @Index(name = "background_task_created_at_idx", columnList = "created_at"),
         }
 )
 public class BackgroundTask extends BaseEntity {
     @Column(name = "file_id")
     private UUID fileId;
+    @Column(name = "cache_key")
+    private String cacheKey;
     @Column(name = "type")
     private String type;
     @Column(name = "status")

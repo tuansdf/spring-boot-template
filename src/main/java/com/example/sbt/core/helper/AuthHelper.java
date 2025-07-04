@@ -1,14 +1,14 @@
 package com.example.sbt.core.helper;
 
-import com.example.sbt.core.dto.RequestContext;
-import com.example.sbt.core.dto.RequestContextData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,10 +25,17 @@ public class AuthHelper {
     }
 
     public boolean hasAnyPermission(String... permissions) {
-        RequestContextData context = RequestContext.get();
-        if (CollectionUtils.isEmpty(context.getPermissions())) {
+        SecurityContext context = SecurityContextHolder.getContext();
+        if (context == null) {
             return false;
         }
-        return Arrays.stream(permissions).anyMatch(x -> context.getPermissions().contains(x));
+        Authentication authentication = context.getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+        if (CollectionUtils.isEmpty(authentication.getAuthorities())) {
+            return false;
+        }
+        return authentication.getAuthorities().stream().anyMatch(x -> ArrayUtils.contains(permissions, x.getAuthority()));
     }
 }

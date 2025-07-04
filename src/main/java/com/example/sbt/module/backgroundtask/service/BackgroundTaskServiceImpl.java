@@ -9,9 +9,11 @@ import com.example.sbt.module.backgroundtask.repository.BackgroundTaskRepository
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -19,6 +21,8 @@ import java.util.UUID;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class BackgroundTaskServiceImpl implements BackgroundTaskService {
+    private static final long RECENT_SECONDS = 60L * 60L;
+
     private final BackgroundTaskRepository backgroundTaskRepository;
     private final BackgroundTaskMapper backgroundTaskMapper;
 
@@ -29,6 +33,16 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
         result.setStatus(BackgroundTaskStatus.ENQUEUED);
         result.setCreatedBy(RequestContext.get().getUserId());
         return backgroundTaskMapper.toDTO(backgroundTaskRepository.save(result));
+    }
+
+    @Override
+    public BackgroundTaskDTO findOneRecentByCacheKey(String cacheKey, String type) {
+        if (StringUtils.isBlank(cacheKey)) {
+            return null;
+        }
+        Instant after = Instant.now().minusSeconds(RECENT_SECONDS);
+        return backgroundTaskRepository.findTopRecentByCacheKey(cacheKey, type, BackgroundTaskStatus.SUCCEEDED, after)
+                .map(backgroundTaskMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -46,21 +60,23 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
         return result;
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
     @Override
-    public void updateStatus(UUID id, String status, UUID fileId) {
-        if (id == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
-        backgroundTaskRepository.updateStatusById(id, status, fileId);
+    public void updateStatus(UUID id, String status, UUID fileId, String cacheKey) {
+        if (id == null) return;
+        backgroundTaskRepository.updateStatusById(id, status, fileId, cacheKey);
     }
 
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     @Override
-    public void updateStatus(UUID id, String status) {
-        if (id == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
+    public void updateStatusWithTrans(UUID id, String status, UUID fileId, String cacheKey) {
+        if (id == null) return;
+        backgroundTaskRepository.updateStatusById(id, status, fileId, cacheKey);
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Override
+    public void updateStatusWithTrans(UUID id, String status) {
+        if (id == null) return;
         backgroundTaskRepository.updateStatusById(id, status);
     }
 }

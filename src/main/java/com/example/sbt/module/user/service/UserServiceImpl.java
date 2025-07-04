@@ -20,10 +20,7 @@ import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.mapper.UserMapper;
 import com.example.sbt.module.user.repository.UserRepository;
 import com.example.sbt.shared.constant.FileType;
-import com.example.sbt.shared.util.ConversionUtils;
-import com.example.sbt.shared.util.DateUtils;
-import com.example.sbt.shared.util.ExcelUtils;
-import com.example.sbt.shared.util.FileUtils;
+import com.example.sbt.shared.util.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -46,6 +43,8 @@ import java.util.*;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
+    private static final long MAX_ITEMS = 1000000L;
+
     private final SQLHelper sqlHelper;
     private final AuthHelper authHelper;
     private final UserMapper userMapper;
@@ -240,30 +239,36 @@ public class UserServiceImpl implements UserService {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        long MAX_ITEMS = 1000000L;
         Instant now = Instant.now();
         requestDTO.setPageNumber(1L);
         requestDTO.setPageSize(MAX_ITEMS);
         requestDTO.setCreatedAtTo(now);
-        long totalItems = executeSearch(requestDTO, true, false).getTotalItems();
-        if (totalItems <= 0) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
         BackgroundTaskDTO taskDTO = backgroundTaskService.init(BackgroundTaskType.EXPORT_USER);
-        exportUserEventPublisher.publish(taskDTO.getId(), requestDTO);
+        BackgroundTaskDTO existing = backgroundTaskService.findOneRecentByCacheKey(CommonUtils.hashObject(requestDTO), BackgroundTaskType.EXPORT_USER);
+        if (existing != null) {
+            backgroundTaskService.updateStatus(taskDTO.getId(), BackgroundTaskStatus.SUCCEEDED, existing.getFileId(), null);
+        } else {
+            exportUserEventPublisher.publish(taskDTO.getId(), requestDTO);
+        }
     }
 
     @Override
     public void handleExportTask(UUID backgroundTaskId, SearchUserRequestDTO requestDTO) {
         try {
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.PROCESSING);
+            String cacheKey = CommonUtils.hashObject(requestDTO);
+            BackgroundTaskDTO existing = backgroundTaskService.findOneRecentByCacheKey(cacheKey, BackgroundTaskType.EXPORT_USER);
+            if (existing != null) {
+                backgroundTaskService.updateStatusWithTrans(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, existing.getFileId(), null);
+                return;
+            }
+            backgroundTaskService.updateStatusWithTrans(backgroundTaskId, BackgroundTaskStatus.PROCESSING);
             FileObjectDTO fileObjectDTO = export(requestDTO);
             if (fileObjectDTO == null) {
                 throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, fileObjectDTO.getId());
+            backgroundTaskService.updateStatusWithTrans(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, fileObjectDTO.getId(), cacheKey);
         } catch (Exception e) {
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.FAILED);
+            backgroundTaskService.updateStatusWithTrans(backgroundTaskId, BackgroundTaskStatus.FAILED);
         }
     }
 
@@ -272,8 +277,8 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         PaginationData<UserDTO> searchData = executeSearch(requestDTO, false, false);
-        if (CollectionUtils.isEmpty(searchData.getItems())) {
-            return null;
+        if (searchData.getItems() == null) {
+            searchData.setItems(new ArrayList<>());
         }
         byte[] file = null;
         try (Workbook workbook = new SXSSFWorkbook()) {
