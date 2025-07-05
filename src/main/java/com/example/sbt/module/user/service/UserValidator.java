@@ -23,7 +23,7 @@ public class UserValidator {
 
     public void validateUpdate(UserDTO requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(localeHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+            throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
         requestDTO.setUsername(ConversionUtils.safeTrim(requestDTO.getUsername()));
         requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
@@ -37,10 +37,10 @@ public class UserValidator {
             throw new CustomException(emailError);
         }
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(localeHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
+            throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.name"), 255));
         }
         if (StringUtils.isNotEmpty(requestDTO.getStatus()) && !validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(localeHelper.getMessage("form.error.invalid", new LocaleKey("field.status")));
+            throw new CustomException(localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.status")));
         }
     }
 }

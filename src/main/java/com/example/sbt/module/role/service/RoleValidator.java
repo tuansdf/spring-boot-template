@@ -31,38 +31,38 @@ public class RoleValidator {
 
     public void validateUpdate(RoleDTO requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(localeHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+            throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(localeHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
+            throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.name"), 255));
         }
         if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(localeHelper.getMessage("form.error.over_max_length", new LocaleKey("field.description"), 255));
+            throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.description"), 255));
         }
         if (CollectionUtils.isEmpty(requestDTO.getPermissionIds())) {
-            throw new CustomException(localeHelper.getMessage("form.error.required", new LocaleKey("field.permission")));
+            throw new CustomException(localeHelper.getMessage("validation.error.required", new LocaleKey("field.permission")));
         }
         if (permissionRepository.countByIdIn(requestDTO.getPermissionIds()) != requestDTO.getPermissionIds().size()) {
-            throw new CustomException(localeHelper.getMessage("form.error.invalid", new LocaleKey("field.permission")));
+            throw new CustomException(localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.permission")));
         }
     }
 
     public void validateCreate(RoleDTO requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(localeHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+            throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
         if (StringUtils.isBlank(requestDTO.getCode())) {
-            throw new CustomException(localeHelper.getMessage("form.error.required", new LocaleKey("field.code")));
+            throw new CustomException(localeHelper.getMessage("validation.error.required", new LocaleKey("field.code")));
         }
         if (!requestDTO.getCode().startsWith(Constants.ROLE_STARTS_WITH)) {
-            throw new CustomException(localeHelper.getMessage("form.error.not_start_with", new LocaleKey("field.code"), Constants.ROLE_STARTS_WITH));
+            throw new CustomException(localeHelper.getMessage("validation.error.not_start_with", new LocaleKey("field.code"), Constants.ROLE_STARTS_WITH));
         }
         String codeError = validationHelper.validateCode(requestDTO.getCode());
         if (codeError != null) {
             throw new CustomException(codeError);
         }
         if (roleRepository.existsByCode(requestDTO.getCode())) {
-            throw new CustomException(localeHelper.getMessage("form.error.duplicated", new LocaleKey("field.code")));
+            throw new CustomException(localeHelper.getMessage("validation.error.duplicated", new LocaleKey("field.code")));
         }
     }
 }

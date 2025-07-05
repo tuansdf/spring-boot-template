@@ -27,29 +27,29 @@ public class PermissionValidator {
 
     public void validateUpdate(PermissionDTO requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(localeHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+            throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
-            throw new CustomException(localeHelper.getMessage("form.error.over_max_length", new LocaleKey("field.name"), 255));
+            throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.name"), 255));
         }
     }
 
     public void validateCreate(PermissionDTO requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(localeHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+            throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
         if (StringUtils.isBlank(requestDTO.getCode())) {
-            throw new CustomException(localeHelper.getMessage("form.error.required", new LocaleKey("field.code")));
+            throw new CustomException(localeHelper.getMessage("validation.error.required", new LocaleKey("field.code")));
         }
         if (!requestDTO.getCode().startsWith(Constants.PERMISSION_STARTS_WITH)) {
-            throw new CustomException(localeHelper.getMessage("form.error.not_start_with", new LocaleKey("field.code"), Constants.PERMISSION_STARTS_WITH));
+            throw new CustomException(localeHelper.getMessage("validation.error.not_start_with", new LocaleKey("field.code"), Constants.PERMISSION_STARTS_WITH));
         }
         String codeError = validationHelper.validateCode(requestDTO.getCode());
         if (codeError != null) {
             throw new CustomException(codeError);
         }
         if (permissionRepository.existsByCode(requestDTO.getCode())) {
-            throw new CustomException(localeHelper.getMessage("form.error.duplicated", new LocaleKey("field.code")));
+            throw new CustomException(localeHelper.getMessage("validation.error.duplicated", new LocaleKey("field.code")));
         }
     }
 }

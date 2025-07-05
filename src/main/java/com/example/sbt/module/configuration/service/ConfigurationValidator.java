@@ -32,35 +32,35 @@ public class ConfigurationValidator {
 
     public void validateUpdate(ConfigurationDTO requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(localeHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+            throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
         if (StringUtils.isNotEmpty(requestDTO.getValue()) && requestDTO.getValue().length() > 255) {
-            throw new CustomException(localeHelper.getMessage("form.error.over_max_length", new LocaleKey("field.value")));
+            throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.value")));
         }
         if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
-            throw new CustomException(localeHelper.getMessage("form.error.over_max_length", new LocaleKey("field.description")));
+            throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.description")));
         }
         if (StringUtils.isBlank(requestDTO.getStatus())) {
-            throw new CustomException(localeHelper.getMessage("form.error.required", new LocaleKey("field.status")));
+            throw new CustomException(localeHelper.getMessage("validation.error.required", new LocaleKey("field.status")));
         }
         if (!validStatus.contains(requestDTO.getStatus())) {
-            throw new CustomException(localeHelper.getMessage("form.error.invalid", new LocaleKey("field.status")));
+            throw new CustomException(localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.status")));
         }
     }
 
     public void validateCreate(ConfigurationDTO requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(localeHelper.getMessage("form.error.missing", new LocaleKey("field.request")));
+            throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
         if (StringUtils.isBlank(requestDTO.getCode())) {
-            throw new CustomException(localeHelper.getMessage("form.error.required", new LocaleKey("field.code")));
+            throw new CustomException(localeHelper.getMessage("validation.error.required", new LocaleKey("field.code")));
         }
         String codeError = validationHelper.validateCode(requestDTO.getCode());
         if (codeError != null) {
             throw new CustomException(codeError);
         }
         if (configurationRepository.existsByCode(requestDTO.getCode())) {
-            throw new CustomException(localeHelper.getMessage("form.error.duplicated", new LocaleKey("field.code")));
+            throw new CustomException(localeHelper.getMessage("validation.error.duplicated", new LocaleKey("field.code")));
         }
     }
 }
