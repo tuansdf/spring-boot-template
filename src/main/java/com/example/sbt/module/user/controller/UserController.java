@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -97,7 +96,7 @@ public class UserController {
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<FileObjectDTO>> export(
             @RequestParam(required = false) String status
-    ) throws IOException {
+    ) {
         var requestDTO = SearchUserRequestDTO.builder()
                 .status(status)
                 .build();

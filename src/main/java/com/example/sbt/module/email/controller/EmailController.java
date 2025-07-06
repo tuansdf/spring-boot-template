@@ -29,7 +29,8 @@ public class EmailController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
-            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+            @RequestParam(required = false, defaultValue = "false") Boolean count
+    ) {
         var requestDTO = SearchEmailRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
@@ -43,7 +44,9 @@ public class EmailController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<EmailDTO>> findOneById(@PathVariable UUID id) {
+    public ResponseEntity<CommonResponse<EmailDTO>> findOneById(
+            @PathVariable UUID id
+    ) {
         var result = emailService.findOneById(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }

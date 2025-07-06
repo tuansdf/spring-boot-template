@@ -29,7 +29,8 @@ public class NotificationController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
-            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+            @RequestParam(required = false, defaultValue = "false") Boolean count
+    ) {
         var requestDTO = SearchNotificationRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
@@ -43,7 +44,9 @@ public class NotificationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<NotificationDTO>> findOneById(@PathVariable UUID id) {
+    public ResponseEntity<CommonResponse<NotificationDTO>> findOneById(
+            @PathVariable UUID id
+    ) {
         var result = notificationService.findOneById(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }

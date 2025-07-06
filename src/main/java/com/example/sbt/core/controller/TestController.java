@@ -76,7 +76,9 @@ public class TestController {
     }
 
     @GetMapping("/excel/export")
-    public String testExportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) throws IOException {
+    public String testExportExcel(
+            @RequestParam(required = false, defaultValue = "1000") Integer total
+    ) throws IOException {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
         try (Workbook workbook = new SXSSFWorkbook()) {
@@ -94,7 +96,9 @@ public class TestController {
     }
 
     @GetMapping("/csv/export")
-    public String testExportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+    public String testExportCsv(
+            @RequestParam(required = false, defaultValue = "1000") Integer total
+    ) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
         try (CSVWriter writer = new CSVWriter(new FileWriter(exportPath))) {
@@ -120,7 +124,9 @@ public class TestController {
     }
 
     @GetMapping("/excel/import")
-    public String testImportExcel(@RequestParam String filePath) {
+    public String testImportExcel(
+            @RequestParam String filePath
+    ) {
         List<UserDTO> items = new ArrayList<>();
         try (Workbook workbook = ExcelUtils.toWorkbook(filePath)) {
             if (workbook == null) return null;
@@ -155,7 +161,9 @@ public class TestController {
     }
 
     @GetMapping("/csv/import")
-    public String testImportCsv(@RequestParam String filePath) {
+    public String testImportCsv(
+            @RequestParam String filePath
+    ) {
         List<UserDTO> items = new ArrayList<>();
         try (CSVReader reader = new CSVReader(Files.newBufferedReader(Paths.get(filePath)))) {
             String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
@@ -187,7 +195,9 @@ public class TestController {
     }
 
     @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String testI18n(@RequestParam String key) {
+    public String testI18n(
+            @RequestParam String key
+    ) {
         return localeHelper.getMessage(key);
     }
 
@@ -268,7 +278,9 @@ public class TestController {
     }
 
     @GetMapping(value = "/totp/verify", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testTotpVerify(@RequestParam String secret) {
+    public Object testTotpVerify(
+            @RequestParam String secret
+    ) {
         for (int i = 0; i < 1_000_000; i++) {
             TOTPUtils.verify("123456", secret);
         }
@@ -276,7 +288,10 @@ public class TestController {
     }
 
     @GetMapping(value = "/notification/send", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testNotificationSend(@RequestParam String token, @RequestParam(required = false) String topic) throws FirebaseMessagingException {
+    public Object testNotificationSend(
+            @RequestParam String token,
+            @RequestParam(required = false) String topic
+    ) throws FirebaseMessagingException {
         sendNotificationService.sendAsync(SendNotificationRequest.builder()
                 .title("notification title")
                 .body("notification content")
@@ -287,7 +302,10 @@ public class TestController {
     }
 
     @GetMapping(value = "/notification/subscribe-topic", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testNotificationSubscribeTopic(@RequestParam String token, @RequestParam String topic) throws FirebaseMessagingException {
+    public Object testNotificationSubscribeTopic(
+            @RequestParam String token,
+            @RequestParam String topic
+    ) throws FirebaseMessagingException {
         sendNotificationService.subscribeTopicAsync(SendNotificationRequest.builder()
                 .topic(topic)
                 .tokens(Collections.singletonList(token))
@@ -296,34 +314,47 @@ public class TestController {
     }
 
     @GetMapping(value = "/s3/upload", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object testS3Upload(@RequestParam MultipartFile file, @RequestParam(defaultValue = "") String filePath) throws IOException {
+    public Object testS3Upload(
+            @RequestParam MultipartFile file,
+            @RequestParam(defaultValue = "") String filePath
+    ) {
         return fileObjectService.uploadFile(file, filePath);
     }
 
     @GetMapping(value = "/s3/presigned", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object testS3Presigned(@RequestParam UUID id) {
+    public Object testS3Presigned(
+            @RequestParam UUID id
+    ) {
         return fileObjectService.getFileById(id);
     }
 
     @GetMapping(value = "/s3/presigned/put", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object testS3PresignedPut(@RequestParam String extension) {
+    public Object testS3PresignedPut(
+            @RequestParam String extension
+    ) {
         return fileObjectService.createPendingUpload("", extension);
     }
 
     @GetMapping(value = "/s3/delete", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testS3Delete(@RequestParam List<UUID> ids) {
+    public Object testS3Delete(
+            @RequestParam List<UUID> ids
+    ) {
         fileObjectService.deleteFilesByIds(ids, RequestContext.get().getUserId());
         return "OK";
     }
 
     @GetMapping(value = "/s3/get", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testS3GetFile(@RequestParam String filePath) {
+    public Object testS3GetFile(
+            @RequestParam String filePath
+    ) {
         FileUtils.writeFile(uploadFileService.getFile(filePath), ".temp/" + FilenameUtils.getBaseName(filePath) + "-" + DateUtils.currentEpochMillis() + "." + FilenameUtils.getExtension(filePath));
         return "OK";
     }
 
     @GetMapping(value = "/text/to-string", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testToString(@RequestBody TestBody body) {
+    public Object testToString(
+            @RequestBody TestBody body
+    ) {
         log.info("body: {}", body);
         return "OK";
     }
@@ -334,12 +365,17 @@ public class TestController {
     }
 
     @GetMapping(value = "/files/validate-type", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testFilesValidateType(@RequestParam MultipartFile file, @RequestParam String fileType) {
+    public Object testFilesValidateType(
+            @RequestParam MultipartFile file,
+            @RequestParam String fileType
+    ) {
         return ConversionUtils.toString(FileUtils.validateFileType(file, Collections.singletonList(FileType.fromExtension(fileType))));
     }
 
     @GetMapping(value = "/files/validate-type/bench", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testFilesValidateTypeBench(@RequestParam MultipartFile file) {
+    public Object testFilesValidateTypeBench(
+            @RequestParam MultipartFile file
+    ) {
         List<FileType> fileTypes = List.of(FileType.PNG, FileType.WEBP, FileType.JPEG);
         for (int i = 0; i < 10_000; i++) {
             FileUtils.validateFileType(file, fileTypes);
@@ -348,7 +384,9 @@ public class TestController {
     }
 
     @GetMapping(value = "/text/regex", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Object testRegex(@RequestBody TestBody body) {
+    public Object testRegex(
+            @RequestBody TestBody body
+    ) {
         Map<String, Object> result = new HashMap<>();
         Matcher matcher = Pattern.compile(body.getRegex()).matcher(body.getText());
         result.put("replace", matcher.replaceAll(body.getReplaceWith()));

@@ -24,21 +24,27 @@ public class PermissionController {
 
     @GetMapping("/code/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PermissionDTO>> findOneByCode(@PathVariable String code) {
+    public ResponseEntity<CommonResponse<PermissionDTO>> findOneByCode(
+            @PathVariable String code
+    ) {
         var result = permissionService.findOneByCodeOrThrow(code);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PermissionDTO>> findOne(@PathVariable UUID id) {
+    public ResponseEntity<CommonResponse<PermissionDTO>> findOne(
+            @PathVariable UUID id
+    ) {
         var result = permissionService.findOneByIdOrThrow(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PutMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<PermissionDTO>> save(@RequestBody PermissionDTO requestDTO) {
+    public ResponseEntity<CommonResponse<PermissionDTO>> save(
+            @RequestBody PermissionDTO requestDTO
+    ) {
         var result = permissionService.save(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
@@ -51,7 +57,8 @@ public class PermissionController {
             @RequestParam(required = false) String code,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
-            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+            @RequestParam(required = false, defaultValue = "false") Boolean count
+    ) {
         var requestDTO = SearchPermissionRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)

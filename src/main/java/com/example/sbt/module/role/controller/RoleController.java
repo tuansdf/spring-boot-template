@@ -24,21 +24,27 @@ public class RoleController {
 
     @GetMapping("/code/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<RoleDTO>> findOneByCode(@PathVariable String code) {
+    public ResponseEntity<CommonResponse<RoleDTO>> findOneByCode(
+            @PathVariable String code
+    ) {
         var result = roleService.findOneByCodeOrThrow(code);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<RoleDTO>> findOneById(@PathVariable UUID id) {
+    public ResponseEntity<CommonResponse<RoleDTO>> findOneById(
+            @PathVariable UUID id
+    ) {
         var result = roleService.findOneByIdOrThrow(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PutMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<RoleDTO>> save(@RequestBody RoleDTO requestDTO) {
+    public ResponseEntity<CommonResponse<RoleDTO>> save(
+            @RequestBody RoleDTO requestDTO
+    ) {
         var result = roleService.save(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
@@ -51,7 +57,8 @@ public class RoleController {
             @RequestParam(required = false) String code,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
-            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+            @RequestParam(required = false, defaultValue = "false") Boolean count
+    ) {
         var requestDTO = SearchRoleRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)

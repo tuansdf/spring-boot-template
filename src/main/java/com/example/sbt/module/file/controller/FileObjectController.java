@@ -24,25 +24,33 @@ public class FileObjectController {
     private final FileObjectService fileObjectService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<Object>> uploadImage(@RequestParam MultipartFile file) {
+    public ResponseEntity<CommonResponse<Object>> uploadImage(
+            @RequestParam MultipartFile file
+    ) {
         var result = fileObjectService.uploadFile(file, null);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<FileObjectDTO>> findOne(@PathVariable UUID id) {
+    public ResponseEntity<CommonResponse<FileObjectDTO>> findOne(
+            @PathVariable UUID id
+    ) {
         var result = fileObjectService.getFileById(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PostMapping("/temporary")
-    public ResponseEntity<CommonResponse<FileObjectPendingDTO>> createPendingFileUpload(@RequestBody TemporaryUploadRequest request) {
+    public ResponseEntity<CommonResponse<FileObjectPendingDTO>> createPendingFileUpload(
+            @RequestBody TemporaryUploadRequest request
+    ) {
         var result = fileObjectService.createPendingUpload(request.mimeType());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PostMapping("/temporary/{id}")
-    public ResponseEntity<CommonResponse<FileObjectDTO>> savePendingFileUpload(@PathVariable UUID id) {
+    public ResponseEntity<CommonResponse<FileObjectDTO>> savePendingFileUpload(
+            @PathVariable UUID id
+    ) {
         var result = fileObjectService.savePendingUpload(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
@@ -58,7 +66,8 @@ public class FileObjectController {
             @RequestParam(required = false) String fileType,
             @RequestParam(required = false) String orderBy,
             @RequestParam(required = false) String orderDirection,
-            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+            @RequestParam(required = false, defaultValue = "false") Boolean count
+    ) {
         var requestDTO = SearchFileRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)

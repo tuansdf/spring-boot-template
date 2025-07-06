@@ -24,7 +24,9 @@ public class AuthController {
     private final AuthService authService;
 
     @PatchMapping("/password")
-    public ResponseEntity<CommonResponse<Object>> changePassword(@RequestBody ChangePasswordRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> changePassword(
+            @RequestBody ChangePasswordRequestDTO requestDTO
+    ) {
         UUID userId = RequestContext.get().getUserId();
         authService.changePassword(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>());
@@ -43,21 +45,27 @@ public class AuthController {
     }
 
     @PostMapping("/2fa/enable")
-    public ResponseEntity<CommonResponse<Object>> enableOtp(@RequestBody EnableOtpRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> enableOtp(
+            @RequestBody EnableOtpRequestDTO requestDTO
+    ) {
         UUID userId = RequestContext.get().getUserId();
         var result = authService.enableOtp(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PostMapping("/2fa/confirm")
-    public ResponseEntity<CommonResponse<Object>> confirmOtp(@RequestBody ConfirmOtpRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> confirmOtp(
+            @RequestBody ConfirmOtpRequestDTO requestDTO
+    ) {
         UUID userId = RequestContext.get().getUserId();
         authService.confirmOtp(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }
 
     @PostMapping("/2fa/disable")
-    public ResponseEntity<CommonResponse<Object>> disableOtp(@RequestBody DisableOtpRequestDTO requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> disableOtp(
+            @RequestBody DisableOtpRequestDTO requestDTO
+    ) {
         UUID userId = RequestContext.get().getUserId();
         authService.disableOtp(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>());

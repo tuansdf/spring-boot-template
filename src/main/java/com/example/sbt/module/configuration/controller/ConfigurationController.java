@@ -25,21 +25,27 @@ public class ConfigurationController {
     private final ConfigurationService configurationService;
 
     @GetMapping("/values")
-    public ResponseEntity<CommonResponse<Map<String, String>>> findValues(@RequestParam Set<String> keys) {
+    public ResponseEntity<CommonResponse<Map<String, String>>> findValues(
+            @RequestParam Set<String> keys
+    ) {
         var result = configurationService.findPublicValues(new ArrayList<>(keys));
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(@PathVariable String code) {
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(
+            @PathVariable String code
+    ) {
         var result = configurationService.findOneByCodeOrThrow(code);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PutMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<ConfigurationDTO>> save(@RequestBody ConfigurationDTO requestDTO) {
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> save(
+            @RequestBody ConfigurationDTO requestDTO
+    ) {
         var result = configurationService.save(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
@@ -53,7 +59,8 @@ public class ConfigurationController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
-            @RequestParam(required = false, defaultValue = "false") Boolean count) {
+            @RequestParam(required = false, defaultValue = "false") Boolean count
+    ) {
         var requestDTO = SearchConfigurationRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)

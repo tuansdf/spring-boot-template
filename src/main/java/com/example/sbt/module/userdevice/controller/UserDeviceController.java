@@ -19,7 +19,9 @@ public class UserDeviceController {
     private final UserDeviceService userDeviceService;
 
     @PutMapping
-    public ResponseEntity<CommonResponse<UserDeviceDTO>> save(@RequestBody UserDeviceDTO requestDTO) {
+    public ResponseEntity<CommonResponse<UserDeviceDTO>> save(
+            @RequestBody UserDeviceDTO requestDTO
+    ) {
         var result = userDeviceService.save(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
