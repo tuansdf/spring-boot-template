@@ -240,9 +240,12 @@ public class UserServiceImpl implements UserService {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
+        Instant cacheTime = Instant.now().truncatedTo(ChronoUnit.HOURS);
         requestDTO.setPageNumber(1L);
         requestDTO.setPageSize(MAX_ITEMS);
-        requestDTO.setCreatedAtTo(Instant.now().truncatedTo(ChronoUnit.HOURS));
+        requestDTO.setCreatedAtTo(cacheTime);
+        requestDTO.setCacheTime(cacheTime);
+        requestDTO.setCacheType(BackgroundTaskType.EXPORT_USER);
         String cacheKey = CommonUtils.hashObject(requestDTO);
         BackgroundTaskDTO taskDTO = backgroundTaskService.init(cacheKey, BackgroundTaskType.EXPORT_USER);
         boolean succeeded = backgroundTaskService.completeByCacheKeyIfExist(cacheKey, BackgroundTaskType.EXPORT_USER, taskDTO.getId());

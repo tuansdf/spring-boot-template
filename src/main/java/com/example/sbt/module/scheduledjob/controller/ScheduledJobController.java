@@ -1,4 +1,4 @@
-package com.example.sbt.module.job.controller;
+package com.example.sbt.module.scheduledjob.controller;
 
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RequiredArgsConstructor
-@Secured(PermissionCode.JOB_EXECUTION)
+@Secured(PermissionCode.SCHEDULED_JOB)
 @RestController
-@RequestMapping("/v1/jobs")
-public class JobController {
+@RequestMapping("/v1/scheduled-jobs")
+public class ScheduledJobController {
     private final AuthTokenService authTokenService;
     private final FileObjectService fileObjectService;
 

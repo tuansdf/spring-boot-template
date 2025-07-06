@@ -26,4 +26,6 @@ public class SearchUserRequestDTO {
     private Instant createdAtTo;
     private String orderBy;
     private String orderDirection;
+    private String cacheType;
+    private Instant cacheTime;
 }
