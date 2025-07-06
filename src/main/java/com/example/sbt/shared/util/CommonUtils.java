@@ -91,7 +91,7 @@ public class CommonUtils {
                 return null;
             }
             byte[] json = JSONHelper.Mapper.HASHING.writeValueAsBytes(input);
-            byte[] hash = DigestUtils.sha256(json);
+            byte[] hash = DigestUtils.sha1(json);
             return Base64.encodeBase64URLSafeString(hash);
         } catch (Exception e) {
             return null;

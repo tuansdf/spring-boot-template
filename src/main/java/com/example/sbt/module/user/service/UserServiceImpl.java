@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
@@ -239,15 +240,13 @@ public class UserServiceImpl implements UserService {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        Instant now = Instant.now();
         requestDTO.setPageNumber(1L);
         requestDTO.setPageSize(MAX_ITEMS);
-        requestDTO.setCreatedAtTo(now);
-        BackgroundTaskDTO taskDTO = backgroundTaskService.init(BackgroundTaskType.EXPORT_USER);
-        BackgroundTaskDTO existing = backgroundTaskService.findOneRecentByCacheKey(CommonUtils.hashObject(requestDTO), BackgroundTaskType.EXPORT_USER);
-        if (existing != null) {
-            backgroundTaskService.updateStatus(taskDTO.getId(), BackgroundTaskStatus.SUCCEEDED, existing.getFileId(), null);
-        } else {
+        requestDTO.setCreatedAtTo(Instant.now().truncatedTo(ChronoUnit.HOURS));
+        String cacheKey = CommonUtils.hashObject(requestDTO);
+        BackgroundTaskDTO taskDTO = backgroundTaskService.init(cacheKey, BackgroundTaskType.EXPORT_USER);
+        boolean succeeded = backgroundTaskService.completeByCacheKeyIfExist(cacheKey, BackgroundTaskType.EXPORT_USER, taskDTO.getId());
+        if (!succeeded) {
             exportUserEventPublisher.publish(taskDTO.getId(), requestDTO);
         }
     }
@@ -256,19 +255,19 @@ public class UserServiceImpl implements UserService {
     public void handleExportTask(UUID backgroundTaskId, SearchUserRequestDTO requestDTO) {
         try {
             String cacheKey = CommonUtils.hashObject(requestDTO);
-            BackgroundTaskDTO existing = backgroundTaskService.findOneRecentByCacheKey(cacheKey, BackgroundTaskType.EXPORT_USER);
-            if (existing != null) {
-                backgroundTaskService.updateStatusWithTrans(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, existing.getFileId(), null);
+            boolean succeeded = backgroundTaskService.completeByCacheKeyIfExist(cacheKey, BackgroundTaskType.EXPORT_USER, backgroundTaskId);
+            if (succeeded) {
                 return;
             }
-            backgroundTaskService.updateStatusWithTrans(backgroundTaskId, BackgroundTaskStatus.PROCESSING);
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.PROCESSING);
             FileObjectDTO fileObjectDTO = export(requestDTO);
             if (fileObjectDTO == null) {
                 throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            backgroundTaskService.updateStatusWithTrans(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, fileObjectDTO.getId(), cacheKey);
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, fileObjectDTO.getId());
         } catch (Exception e) {
-            backgroundTaskService.updateStatusWithTrans(backgroundTaskId, BackgroundTaskStatus.FAILED);
+            log.error("handleExportTask ", e);
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.FAILED);
         }
     }
 
@@ -304,7 +303,7 @@ public class UserServiceImpl implements UserService {
         if (file == null || file.length == 0) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String filename = FileUtils.getFilename("EXPORT_USERS_".concat(ConversionUtils.safeToString(DateUtils.currentEpochMillis())), FileType.XLSX);
+        String filename = FileUtils.getFilename("ExportUsers_".concat(ConversionUtils.safeToString(DateUtils.currentEpochMillis())), FileType.XLSX);
         return fileObjectService.getFileUrls(fileObjectService.uploadFile(file, "", filename));
     }
 }

@@ -15,6 +15,7 @@ import java.util.UUID;
 public class BackgroundTaskDTO {
     private UUID id;
     private UUID fileId;
+    private String cacheKey;
     private String type;
     private String status;
     private String errorMessage;
