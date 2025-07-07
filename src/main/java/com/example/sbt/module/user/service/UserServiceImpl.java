@@ -5,6 +5,7 @@ import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.AuthHelper;
+import com.example.sbt.core.helper.CommonHelper;
 import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.event.publisher.ExportUserEventPublisher;
 import com.example.sbt.module.backgroundtask.constant.BackgroundTaskStatus;
@@ -20,13 +21,17 @@ import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.mapper.UserMapper;
 import com.example.sbt.module.user.repository.UserRepository;
 import com.example.sbt.shared.constant.FileType;
-import com.example.sbt.shared.util.*;
+import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
+import com.example.sbt.shared.util.ExcelUtils;
+import com.example.sbt.shared.util.FileUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -46,6 +51,7 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
     private static final long MAX_ITEMS = 1000000L;
 
+    private final CommonHelper commonHelper;
     private final SQLHelper sqlHelper;
     private final AuthHelper authHelper;
     private final UserMapper userMapper;
@@ -246,7 +252,7 @@ public class UserServiceImpl implements UserService {
         requestDTO.setCreatedAtTo(cacheTime);
         requestDTO.setCacheTime(cacheTime);
         requestDTO.setCacheType(BackgroundTaskType.EXPORT_USER);
-        String cacheKey = CommonUtils.hashObject(requestDTO);
+        String cacheKey = commonHelper.createCacheKey(requestDTO);
         BackgroundTaskDTO taskDTO = backgroundTaskService.init(cacheKey, BackgroundTaskType.EXPORT_USER);
         boolean succeeded = backgroundTaskService.completeByCacheKeyIfExist(cacheKey, BackgroundTaskType.EXPORT_USER, taskDTO.getId());
         if (!succeeded) {
@@ -257,7 +263,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void handleExportTask(UUID backgroundTaskId, SearchUserRequestDTO requestDTO) {
         try {
-            String cacheKey = CommonUtils.hashObject(requestDTO);
+            String cacheKey = commonHelper.createCacheKey(requestDTO);
             boolean succeeded = backgroundTaskService.completeByCacheKeyIfExist(cacheKey, BackgroundTaskType.EXPORT_USER, backgroundTaskId);
             if (succeeded) {
                 return;
