@@ -109,12 +109,13 @@ public class TestController {
                 writer.writeNext(new String[]{
                         ConversionUtils.toString(idx),
                         ConversionUtils.toString(item.getId()),
-                        item.getUsername(),
-                        item.getEmail(),
-                        item.getName(),
-                        item.getStatus(),
+                        ConversionUtils.toString(item.getUsername()),
+                        ConversionUtils.toString(item.getEmail()),
+                        ConversionUtils.toString(item.getName()),
+                        ConversionUtils.toString(item.getStatus()),
                         ConversionUtils.toString(item.getCreatedAt()),
-                        ConversionUtils.toString(item.getUpdatedAt())});
+                        ConversionUtils.toString(item.getUpdatedAt())
+                });
                 idx++;
             }
         } catch (IOException e) {
