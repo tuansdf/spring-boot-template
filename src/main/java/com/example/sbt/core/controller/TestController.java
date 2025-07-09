@@ -107,14 +107,14 @@ public class TestController {
             int idx = 1;
             for (var item : data) {
                 writer.writeNext(new String[]{
-                        ConversionUtils.toString(idx),
-                        ConversionUtils.toString(item.getId()),
-                        ConversionUtils.toString(item.getUsername()),
-                        ConversionUtils.toString(item.getEmail()),
-                        ConversionUtils.toString(item.getName()),
-                        ConversionUtils.toString(item.getStatus()),
-                        ConversionUtils.toString(item.getCreatedAt()),
-                        ConversionUtils.toString(item.getUpdatedAt())
+                        ConversionUtils.safeToString(idx),
+                        ConversionUtils.safeToString(item.getId()),
+                        ConversionUtils.safeToString(item.getUsername()),
+                        ConversionUtils.safeToString(item.getEmail()),
+                        ConversionUtils.safeToString(item.getName()),
+                        ConversionUtils.safeToString(item.getStatus()),
+                        ConversionUtils.safeToString(item.getCreatedAt()),
+                        ConversionUtils.safeToString(item.getUpdatedAt())
                 });
                 idx++;
             }

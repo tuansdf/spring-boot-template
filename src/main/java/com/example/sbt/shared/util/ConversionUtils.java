@@ -5,8 +5,11 @@ import java.util.UUID;
 public class ConversionUtils {
     public static String toString(Object input) {
         try {
-            if (input == null) return null;
-            return input.toString();
+            return switch (input) {
+                case null -> null;
+                case String v -> v;
+                default -> input.toString();
+            };
         } catch (Exception e) {
             return null;
         }
@@ -14,8 +17,12 @@ public class ConversionUtils {
 
     public static String safeToString(Object input) {
         try {
-            if (input == null) return "";
-            return input.toString();
+            String result = switch (input) {
+                case null -> "";
+                case String v -> v;
+                default -> input.toString();
+            };
+            return result == null ? "" : result;
         } catch (Exception e) {
             return "";
         }
@@ -24,7 +31,7 @@ public class ConversionUtils {
     public static String safeTrim(Object input) {
         try {
             if (input == null) return "";
-            return input.toString().trim();
+            return safeToString(input).trim();
         } catch (Exception e) {
             return "";
         }
