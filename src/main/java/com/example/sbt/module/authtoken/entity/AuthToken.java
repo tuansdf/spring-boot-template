@@ -1,4 +1,4 @@
-package com.example.sbt.module.token.entity;
+package com.example.sbt.module.authtoken.entity;
 
 import com.example.sbt.core.entity.BaseEntity;
 import jakarta.persistence.Column;

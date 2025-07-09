@@ -1,4 +1,4 @@
-package com.example.sbt.module.token.dto;
+package com.example.sbt.module.authtoken.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;

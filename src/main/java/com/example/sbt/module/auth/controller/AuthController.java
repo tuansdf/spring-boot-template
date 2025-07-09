@@ -6,7 +6,7 @@ import com.example.sbt.module.auth.dto.ConfirmOtpRequestDTO;
 import com.example.sbt.module.auth.dto.DisableOtpRequestDTO;
 import com.example.sbt.module.auth.dto.EnableOtpRequestDTO;
 import com.example.sbt.module.auth.service.AuthService;
-import com.example.sbt.module.token.service.AuthTokenService;
+import com.example.sbt.module.authtoken.service.AuthTokenService;
 import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

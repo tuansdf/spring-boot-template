@@ -4,7 +4,7 @@ import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.JWTPayload;
 import com.example.sbt.core.dto.RequestContext;
-import com.example.sbt.module.token.service.JWTService;
+import com.example.sbt.module.authtoken.service.JWTService;
 import com.example.sbt.shared.util.ConversionUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

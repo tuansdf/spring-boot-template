@@ -3,7 +3,7 @@ package com.example.sbt.module.scheduledjob.controller;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.module.file.service.FileObjectService;
-import com.example.sbt.module.token.service.AuthTokenService;
+import com.example.sbt.module.authtoken.service.AuthTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

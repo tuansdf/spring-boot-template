@@ -1,4 +1,4 @@
-package com.example.sbt.module.token.service;
+package com.example.sbt.module.authtoken.service;
 
 import com.example.sbt.core.dto.JWTPayload;
 

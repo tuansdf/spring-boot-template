@@ -1,6 +1,6 @@
-package com.example.sbt.module.token.repository;
+package com.example.sbt.module.authtoken.repository;
 
-import com.example.sbt.module.token.entity.AuthToken;
+import com.example.sbt.module.authtoken.entity.AuthToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
