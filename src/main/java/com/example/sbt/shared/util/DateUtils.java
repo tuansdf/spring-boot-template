@@ -53,7 +53,7 @@ public class DateUtils {
         return toEpochNanos(null);
     }
 
-    public static OffsetDateTime toOffsetDateTime(Object input, ZoneOffset offset, DateTimeFormatter formatter) {
+    public static OffsetDateTime toOffsetDateTime(Object input, DateTimeFormatter formatter, ZoneOffset offset) {
         if (offset == null) {
             offset = ZoneOffset.UTC;
         }
@@ -66,7 +66,7 @@ public class DateUtils {
                 case OffsetDateTime v -> v;
                 case String v -> OffsetDateTime.parse(v, formatter);
                 default -> {
-                    Instant result = toInstant(input, offset, formatter);
+                    Instant result = toInstant(input, formatter, offset);
                     if (result == null) yield null;
                     yield result.atOffset(offset);
                 }
@@ -89,16 +89,7 @@ public class DateUtils {
         }
     }
 
-    public static String format(OffsetDateTime dateTime, DateTimeFormatter formatter) {
-        if (dateTime == null || formatter == null) return "";
-        try {
-            return formatter.format(dateTime);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    public static Date toDate(Object input, ZoneOffset offset, DateTimeFormatter formatter) {
+    public static Date toDate(Object input, DateTimeFormatter formatter, ZoneOffset offset) {
         if (offset == null) {
             offset = ZoneOffset.UTC;
         }
@@ -107,7 +98,7 @@ public class DateUtils {
                 case null -> null;
                 case Date v -> v;
                 default -> {
-                    Instant result = toInstant(input, offset, formatter);
+                    Instant result = toInstant(input, formatter, offset);
                     if (result == null) yield null;
                     yield Date.from(result);
                 }
@@ -121,7 +112,7 @@ public class DateUtils {
         return toDate(input, null, null);
     }
 
-    public static Instant toInstant(Object input, ZoneOffset offset, DateTimeFormatter formatter) {
+    public static Instant toInstant(Object input, DateTimeFormatter formatter, ZoneOffset offset) {
         if (offset == null) {
             offset = ZoneOffset.UTC;
         }
@@ -149,10 +140,19 @@ public class DateUtils {
     }
 
     public static Instant toInstant(Object input, DateTimeFormatter formatter) {
-        return toInstant(input, null, formatter);
+        return toInstant(input, formatter, null);
     }
 
     public static Instant toInstant(Object input) {
         return toInstant(input, null, null);
+    }
+
+    public static String format(OffsetDateTime dateTime, DateTimeFormatter formatter) {
+        if (dateTime == null || formatter == null) return "";
+        try {
+            return formatter.format(dateTime);
+        } catch (Exception e) {
+            return "";
+        }
     }
 }
