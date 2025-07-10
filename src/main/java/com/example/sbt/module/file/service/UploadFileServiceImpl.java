@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.ContentDisposition;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -22,7 +21,6 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 
@@ -40,6 +38,7 @@ public class UploadFileServiceImpl implements UploadFileService {
 
     private ObjectKey cleanObjectKey(String dirPath, String originalFilename, FileType fileType) {
         dirPath = ConversionUtils.safeTrim(dirPath);
+        String originalFilenameAscii = FileUtils.truncateFilename(FileUtils.cleanFilenameAscii(originalFilename));
         originalFilename = FileUtils.truncateFilename(FileUtils.cleanFilename(originalFilename));
         if (fileType == null) {
             fileType = FileType.fromExtension(FileUtils.getFileExtension(originalFilename));
@@ -51,10 +50,14 @@ public class UploadFileServiceImpl implements UploadFileService {
         if (StringUtils.isBlank(originalFilename)) {
             originalFilename = filename;
         }
+        if (StringUtils.isBlank(originalFilenameAscii)) {
+            originalFilenameAscii = filename;
+        }
         String filePath = FileUtils.cleanFilePath(FileUtils.getFilePath(dirPath, filename));
         return ObjectKey.builder()
                 .dirPath(dirPath)
                 .originalFilename(originalFilename)
+                .originalFilenameAscii(originalFilenameAscii)
                 .filename(filename)
                 .filePath(filePath)
                 .build();
@@ -71,7 +74,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
-                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFilename(), StandardCharsets.UTF_8).build().toString())
+                    .contentDisposition(FileUtils.buildContentDisposition(objectKey.getOriginalFilenameAscii(), objectKey.getOriginalFilename()))
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file));
             return objectKey.getFilePath();
@@ -92,7 +95,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
-                    .contentDisposition(ContentDisposition.attachment().filename(objectKey.getOriginalFilename(), StandardCharsets.UTF_8).build().toString())
+                    .contentDisposition(FileUtils.buildContentDisposition(objectKey.getOriginalFilenameAscii(), objectKey.getOriginalFilename()))
                     .build();
             try (InputStream inputStream = file.getInputStream()) {
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
