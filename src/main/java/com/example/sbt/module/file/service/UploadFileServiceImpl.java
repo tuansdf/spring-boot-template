@@ -38,7 +38,6 @@ public class UploadFileServiceImpl implements UploadFileService {
 
     private ObjectKey cleanObjectKey(String dirPath, String originalFilename, FileType fileType) {
         dirPath = ConversionUtils.safeTrim(dirPath);
-        String originalFilenameAscii = FileUtils.truncateFilename(FileUtils.cleanFilenameAscii(originalFilename));
         originalFilename = FileUtils.truncateFilename(FileUtils.cleanFilename(originalFilename));
         if (fileType == null) {
             fileType = FileType.fromExtension(FileUtils.getFileExtension(originalFilename));
@@ -50,14 +49,10 @@ public class UploadFileServiceImpl implements UploadFileService {
         if (StringUtils.isBlank(originalFilename)) {
             originalFilename = filename;
         }
-        if (StringUtils.isBlank(originalFilenameAscii)) {
-            originalFilenameAscii = filename;
-        }
         String filePath = FileUtils.cleanFilePath(FileUtils.getFilePath(dirPath, filename));
         return ObjectKey.builder()
                 .dirPath(dirPath)
                 .originalFilename(originalFilename)
-                .originalFilenameAscii(originalFilenameAscii)
                 .filename(filename)
                 .filePath(filePath)
                 .build();
@@ -74,7 +69,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
-                    .contentDisposition(FileUtils.buildContentDisposition(objectKey.getOriginalFilenameAscii(), objectKey.getOriginalFilename()))
+                    .contentDisposition(FileUtils.buildContentDisposition(objectKey.getOriginalFilename()))
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file));
             return objectKey.getFilePath();
@@ -95,7 +90,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
-                    .contentDisposition(FileUtils.buildContentDisposition(objectKey.getOriginalFilenameAscii(), objectKey.getOriginalFilename()))
+                    .contentDisposition(FileUtils.buildContentDisposition(objectKey.getOriginalFilename()))
                     .build();
             try (InputStream inputStream = file.getInputStream()) {
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));

@@ -13,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
@@ -26,8 +25,7 @@ public class FileUtils {
     private static final int MAX_FILE_NAME_LENGTH = 255;
     private static final String PATH_SEPARATOR = "/";
     private static final String EXTENSION_SEPARATOR = ".";
-    private static final Pattern UNSAFE_CHARS = Pattern.compile("[^\\p{L}\\p{N}\\-_., ()\\[\\]]");
-    private static final Pattern UNSAFE_CHARS_ASCII = Pattern.compile("[^A-Za-z0-9._-]");
+    private static final Pattern UNSAFE_CHARS = Pattern.compile("[^A-Za-z0-9._-]");
     private static final Pattern MARK_CHARS = Pattern.compile("\\p{M}");
 
     public static void writeFile(byte[] bytes, String outputPath) {
@@ -145,30 +143,20 @@ public class FileUtils {
     public static String cleanFilename(String filename) {
         if (StringUtils.isBlank(filename)) return "";
         filename = FilenameUtils.normalize(filename);
+        filename = Normalizer.normalize(filename, Normalizer.Form.NFKD);
+        filename = filename.replace("đ", "d").replace("Đ", "D");
+        filename = MARK_CHARS.matcher(filename).replaceAll("");
         filename = UNSAFE_CHARS.matcher(filename).replaceAll("_");
         return filename.trim();
     }
 
-    public static String cleanFilenameAscii(String filename) {
-        if (StringUtils.isBlank(filename)) return "";
-        filename = FilenameUtils.normalize(filename);
-        filename = Normalizer.normalize(filename, Normalizer.Form.NFKD);
-        filename = filename.replace("đ", "d").replace("Đ", "D");
-        filename = MARK_CHARS.matcher(filename).replaceAll("");
-        filename = UNSAFE_CHARS_ASCII.matcher(filename).replaceAll("_");
-        return filename.trim();
-    }
-
-    public static String buildContentDisposition(String asciiFilename, String filename) {
-        if (StringUtils.isBlank(asciiFilename) && StringUtils.isBlank(filename)) {
+    public static String buildContentDisposition(String filename) {
+        if (StringUtils.isBlank(filename)) {
             return "";
         }
         ContentDisposition.Builder builder = ContentDisposition.attachment();
-        if (StringUtils.isNotBlank(asciiFilename)) {
-            builder = builder.filename(asciiFilename);
-        }
         if (StringUtils.isNotBlank(filename)) {
-            builder = builder.filename(filename, StandardCharsets.UTF_8);
+            builder.filename(filename);
         }
         return builder.build().toString();
     }

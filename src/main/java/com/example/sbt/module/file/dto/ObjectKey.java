@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public final class ObjectKey {
     private String dirPath;
     private String originalFilename;
-    private String originalFilenameAscii;
     private String filename;
     private String filePath;
     private String fileUrl;
