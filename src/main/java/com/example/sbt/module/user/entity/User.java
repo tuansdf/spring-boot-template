@@ -4,7 +4,10 @@ import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.entity.BaseEntity;
 import com.example.sbt.module.user.dto.UserDTO;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -13,7 +16,6 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(
         name = "_user",
@@ -31,8 +33,8 @@ import java.util.UUID;
                 @ColumnResult(name = "username", type = String.class),
                 @ColumnResult(name = "email", type = String.class),
                 @ColumnResult(name = "name", type = String.class),
-                @ColumnResult(name = "verified", type = Boolean.class),
-                @ColumnResult(name = "otp_enabled", type = Boolean.class),
+                @ColumnResult(name = "is_verified", type = Boolean.class),
+                @ColumnResult(name = "is_otp_enabled", type = Boolean.class),
                 @ColumnResult(name = "status", type = String.class),
                 @ColumnResult(name = "created_at", type = Instant.class),
                 @ColumnResult(name = "updated_at", type = Instant.class),
@@ -47,20 +49,20 @@ import java.util.UUID;
         })
 })
 public class User extends BaseEntity {
-    @Column(name = "username")
+    @Column(name = "username", unique = true, length = 64)
     private String username;
-    @Column(name = "email")
+    @Column(name = "email", unique = true, length = 255)
     private String email;
-    @Column(name = "name")
+    @Column(name = "name", length = 255)
     private String name;
-    @Column(name = "password")
+    @Column(name = "password", length = 255)
     private String password;
-    @Column(name = "verified")
-    private Boolean verified;
-    @Column(name = "otp_enabled")
-    private Boolean otpEnabled;
-    @Column(name = "otp_secret")
+    @Column(name = "is_verified")
+    private Boolean isVerified;
+    @Column(name = "is_otp_enabled")
+    private Boolean isOtpEnabled;
+    @Column(name = "otp_secret", length = 255)
     private String otpSecret;
-    @Column(name = "status")
+    @Column(name = "status", length = 16)
     private String status;
 }

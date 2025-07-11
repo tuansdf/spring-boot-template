@@ -25,11 +25,11 @@ import java.util.UUID;
         }
 )
 public class FileObjectPending extends BaseEntity {
-    @Column(name = "file_path", columnDefinition = "text")
+    @Column(name = "file_path", length = 255)
     private String filePath;
-    @Column(name = "filename", columnDefinition = "text")
+    @Column(name = "filename", length = 255)
     private String filename;
-    @Column(name = "file_type", columnDefinition = "text")
+    @Column(name = "file_type", length = 255)
     private String fileType;
     @Column(name = "expires_at", updatable = false)
     private Instant expiresAt;

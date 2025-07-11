@@ -90,7 +90,7 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        if (ConversionUtils.safeToBoolean(userDTO.getOtpEnabled())) {
+        if (ConversionUtils.safeToBoolean(userDTO.getIsOtpEnabled())) {
             if (StringUtils.isBlank(requestDTO.getOtpCode())) {
                 throw new CustomException(localeHelper.getMessage("auth.error.missing_otp_code"), HttpStatus.UNAUTHORIZED);
             }
@@ -144,7 +144,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
         user.setStatus(CommonStatus.INACTIVE);
-        user.setVerified(false);
+        user.setIsVerified(false);
         user = userRepository.save(user);
 
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
@@ -159,7 +159,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.NOT_FOUND);
         }
-        if (ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
+        if (ConversionUtils.safeToBoolean(user.getIsOtpEnabled())) {
             if (StringUtils.isBlank(requestDTO.getOtpCode()) || !TOTPUtils.verify(requestDTO.getOtpCode(), user.getOtpSecret())) {
                 throw new CustomException(localeHelper.getMessage("auth.error.invalid_otp_code"), HttpStatus.UNAUTHORIZED);
             }
@@ -250,10 +250,10 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(localeHelper.getMessage("auth.error.account_already_active"), HttpStatus.BAD_REQUEST);
         }
         user.setStatus(CommonStatus.ACTIVE);
-        user.setVerified(true);
+        user.setIsVerified(true);
         user = userRepository.save(user);
         authTokenService.deactivateByUserId(authTokenDTO.getUserId());
-        if (!ConversionUtils.safeToBoolean(user.getVerified())) {
+        if (!ConversionUtils.safeToBoolean(user.getIsVerified())) {
             notificationService.sendNewComerNotification(authTokenDTO.getUserId());
         }
     }
@@ -264,7 +264,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
-        if (ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
+        if (ConversionUtils.safeToBoolean(user.getIsOtpEnabled())) {
             throw new CustomException(localeHelper.getMessage("auth.error.otp_already_enabled"), HttpStatus.BAD_REQUEST);
         }
         boolean isPasswordCorrect = authHelper.verifyPassword(requestDTO.getPassword(), user.getPassword());
@@ -273,7 +273,7 @@ public class AuthServiceImpl implements AuthService {
         }
         String secret = TOTPUtils.generateSecret();
         user.setOtpSecret(secret);
-        user.setOtpEnabled(false);
+        user.setIsOtpEnabled(false);
         userRepository.save(user);
         return EnableOtpResponseDTO.builder().otpSecret(secret).build();
     }
@@ -284,14 +284,14 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
-        if (ConversionUtils.safeToBoolean(user.getOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
+        if (ConversionUtils.safeToBoolean(user.getIsOtpEnabled()) || StringUtils.isBlank(user.getOtpSecret())) {
             throw new CustomException(localeHelper.getMessage("auth.error.otp_already_enabled"), HttpStatus.BAD_REQUEST);
         }
         boolean isOtpCorrect = TOTPUtils.verify(requestDTO.getOtpCode(), user.getOtpSecret());
         if (!isOtpCorrect) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_otp_code"), HttpStatus.BAD_REQUEST);
         }
-        user.setOtpEnabled(true);
+        user.setIsOtpEnabled(true);
         userRepository.save(user);
     }
 
@@ -301,7 +301,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
-        if (!ConversionUtils.safeToBoolean(user.getOtpEnabled())) {
+        if (!ConversionUtils.safeToBoolean(user.getIsOtpEnabled())) {
             throw new CustomException(localeHelper.getMessage("auth.error.otp_not_enabled"), HttpStatus.BAD_REQUEST);
         }
         boolean isOtpCorrect = TOTPUtils.verify(requestDTO.getOtpCode(), user.getOtpSecret());
@@ -313,7 +313,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_password"), HttpStatus.UNAUTHORIZED);
         }
         user.setOtpSecret(null);
-        user.setOtpEnabled(false);
+        user.setIsOtpEnabled(false);
         userRepository.save(user);
     }
 }

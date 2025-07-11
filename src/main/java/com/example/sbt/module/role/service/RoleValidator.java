@@ -51,15 +51,12 @@ public class RoleValidator {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        if (StringUtils.isBlank(requestDTO.getCode())) {
-            throw new CustomException(localeHelper.getMessage("validation.error.required", new LocaleKey("field.code")));
-        }
-        if (!requestDTO.getCode().startsWith(Constants.ROLE_STARTS_WITH)) {
-            throw new CustomException(localeHelper.getMessage("validation.error.not_start_with", new LocaleKey("field.code"), Constants.ROLE_STARTS_WITH));
-        }
         String codeError = validationHelper.validateCode(requestDTO.getCode());
         if (codeError != null) {
             throw new CustomException(codeError);
+        }
+        if (!requestDTO.getCode().startsWith(Constants.ROLE_STARTS_WITH)) {
+            throw new CustomException(localeHelper.getMessage("validation.error.not_start_with", new LocaleKey("field.code"), Constants.ROLE_STARTS_WITH));
         }
         if (roleRepository.existsByCode(requestDTO.getCode())) {
             throw new CustomException(localeHelper.getMessage("validation.error.duplicated", new LocaleKey("field.code")));

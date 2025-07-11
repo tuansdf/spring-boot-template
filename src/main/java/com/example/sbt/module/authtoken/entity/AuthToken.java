@@ -31,8 +31,8 @@ public class AuthToken extends BaseEntity {
     private UUID userId;
     @Column(name = "expires_at")
     private Instant expiresAt;
-    @Column(name = "type")
+    @Column(name = "type", length = 32)
     private String type;
-    @Column(name = "status")
+    @Column(name = "status", length = 16)
     private String status;
 }

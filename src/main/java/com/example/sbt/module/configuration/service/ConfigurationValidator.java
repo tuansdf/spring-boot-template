@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class ConfigurationValidator {
-    private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
+    private static final List<String> VALID_STATUS = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
 
     private final LocaleHelper localeHelper;
     private final ValidationHelper validationHelper;
@@ -43,7 +43,7 @@ public class ConfigurationValidator {
         if (StringUtils.isBlank(requestDTO.getStatus())) {
             throw new CustomException(localeHelper.getMessage("validation.error.required", new LocaleKey("field.status")));
         }
-        if (!validStatus.contains(requestDTO.getStatus())) {
+        if (!VALID_STATUS.contains(requestDTO.getStatus())) {
             throw new CustomException(localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.status")));
         }
     }
@@ -51,9 +51,6 @@ public class ConfigurationValidator {
     public void validateCreate(ConfigurationDTO requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
-        }
-        if (StringUtils.isBlank(requestDTO.getCode())) {
-            throw new CustomException(localeHelper.getMessage("validation.error.required", new LocaleKey("field.code")));
         }
         String codeError = validationHelper.validateCode(requestDTO.getCode());
         if (codeError != null) {

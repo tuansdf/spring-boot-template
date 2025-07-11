@@ -27,8 +27,8 @@ public class UserDTO {
     @JsonIgnore
     private String password;
     @JsonIgnore
-    private Boolean verified;
-    private Boolean otpEnabled;
+    private Boolean isVerified;
+    private Boolean isOtpEnabled;
     private String otpSecret;
     private String status;
     private Instant createdAt;
@@ -45,14 +45,14 @@ public class UserDTO {
     }
 
     // USER_SEARCH
-    public UserDTO(UUID id, String username, String email, String name, Boolean verified, Boolean otpEnabled, String status,
+    public UserDTO(UUID id, String username, String email, String name, Boolean isVerified, Boolean isOtpEnabled, String status,
                    Instant createdAt, Instant updatedAt, String roleCodes, String permissionCodes) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.name = name;
-        this.verified = verified;
-        this.otpEnabled = otpEnabled;
+        this.isVerified = isVerified;
+        this.isOtpEnabled = isOtpEnabled;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

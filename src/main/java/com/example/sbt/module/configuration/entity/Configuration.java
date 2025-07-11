@@ -39,13 +39,13 @@ import java.util.UUID;
         })
 })
 public class Configuration extends BaseEntity {
-    @Column(name = "code", updatable = false)
+    @Column(name = "code", unique = true, updatable = false, length = 64)
     private String code;
-    @Column(name = "value", columnDefinition = "text")
+    @Column(name = "value", length = 255)
     private String value;
-    @Column(name = "description", columnDefinition = "text")
+    @Column(name = "description", length = 255)
     private String description;
-    @Column(name = "status")
+    @Column(name = "status", length = 16)
     private String status;
     @Column(name = "is_public")
     private Boolean isPublic;

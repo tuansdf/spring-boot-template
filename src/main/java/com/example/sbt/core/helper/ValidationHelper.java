@@ -13,7 +13,9 @@ public class ValidationHelper {
     private final LocaleHelper localeHelper;
 
     public String validatePassword(String input) {
-        if (StringUtils.isEmpty(input)) return null;
+        if (StringUtils.isEmpty(input)) {
+            return localeHelper.getMessage("validation.error.required", new LocaleKey("field.password"));
+        }
         if (input.length() < 12 || input.length() > 64) {
             return localeHelper.getMessage("validation.error.not_between_length", new LocaleKey("field.password"), 12, 64);
         }
@@ -21,9 +23,11 @@ public class ValidationHelper {
     }
 
     public String validateCode(String input) {
-        if (StringUtils.isEmpty(input)) return null;
-        if (input.length() > 255) {
-            return localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.code"), 255);
+        if (StringUtils.isBlank(input)) {
+            return localeHelper.getMessage("validation.error.required", new LocaleKey("field.code"));
+        }
+        if (input.length() > 64) {
+            return localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.code"), 64);
         }
         if (Regex.CODE.matcher(input).matches()) {
             return localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.code"));
@@ -32,7 +36,9 @@ public class ValidationHelper {
     }
 
     public String validateEmail(String input) {
-        if (StringUtils.isEmpty(input)) return null;
+        if (StringUtils.isBlank(input)) {
+            return localeHelper.getMessage("validation.error.required", new LocaleKey("field.email"));
+        }
         if (input.length() > 255) {
             return localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.email"), 255);
         }
@@ -43,12 +49,11 @@ public class ValidationHelper {
     }
 
     public String validateUsername(String input) {
-        if (StringUtils.isEmpty(input)) return null;
-        if (input.length() < 3) {
-            return localeHelper.getMessage("validation.error.under_min_length", new LocaleKey("field.username"), 3);
+        if (StringUtils.isBlank(input)) {
+            return localeHelper.getMessage("validation.error.required", new LocaleKey("field.username"));
         }
-        if (input.length() > 64) {
-            return localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.username"), 64);
+        if (input.length() < 3 || input.length() > 64) {
+            return localeHelper.getMessage("validation.error.not_between_length", new LocaleKey("field.username"), 3, 64);
         }
         if (!Regex.USERNAME.matcher(input).matches()) {
             return localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.username"));

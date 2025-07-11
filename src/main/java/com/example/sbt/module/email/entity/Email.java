@@ -54,11 +54,11 @@ public class Email extends BaseEntity {
     private String body;
     @Column(name = "retry_count")
     private Integer retryCount;
-    @Column(name = "type")
+    @Column(name = "type", length = 32)
     private String type;
-    @Column(name = "status")
+    @Column(name = "status", length = 16)
     private String status;
-    @Column(name = "send_status")
+    @Column(name = "send_status", length = 16)
     private String sendStatus;
     @Column(name = "is_html")
     private Boolean isHtml;

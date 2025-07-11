@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
         StringBuilder builder = new StringBuilder();
         String orderBy = sqlHelper.toOrderBy("u.", requestDTO.getOrderBy(), requestDTO.getOrderDirection(), "u.id asc", List.of("username", "email"));
         if (!isCount) {
-            builder.append(" select u.id, u.username, u.email, u.name, u.verified, u.otp_enabled, u.status, u.created_at, u.updated_at, ");
+            builder.append(" select u.id, u.username, u.email, u.name, u.is_verified, u.is_otp_enabled, u.status, u.created_at, u.updated_at, ");
             builder.append(" string_agg(distinct(r.code), ',') as roles, ");
             builder.append(" string_agg(distinct(p.code), ',') as permissions ");
             builder.append(" from _user u ");
@@ -298,8 +298,8 @@ public class UserServiceImpl implements UserService {
                         item.getUsername(),
                         item.getEmail(),
                         item.getName(),
-                        ConversionUtils.safeToBoolean(item.getOtpEnabled()),
-                        ConversionUtils.safeToBoolean(item.getVerified()),
+                        ConversionUtils.safeToBoolean(item.getIsOtpEnabled()),
+                        ConversionUtils.safeToBoolean(item.getIsVerified()),
                         item.getStatus(),
                         String.join(",", item.getRoleCodes()),
                         String.join(",", item.getPermissionCodes()));

@@ -29,13 +29,13 @@ import java.util.UUID;
 public class BackgroundTask extends BaseEntity {
     @Column(name = "file_id")
     private UUID fileId;
-    @Column(name = "cache_key")
+    @Column(name = "cache_key", length = 64)
     private String cacheKey;
-    @Column(name = "type")
+    @Column(name = "type", length = 32)
     private String type;
-    @Column(name = "status")
+    @Column(name = "status", length = 16)
     private String status;
-    @Column(name = "error_message")
+    @Column(name = "error_message", length = 255)
     private String errorMessage;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;

@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class UserValidator {
-    private static final List<String> validStatus = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
+    private static final List<String> VALID_STATUS = List.of(CommonStatus.ACTIVE, CommonStatus.INACTIVE);
 
     private final LocaleHelper localeHelper;
     private final ValidationHelper validationHelper;
@@ -39,7 +39,7 @@ public class UserValidator {
         if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
             throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.name"), 255));
         }
-        if (StringUtils.isNotEmpty(requestDTO.getStatus()) && !validStatus.contains(requestDTO.getStatus())) {
+        if (StringUtils.isNotEmpty(requestDTO.getStatus()) && !VALID_STATUS.contains(requestDTO.getStatus())) {
             throw new CustomException(localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.status")));
         }
     }
