@@ -1,5 +1,7 @@
 package com.example.sbt.core.mapper;
 
+import com.example.sbt.module.authtoken.dto.AuthTokenDTO;
+import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import com.example.sbt.module.configuration.entity.Configuration;
 import com.example.sbt.module.email.dto.EmailDTO;
@@ -18,8 +20,6 @@ import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.permission.entity.Permission;
 import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.entity.Role;
-import com.example.sbt.module.authtoken.dto.AuthTokenDTO;
-import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import com.example.sbt.module.userdevice.entity.UserDevice;
 import org.mapstruct.Mapper;
