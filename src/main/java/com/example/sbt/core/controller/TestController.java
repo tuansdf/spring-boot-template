@@ -394,6 +394,7 @@ public class TestController {
         result.put("match", matcher.matches());
         result.put("normalize-path", FilenameUtils.normalize(body.getText()));
         result.put("clean-file-name", FileUtils.cleanFilename(body.getText()));
+        result.put("string-join", String.join("", "a", "b", null, "c"));
         return result;
     }
 

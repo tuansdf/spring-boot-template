@@ -1,8 +1,8 @@
 package com.example.sbt.shared.util;
 
 import jakarta.persistence.Tuple;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,9 @@ import java.util.List;
 public class CommonUtils {
     public static <T> T getValue(Tuple tuple, String name, Class<T> tClass) {
         try {
-            if (tuple.get(name) == null) return null;
+            if (tuple.get(name) == null) {
+                return null;
+            }
             return tuple.get(name, tClass);
         } catch (Exception e) {
             return null;
@@ -20,17 +22,25 @@ public class CommonUtils {
     }
 
     public static String coalesce(String... values) {
-        if (ArrayUtils.isEmpty(values)) return null;
+        if (ArrayUtils.isEmpty(values)) {
+            return null;
+        }
         for (String value : values) {
-            if (StringUtils.isNotEmpty(value)) return value;
+            if (value != null) {
+                return value;
+            }
         }
         return null;
     }
 
     public static Object coalesce(Object... values) {
-        if (ArrayUtils.isEmpty(values)) return null;
+        if (ArrayUtils.isEmpty(values)) {
+            return null;
+        }
         for (Object value : values) {
-            if (value != null) return value;
+            if (value != null) {
+                return value;
+            }
         }
         return null;
     }
@@ -80,5 +90,27 @@ public class CommonUtils {
             return null;
         }
         return items.get(index);
+    }
+
+    public static <T> T inListOrNull(T input, List<T> values) {
+        if (CollectionUtils.isEmpty(values)) {
+            return null;
+        }
+        if (values.contains(input)) {
+            return input;
+        }
+        return null;
+    }
+
+    public static String joinNotNull(String... values) {
+        if (ArrayUtils.isEmpty(values)) {
+            return "";
+        }
+        for (String value : values) {
+            if (value == null) {
+                return "";
+            }
+        }
+        return String.join("", values);
     }
 }

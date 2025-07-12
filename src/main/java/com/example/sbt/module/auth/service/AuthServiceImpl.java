@@ -232,7 +232,7 @@ public class AuthServiceImpl implements AuthService {
         }
         authTokenService.deactivateByUserIdAndType(user.getId(), CommonType.ACTIVATE_ACCOUNT);
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
-        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail(), "");
+        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
         emailService.sendActivateAccountEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
     }
 

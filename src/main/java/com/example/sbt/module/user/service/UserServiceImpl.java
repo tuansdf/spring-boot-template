@@ -21,10 +21,7 @@ import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.mapper.UserMapper;
 import com.example.sbt.module.user.repository.UserRepository;
 import com.example.sbt.shared.constant.FileType;
-import com.example.sbt.shared.util.ConversionUtils;
-import com.example.sbt.shared.util.DateUtils;
-import com.example.sbt.shared.util.ExcelUtils;
-import com.example.sbt.shared.util.FileUtils;
+import com.example.sbt.shared.util.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -66,7 +63,8 @@ public class UserServiceImpl implements UserService {
         PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
-        String orderBy = sqlHelper.toOrderBy("u.", requestDTO.getOrderBy(), requestDTO.getOrderDirection(), "u.id asc", List.of("username", "email"));
+        requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("username", "email")));
+        requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         if (!isCount) {
             builder.append(" select u.id, u.username, u.email, u.name, u.is_verified, u.is_otp_enabled, u.status, u.created_at, u.updated_at, ");
             builder.append(" string_agg(distinct(r.code), ',') as roles, ");
@@ -119,10 +117,13 @@ public class UserServiceImpl implements UserService {
                 params.put("createdAtTo", requestDTO.getCreatedAtTo());
             }
             if (!isCount) {
-                builder.append(orderBy);
+                builder.append(CommonUtils.joinNotNull(" u.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
+                builder.append(" u.id asc ");
             }
             if (!isAll) {
-                builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
+                builder.append(" limit :limit offset :offset ");
+                params.put("limit", result.getPageSize());
+                params.put("offset", ((result.getPageNumber() - 1) * result.getPageSize()));
             }
         }
         if (!isCount) {
@@ -132,7 +133,7 @@ public class UserServiceImpl implements UserService {
             builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
             builder.append(" left join permission p on (p.id = rp.permission_id) ");
             builder.append(" group by u.id ");
-            builder.append(orderBy);
+            builder.append(CommonUtils.joinNotNull(" u.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
