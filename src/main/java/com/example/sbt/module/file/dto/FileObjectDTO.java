@@ -19,22 +19,25 @@ public class FileObjectDTO {
     private String filePath;
     @JsonIgnore
     private String previewFilePath;
-    private String fileUrl;
-    private String previewFileUrl;
     private String filename;
     private String fileType;
     private Long fileSize;
+    private String cacheKey;
     private UUID createdBy;
     private Instant createdAt;
     private Instant updatedAt;
 
-    public FileObjectDTO(UUID id, String filePath, String previewFilePath, String filename, String fileType, Long fileSize, UUID createdBy, Instant createdAt, Instant updatedAt) {
+    private String fileUrl;
+    private String previewFileUrl;
+
+    public FileObjectDTO(UUID id, String filePath, String previewFilePath, String filename, String fileType, Long fileSize, String cacheKey, UUID createdBy, Instant createdAt, Instant updatedAt) {
         this.id = id;
         this.filePath = filePath;
         this.previewFilePath = previewFilePath;
         this.filename = filename;
         this.fileType = fileType;
         this.fileSize = fileSize;
+        this.cacheKey = cacheKey;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;

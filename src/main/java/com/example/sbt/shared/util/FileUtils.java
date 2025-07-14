@@ -133,7 +133,7 @@ public class FileUtils {
 
     public static String cleanFilePath(String filePath) {
         if (StringUtils.isBlank(filePath)) return "";
-        filePath = FilenameUtils.normalize(filePath);
+        filePath = FilenameUtils.normalize(filePath, true);
         filePath = filePath.replaceAll("\\s*/\\s*", PATH_SEPARATOR);
         filePath = filePath.replaceAll("/+", PATH_SEPARATOR);
         filePath = StringUtils.strip(filePath, PATH_SEPARATOR);
@@ -151,6 +151,7 @@ public class FileUtils {
     }
 
     public static String buildContentDisposition(String filename) {
+        filename = FileUtils.truncateFilename(FileUtils.cleanFilename(filename));
         if (StringUtils.isBlank(filename)) {
             return "";
         }

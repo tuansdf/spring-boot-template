@@ -69,7 +69,6 @@ public class UploadFileServiceImpl implements UploadFileService {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
-                    .contentDisposition(FileUtils.buildContentDisposition(objectKey.getOriginalFilename()))
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file));
             return objectKey.getFilePath();
@@ -90,7 +89,6 @@ public class UploadFileServiceImpl implements UploadFileService {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
-                    .contentDisposition(FileUtils.buildContentDisposition(objectKey.getOriginalFilename()))
                     .build();
             try (InputStream inputStream = file.getInputStream()) {
                 s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
@@ -103,7 +101,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public String createPresignedGetUrl(String filePath, Long seconds) {
+    public String createPresignedGetUrl(String filePath, String filename, Long seconds) {
         try {
             if (StringUtils.isBlank(filePath)) return null;
             if (seconds == null || seconds <= 0L) {
@@ -111,6 +109,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             }
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
+                    .responseContentDisposition(FileUtils.buildContentDisposition(filename))
                     .key(filePath)
                     .build();
             GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
@@ -125,8 +124,8 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public String createPresignedGetUrl(String filePath) {
-        return createPresignedGetUrl(filePath, null);
+    public String createPresignedGetUrl(String filePath, String filename) {
+        return createPresignedGetUrl(filePath, filename, null);
     }
 
     @Override
@@ -218,6 +217,16 @@ public class UploadFileServiceImpl implements UploadFileService {
         } catch (Exception e) {
             log.error("getFileMetadata ", e);
             return null;
+        }
+    }
+
+    @Override
+    public boolean existsFile(String filePath) {
+        try {
+            return getFileMetadata(filePath) != null;
+        } catch (Exception e) {
+            log.error("existsFile ", e);
+            return false;
         }
     }
 

@@ -12,9 +12,9 @@ public interface UploadFileService {
 
     String uploadFile(MultipartFile file, String filePath, String filename);
 
-    String createPresignedGetUrl(String filePath, Long seconds);
+    String createPresignedGetUrl(String filePath, String filename, Long seconds);
 
-    String createPresignedGetUrl(String filePath);
+    String createPresignedGetUrl(String filePath, String filename);
 
     ObjectKey createPresignedPutUrl(String dirPath, FileType fileType, Long seconds);
 
@@ -27,6 +27,8 @@ public interface UploadFileService {
     HeadObjectResponse getFileMetadata(String filePath);
 
     byte[] getFileHeaderBytes(String filePath);
+
+    boolean existsFile(String filePath);
 
     void deleteFile(String filePath);
 

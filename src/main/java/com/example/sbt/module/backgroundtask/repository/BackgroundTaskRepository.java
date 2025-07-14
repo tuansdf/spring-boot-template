@@ -17,6 +17,5 @@ public interface BackgroundTaskRepository extends JpaRepository<BackgroundTask, 
     @Modifying
     void updateStatusById(UUID id, String status);
 
-    @Query(value = "select * from background_task where cache_key = :cacheKey and type = :type and status = :status order by id asc limit 1", nativeQuery = true)
     Optional<BackgroundTask> findTopByCacheKeyAndTypeAndStatus(String cacheKey, String type, String status);
 }
