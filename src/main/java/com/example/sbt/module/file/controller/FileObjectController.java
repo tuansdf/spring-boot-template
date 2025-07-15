@@ -43,7 +43,7 @@ public class FileObjectController {
     public ResponseEntity<CommonResponse<FileObjectPendingDTO>> createPendingFileUpload(
             @RequestBody TemporaryUploadRequest request
     ) {
-        var result = fileObjectService.createPendingUpload(request.mimeType());
+        var result = fileObjectService.createPendingUpload(request.filename());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
@@ -84,6 +84,6 @@ public class FileObjectController {
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
-    public record TemporaryUploadRequest(String mimeType) {
+    public record TemporaryUploadRequest(String filename) {
     }
 }

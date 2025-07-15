@@ -1,5 +1,6 @@
 package com.example.sbt.module.file.dto;
 
+import com.example.sbt.shared.constant.FileType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +16,6 @@ public final class ObjectKey {
     private String filename;
     private String filePath;
     private String fileUrl;
+    private FileType fileType;
 }
 

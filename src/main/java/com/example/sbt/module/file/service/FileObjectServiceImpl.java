@@ -119,20 +119,21 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public FileObjectPendingDTO createPendingUpload(String mimeType, String dirPath) {
+    public FileObjectPendingDTO createPendingUpload(String filename, String dirPath) {
         final long EXPIRES_SECONDS = 10L * 60L;
-        FileType fileType = FileType.fromMimeType(mimeType);
+        String extension = FileUtils.getFileExtension(filename);
+        FileType fileType = FileType.fromExtension(extension);
         if (fileType == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        ObjectKey objectKey = uploadFileService.createPresignedPutUrl(dirPath, fileType, EXPIRES_SECONDS);
+        ObjectKey objectKey = uploadFileService.createPresignedPutUrl(dirPath, filename, EXPIRES_SECONDS);
         if (objectKey == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         FileObjectPending result = new FileObjectPending();
         result.setFilePath(objectKey.getFilePath());
         result.setFileType(fileType.getMimeType());
-        result.setFilename(objectKey.getFilename());
+        result.setFilename(FileUtils.truncateFilename(filename));
         result.setExpiresAt(Instant.now().plusSeconds(EXPIRES_SECONDS));
         result.setCreatedBy(RequestContext.get().getUserId());
         FileObjectPendingDTO dto = commonMapper.toDTO(fileObjectPendingRepository.save(result));

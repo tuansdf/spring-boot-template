@@ -36,25 +36,24 @@ public class UploadFileServiceImpl implements UploadFileService {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
-    private ObjectKey cleanObjectKey(String dirPath, String originalFilename, FileType fileType) {
+    private ObjectKey cleanObjectKey(String dirPath, String originalFilename) {
         dirPath = ConversionUtils.safeTrim(dirPath);
         originalFilename = FileUtils.truncateFilename(FileUtils.cleanFilename(originalFilename));
-        if (fileType == null) {
-            fileType = FileType.fromExtension(FileUtils.getFileExtension(originalFilename));
-        }
+        FileType fileType = FileType.fromExtension(FileUtils.getFileExtension(originalFilename));
         String filename = RandomUtils.secure().randomUUID().toString();
         if (fileType != null) {
-            filename = FileUtils.getFilename(filename, fileType);
+            filename = FileUtils.toFilename(filename, fileType);
         }
         if (StringUtils.isBlank(originalFilename)) {
             originalFilename = filename;
         }
-        String filePath = FileUtils.cleanFilePath(FileUtils.getFilePath(dirPath, filename));
+        String filePath = FileUtils.cleanFilePath(FileUtils.toFilePath(dirPath, filename));
         return ObjectKey.builder()
                 .dirPath(dirPath)
                 .originalFilename(originalFilename)
                 .filename(filename)
                 .filePath(filePath)
+                .fileType(fileType)
                 .build();
     }
 
@@ -62,7 +61,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     public String uploadFile(byte[] file, String dirPath, String filename) {
         try {
             if (file == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, filename, null);
+            ObjectKey objectKey = cleanObjectKey(dirPath, filename);
             if (StringUtils.isBlank(objectKey.getFilename()) || StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
@@ -82,7 +81,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     public String uploadFile(MultipartFile file, String dirPath, String filename) {
         try {
             if (file == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, filename, null);
+            ObjectKey objectKey = cleanObjectKey(dirPath, filename);
             if (StringUtils.isBlank(objectKey.getFilename()) || StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
@@ -129,11 +128,10 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public ObjectKey createPresignedPutUrl(String dirPath, FileType fileType, Long seconds) {
+    public ObjectKey createPresignedPutUrl(String dirPath, String fileName, Long seconds) {
         try {
-            if (fileType == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, null, fileType);
-            if (StringUtils.isBlank(objectKey.getFilename()) || StringUtils.isBlank(objectKey.getFilePath())) {
+            ObjectKey objectKey = cleanObjectKey(dirPath, fileName);
+            if (StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
             if (seconds == null || seconds <= 0L) {
@@ -142,7 +140,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
-                    .contentType(fileType.getMimeType())
+                    .contentType(objectKey.getFileType().getMimeType())
                     .ifNoneMatch("*") // api clients need to include this header: If-None-Match: *
                     .build();
             PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
@@ -159,8 +157,8 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public ObjectKey createPresignedPutUrl(String dirPath, FileType fileType) {
-        return createPresignedPutUrl(dirPath, fileType, null);
+    public ObjectKey createPresignedPutUrl(String dirPath, String filename) {
+        return createPresignedPutUrl(dirPath, filename, null);
     }
 
     @Override

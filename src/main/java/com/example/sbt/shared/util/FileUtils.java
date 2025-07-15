@@ -45,12 +45,12 @@ public class FileUtils {
         return filename.substring(dotIndex + 1);
     }
 
-    public static String getFilename(String name, FileType fileType) {
+    public static String toFilename(String name, FileType fileType) {
         if (StringUtils.isBlank(name) || fileType == null) return "";
         return name.concat(EXTENSION_SEPARATOR).concat(fileType.getExtension());
     }
 
-    public static String getFilePath(String... paths) {
+    public static String toFilePath(String... paths) {
         if (ArrayUtils.isEmpty(paths)) return "";
         return String.join(PATH_SEPARATOR, paths);
     }
