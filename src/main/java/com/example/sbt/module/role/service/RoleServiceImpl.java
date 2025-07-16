@@ -154,7 +154,7 @@ public class RoleServiceImpl implements RoleService {
             params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and r.created_at <= :createdAtTo ");
+            builder.append(" and r.created_at < :createdAtTo ");
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {

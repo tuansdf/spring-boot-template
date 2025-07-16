@@ -255,7 +255,7 @@ public class FileObjectServiceImpl implements FileObjectService {
             params.put("fileSizeFrom", requestDTO.getFileSizeFrom());
         }
         if (requestDTO.getFileSizeTo() != null) {
-            builder.append(" and fo.file_size <= :fileSizeTo ");
+            builder.append(" and fo.file_size < :fileSizeTo ");
             params.put("fileSizeTo", requestDTO.getFileSizeTo());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
@@ -263,7 +263,7 @@ public class FileObjectServiceImpl implements FileObjectService {
             params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and fo.created_at <= :createdAtTo ");
+            builder.append(" and fo.created_at < :createdAtTo ");
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {

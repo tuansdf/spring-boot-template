@@ -173,7 +173,7 @@ public class PermissionServiceImpl implements PermissionService {
             params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and p.created_at <= :createdAtTo ");
+            builder.append(" and p.created_at < :createdAtTo ");
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {

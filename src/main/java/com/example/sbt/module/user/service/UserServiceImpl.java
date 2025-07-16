@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
                 params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
             }
             if (requestDTO.getCreatedAtTo() != null) {
-                builder.append(" and u.created_at <= :createdAtTo ");
+                builder.append(" and u.created_at < :createdAtTo ");
                 params.put("createdAtTo", requestDTO.getCreatedAtTo());
             }
             if (!isCount) {

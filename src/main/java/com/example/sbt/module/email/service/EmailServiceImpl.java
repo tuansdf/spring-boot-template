@@ -70,11 +70,11 @@ public class EmailServiceImpl implements EmailService {
             params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and e.created_at <= :createdAtTo ");
+            builder.append(" and e.created_at < :createdAtTo ");
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
-            builder.append(" order by e.created_at desc, e.id asc ");
+            builder.append(" order by e.id desc ");
             builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {

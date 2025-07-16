@@ -70,11 +70,11 @@ public class NotificationServiceImpl implements NotificationService {
             params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and n.created_at <= :createdAtTo ");
+            builder.append(" and n.created_at < :createdAtTo ");
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
-            builder.append(" order by n.created_at desc, n.id asc ");
+            builder.append(" order by n.id desc ");
             builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {

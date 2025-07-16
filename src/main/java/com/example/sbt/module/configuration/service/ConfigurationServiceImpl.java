@@ -153,7 +153,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and c.created_at <= :createdAtTo ");
+            builder.append(" and c.created_at < :createdAtTo ");
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
