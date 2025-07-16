@@ -102,7 +102,7 @@ public class CommonUtils {
         return null;
     }
 
-    public static String joinNotNull(String... values) {
+    public static String joinWhenNoNull(String... values) {
         if (ArrayUtils.isEmpty(values)) {
             return "";
         }

@@ -17,6 +17,7 @@ import com.example.sbt.module.file.entity.FileObjectPending;
 import com.example.sbt.module.file.repository.FileObjectPendingRepository;
 import com.example.sbt.module.file.repository.FileObjectRepository;
 import com.example.sbt.shared.constant.FileType;
+import com.example.sbt.shared.util.CommonUtils;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.FileUtils;
 import jakarta.persistence.EntityManager;
@@ -233,6 +234,8 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     private PaginationData<FileObjectDTO> executeSearch(SearchFileRequestDTO requestDTO, boolean isCount) {
+        requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("created_at", "file_type", "file_size")));
+        requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         PaginationData<FileObjectDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
@@ -264,19 +267,9 @@ public class FileObjectServiceImpl implements FileObjectService {
             params.put("createdAtTo", requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
-            List<String> orderBys = List.of("created_at", "file_type", "file_size");
-            List<String> orderDirections = List.of("asc", "desc");
-            if (orderBys.contains(requestDTO.getOrderBy())) {
-                builder.append(" order by fo.").append(requestDTO.getOrderBy()).append(" ");
-                if (orderDirections.contains(requestDTO.getOrderDirection())) {
-                    builder.append(" ").append(requestDTO.getOrderDirection()).append(" ");
-                } else {
-                    builder.append(" asc ");
-                }
-                builder.append(" , fo.id desc ");
-            } else {
-                builder.append(" order by fo.id desc ");
-            }
+            builder.append(" order by ");
+            builder.append(CommonUtils.joinWhenNoNull(" fo.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
+            builder.append(" fo.id desc ");
             builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
         }
         if (isCount) {

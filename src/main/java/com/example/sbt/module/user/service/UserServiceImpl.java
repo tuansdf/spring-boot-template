@@ -60,11 +60,11 @@ public class UserServiceImpl implements UserService {
     private final BackgroundTaskService backgroundTaskService;
 
     private PaginationData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount, boolean isAll) {
+        requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("username", "email")));
+        requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
-        requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("username", "email")));
-        requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         if (!isCount) {
             builder.append(" select u.id, u.username, u.email, u.name, u.is_verified, u.is_otp_enabled, u.status, u.created_at, u.updated_at, ");
             builder.append(" string_agg(distinct(r.code), ',') as roles, ");
@@ -117,7 +117,8 @@ public class UserServiceImpl implements UserService {
                 params.put("createdAtTo", requestDTO.getCreatedAtTo());
             }
             if (!isCount) {
-                builder.append(CommonUtils.joinNotNull(" u.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
+                builder.append(" order by ");
+                builder.append(CommonUtils.joinWhenNoNull(" u.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
                 builder.append(" u.id asc ");
             }
             if (!isAll) {
@@ -133,7 +134,9 @@ public class UserServiceImpl implements UserService {
             builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
             builder.append(" left join permission p on (p.id = rp.permission_id) ");
             builder.append(" group by u.id ");
-            builder.append(CommonUtils.joinNotNull(" u.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
+            builder.append(" order by ");
+            builder.append(CommonUtils.joinWhenNoNull(" u.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
+            builder.append(" u.id asc ");
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
