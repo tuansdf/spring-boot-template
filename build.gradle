@@ -43,7 +43,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-admin:9.4.3'
     implementation 'software.amazon.awssdk:s3:2.31.11'
 
-    implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
     implementation 'org.apache.commons:commons-collections4:4.5.0'
     implementation 'org.apache.commons:commons-compress:1.27.1'
     implementation 'commons-codec:commons-codec:1.18.0'
@@ -51,6 +51,7 @@ dependencies {
     implementation 'org.apache.tika:tika-core:3.2.0'
     implementation 'org.apache.tika:tika-parsers-standard-package:3.2.0'
 
+    implementation 'co.elastic.logging:logback-ecs-encoder:1.7.0'
     implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
     implementation 'com.opencsv:opencsv:5.11.2'

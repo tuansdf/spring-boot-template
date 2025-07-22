@@ -1,15 +1,18 @@
 <configuration>
-    <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>10000</queueSize>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="co/elastic/logging/logback/boot/ecs-console-appender.xml"/>
+
+    <appender name="ASYNC_ECS_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>1024</queueSize>
         <discardingThreshold>0</discardingThreshold>
-        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ECS_JSON_CONSOLE"/>
     </appender>
 
     <root level="info">
-        <appender-ref ref="ASYNC_CONSOLE"/>
+        <appender-ref ref="ASYNC_ECS_CONSOLE"/>
     </root>
 
     <logger name="org.hibernate.SQL" level="debug" additivity="false">
-        <appender-ref ref="ASYNC_CONSOLE"/>
+        <appender-ref ref="ASYNC_ECS_CONSOLE"/>
     </logger>
 </configuration>
