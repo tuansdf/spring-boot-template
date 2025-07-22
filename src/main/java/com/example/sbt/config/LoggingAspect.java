@@ -1,5 +1,6 @@
 package com.example.sbt.config;
 
+import com.example.sbt.core.constant.LoggerKey;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -29,22 +30,39 @@ public class LoggingAspect {
             if (i > 0) params.append(", ");
             params.append(paramNames[i]).append("=").append(paramValues[i]);
         }
-        String paramString = !params.isEmpty() ? params.toString() : "";
+        String arguments = !params.isEmpty() ? params.toString() : "";
 
-        log.info("[methodAt={}] ENTER [method={}] [arguments={}]", start, methodName, paramString);
+        log.atInfo()
+                .addKeyValue(LoggerKey.EVENT, "ENTER")
+                .addKeyValue(LoggerKey.AROUND_KEY, start)
+                .addKeyValue(LoggerKey.METHOD, methodName)
+                .addKeyValue(LoggerKey.ARGUMENTS, arguments)
+                .log();
 
         Object result = null;
         try {
             result = joinPoint.proceed();
-            long exTime = DateUtils.currentEpochMillis() - start;
+            long elapsedMs = DateUtils.currentEpochMillis() - start;
             String resultString = ConversionUtils.toString(result);
             if (resultString != null && resultString.length() > MAX_RESULT_LENGTH) {
                 resultString = resultString.substring(0, MAX_RESULT_LENGTH);
             }
-            log.info("[methodAt={}] EXIT  [method={}] [execTime={} ms] result: {}", start, methodName, exTime, resultString);
+            log.atInfo()
+                    .addKeyValue(LoggerKey.EVENT, "EXIT")
+                    .addKeyValue(LoggerKey.AROUND_KEY, start)
+                    .addKeyValue(LoggerKey.METHOD, methodName)
+                    .addKeyValue(LoggerKey.ARGUMENTS, arguments)
+                    .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
+                    .log(resultString);
         } catch (Throwable e) {
-            long exTime = DateUtils.currentEpochMillis() - start;
-            log.error("[methodAt={}] EXIT  [method={}] [execTime={} ms] exception: ", start, methodName, exTime, e);
+            long elapsedMs = DateUtils.currentEpochMillis() - start;
+            log.atError()
+                    .addKeyValue(LoggerKey.EVENT, "EXIT")
+                    .addKeyValue(LoggerKey.AROUND_KEY, start)
+                    .addKeyValue(LoggerKey.METHOD, methodName)
+                    .addKeyValue(LoggerKey.ARGUMENTS, arguments)
+                    .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
+                    .log(e.toString());
             throw e;
         }
 

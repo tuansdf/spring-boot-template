@@ -95,7 +95,6 @@ public class GlobalDefaultExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonResponse<Object>> defaultExceptionHandler(Exception e) {
-        log.error("defaultExceptionHandler ", e);
         return exceptionHelper.toResponseEntity(e);
     }
 }

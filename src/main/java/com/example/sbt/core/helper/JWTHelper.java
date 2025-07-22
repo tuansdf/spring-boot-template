@@ -66,7 +66,7 @@ public class JWTHelper {
             signedJWT.sign(jwsSigner);
             return signedJWT.serialize();
         } catch (Exception e) {
-            log.error("create ", e);
+            log.error("create {}", e.toString());
             return null;
         }
     }
@@ -79,7 +79,7 @@ public class JWTHelper {
             }
             return objectMapper.readValue(signedJWT.getPayload().toString(), JWTPayload.class);
         } catch (Exception e) {
-            log.error("verify ", e);
+            log.error("verify {}", e.toString());
             return null;
         }
     }

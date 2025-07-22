@@ -278,7 +278,7 @@ public class UserServiceImpl implements UserService {
             }
             backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, fileObjectDTO.getId());
         } catch (Exception e) {
-            log.error("handleExportTask ", e);
+            log.error("handleExportTask {}", e.toString());
             backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.FAILED);
         }
     }

@@ -27,7 +27,7 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
 
             emailService.executeSend(request.getEmail());
         } catch (Exception e) {
-            log.error("SendEmailEventListener.error ", e);
+            log.error("SendEmailEventListener.error {}", e.toString());
         } finally {
             try {
                 redisTemplate.opsForStream().acknowledge(EventKey.SEND_EMAIL, message);

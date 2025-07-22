@@ -20,7 +20,7 @@ public class Base64Utils {
             if (bytes == null) return null;
             return encoder.encodeToString(bytes);
         } catch (Exception e) {
-            log.error("base64 encode ", e);
+            log.error("base64 encode {}", e.toString());
             return null;
         }
     }
@@ -30,7 +30,7 @@ public class Base64Utils {
             if (input == null) return null;
             return encode(input.getBytes(DEFAULT_CHARSET));
         } catch (Exception e) {
-            log.error("base64 encode ", e);
+            log.error("base64 encode {}", e.toString());
             return null;
         }
     }
@@ -40,7 +40,7 @@ public class Base64Utils {
             if (bytes == null) return null;
             return urlEncoder.encodeToString(bytes);
         } catch (Exception e) {
-            log.error("base64url encode ", e);
+            log.error("base64url encode {}", e.toString());
             return null;
         }
     }
@@ -50,7 +50,7 @@ public class Base64Utils {
             if (input == null) return null;
             return urlEncode(input.getBytes(DEFAULT_CHARSET));
         } catch (Exception e) {
-            log.error("base64url encode ", e);
+            log.error("base64url encode {}", e.toString());
             return null;
         }
     }
@@ -60,7 +60,7 @@ public class Base64Utils {
             if (StringUtils.isBlank(input)) return null;
             return decoder.decode(input.getBytes());
         } catch (Exception e) {
-            log.error("base64 decode ", e);
+            log.error("base64 decode {}", e.toString());
             return null;
         }
     }
@@ -71,7 +71,7 @@ public class Base64Utils {
             if (result == null) return null;
             return new String(result, DEFAULT_CHARSET);
         } catch (Exception e) {
-            log.error("base64 decode to string ", e);
+            log.error("base64 decode to string {}", e.toString());
             return null;
         }
     }
@@ -81,7 +81,7 @@ public class Base64Utils {
             if (StringUtils.isBlank(input)) return null;
             return urlDecoder.decode(input.getBytes());
         } catch (Exception e) {
-            log.error("base64url decode ", e);
+            log.error("base64url decode {}", e.toString());
             return null;
         }
     }
@@ -92,7 +92,7 @@ public class Base64Utils {
             if (result == null) return null;
             return new String(result, DEFAULT_CHARSET);
         } catch (Exception e) {
-            log.error("base64url decode to string ", e);
+            log.error("base64url decode to string {}", e.toString());
             return null;
         }
     }

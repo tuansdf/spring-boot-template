@@ -1,6 +1,6 @@
 package com.example.sbt.core.dto;
 
-import com.example.sbt.core.constant.MDCKey;
+import com.example.sbt.core.constant.LoggerKey;
 import com.example.sbt.shared.util.ConversionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
@@ -19,7 +19,7 @@ public class RequestContext {
 
     public static void set(RequestContextData input) {
         context.set(input);
-        syncMDC();
+        syncWithLogger();
     }
 
     public static void clear() {
@@ -27,11 +27,11 @@ public class RequestContext {
         MDC.clear();
     }
 
-    public static void syncMDC() {
+    public static void syncWithLogger() {
         RequestContextData context = get();
         String requestId = ConversionUtils.toString(context.getRequestId());
         if (StringUtils.isNotEmpty(requestId)) {
-            MDC.put(MDCKey.REQUEST_ID, requestId);
+            MDC.put(LoggerKey.REQUEST_ID, requestId);
         }
     }
 }

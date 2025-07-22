@@ -27,7 +27,7 @@ public class ExportUserEventListener implements StreamListener<String, ObjectRec
 
             userService.handleExportTask(request.getBackgroundTaskId(), request.getSearchRequest());
         } catch (Exception e) {
-            log.error("ExportUserEventListener.error ", e);
+            log.error("ExportUserEventListener.error {}", e.toString());
         } finally {
             try {
                 redisTemplate.opsForStream().acknowledge(EventKey.EXPORT_USER, message);

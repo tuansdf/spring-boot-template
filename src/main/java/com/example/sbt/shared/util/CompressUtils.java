@@ -20,7 +20,7 @@ public class CompressUtils {
                 return byteArrayOutputStream.toByteArray();
             }
         } catch (Exception e) {
-            log.error("compressGzip ", e);
+            log.error("toGzip {}", e.toString());
             return null;
         }
     }

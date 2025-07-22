@@ -72,7 +72,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file));
             return objectKey.getFilePath();
         } catch (Exception e) {
-            log.error("uploadFile ", e);
+            log.error("uploadFile {}", e.toString());
             return null;
         }
     }
@@ -94,7 +94,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             }
             return objectKey.getFilePath();
         } catch (Exception e) {
-            log.error("uploadFile ", e);
+            log.error("uploadFile {}", e.toString());
             return null;
         }
     }
@@ -117,7 +117,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .build();
             return s3Presigner.presignGetObject(presignRequest).url().toString();
         } catch (Exception e) {
-            log.error("createPresignedGetUrl ", e);
+            log.error("createPresignedGetUrl {}", e.toString());
             return null;
         }
     }
@@ -151,7 +151,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             objectKey.setFileUrl(presignedUrl);
             return objectKey;
         } catch (Exception e) {
-            log.error("createPresignedPutUrl ", e);
+            log.error("createPresignedPutUrl {}", e.toString());
             return null;
         }
     }
@@ -171,7 +171,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .build();
             return s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
         } catch (Exception e) {
-            log.error("getFile ", e);
+            log.error("getFile {}", e.toString());
             return null;
         }
     }
@@ -191,7 +191,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .build();
             return s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
         } catch (Exception e) {
-            log.error("getFileHeaderBytes ", e);
+            log.error("getFileHeaderBytes {}", e.toString());
             return null;
         }
     }
@@ -213,7 +213,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             if (!response.hasMetadata()) return null;
             return response;
         } catch (Exception e) {
-            log.error("getFileMetadata ", e);
+            log.error("getFileMetadata {}", e.toString());
             return null;
         }
     }
@@ -223,7 +223,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         try {
             return getFileMetadata(filePath) != null;
         } catch (Exception e) {
-            log.error("existsFile ", e);
+            log.error("existsFile {}", e.toString());
             return false;
         }
     }
@@ -238,7 +238,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .build();
             s3Client.deleteObject(deleteObjectRequest);
         } catch (Exception e) {
-            log.error("deleteFile ", e);
+            log.error("deleteFile {}", e.toString());
         }
     }
 
@@ -259,7 +259,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                 s3Client.deleteObjects(deleteObjectsRequest);
             }
         } catch (Exception e) {
-            log.error("deleteFiles ", e);
+            log.error("deleteFiles {}", e.toString());
         }
     }
 }

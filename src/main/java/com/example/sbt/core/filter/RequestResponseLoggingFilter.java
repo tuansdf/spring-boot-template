@@ -1,6 +1,7 @@
 package com.example.sbt.core.filter;
 
 import com.example.sbt.core.constant.HTTPHeader;
+import com.example.sbt.core.constant.LoggerKey;
 import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.DateUtils;
@@ -29,13 +30,28 @@ public class RequestResponseLoggingFilter implements Filter {
             RequestContext.get().setRequestId(ConversionUtils.safeToString(RandomUtils.insecure().randomHexString(8)));
             RequestContext.get().setLocale(httpServletRequest.getLocale());
             RequestContext.get().setTenantId(httpServletRequest.getHeader(HTTPHeader.X_TENANT_ID));
-            RequestContext.syncMDC();
+            RequestContext.syncWithLogger();
 
-            log.info("[requestAt={}] ENTER [method={}] [path={}] [query={}]", start, httpServletRequest.getMethod(), httpServletRequest.getServletPath(), httpServletRequest.getQueryString());
+            log.atInfo()
+                    .addKeyValue(LoggerKey.EVENT, "ENTER")
+                    .addKeyValue(LoggerKey.AROUND_KEY, start)
+                    .addKeyValue(LoggerKey.HTTP_METHOD, httpServletRequest.getMethod())
+                    .addKeyValue(LoggerKey.HTTP_PATH, httpServletRequest.getServletPath())
+                    .addKeyValue(LoggerKey.HTTP_QUERY, httpServletRequest.getQueryString())
+                    .log();
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
-            long execTime = DateUtils.currentEpochMillis() - start;
-            log.info("[requestAt={}] EXIT  [userId={}] [method={}] [path={}] [execTime={} ms] [status={}]", start, RequestContext.get().getUserId(), httpServletRequest.getMethod(), httpServletRequest.getServletPath(), execTime, httpServletResponse.getStatus());
+            long elapsedMs = DateUtils.currentEpochMillis() - start;
+            log.atInfo()
+                    .addKeyValue(LoggerKey.EVENT, "EXIT")
+                    .addKeyValue(LoggerKey.USER_ID, RequestContext.get().getUserId())
+                    .addKeyValue(LoggerKey.AROUND_KEY, start)
+                    .addKeyValue(LoggerKey.HTTP_METHOD, httpServletRequest.getMethod())
+                    .addKeyValue(LoggerKey.HTTP_PATH, httpServletRequest.getServletPath())
+                    .addKeyValue(LoggerKey.HTTP_QUERY, httpServletRequest.getQueryString())
+                    .addKeyValue(LoggerKey.HTTP_STATUS, httpServletResponse.getStatus())
+                    .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
+                    .log();
             RequestContext.clear();
         }
     }

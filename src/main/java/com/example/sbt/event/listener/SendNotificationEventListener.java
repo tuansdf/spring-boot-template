@@ -27,7 +27,7 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
 
             notificationService.executeSend(request.getNotification());
         } catch (Exception e) {
-            log.error("SendNotificationEventListener.error ", e);
+            log.error("SendNotificationEventListener.error {}", e.toString());
         } finally {
             try {
                 redisTemplate.opsForStream().acknowledge(EventKey.SEND_NOTIFICATION, message);

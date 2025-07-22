@@ -34,7 +34,7 @@ public class FileUtils {
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
             bufferedOutputStream.write(bytes);
         } catch (Exception e) {
-            log.error("writeFile ", e);
+            log.error("writeFile {}", e.toString());
         }
     }
 
