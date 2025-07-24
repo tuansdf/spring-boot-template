@@ -9,7 +9,6 @@ import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.permission.repository.PermissionRepository;
 import com.example.sbt.shared.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -29,7 +28,7 @@ public class PermissionValidator {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
+        if (requestDTO.getName() != null && requestDTO.getName().length() > 255) {
             throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.name"), 255));
         }
     }

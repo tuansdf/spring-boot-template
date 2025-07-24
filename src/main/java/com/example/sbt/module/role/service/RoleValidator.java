@@ -11,7 +11,6 @@ import com.example.sbt.module.role.repository.RoleRepository;
 import com.example.sbt.shared.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -33,10 +32,10 @@ public class RoleValidator {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
+        if (requestDTO.getName() != null && requestDTO.getName().length() > 255) {
             throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.name"), 255));
         }
-        if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
+        if (requestDTO.getDescription() != null && requestDTO.getDescription().length() > 255) {
             throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.description"), 255));
         }
         if (CollectionUtils.isEmpty(requestDTO.getPermissionIds())) {

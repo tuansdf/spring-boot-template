@@ -2,10 +2,17 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="co/elastic/logging/logback/boot/ecs-console-appender.xml"/>
 
+    <appender name="ECS_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="co.elastic.logging.logback.EcsEncoder">
+            <includeCallerData>true</includeCallerData>
+            <includeMdc>true</includeMdc>
+        </encoder>
+    </appender>
+
     <appender name="ASYNC_ECS_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
         <queueSize>1024</queueSize>
         <discardingThreshold>0</discardingThreshold>
-        <appender-ref ref="ECS_JSON_CONSOLE"/>
+        <appender-ref ref="ECS_CONSOLE"/>
     </appender>
 
     <root level="info">

@@ -28,16 +28,19 @@ public class ConfigurationValidator {
         requestDTO.setCode(ConversionUtils.safeTrim(requestDTO.getCode()).toUpperCase());
         requestDTO.setDescription(ConversionUtils.safeTrim(requestDTO.getDescription()));
         requestDTO.setValue(ConversionUtils.safeToString(requestDTO.getCode()));
+        if (!VALID_STATUS.contains(requestDTO.getStatus())) {
+            requestDTO.setStatus(CommonStatus.INACTIVE);
+        }
     }
 
     public void validateUpdate(ConfigurationDTO requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        if (StringUtils.isNotEmpty(requestDTO.getValue()) && requestDTO.getValue().length() > 255) {
+        if (requestDTO.getValue() != null && requestDTO.getValue().length() > 255) {
             throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.value")));
         }
-        if (StringUtils.isNotEmpty(requestDTO.getDescription()) && requestDTO.getDescription().length() > 255) {
+        if (requestDTO.getDescription() != null && requestDTO.getDescription().length() > 255) {
             throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.description")));
         }
         if (StringUtils.isBlank(requestDTO.getStatus())) {

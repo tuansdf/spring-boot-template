@@ -8,7 +8,6 @@ import com.example.sbt.core.helper.ValidationHelper;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.shared.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -36,10 +35,10 @@ public class UserValidator {
         if (emailError != null) {
             throw new CustomException(emailError);
         }
-        if (StringUtils.isNotEmpty(requestDTO.getName()) && requestDTO.getName().length() > 255) {
+        if (requestDTO.getName() != null && requestDTO.getName().length() > 255) {
             throw new CustomException(localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.name"), 255));
         }
-        if (StringUtils.isNotEmpty(requestDTO.getStatus()) && !VALID_STATUS.contains(requestDTO.getStatus())) {
+        if (requestDTO.getStatus() != null && !VALID_STATUS.contains(requestDTO.getStatus())) {
             throw new CustomException(localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.status")));
         }
     }
