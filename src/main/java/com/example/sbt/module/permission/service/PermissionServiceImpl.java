@@ -179,7 +179,7 @@ public class PermissionServiceImpl implements PermissionService {
         if (!isCount) {
             builder.append(" order by p.code asc, p.id asc ");
             builder.append(" limit :limit offset :offset ");
-            sqlHelper.setLimitOffset(params, requestDTO.getPageNumber(), requestDTO.getPageSize());
+            sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());

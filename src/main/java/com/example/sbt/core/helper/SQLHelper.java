@@ -37,7 +37,8 @@ public class SQLHelper {
     }
 
     public void setLimitOffset(Map<String, Object> params, long pageNumber, long pageSize) {
-        params.put("limit", pageNumber);
+        if (params == null) return;
+        params.put("limit", pageSize);
         params.put("offset", ((pageNumber - 1) * pageSize));
     }
 

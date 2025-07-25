@@ -76,7 +76,7 @@ public class NotificationServiceImpl implements NotificationService {
         if (!isCount) {
             builder.append(" order by n.id desc ");
             builder.append(" limit :limit offset :offset ");
-            sqlHelper.setLimitOffset(params, requestDTO.getPageNumber(), requestDTO.getPageSize());
+            sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());

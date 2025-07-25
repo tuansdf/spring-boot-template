@@ -93,7 +93,7 @@ public class CommonUtils {
     }
 
     public static <T> T inListOrNull(T input, List<T> values) {
-        if (CollectionUtils.isEmpty(values)) {
+        if (input == null || CollectionUtils.isEmpty(values)) {
             return null;
         }
         if (values.contains(input)) {

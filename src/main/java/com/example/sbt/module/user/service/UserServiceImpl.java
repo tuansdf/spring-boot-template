@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
             }
             if (!isAll) {
                 builder.append(" limit :limit offset :offset ");
-                sqlHelper.setLimitOffset(params, requestDTO.getPageNumber(), requestDTO.getPageSize());
+                sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
             }
         }
         if (!isCount) {

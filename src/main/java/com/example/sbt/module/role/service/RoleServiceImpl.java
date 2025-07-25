@@ -160,7 +160,7 @@ public class RoleServiceImpl implements RoleService {
         if (!isCount) {
             builder.append(" order by r.code asc, r.id asc ");
             builder.append(" limit :limit offset :offset ");
-            sqlHelper.setLimitOffset(params, requestDTO.getPageNumber(), requestDTO.getPageSize());
+            sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());

@@ -271,7 +271,7 @@ public class FileObjectServiceImpl implements FileObjectService {
             builder.append(CommonUtils.joinWhenNoNull(" fo.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
             builder.append(" fo.id desc ");
             builder.append(" limit :limit offset :offset ");
-            sqlHelper.setLimitOffset(params, requestDTO.getPageNumber(), requestDTO.getPageSize());
+            sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
