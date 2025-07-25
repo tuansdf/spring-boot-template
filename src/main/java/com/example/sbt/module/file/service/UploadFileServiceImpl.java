@@ -3,6 +3,7 @@ package com.example.sbt.module.file.service;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.module.file.dto.ObjectKey;
 import com.example.sbt.shared.constant.FileType;
+import com.example.sbt.shared.util.CommonUtils;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.FileUtils;
 import com.example.sbt.shared.util.RandomUtils;
@@ -103,9 +104,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     public String createPresignedGetUrl(String filePath, String filename, Long seconds) {
         try {
             if (StringUtils.isBlank(filePath)) return null;
-            if (seconds == null || seconds <= 0L) {
-                seconds = DEFAULT_PRESIGN_GET_SECONDS;
-            }
+            seconds = CommonUtils.defaultWhenNotPositive(seconds, DEFAULT_PRESIGN_GET_SECONDS);
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .responseContentDisposition(FileUtils.buildContentDisposition(filename))
@@ -134,9 +133,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             if (StringUtils.isBlank(objectKey.getFilePath())) {
                 return null;
             }
-            if (seconds == null || seconds <= 0L) {
-                seconds = DEFAULT_PRESIGN_PUT_SECONDS;
-            }
+            seconds = CommonUtils.defaultWhenNotPositive(seconds, DEFAULT_PRESIGN_PUT_SECONDS);
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
@@ -180,9 +177,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     public byte[] getFileHeaderBytes(String filePath, Integer size) {
         try {
             if (StringUtils.isBlank(filePath)) return null;
-            if (size == null || size <= 0) {
-                size = 2048;
-            }
+            size = CommonUtils.defaultWhenNotPositive(size, 2048);
             String rangeHeader = "bytes=0-" + (size - 1);
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())

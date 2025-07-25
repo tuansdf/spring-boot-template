@@ -113,4 +113,12 @@ public class CommonUtils {
         }
         return String.join("", values);
     }
+
+    public static <T> T defaultWhenNull(T value, T defaultValue) {
+        return value == null ? defaultValue : value;
+    }
+
+    public static <T extends Number> T defaultWhenNotPositive(T value, T defaultValue) {
+        return value == null || value.doubleValue() <= 0 ? defaultValue : value;
+    }
 }

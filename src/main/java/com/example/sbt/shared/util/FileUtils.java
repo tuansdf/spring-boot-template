@@ -116,9 +116,7 @@ public class FileUtils {
 
     public static String truncateFilename(String filename, Integer maxLength) {
         if (StringUtils.isBlank(filename)) return "";
-        if (maxLength == null || maxLength <= 0) {
-            maxLength = MAX_FILE_NAME_LENGTH;
-        }
+        maxLength = CommonUtils.defaultWhenNotPositive(maxLength, MAX_FILE_NAME_LENGTH);
         if (filename.length() <= maxLength) return filename;
         String extension = getFileExtension(filename);
         if (StringUtils.isEmpty(extension)) {
@@ -151,7 +149,7 @@ public class FileUtils {
     }
 
     public static String buildContentDisposition(String filename) {
-        filename = FileUtils.truncateFilename(FileUtils.cleanFilename(filename));
+        filename = truncateFilename(cleanFilename(filename));
         if (StringUtils.isBlank(filename)) {
             return "";
         }
