@@ -36,6 +36,11 @@ public class SQLHelper {
         return " limit " + pageSize + " offset " + ((pageNumber - 1) * pageSize) + " ";
     }
 
+    public void setLimitOffset(Map<String, Object> params, long pageNumber, long pageSize) {
+        params.put("limit", pageNumber);
+        params.put("offset", ((pageNumber - 1) * pageSize));
+    }
+
     public long toPages(long totalItems, long pageSize) {
         return ConversionUtils.safeToLong(totalItems / pageSize + (totalItems % pageSize > 0 ? 1 : 0));
     }

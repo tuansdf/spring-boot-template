@@ -75,7 +75,8 @@ public class EmailServiceImpl implements EmailService {
         }
         if (!isCount) {
             builder.append(" order by e.id desc ");
-            builder.append(sqlHelper.toLimitOffset(result.getPageNumber(), result.getPageSize()));
+            builder.append(" limit :limit offset :offset ");
+            sqlHelper.setLimitOffset(params, requestDTO.getPageNumber(), requestDTO.getPageSize());
         }
         if (isCount) {
             Query query = entityManager.createNativeQuery(builder.toString());
