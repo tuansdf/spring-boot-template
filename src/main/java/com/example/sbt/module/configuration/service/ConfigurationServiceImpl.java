@@ -1,6 +1,5 @@
 package com.example.sbt.module.configuration.service;
 
-import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
@@ -57,8 +56,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
         result.setValue(requestDTO.getValue());
         result.setDescription(requestDTO.getDescription());
-        result.setStatus(requestDTO.getStatus());
-        result.setIsPublic(ConversionUtils.safeToBoolean(requestDTO.getIsPublic()));
+        result.setIsEnabled(requestDTO.getIsEnabled());
+        result.setIsPublic(requestDTO.getIsPublic());
         result = configurationRepository.save(result);
         ConfigurationDTO resultDTO = commonMapper.toDTO(result);
         configurationKVRepository.save(commonMapper.toKV(resultDTO));
@@ -111,7 +110,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public String findValueByCode(String code) {
         ConfigurationKV result = findOneCachedByCode(code);
         if (result == null) return null;
-        if (!CommonStatus.ACTIVE.equals(result.getStatus())) return null;
+        if (!ConversionUtils.safeToBoolean(result.getIsEnabled())) return null;
         return ConversionUtils.safeToString(result.getValue());
     }
 
@@ -119,7 +118,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public String findPublicValueByCode(String code) {
         ConfigurationKV result = findOneCachedByCode(code);
         if (result == null) return null;
-        if (!CommonStatus.ACTIVE.equals(result.getStatus()) || !ConversionUtils.safeToBoolean(result.getIsPublic()))
+        if (!ConversionUtils.safeToBoolean(result.getIsEnabled()) || !ConversionUtils.safeToBoolean(result.getIsPublic()))
             return null;
         return ConversionUtils.safeToString(result.getValue());
     }
@@ -155,12 +154,16 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         builder.append(" from configuration c ");
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
-            builder.append(" and c.code = :code ");
-            params.put("code", requestDTO.getCode().trim());
+            builder.append(" and c.code ilike :code ");
+            params.put("code", sqlHelper.escapeLikePattern(requestDTO.getCode()) + "%");
         }
-        if (StringUtils.isNotBlank(requestDTO.getStatus())) {
-            builder.append(" and c.status = :status ");
-            params.put("status", requestDTO.getStatus().trim());
+        if (requestDTO.getIsEnabled() != null) {
+            builder.append(" and c.is_enabled = :isEnabled ");
+            params.put("isEnabled", requestDTO.getIsEnabled());
+        }
+        if (requestDTO.getIsPublic() != null) {
+            builder.append(" and c.is_public = :isPublic ");
+            params.put("isPublic", requestDTO.getIsPublic());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
             builder.append(" and c.created_at >= :createdAtFrom ");

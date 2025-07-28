@@ -56,7 +56,8 @@ public class ConfigurationController {
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String code,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Boolean isEnabled,
+            @RequestParam(required = false) Boolean isPublic,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count
@@ -65,7 +66,8 @@ public class ConfigurationController {
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .code(code)
-                .status(status)
+                .isEnabled(isEnabled)
+                .isPublic(isPublic)
                 .createdAtTo(createdAtTo)
                 .createdAtFrom(createdAtFrom)
                 .build();

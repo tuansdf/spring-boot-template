@@ -2,7 +2,6 @@
 @code=
 @value=
 @description=
-@status=
 
 ###
 
@@ -16,7 +15,7 @@ Authorization: Bearer {{access_token}}
 
 ###
 
-GET {{base_url}}/v1/configurations/search
+GET {{base_url}}/v1/configurations/search?code=LOGIN&isEnabled=false
 Authorization: Bearer {{access_token}}
 
 ###
@@ -30,5 +29,6 @@ Content-Type: application/json
   "code": "{{code}}",
   "value": "{{value}}",
   "description": "{{description}}",
-  "status": "{{status}}"
+  "isEnabled": true,
+  "isPublic": false
 }

@@ -16,6 +16,6 @@ public class ConfigurationKV {
     @Id
     private String code;
     private String value;
-    private String status;
+    private Boolean isEnabled;
     private Boolean isPublic;
 }
