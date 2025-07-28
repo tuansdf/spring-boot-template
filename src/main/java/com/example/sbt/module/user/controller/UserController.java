@@ -70,7 +70,8 @@ public class UserController {
             @RequestParam(required = false) Long pageSize,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Boolean isEnabled,
+            @RequestParam(required = false) Boolean isVerified,
             @RequestParam(required = false) Instant createdAtFrom,
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false) String orderBy,
@@ -82,7 +83,8 @@ public class UserController {
                 .pageSize(pageSize)
                 .username(username)
                 .email(email)
-                .status(status)
+                .isEnabled(isEnabled)
+                .isVerified(isVerified)
                 .createdAtTo(createdAtTo)
                 .createdAtFrom(createdAtFrom)
                 .orderBy(orderBy)
@@ -94,12 +96,8 @@ public class UserController {
 
     @PostMapping("/export")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<FileObjectDTO>> export(
-            @RequestParam(required = false) String status
-    ) {
-        var requestDTO = SearchUserRequestDTO.builder()
-                .status(status)
-                .build();
+    public ResponseEntity<CommonResponse<FileObjectDTO>> export() {
+        var requestDTO = SearchUserRequestDTO.builder().build();
         userService.triggerExport(requestDTO);
         var message = localeHelper.getMessage("user.task.export.enqueued");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));

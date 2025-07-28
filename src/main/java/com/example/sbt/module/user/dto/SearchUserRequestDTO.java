@@ -21,7 +21,8 @@ public class SearchUserRequestDTO {
     private UUID idFrom;
     private String usernameFrom;
     private String emailFrom;
-    private String status;
+    private Boolean isEnabled;
+    private Boolean isVerified;
     private Instant createdAtFrom;
     private Instant createdAtTo;
     private String orderBy;

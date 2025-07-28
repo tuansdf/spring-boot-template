@@ -1,6 +1,5 @@
 package com.example.sbt.module.auth.service;
 
-import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.dto.JWTPayload;
 import com.example.sbt.core.exception.CustomException;
@@ -73,8 +72,7 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
 
-        boolean isActive = CommonStatus.ACTIVE.equals(userDTO.getStatus());
-        if (!isActive) {
+        if (!ConversionUtils.safeToBoolean(userDTO.getIsEnabled())) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
 
@@ -140,7 +138,7 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(requestDTO.getEmail());
         user.setPassword(hashedPassword);
         user.setName(requestDTO.getName());
-        user.setStatus(CommonStatus.INACTIVE);
+        user.setIsEnabled(false);
         user.setIsVerified(false);
         user = userRepository.save(user);
 
@@ -180,7 +178,7 @@ public class AuthServiceImpl implements AuthService {
         if (userId == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
-        boolean isUserValid = userRepository.existsByIdAndStatus(userId, CommonStatus.ACTIVE);
+        boolean isUserValid = userRepository.existsByIdAndIsEnabled(userId, true);
         if (!isUserValid) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
@@ -194,7 +192,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void requestResetPassword(RequestResetPasswordRequestDTO requestDTO) {
         authValidator.validateRequestResetPassword(requestDTO);
-        User user = userRepository.findTopByEmailAndStatus(requestDTO.getEmail(), CommonStatus.ACTIVE).orElse(null);
+        User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.BAD_REQUEST);
         }
@@ -211,7 +209,7 @@ public class AuthServiceImpl implements AuthService {
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
-        User user = userRepository.findTopByIdAndStatus(authTokenDTO.getUserId(), CommonStatus.ACTIVE).orElse(null);
+        User user = userRepository.findTopByIdAndIsEnabled(authTokenDTO.getUserId(), true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
@@ -223,7 +221,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void requestActivateAccount(RequestActivateAccountRequestDTO requestDTO) {
         authValidator.validateRequestActivateAccount(requestDTO);
-        User user = userRepository.findTopByEmailAndStatus(requestDTO.getEmail(), CommonStatus.INACTIVE).orElse(null);
+        User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
@@ -243,10 +241,10 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
-        if (CommonStatus.ACTIVE.equals(user.getStatus())) {
+        if (ConversionUtils.safeToBoolean(user.getIsEnabled())) {
             throw new CustomException(localeHelper.getMessage("auth.error.account_already_active"), HttpStatus.BAD_REQUEST);
         }
-        user.setStatus(CommonStatus.ACTIVE);
+        user.setIsEnabled(true);
         user.setIsVerified(true);
         user = userRepository.save(user);
         authTokenService.deactivateByUserId(authTokenDTO.getUserId());
@@ -257,7 +255,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public EnableOtpResponseDTO enableOtp(EnableOtpRequestDTO requestDTO, UUID userId) {
-        User user = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE).orElse(null);
+        User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
@@ -277,7 +275,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void confirmOtp(ConfirmOtpRequestDTO requestDTO, UUID userId) {
-        User user = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE).orElse(null);
+        User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
@@ -294,7 +292,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void disableOtp(DisableOtpRequestDTO requestDTO, UUID userId) {
-        User user = userRepository.findTopByIdAndStatus(userId, CommonStatus.ACTIVE).orElse(null);
+        User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }

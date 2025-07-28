@@ -1,6 +1,5 @@
 package com.example.sbt.core.controller;
 
-import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.exception.CustomException;
@@ -67,7 +66,8 @@ public class TestController {
             user.setEmail(ConversionUtils.safeToString(RandomUtils.insecure().randomTimeBasedUUID()));
             user.setName(ConversionUtils.safeToString(RandomUtils.insecure().randomTimeBasedUUID()));
             user.setPassword(ConversionUtils.safeToString(RandomUtils.insecure().randomTimeBasedUUID()));
-            user.setStatus(CommonStatus.ACTIVE);
+            user.setIsEnabled(true);
+            user.setIsVerified(true);
             user.setCreatedAt(now.plusSeconds(i));
             user.setUpdatedAt(now.plusSeconds(i * 60L));
             data.add(user);
@@ -83,11 +83,11 @@ public class TestController {
         String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet();
-            List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
+            List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At");
             ExcelUtils.setCellValues(sheet, 0, header);
             int idx = 1;
             for (var item : data) {
-                ExcelUtils.setCellValues(sheet, idx, Arrays.asList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getStatus(), item.getCreatedAt(), item.getUpdatedAt()));
+                ExcelUtils.setCellValues(sheet, idx, Arrays.asList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getIsEnabled(), item.getIsVerified(), item.getCreatedAt(), item.getUpdatedAt()));
                 idx++;
             }
             ExcelUtils.writeFile(workbook, exportPath);
@@ -102,7 +102,7 @@ public class TestController {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
         try (CSVWriter writer = new CSVWriter(new FileWriter(exportPath))) {
-            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
+            String[] header = {"Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
             writer.writeNext(header);
             int idx = 1;
             for (var item : data) {
@@ -112,7 +112,8 @@ public class TestController {
                         ConversionUtils.safeToString(item.getUsername()),
                         ConversionUtils.safeToString(item.getEmail()),
                         ConversionUtils.safeToString(item.getName()),
-                        ConversionUtils.safeToString(item.getStatus()),
+                        ConversionUtils.safeToString(item.getIsEnabled()),
+                        ConversionUtils.safeToString(item.getIsVerified()),
                         ConversionUtils.safeToString(item.getCreatedAt()),
                         ConversionUtils.safeToString(item.getUpdatedAt())
                 });
@@ -131,7 +132,7 @@ public class TestController {
         List<UserDTO> items = new ArrayList<>();
         try (Workbook workbook = ExcelUtils.toWorkbook(filePath)) {
             if (workbook == null) return null;
-            List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At");
+            List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At");
             Sheet sheet = workbook.getSheetAt(0);
             boolean isHeader = true;
             for (var row : sheet) {
@@ -148,7 +149,7 @@ public class TestController {
                         .username(ConversionUtils.toString(CommonUtils.get(data, 2)))
                         .email(ConversionUtils.toString(CommonUtils.get(data, 3)))
                         .name(ConversionUtils.toString(CommonUtils.get(data, 4)))
-                        .status(ConversionUtils.toString(CommonUtils.get(data, 5)))
+                        .isEnabled(ConversionUtils.toBoolean(CommonUtils.get(data, 5)))
                         .createdAt(DateUtils.toInstant(CommonUtils.get(data, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                         .updatedAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                         .build();
@@ -167,7 +168,7 @@ public class TestController {
     ) {
         List<UserDTO> items = new ArrayList<>();
         try (CSVReader reader = new CSVReader(Files.newBufferedReader(Paths.get(filePath)))) {
-            String[] header = {"Order", "ID", "Username", "Email", "Name", "Status", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
+            String[] header = {"Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
             boolean isHeader = true;
             for (var row : reader) {
                 if (isHeader) {
@@ -182,9 +183,10 @@ public class TestController {
                         .username(ConversionUtils.toString(CommonUtils.get(row, 2)))
                         .email(ConversionUtils.toString(CommonUtils.get(row, 3)))
                         .name(ConversionUtils.toString(CommonUtils.get(row, 4)))
-                        .status(ConversionUtils.toString(CommonUtils.get(row, 5)))
-                        .createdAt(DateUtils.toInstant(CommonUtils.get(row, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .updatedAt(DateUtils.toInstant(CommonUtils.get(row, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .isEnabled(ConversionUtils.toBoolean(CommonUtils.get(row, 5)))
+                        .isVerified(ConversionUtils.toBoolean(CommonUtils.get(row, 6)))
+                        .createdAt(DateUtils.toInstant(CommonUtils.get(row, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .updatedAt(DateUtils.toInstant(CommonUtils.get(row, 8), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                         .build();
                 items.add(temp);
             }

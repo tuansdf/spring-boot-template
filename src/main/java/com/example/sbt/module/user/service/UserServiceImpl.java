@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         Map<String, Object> params = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         if (!isCount) {
-            builder.append(" select u.id, u.username, u.email, u.name, u.is_verified, u.is_otp_enabled, u.status, u.created_at, u.updated_at, ");
+            builder.append(" select u.id, u.username, u.email, u.name, u.is_enabled, u.is_verified, u.is_otp_enabled, u.created_at, u.updated_at, ");
             builder.append(" string_agg(distinct(r.code), ',') as roles, ");
             builder.append(" string_agg(distinct(p.code), ',') as permissions ");
             builder.append(" from _user u ");
@@ -104,9 +104,13 @@ public class UserServiceImpl implements UserService {
                 builder.append(" and u.email > :emailFrom ");
                 params.put("emailFrom", requestDTO.getEmailFrom());
             }
-            if (StringUtils.isNotBlank(requestDTO.getStatus())) {
-                builder.append(" and u.status = :status ");
-                params.put("status", requestDTO.getStatus());
+            if (requestDTO.getIsEnabled() != null) {
+                builder.append(" and u.is_enabled = :isEnabled ");
+                params.put("isEnabled", requestDTO.getIsEnabled());
+            }
+            if (requestDTO.getIsVerified() != null) {
+                builder.append(" and u.is_verified = :isVerified ");
+                params.put("isVerified", requestDTO.getIsVerified());
             }
             if (requestDTO.getCreatedAtFrom() != null) {
                 builder.append(" and u.created_at >= :createdAtFrom ");
@@ -171,25 +175,28 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
-        if (StringUtils.isNotBlank(requestDTO.getUsername())) {
+        if (requestDTO.getUsername() != null) {
+            requestDTO.setUsername(ConversionUtils.safeTrim(requestDTO.getUsername()));
             if (!user.getUsername().equals(requestDTO.getUsername()) && userRepository.existsByUsername(requestDTO.getUsername())) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }
             user.setUsername(requestDTO.getUsername());
         }
-        if (StringUtils.isNotBlank(requestDTO.getEmail())) {
+        if (requestDTO.getEmail() != null) {
+            requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
             if (!user.getEmail().equals(requestDTO.getEmail()) && userRepository.existsByEmail(requestDTO.getEmail())) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }
             user.setEmail(requestDTO.getEmail());
         }
-        if (StringUtils.isNotBlank(requestDTO.getName())) {
+        if (requestDTO.getName() != null) {
+            requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
             user.setName(requestDTO.getName());
         }
         boolean isAdmin = authHelper.hasAnyPermission(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER);
         if (isAdmin) {
-            if (StringUtils.isNotEmpty(requestDTO.getStatus())) {
-                user.setStatus(requestDTO.getStatus());
+            if (requestDTO.getIsEnabled() != null) {
+                user.setIsEnabled(requestDTO.getIsEnabled());
             }
             if (requestDTO.getRoleIds() != null) {
                 roleService.setUserRoles(user.getId(), requestDTO.getRoleIds());
@@ -293,7 +300,7 @@ public class UserServiceImpl implements UserService {
         byte[] file = null;
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet();
-            List<Object> header = List.of("Username", "Email", "Name", "Is OTP Enabled", "Is Verified", "Status", "Roles", "Permissions");
+            List<Object> header = List.of("Username", "Email", "Name", "Is Enabled", "Is Verified", "Is OTP Enabled", "Roles", "Permissions");
             ExcelUtils.setCellValues(sheet, 0, header);
             int idx = 1;
             for (UserDTO item : searchData.getItems()) {
@@ -301,9 +308,9 @@ public class UserServiceImpl implements UserService {
                         item.getUsername(),
                         item.getEmail(),
                         item.getName(),
-                        ConversionUtils.safeToBoolean(item.getIsOtpEnabled()),
+                        ConversionUtils.safeToBoolean(item.getIsEnabled()),
                         ConversionUtils.safeToBoolean(item.getIsVerified()),
-                        item.getStatus(),
+                        ConversionUtils.safeToBoolean(item.getIsOtpEnabled()),
                         String.join(",", item.getRoleCodes()),
                         String.join(",", item.getPermissionCodes()));
                 ExcelUtils.setCellValues(sheet, idx, data);
