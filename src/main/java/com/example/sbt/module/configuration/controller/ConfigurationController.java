@@ -28,7 +28,7 @@ public class ConfigurationController {
     public ResponseEntity<CommonResponse<Map<String, String>>> findValues(
             @RequestParam Set<String> keys
     ) {
-        var result = configurationService.findPublicValues(new ArrayList<>(keys));
+        var result = configurationService.findPublicValuesByCodes(new ArrayList<>(keys));
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
