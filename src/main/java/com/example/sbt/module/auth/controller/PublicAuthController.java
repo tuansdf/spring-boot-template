@@ -1,6 +1,7 @@
 package com.example.sbt.module.auth.controller;
 
 import com.example.sbt.core.dto.CommonResponse;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.core.helper.ExceptionHelper;
 import com.example.sbt.core.helper.HTMLTemplate;
 import com.example.sbt.core.helper.LocaleHelper;
@@ -27,6 +28,8 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<AuthDTO>> login(
             @RequestBody LoginRequestDTO requestDTO
     ) {
+        RequestContext.get().setUsername(requestDTO.getUsername());
+        RequestContext.syncWithLogger();
         var result = authService.login(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }

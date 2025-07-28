@@ -1,0 +1,36 @@
+package com.example.sbt.module.configuration.service;
+
+import com.example.sbt.core.constant.ConfigurationCode;
+import com.example.sbt.shared.util.ConversionUtils;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@RequiredArgsConstructor
+@Component
+public class Configurations {
+    private final ConfigurationService configurationService;
+
+    public Boolean isRegistrationEnabled() {
+        return ConversionUtils.toBoolean(configurationService.findValueByCode(ConfigurationCode.REGISTRATION_ENABLED));
+    }
+
+    public String getActivateAccountUrl() {
+        return configurationService.findValueByCode(ConfigurationCode.ACTIVATE_ACCOUNT_URL);
+    }
+
+    public String getIpWhitelist() {
+        return configurationService.findValueByCode(ConfigurationCode.IP_WHITELIST);
+    }
+
+    public Integer getLoginMaxAttempts() {
+        Integer result = ConversionUtils.toInteger(configurationService.findValueByCode(ConfigurationCode.LOGIN_MAX_ATTEMPTS));
+        if (result == null) return null;
+        return Math.abs(result);
+    }
+
+    public Integer getLoginTimeWindow() {
+        Integer result = ConversionUtils.toInteger(configurationService.findValueByCode(ConfigurationCode.LOGIN_TIME_WINDOW));
+        if (result == null) return null;
+        return Math.abs(result);
+    }
+}

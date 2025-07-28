@@ -1,6 +1,9 @@
 package com.example.sbt.module.email.service;
 
-import com.example.sbt.core.constant.*;
+import com.example.sbt.core.constant.ApplicationProperties;
+import com.example.sbt.core.constant.CommonStatus;
+import com.example.sbt.core.constant.CommonType;
+import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.core.exception.CustomException;
@@ -8,7 +11,7 @@ import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.event.publisher.SendEmailEventPublisher;
-import com.example.sbt.module.configuration.service.ConfigurationService;
+import com.example.sbt.module.configuration.service.Configurations;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.EmailStatsDTO;
 import com.example.sbt.module.email.dto.SearchEmailRequestDTO;
@@ -43,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
     private final EmailRepository emailRepository;
     private final SendEmailEventPublisher sendEmailEventPublisher;
     private final SendEmailService sendEmailService;
-    private final ConfigurationService configurationService;
+    private final Configurations configurations;
     private final EntityManager entityManager;
 
     private PaginationData<EmailDTO> executeSearch(SearchEmailRequestDTO requestDTO, boolean isCount) {
@@ -169,9 +172,10 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
         throttleSend(userId, CommonType.ACTIVATE_ACCOUNT, "auth.activate_account_email_sent");
-        String url = configurationService.findValueByCode(ConfigurationCode.ACTIVATE_ACCOUNT_URL);
+        String url = configurations.getActivateAccountUrl();
         if (StringUtils.isBlank(url)) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            log.info("Activate account url is empty");
+            return null;
         }
         url = url.replace("{{{token}}}", token);
         EmailDTO emailDTO = EmailDTO.builder()

@@ -121,4 +121,8 @@ public class CommonUtils {
     public static <T extends Number> T defaultWhenNotPositive(T value, T defaultValue) {
         return value == null || value.doubleValue() <= 0 ? defaultValue : value;
     }
+
+    public static boolean isPositive(Integer value) {
+        return value != null && value > 0;
+    }
 }

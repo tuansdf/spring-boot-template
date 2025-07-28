@@ -17,4 +17,5 @@ public class RequestContextData {
     private String requestId;
     private Locale locale;
     private UUID userId;
+    private String username;
 }

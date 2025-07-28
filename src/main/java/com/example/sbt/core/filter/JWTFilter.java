@@ -33,22 +33,22 @@ public class JWTFilter extends OncePerRequestFilter {
     private final JWTService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain chain) throws ServletException, IOException {
-        final String header = servletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.isBlank(header) || !header.startsWith(AUTHORIZATION_START_WITH)) {
-            chain.doFilter(servletRequest, servletResponse);
+            filterChain.doFilter(request, response);
             return;
         }
 
         final String jwt = header.substring(TOKEN_START_AT);
         JWTPayload jwtPayload = jwtService.verify(jwt);
         if (jwtPayload == null) {
-            chain.doFilter(servletRequest, servletResponse);
+            filterChain.doFilter(request, response);
             return;
         }
 
         if (!CommonType.ACCESS_TOKEN.equals(CommonType.fromIndex(jwtPayload.getType()))) {
-            chain.doFilter(servletRequest, servletResponse);
+            filterChain.doFilter(request, response);
             return;
         }
 
@@ -61,6 +61,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
         RequestContext.get().setUserId(ConversionUtils.toUUID(jwtPayload.getSubject()));
 
-        chain.doFilter(servletRequest, servletResponse);
+        filterChain.doFilter(request, response);
     }
 }

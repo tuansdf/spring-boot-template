@@ -1,9 +1,7 @@
 package com.example.sbt.module.auth.service;
 
-import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
-import com.example.sbt.core.constant.ConfigurationCode;
 import com.example.sbt.core.dto.JWTPayload;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.exception.NoRollbackException;
@@ -13,7 +11,7 @@ import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.authtoken.dto.AuthTokenDTO;
 import com.example.sbt.module.authtoken.service.AuthTokenService;
 import com.example.sbt.module.authtoken.service.JWTService;
-import com.example.sbt.module.configuration.service.ConfigurationService;
+import com.example.sbt.module.configuration.service.Configurations;
 import com.example.sbt.module.email.service.EmailService;
 import com.example.sbt.module.loginaudit.service.LoginAuditService;
 import com.example.sbt.module.notification.service.NotificationService;
@@ -43,18 +41,17 @@ import java.util.UUID;
 @Service
 @Transactional(rollbackOn = Exception.class, dontRollbackOn = NoRollbackException.class)
 public class AuthServiceImpl implements AuthService {
-    private final ApplicationProperties applicationProperties;
     private final UserRepository userRepository;
     private final AuthHelper authHelper;
     private final LocaleHelper localeHelper;
     private final AuthValidator authValidator;
+    private final Configurations configurations;
     private final UserMapper userMapper;
     private final JWTService jwtService;
     private final PermissionService permissionService;
     private final RoleService roleService;
     private final AuthTokenService authTokenService;
     private final EmailService emailService;
-    private final ConfigurationService configurationService;
     private final NotificationService notificationService;
     private final LoginAuditService loginAuditService;
 
@@ -81,9 +78,9 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
 
-        Integer maxAttempts = applicationProperties.getLoginMaxAttempts();
-        Integer timeWindow = applicationProperties.getLoginTimeWindow();
-        if (maxAttempts != null && maxAttempts > 0 && timeWindow != null && timeWindow > 0) {
+        Integer maxAttempts = configurations.getLoginMaxAttempts();
+        Integer timeWindow = configurations.getLoginTimeWindow();
+        if (CommonUtils.isPositive(maxAttempts) && CommonUtils.isPositive(timeWindow)) {
             long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(userDTO.getId(), Instant.now().minusSeconds(timeWindow));
             if (attempts >= maxAttempts) {
                 throw new CustomException(localeHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
@@ -127,7 +124,7 @@ public class AuthServiceImpl implements AuthService {
     public void register(RegisterRequestDTO requestDTO) {
         authValidator.validateRegister(requestDTO);
 
-        Boolean isRegistrationEnabled = ConversionUtils.toBoolean(configurationService.findValueByCode(ConfigurationCode.REGISTRATION_ENABLED));
+        Boolean isRegistrationEnabled = configurations.isRegistrationEnabled();
         if (isRegistrationEnabled != null && !isRegistrationEnabled) {
             throw new CustomException(localeHelper.getMessage("auth.error.registration_disabled"), HttpStatus.UNAUTHORIZED);
         }
