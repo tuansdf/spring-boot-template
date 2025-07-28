@@ -1,7 +1,7 @@
 package com.example.sbt.event.listener;
 
 import com.example.sbt.core.constant.EventKey;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
 import com.example.sbt.module.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
     public void onMessage(ObjectRecord<String, SendNotificationEventRequest> message) {
         try {
             SendNotificationEventRequest request = message.getValue();
-            RequestContext.set(request.getRequestContext());
+            RequestContextHolder.set(request.getRequestContext());
             log.info("SendNotificationEventListener.start ");
 
             notificationService.executeSend(request.getNotification());
@@ -35,7 +35,7 @@ public class SendNotificationEventListener implements StreamListener<String, Obj
                 log.info("SendNotificationEventListener.end ");
             } catch (Exception ignore) {
             }
-            RequestContext.clear();
+            RequestContextHolder.clear();
         }
     }
 }

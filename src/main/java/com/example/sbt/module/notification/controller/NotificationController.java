@@ -2,7 +2,7 @@ package com.example.sbt.module.notification.controller;
 
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import com.example.sbt.module.notification.dto.NotificationStatsDTO;
 import com.example.sbt.module.notification.dto.SearchNotificationRequestDTO;
@@ -34,7 +34,7 @@ public class NotificationController {
         var requestDTO = SearchNotificationRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
-                .userId(RequestContext.get().getUserId())
+                .userId(RequestContextHolder.get().getUserId())
                 .status(status)
                 .createdAtTo(createdAtTo)
                 .createdAtFrom(createdAtFrom)
@@ -53,7 +53,7 @@ public class NotificationController {
 
     @GetMapping("/stats")
     public ResponseEntity<CommonResponse<NotificationStatsDTO>> getStats() {
-        var result = notificationService.getStatsByUser(RequestContext.get().getUserId());
+        var result = notificationService.getStatsByUser(RequestContextHolder.get().getUserId());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 }

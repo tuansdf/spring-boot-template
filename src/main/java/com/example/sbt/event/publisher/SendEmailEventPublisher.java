@@ -1,7 +1,7 @@
 package com.example.sbt.event.publisher;
 
 import com.example.sbt.core.constant.EventKey;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.event.dto.SendEmailEventRequest;
 import com.example.sbt.module.email.dto.EmailDTO;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class SendEmailEventPublisher {
 
     public void publish(EmailDTO email) {
         SendEmailEventRequest request = SendEmailEventRequest.builder()
-                .requestContext(RequestContext.get())
+                .requestContext(RequestContextHolder.get())
                 .email(email)
                 .build();
         ObjectRecord<String, SendEmailEventRequest> data = StreamRecords.newRecord()

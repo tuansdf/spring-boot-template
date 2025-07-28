@@ -1,6 +1,6 @@
 package com.example.sbt.module.backgroundtask.service;
 
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.module.backgroundtask.constant.BackgroundTaskStatus;
 import com.example.sbt.module.backgroundtask.dto.BackgroundTaskDTO;
@@ -29,7 +29,7 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
         result.setCacheKey(cacheKey);
         result.setType(type);
         result.setStatus(BackgroundTaskStatus.ENQUEUED);
-        result.setCreatedBy(RequestContext.get().getUserId());
+        result.setCreatedBy(RequestContextHolder.get().getUserId());
         return backgroundTaskMapper.toDTO(backgroundTaskRepository.save(result));
     }
 

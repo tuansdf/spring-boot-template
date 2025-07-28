@@ -2,7 +2,7 @@ package com.example.sbt.module.file.controller;
 
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.dto.SearchFileRequestDTO;
@@ -78,7 +78,7 @@ public class FileObjectController {
                 .fileType(fileType)
                 .orderBy(orderBy)
                 .orderDirection(orderDirection)
-                .createdBy(RequestContext.get().getUserId())
+                .createdBy(RequestContextHolder.get().getUserId())
                 .build();
         var result = fileObjectService.search(requestDTO, count);
         return ResponseEntity.ok(new CommonResponse<>(result));

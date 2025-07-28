@@ -1,7 +1,7 @@
 package com.example.sbt.module.auth.controller;
 
 import com.example.sbt.core.dto.CommonResponse;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.module.auth.dto.ConfirmOtpRequestDTO;
 import com.example.sbt.module.auth.dto.DisableOtpRequestDTO;
 import com.example.sbt.module.auth.dto.EnableOtpRequestDTO;
@@ -27,7 +27,7 @@ public class AuthController {
     public ResponseEntity<CommonResponse<Object>> changePassword(
             @RequestBody ChangePasswordRequestDTO requestDTO
     ) {
-        UUID userId = RequestContext.get().getUserId();
+        UUID userId = RequestContextHolder.get().getUserId();
         authService.changePassword(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }
@@ -39,7 +39,7 @@ public class AuthController {
 
     @PostMapping("/token/revoke")
     public ResponseEntity<CommonResponse<Object>> revokeAllTokens() {
-        UUID userId = RequestContext.get().getUserId();
+        UUID userId = RequestContextHolder.get().getUserId();
         authTokenService.deactivateByUserId(userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }
@@ -48,7 +48,7 @@ public class AuthController {
     public ResponseEntity<CommonResponse<Object>> enableOtp(
             @RequestBody EnableOtpRequestDTO requestDTO
     ) {
-        UUID userId = RequestContext.get().getUserId();
+        UUID userId = RequestContextHolder.get().getUserId();
         var result = authService.enableOtp(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
@@ -57,7 +57,7 @@ public class AuthController {
     public ResponseEntity<CommonResponse<Object>> confirmOtp(
             @RequestBody ConfirmOtpRequestDTO requestDTO
     ) {
-        UUID userId = RequestContext.get().getUserId();
+        UUID userId = RequestContextHolder.get().getUserId();
         authService.confirmOtp(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }
@@ -66,7 +66,7 @@ public class AuthController {
     public ResponseEntity<CommonResponse<Object>> disableOtp(
             @RequestBody DisableOtpRequestDTO requestDTO
     ) {
-        UUID userId = RequestContext.get().getUserId();
+        UUID userId = RequestContextHolder.get().getUserId();
         authService.disableOtp(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }

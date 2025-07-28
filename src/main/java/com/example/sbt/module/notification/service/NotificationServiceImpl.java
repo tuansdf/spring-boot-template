@@ -4,7 +4,7 @@ import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.mapper.CommonMapper;
@@ -113,7 +113,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO findOneById(UUID id) {
         if (id == null) return null;
-        Notification result = notificationRepository.findTopByIdAndUserId(id, RequestContext.get().getUserId()).orElse(null);
+        Notification result = notificationRepository.findTopByIdAndUserId(id, RequestContextHolder.get().getUserId()).orElse(null);
         if (result == null) {
             return null;
         }

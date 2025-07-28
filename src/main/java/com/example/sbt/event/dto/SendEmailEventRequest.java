@@ -1,6 +1,6 @@
 package com.example.sbt.event.dto;
 
-import com.example.sbt.core.dto.RequestContextData;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.email.dto.EmailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +14,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Builder
 public class SendEmailEventRequest implements Serializable {
-    private RequestContextData requestContext;
+    private RequestContext requestContext;
     private EmailDTO email;
 }

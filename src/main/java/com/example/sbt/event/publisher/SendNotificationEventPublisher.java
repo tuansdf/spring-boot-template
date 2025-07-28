@@ -1,7 +1,7 @@
 package com.example.sbt.event.publisher;
 
 import com.example.sbt.core.constant.EventKey;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.event.dto.SendNotificationEventRequest;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class SendNotificationEventPublisher {
 
     public void publish(NotificationDTO notification) {
         SendNotificationEventRequest request = SendNotificationEventRequest.builder()
-                .requestContext(RequestContext.get())
+                .requestContext(RequestContextHolder.get())
                 .notification(notification)
                 .build();
         ObjectRecord<String, SendNotificationEventRequest> data = StreamRecords.newRecord()

@@ -1,7 +1,7 @@
 package com.example.sbt.event.listener;
 
 import com.example.sbt.core.constant.EventKey;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.event.dto.ExportUserEventRequest;
 import com.example.sbt.module.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class ExportUserEventListener implements StreamListener<String, ObjectRec
     public void onMessage(ObjectRecord<String, ExportUserEventRequest> message) {
         try {
             ExportUserEventRequest request = message.getValue();
-            RequestContext.set(request.getRequestContext());
+            RequestContextHolder.set(request.getRequestContext());
             log.info("ExportUserEventListener.start ");
 
             userService.handleExportTask(request.getBackgroundTaskId(), request.getSearchRequest());
@@ -35,7 +35,7 @@ public class ExportUserEventListener implements StreamListener<String, ObjectRec
                 log.info("ExportUserEventListener.end ");
             } catch (Exception ignore) {
             }
-            RequestContext.clear();
+            RequestContextHolder.clear();
         }
     }
 }

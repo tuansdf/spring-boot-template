@@ -1,7 +1,7 @@
 package com.example.sbt.core.helper;
 
 import com.example.sbt.core.dto.LocaleKey;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,7 +20,7 @@ public class LocaleHelper {
             return "";
         }
         if (locale == null) {
-            locale = RequestContext.get().getLocale();
+            locale = RequestContextHolder.get().getLocale();
         }
         try {
             if (ArrayUtils.isNotEmpty(args)) {
@@ -38,7 +38,7 @@ public class LocaleHelper {
 
     public String getMessage(String code, Object... args) {
         try {
-            return getMessage(code, RequestContext.get().getLocale(), args);
+            return getMessage(code, RequestContextHolder.get().getLocale(), args);
         } catch (Exception e) {
             return code;
         }
@@ -54,7 +54,7 @@ public class LocaleHelper {
 
     public String getMessage(String code) {
         try {
-            return getMessage(code, RequestContext.get().getLocale());
+            return getMessage(code, RequestContextHolder.get().getLocale());
         } catch (Exception e) {
             return code;
         }

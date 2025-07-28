@@ -2,7 +2,7 @@ package com.example.sbt.module.email.controller;
 
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.EmailStatsDTO;
 import com.example.sbt.module.email.dto.SearchEmailRequestDTO;
@@ -34,7 +34,7 @@ public class EmailController {
         var requestDTO = SearchEmailRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
-                .userId(RequestContext.get().getUserId())
+                .userId(RequestContextHolder.get().getUserId())
                 .status(status)
                 .createdAtTo(createdAtTo)
                 .createdAtFrom(createdAtFrom)
@@ -53,7 +53,7 @@ public class EmailController {
 
     @GetMapping("/stats")
     public ResponseEntity<CommonResponse<EmailStatsDTO>> getStats() {
-        var result = emailService.getStatsByUser(RequestContext.get().getUserId());
+        var result = emailService.getStatsByUser(RequestContextHolder.get().getUserId());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 }

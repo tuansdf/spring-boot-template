@@ -1,7 +1,7 @@
 package com.example.sbt.event.publisher;
 
 import com.example.sbt.core.constant.EventKey;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.event.dto.ExportUserEventRequest;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class ExportUserEventPublisher {
 
     public void publish(UUID id, SearchUserRequestDTO requestDTO) {
         ExportUserEventRequest request = ExportUserEventRequest.builder()
-                .requestContext(RequestContext.get())
+                .requestContext(RequestContextHolder.get())
                 .searchRequest(requestDTO)
                 .backgroundTaskId(id)
                 .build();

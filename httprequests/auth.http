@@ -1,6 +1,6 @@
-@username=
-@email=
-@password=
+@username=user1
+@email=user1@email.com
+@password=passworddddd
 @otp_code=
 @activate_token=
 @reset_token=

@@ -2,7 +2,7 @@ package com.example.sbt.core.controller;
 
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.PermissionCode;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.exception.ValidationException;
 import com.example.sbt.core.helper.LocaleHelper;
@@ -340,7 +340,7 @@ public class TestController {
     public Object testS3Delete(
             @RequestParam List<UUID> ids
     ) {
-        fileObjectService.deleteFilesByIds(ids, RequestContext.get().getUserId());
+        fileObjectService.deleteFilesByIds(ids, RequestContextHolder.get().getUserId());
         return "OK";
     }
 
