@@ -21,9 +21,9 @@ import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
-//@Component
-//@Order(2)
-public class IPWhitelistFilter  {
+@Component
+@Order(2)
+public class IPWhitelistFilter extends OncePerRequestFilter {
     private final LocaleHelper localeHelper;
     private final Configurations configurations;
     private final RequestHelper requestHelper;

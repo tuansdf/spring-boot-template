@@ -30,13 +30,9 @@ public class RequestContext {
     public static void syncWithLogger() {
         RequestContextData context = get();
         String requestId = ConversionUtils.toString(context.getRequestId());
-        String userId = ConversionUtils.toString(context.getUserId());
         String username = ConversionUtils.toString(context.getUsername());
         if (StringUtils.isNotEmpty(requestId)) {
             MDC.put(LoggerKey.REQUEST_ID, requestId);
-        }
-        if (StringUtils.isNotEmpty(userId)) {
-            MDC.put(LoggerKey.USER_ID, userId);
         }
         if (StringUtils.isNotEmpty(username)) {
             MDC.put(LoggerKey.USERNAME, username);

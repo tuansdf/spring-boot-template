@@ -73,6 +73,7 @@ public class JWTHelper {
 
     public JWTPayload verify(String token) {
         try {
+            if (StringUtils.isBlank(token)) return null;
             SignedJWT signedJWT = SignedJWT.parse(token);
             if (!signedJWT.verify(jwsVerifier)) {
                 return null;

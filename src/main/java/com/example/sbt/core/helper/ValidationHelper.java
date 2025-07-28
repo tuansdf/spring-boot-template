@@ -29,7 +29,7 @@ public class ValidationHelper {
         if (input.length() > 64) {
             return localeHelper.getMessage("validation.error.over_max_length", new LocaleKey("field.code"), 64);
         }
-        if (Regex.CODE.matcher(input).matches()) {
+        if (!Regex.CODE.matcher(input).matches()) {
             return localeHelper.getMessage("validation.error.invalid", new LocaleKey("field.code"));
         }
         return null;

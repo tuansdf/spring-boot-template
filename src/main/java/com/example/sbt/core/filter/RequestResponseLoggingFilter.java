@@ -20,36 +20,36 @@ import java.io.IOException;
 @Order(1)
 public class RequestResponseLoggingFilter implements Filter {
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         long start = DateUtils.currentEpochMillis();
 
-        HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         try {
             RequestContext.get().setRequestId(ConversionUtils.safeToString(RandomUtils.insecure().randomHexString(8)));
-            RequestContext.get().setLocale(httpServletRequest.getLocale());
-            RequestContext.get().setTenantId(httpServletRequest.getHeader(HTTPHeader.X_TENANT_ID));
+            RequestContext.get().setLocale(httpRequest.getLocale());
+            RequestContext.get().setTenantId(httpRequest.getHeader(HTTPHeader.X_TENANT_ID));
             RequestContext.syncWithLogger();
 
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "ENTER")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
-                    .addKeyValue(LoggerKey.HTTP_METHOD, httpServletRequest.getMethod())
-                    .addKeyValue(LoggerKey.HTTP_PATH, httpServletRequest.getServletPath())
-                    .addKeyValue(LoggerKey.HTTP_QUERY, httpServletRequest.getQueryString())
+                    .addKeyValue(LoggerKey.HTTP_METHOD, httpRequest.getMethod())
+                    .addKeyValue(LoggerKey.HTTP_PATH, httpRequest.getServletPath())
+                    .addKeyValue(LoggerKey.HTTP_QUERY, httpRequest.getQueryString())
                     .log();
-            filterChain.doFilter(servletRequest, servletResponse);
+            filterChain.doFilter(request, response);
         } finally {
             long elapsedMs = DateUtils.currentEpochMillis() - start;
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.USER_ID, RequestContext.get().getUserId())
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
-                    .addKeyValue(LoggerKey.HTTP_METHOD, httpServletRequest.getMethod())
-                    .addKeyValue(LoggerKey.HTTP_PATH, httpServletRequest.getServletPath())
-                    .addKeyValue(LoggerKey.HTTP_QUERY, httpServletRequest.getQueryString())
-                    .addKeyValue(LoggerKey.HTTP_STATUS, httpServletResponse.getStatus())
+                    .addKeyValue(LoggerKey.HTTP_METHOD, httpRequest.getMethod())
+                    .addKeyValue(LoggerKey.HTTP_PATH, httpRequest.getServletPath())
+                    .addKeyValue(LoggerKey.HTTP_QUERY, httpRequest.getQueryString())
+                    .addKeyValue(LoggerKey.HTTP_STATUS, httpResponse.getStatus())
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
                     .log();
             RequestContext.clear();

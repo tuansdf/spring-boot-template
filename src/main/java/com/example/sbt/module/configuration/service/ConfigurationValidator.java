@@ -27,7 +27,7 @@ public class ConfigurationValidator {
         if (requestDTO == null) return;
         requestDTO.setCode(ConversionUtils.safeTrim(requestDTO.getCode()).toUpperCase());
         requestDTO.setDescription(ConversionUtils.safeTrim(requestDTO.getDescription()));
-        requestDTO.setValue(ConversionUtils.safeToString(requestDTO.getCode()));
+        requestDTO.setValue(ConversionUtils.safeToString(requestDTO.getValue()));
         if (!VALID_STATUS.contains(requestDTO.getStatus())) {
             requestDTO.setStatus(CommonStatus.INACTIVE);
         }

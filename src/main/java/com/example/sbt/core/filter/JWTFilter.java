@@ -4,6 +4,7 @@ import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.JWTPayload;
 import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.core.helper.RequestHelper;
 import com.example.sbt.module.authtoken.service.JWTService;
 import com.example.sbt.shared.util.ConversionUtils;
 import jakarta.servlet.FilterChain;
@@ -12,8 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,20 +26,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class JWTFilter extends OncePerRequestFilter {
-    private static final String AUTHORIZATION_START_WITH = "Bearer ";
-    private static final int TOKEN_START_AT = AUTHORIZATION_START_WITH.length();
-
+    private final RequestHelper requestHelper;
     private final JWTService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.isBlank(header) || !header.startsWith(AUTHORIZATION_START_WITH)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        final String jwt = header.substring(TOKEN_START_AT);
+        String jwt = requestHelper.getBearerToken(request);
         JWTPayload jwtPayload = jwtService.verify(jwt);
         if (jwtPayload == null) {
             filterChain.doFilter(request, response);
@@ -60,6 +51,8 @@ public class JWTFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         RequestContext.get().setUserId(ConversionUtils.toUUID(jwtPayload.getSubject()));
+        RequestContext.get().setUsername(jwtPayload.getSubject());
+        RequestContext.syncWithLogger();
 
         filterChain.doFilter(request, response);
     }
