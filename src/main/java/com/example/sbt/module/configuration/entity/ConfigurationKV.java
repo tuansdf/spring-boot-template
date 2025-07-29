@@ -11,7 +11,7 @@ import org.springframework.data.redis.core.RedisHash;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@RedisHash("configuration")
+@RedisHash(value = "configuration", timeToLive = 86400)
 public class ConfigurationKV {
     @Id
     private String code;

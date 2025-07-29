@@ -44,9 +44,9 @@ public class RedisStreamConfig {
         String consumerName = "consumer-" + hostname;
 
         List<CreateSubscriptionRequest<?>> requests = new ArrayList<>();
-        requests.add(new CreateSubscriptionRequest<>(sendEmailEventListener, SendEmailEventRequest.class, EventKey.SEND_EMAIL.concat("_group"), EventKey.SEND_EMAIL));
-        requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationEventRequest.class, EventKey.SEND_NOTIFICATION.concat("_group"), EventKey.SEND_NOTIFICATION));
-        requests.add(new CreateSubscriptionRequest<>(exportUserEventListener, ExportUserEventRequest.class, EventKey.EXPORT_USER.concat("_group"), EventKey.EXPORT_USER));
+        requests.add(new CreateSubscriptionRequest<>(sendEmailEventListener, SendEmailEventRequest.class, EventKey.SEND_EMAIL + "_group", EventKey.SEND_EMAIL));
+        requests.add(new CreateSubscriptionRequest<>(sendNotificationEventListener, SendNotificationEventRequest.class, EventKey.SEND_NOTIFICATION + "_group", EventKey.SEND_NOTIFICATION));
+        requests.add(new CreateSubscriptionRequest<>(exportUserEventListener, ExportUserEventRequest.class, EventKey.EXPORT_USER + "_group", EventKey.EXPORT_USER));
         List<Subscription> subscriptions = new ArrayList<>();
 
         for (CreateSubscriptionRequest<?> request : requests) {
@@ -69,7 +69,7 @@ public class RedisStreamConfig {
         var executor = new SimpleAsyncTaskExecutor();
         executor.setVirtualThreads(true);
         executor.setConcurrencyLimit(10);
-        executor.setThreadNamePrefix(request.streamName().concat("-"));
+        executor.setThreadNamePrefix(request.streamName() + "-");
 
         var options = StreamMessageListenerContainer.StreamMessageListenerContainerOptions.builder()
                 .pollTimeout(Duration.ofSeconds(5))

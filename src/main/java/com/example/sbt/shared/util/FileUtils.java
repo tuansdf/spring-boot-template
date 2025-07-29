@@ -47,7 +47,7 @@ public class FileUtils {
 
     public static String toFilename(String name, FileType fileType) {
         if (StringUtils.isBlank(name) || fileType == null) return "";
-        return name.concat(EXTENSION_SEPARATOR).concat(fileType.getExtension());
+        return name + EXTENSION_SEPARATOR + fileType.getExtension();
     }
 
     public static String toFilePath(String... paths) {
@@ -122,7 +122,7 @@ public class FileUtils {
         if (StringUtils.isEmpty(extension)) {
             return filename.substring(0, maxLength);
         }
-        return filename.substring(0, maxLength - extension.length()).concat(extension);
+        return filename.substring(0, maxLength - extension.length()) + extension;
     }
 
     public static String truncateFilename(String filename) {

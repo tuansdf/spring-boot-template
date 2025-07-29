@@ -321,7 +321,7 @@ public class UserServiceImpl implements UserService {
         if (file == null || file.length == 0) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String filename = FileUtils.toFilename("ExportUsers_".concat(ConversionUtils.safeToString(DateUtils.currentEpochMillis())), FileType.XLSX);
+        String filename = FileUtils.toFilename("ExportUsers_" + ConversionUtils.safeToString(DateUtils.currentEpochMillis()), FileType.XLSX);
         return fileObjectService.getFileUrls(fileObjectService.uploadFile(file, "", filename));
     }
 }

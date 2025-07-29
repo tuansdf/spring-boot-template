@@ -49,7 +49,7 @@ public class GlobalDefaultExceptionHandler {
     public ResponseEntity<CommonResponse<Object>> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setMessage("Missing required parameter: ".concat(ex.getParameterName()));
+        response.setMessage("Missing required parameter: " + ex.getParameterName());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -60,7 +60,7 @@ public class GlobalDefaultExceptionHandler {
     public ResponseEntity<CommonResponse<Object>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.BAD_REQUEST.value());
-        response.setMessage("Invalid value for parameter: ".concat(ex.getName()));
+        response.setMessage("Invalid value for parameter: " + ex.getName());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -68,7 +68,7 @@ public class GlobalDefaultExceptionHandler {
     public ResponseEntity<CommonResponse<Object>> handleNotFound(HttpServletRequest servletRequest) {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setMessage("Endpoint not found: ".concat(servletRequest.getMethod()).concat(" ").concat(servletRequest.getServletPath()));
+        response.setMessage("Endpoint not found: " + servletRequest.getMethod() + " " + servletRequest.getServletPath());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
@@ -76,7 +76,7 @@ public class GlobalDefaultExceptionHandler {
     public ResponseEntity<CommonResponse<Object>> handleHttpRequestMethodNotSupportedException(HttpServletRequest servletRequest) {
         CommonResponse<Object> response = new CommonResponse<>();
         response.setStatus(HttpStatus.NOT_FOUND.value());
-        response.setMessage("Endpoint not found: ".concat(servletRequest.getMethod()).concat(" ").concat(servletRequest.getServletPath()));
+        response.setMessage("Endpoint not found: " + servletRequest.getMethod() + " " + servletRequest.getServletPath());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
