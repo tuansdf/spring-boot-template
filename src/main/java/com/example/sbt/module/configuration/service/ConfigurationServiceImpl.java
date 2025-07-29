@@ -109,25 +109,42 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public String findValueByCode(String code) {
         ConfigurationKV result = findOneCachedByCode(code);
-        if (result == null) return null;
-        if (!ConversionUtils.safeToBoolean(result.getIsEnabled())) return null;
+        if (result == null) {
+            return null;
+        }
+        if (!ConversionUtils.safeToBoolean(result.getIsEnabled())) {
+            return null;
+        }
         return ConversionUtils.safeToString(result.getValue());
+    }
+
+    @Override
+    public Map<String, String> findValuesByCodes(List<String> codes) {
+        Map<String, String> result = new HashMap<>();
+        if (CollectionUtils.isEmpty(codes)) return result;
+        for (String code : codes) {
+            result.put(code, findValueByCode(code));
+        }
+        return result;
     }
 
     @Override
     public String findPublicValueByCode(String code) {
         ConfigurationKV result = findOneCachedByCode(code);
-        if (result == null) return null;
-        if (!ConversionUtils.safeToBoolean(result.getIsEnabled()) || !ConversionUtils.safeToBoolean(result.getIsPublic()))
+        if (result == null) {
             return null;
+        }
+        if (!ConversionUtils.safeToBoolean(result.getIsEnabled()) || !ConversionUtils.safeToBoolean(result.getIsPublic())) {
+            return null;
+        }
         return ConversionUtils.safeToString(result.getValue());
     }
 
     @Override
     public Map<String, String> findPublicValuesByCodes(List<String> codes) {
-        if (CollectionUtils.isEmpty(codes) || codes.size() > MAX_PUBLIC_CODES) return null;
         Map<String, String> result = new HashMap<>();
-        for (String code : codes) {
+        if (CollectionUtils.isEmpty(codes)) return result;
+        for (String code : codes.subList(0, MAX_PUBLIC_CODES)) {
             result.put(code, findPublicValueByCode(code));
         }
         return result;

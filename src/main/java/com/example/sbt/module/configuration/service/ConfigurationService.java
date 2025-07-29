@@ -22,9 +22,11 @@ public interface ConfigurationService {
 
     ConfigurationKV findOneCachedByCode(String code);
 
-    String findPublicValueByCode(String code);
-
     String findValueByCode(String code);
+
+    Map<String, String> findValuesByCodes(List<String> codes);
+
+    String findPublicValueByCode(String code);
 
     Map<String, String> findPublicValuesByCodes(List<String> codes);
 
