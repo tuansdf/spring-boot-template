@@ -4,7 +4,7 @@ import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.JWTPayload;
 import com.example.sbt.core.dto.RequestContextHolder;
-import com.example.sbt.core.helper.RequestHelper;
+import com.example.sbt.core.helper.ServletHelper;
 import com.example.sbt.module.authtoken.service.JWTService;
 import com.example.sbt.shared.util.ConversionUtils;
 import jakarta.servlet.FilterChain;
@@ -26,12 +26,12 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class JWTFilter extends OncePerRequestFilter {
-    private final RequestHelper requestHelper;
+    private final ServletHelper servletHelper;
     private final JWTService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = requestHelper.getBearerToken(request);
+        String jwt = servletHelper.getBearerToken(request);
         JWTPayload jwtPayload = jwtService.verify(jwt);
         if (jwtPayload == null) {
             filterChain.doFilter(request, response);

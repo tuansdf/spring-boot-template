@@ -1,12 +1,14 @@
 package com.example.sbt.core.helper;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RequestHelper {
+public class ServletHelper {
     private static final String AUTHORIZATION_START_WITH = "Bearer ";
     private static final int TOKEN_START_AT = AUTHORIZATION_START_WITH.length();
 
@@ -35,11 +37,19 @@ public class RequestHelper {
     }
 
     public String getBearerToken(HttpServletRequest request) {
-        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.isBlank(header) || !header.startsWith(AUTHORIZATION_START_WITH)) {
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (StringUtils.isBlank(bearerToken)) {
+            Cookie[] cookies = request.getCookies();
+            if (ObjectUtils.isEmpty(cookies)) return null;
+            for (Cookie cookie : cookies) {
+                if (HttpHeaders.AUTHORIZATION.equalsIgnoreCase(cookie.getName())) {
+                    bearerToken = cookie.getValue();
+                }
+            }
+        }
+        if (StringUtils.isBlank(bearerToken) || !bearerToken.startsWith(AUTHORIZATION_START_WITH)) {
             return null;
         }
-
-        return header.substring(TOKEN_START_AT);
+        return bearerToken.substring(TOKEN_START_AT);
     }
 }

@@ -2,7 +2,7 @@ package com.example.sbt.core.filter;
 
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.helper.LocaleHelper;
-import com.example.sbt.core.helper.RequestHelper;
+import com.example.sbt.core.helper.ServletHelper;
 import com.example.sbt.module.configuration.service.Configurations;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -26,11 +26,11 @@ import java.io.IOException;
 public class IPWhitelistFilter extends OncePerRequestFilter {
     private final LocaleHelper localeHelper;
     private final Configurations configurations;
-    private final RequestHelper requestHelper;
+    private final ServletHelper servletHelper;
     private final ObjectMapper objectMapper;
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if (!isIpWhitelisted(requestHelper.getClientIp(request))) {
+        if (!isIpWhitelisted(servletHelper.getClientIp(request))) {
             CommonResponse<Object> commonResponse = new CommonResponse<>();
             commonResponse.setMessage(localeHelper.getMessage("auth.error.invalid_ip"));
             commonResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
