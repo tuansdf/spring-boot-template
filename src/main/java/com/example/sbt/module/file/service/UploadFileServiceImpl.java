@@ -21,6 +21,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
@@ -31,7 +32,8 @@ import java.util.List;
 public class UploadFileServiceImpl implements UploadFileService {
     private static final long DEFAULT_PRESIGN_GET_SECONDS = 24L * 60L * 60L;
     private static final long DEFAULT_PRESIGN_PUT_SECONDS = 10L * 60L;
-    private final int OBJECT_KEY_BATCH_SIZE = 500;
+    private static final int OBJECT_KEY_BATCH_SIZE = 500;
+    private static final int DEFAULT_HEADER_BYTES_SIZE = 512;
 
     private final ApplicationProperties applicationProperties;
     private final S3Client s3Client;
@@ -58,8 +60,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                 .build();
     }
 
-    @Override
-    public String uploadFile(byte[] file, String dirPath, String filename) {
+    private String uploadFile(InputStream file, long fileSize, String dirPath, String filename) {
         try {
             if (file == null) return null;
             ObjectKey objectKey = cleanObjectKey(dirPath, filename);
@@ -70,7 +71,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .bucket(applicationProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
                     .build();
-            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(file));
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file, fileSize));
             return objectKey.getFilePath();
         } catch (Exception e) {
             log.error("uploadFile {}", e.toString());
@@ -79,21 +80,19 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
+    public String uploadFile(byte[] file, String dirPath, String filename) {
+        try (InputStream inputStream = new ByteArrayInputStream(file)) {
+            return uploadFile(inputStream, file.length, dirPath, filename);
+        } catch (Exception e) {
+            log.error("uploadFile {}", e.toString());
+            return null;
+        }
+    }
+
+    @Override
     public String uploadFile(MultipartFile file, String dirPath, String filename) {
-        try {
-            if (file == null) return null;
-            ObjectKey objectKey = cleanObjectKey(dirPath, filename);
-            if (StringUtils.isBlank(objectKey.getFilename()) || StringUtils.isBlank(objectKey.getFilePath())) {
-                return null;
-            }
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
-                    .key(objectKey.getFilePath())
-                    .build();
-            try (InputStream inputStream = file.getInputStream()) {
-                s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
-            }
-            return objectKey.getFilePath();
+        try (InputStream inputStream = file.getInputStream()) {
+            return uploadFile(inputStream, file.getSize(), dirPath, filename);
         } catch (Exception e) {
             log.error("uploadFile {}", e.toString());
             return null;
@@ -177,7 +176,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     public byte[] getFileHeaderBytes(String filePath, Integer size) {
         try {
             if (StringUtils.isBlank(filePath)) return null;
-            size = CommonUtils.defaultWhenNotPositive(size, 2048);
+            size = CommonUtils.defaultWhenNotPositive(size, DEFAULT_HEADER_BYTES_SIZE);
             String rangeHeader = "bytes=0-" + (size - 1);
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(applicationProperties.getAwsS3Bucket())

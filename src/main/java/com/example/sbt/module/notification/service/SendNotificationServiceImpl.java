@@ -22,13 +22,15 @@ public class SendNotificationServiceImpl implements SendNotificationService {
     public void send(SendNotificationRequest request) throws FirebaseMessagingException {
         if (request == null) return;
 
+        Notification notification = Notification.builder()
+                .setTitle(request.getTitle())
+                .setBody(request.getBody())
+                .build();
+
         if (StringUtils.isNotBlank(request.getTopic())) {
             Message message = Message.builder()
                     .setTopic(request.getTopic())
-                    .setNotification(Notification.builder()
-                            .setTitle(request.getTitle())
-                            .setBody(request.getBody())
-                            .build())
+                    .setNotification(notification)
                     .build();
             firebaseMessaging.send(message);
             return;
@@ -41,10 +43,7 @@ public class SendNotificationServiceImpl implements SendNotificationService {
             int to = Math.min(i + TOKEN_BATCH_SIZE, tokenSize);
             MulticastMessage message = MulticastMessage.builder()
                     .addAllTokens(request.getTokens().subList(i, to))
-                    .setNotification(Notification.builder()
-                            .setTitle(request.getTitle())
-                            .setBody(request.getBody())
-                            .build())
+                    .setNotification(notification)
                     .build();
             firebaseMessaging.sendEachForMulticast(message);
         }
@@ -58,10 +57,9 @@ public class SendNotificationServiceImpl implements SendNotificationService {
 
     @Override
     public void subscribeTopic(SendNotificationRequest request) throws FirebaseMessagingException {
-        if (request == null || StringUtils.isBlank(request.getTopic())) return;
-
-        if (CollectionUtils.isEmpty(request.getTokens())) return;
-
+        if (request == null || StringUtils.isBlank(request.getTopic()) || CollectionUtils.isEmpty(request.getTokens())) {
+            return;
+        }
         int tokenSize = request.getTokens().size();
         for (int i = 0; i < tokenSize; i += TOKEN_BATCH_SIZE) {
             int to = Math.min(i + TOKEN_BATCH_SIZE, tokenSize);

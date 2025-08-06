@@ -156,11 +156,19 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    private List<UserDTO> executeSearchToList(SearchUserRequestDTO requestDTO) {
+        PaginationData<UserDTO> result = executeSearch(requestDTO, false, false);
+        if (CollectionUtils.isEmpty(result.getItems())) {
+            return new ArrayList<>();
+        }
+        return result.getItems();
+    }
+
     @Override
     public PaginationData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount) {
         PaginationData<UserDTO> result = executeSearch(requestDTO, true, true);
         if (!isCount && result.getTotalItems() > 0) {
-            result.setItems(executeSearch(requestDTO, false, false).getItems());
+            result.setItems(executeSearchToList(requestDTO));
         }
         return result;
     }
@@ -207,13 +215,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneById(UUID userId) {
-        if (userId == null) {
-            return null;
-        }
-        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().id(userId).build(), false, false).getItems();
-        if (CollectionUtils.isEmpty(result)) {
-            return null;
-        }
+        if (userId == null) return null;
+        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().id(userId).build());
+        if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
 
@@ -228,25 +232,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO findOneByUsername(String username) {
-        if (StringUtils.isBlank(username)) {
-            return null;
-        }
-        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().username(username).build(), false, false).getItems();
-        if (CollectionUtils.isEmpty(result)) {
-            return null;
-        }
+        if (StringUtils.isBlank(username)) return null;
+        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().username(username).build());
+        if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
 
     @Override
     public UserDTO findOneByEmail(String email) {
-        if (StringUtils.isBlank(email)) {
-            return null;
-        }
-        List<UserDTO> result = executeSearch(SearchUserRequestDTO.builder().email(email).build(), false, false).getItems();
-        if (CollectionUtils.isEmpty(result)) {
-            return null;
-        }
+        if (StringUtils.isBlank(email)) return null;
+        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().email(email).build());
+        if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
 
@@ -293,26 +289,23 @@ public class UserServiceImpl implements UserService {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        PaginationData<UserDTO> searchData = executeSearch(requestDTO, false, false);
-        if (searchData.getItems() == null) {
-            searchData.setItems(new ArrayList<>());
-        }
+        List<UserDTO> users = executeSearchToList(requestDTO);
         byte[] file = null;
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet();
             List<Object> header = List.of("Username", "Email", "Name", "Is Enabled", "Is Verified", "Is OTP Enabled", "Roles", "Permissions");
             ExcelUtils.setCellValues(sheet, 0, header);
             int idx = 1;
-            for (UserDTO item : searchData.getItems()) {
+            for (UserDTO user : users) {
                 List<Object> data = Arrays.asList(
-                        item.getUsername(),
-                        item.getEmail(),
-                        item.getName(),
-                        ConversionUtils.safeToBoolean(item.getIsEnabled()),
-                        ConversionUtils.safeToBoolean(item.getIsVerified()),
-                        ConversionUtils.safeToBoolean(item.getIsOtpEnabled()),
-                        String.join(",", item.getRoleCodes()),
-                        String.join(",", item.getPermissionCodes()));
+                        user.getUsername(),
+                        user.getEmail(),
+                        user.getName(),
+                        ConversionUtils.safeToBoolean(user.getIsEnabled()),
+                        ConversionUtils.safeToBoolean(user.getIsVerified()),
+                        ConversionUtils.safeToBoolean(user.getIsOtpEnabled()),
+                        String.join(",", user.getRoleCodes()),
+                        String.join(",", user.getPermissionCodes()));
                 ExcelUtils.setCellValues(sheet, idx, data);
                 idx++;
             }
