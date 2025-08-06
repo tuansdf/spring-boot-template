@@ -1,6 +1,5 @@
 package com.example.sbt.module.authtoken.service;
 
-import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.dto.JWTPayload;
 import com.example.sbt.core.mapper.CommonMapper;
@@ -8,12 +7,10 @@ import com.example.sbt.module.authtoken.dto.AuthTokenDTO;
 import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.example.sbt.module.authtoken.repository.AuthTokenRepository;
 import com.example.sbt.shared.util.ConversionUtils;
-import com.example.sbt.shared.util.RandomUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -29,6 +26,22 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     private final AuthTokenRepository authTokenRepository;
     private final JWTService jwtService;
 
+    private AuthTokenDTO findOneOrCreateByUserIdAndType(UUID userId, String type) {
+        Instant now = Instant.now();
+        AuthTokenDTO result = authTokenRepository.findTopByUserIdAndType(userId, type).map(commonMapper::toDTO).orElse(null);
+        if (result != null) return result;
+        AuthToken authToken = new AuthToken();
+        authToken.setUserId(userId);
+        authToken.setValidFrom(now);
+        authToken.setType(type);
+        return commonMapper.toDTO(authTokenRepository.save(authToken));
+    }
+
+    private AuthTokenDTO findOneByUserIdAndType(UUID userId, String type) {
+        if (userId == null || StringUtils.isBlank(type)) return null;
+        return authTokenRepository.findTopByUserIdAndType(userId, type).map(commonMapper::toDTO).orElse(null);
+    }
+
     @Override
     public AuthTokenDTO findOneById(UUID id) {
         if (id == null) return null;
@@ -36,29 +49,18 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     }
 
     @Override
-    public void deactivateByUserIdAndType(UUID userId, String type) {
-        authTokenRepository.updateStatusByUserIdAndType(userId, type, CommonStatus.INACTIVE);
+    public void invalidateByUserIdAndType(UUID userId, String type) {
+        authTokenRepository.invalidateByUserIdAndType(userId, type);
     }
 
     @Override
-    public void deactivateByUserIdAndTypes(UUID userId, List<String> types) {
-        authTokenRepository.updateStatusByUserIdAndTypes(userId, types, CommonStatus.INACTIVE);
+    public void invalidateByUserIdAndTypes(UUID userId, List<String> types) {
+        authTokenRepository.invalidateByUserIdAndTypes(userId, types);
     }
 
     @Override
-    public void deactivateByUserId(UUID userId) {
-        authTokenRepository.updateStatusByUserId(userId, CommonStatus.INACTIVE);
-    }
-
-    @Override
-    public void deleteExpiredTokens() {
-        authTokenRepository.deleteByExpiresAtBefore(Instant.now());
-    }
-
-    @Async
-    @Override
-    public void deleteExpiredTokensAsync() {
-        deleteExpiredTokens();
+    public void invalidateByUserId(UUID userId) {
+        authTokenRepository.invalidateByUserId(userId);
     }
 
     @Override
@@ -74,15 +76,12 @@ public class AuthTokenServiceImpl implements AuthTokenService {
         if (!type.equals(tokenType)) {
             return null;
         }
-        UUID tokenId = ConversionUtils.toUUID(jwtPayload.getSubject());
-        AuthTokenDTO authTokenDTO = findOneById(tokenId);
+        UUID userId = ConversionUtils.toUUID(jwtPayload.getSubject());
+        AuthTokenDTO authTokenDTO = findOneByUserIdAndType(userId, type);
         if (authTokenDTO == null) {
             return null;
         }
-        if (!type.equals(authTokenDTO.getType()) || !CommonStatus.ACTIVE.equals(authTokenDTO.getStatus())) {
-            return null;
-        }
-        if (Instant.now().isAfter(authTokenDTO.getExpiresAt())) {
+        if (authTokenDTO.getValidFrom().isAfter(jwtPayload.getIssuedAt())) {
             return null;
         }
         return authTokenDTO;
@@ -90,51 +89,24 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
     @Override
     public AuthTokenDTO createRefreshToken(UUID userId) {
-        UUID id = RandomUtils.secure().randomTimeBasedUUID();
-        JWTPayload jwtPayload = jwtService.createRefreshJwt(id);
-
-        AuthToken authToken = new AuthToken();
-        authToken.setId(id);
-        authToken.setUserId(userId);
-        authToken.setExpiresAt(jwtPayload.getExpiresAt());
-        authToken.setType(CommonType.REFRESH_TOKEN);
-        authToken.setStatus(CommonStatus.ACTIVE);
-
-        AuthTokenDTO result = commonMapper.toDTO(authTokenRepository.save(authToken));
+        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, CommonType.REFRESH_TOKEN);
+        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
         result.setValue(jwtPayload.getValue());
         return result;
     }
 
     @Override
     public AuthTokenDTO createResetPasswordToken(UUID userId) {
-        UUID id = RandomUtils.secure().randomTimeBasedUUID();
-        JWTPayload jwtPayload = jwtService.createResetPasswordJwt(id);
-
-        AuthToken authToken = new AuthToken();
-        authToken.setId(id);
-        authToken.setUserId(userId);
-        authToken.setExpiresAt(jwtPayload.getExpiresAt());
-        authToken.setType(CommonType.RESET_PASSWORD);
-        authToken.setStatus(CommonStatus.ACTIVE);
-
-        AuthTokenDTO result = commonMapper.toDTO(authTokenRepository.save(authToken));
+        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, CommonType.RESET_PASSWORD);
+        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
         result.setValue(jwtPayload.getValue());
         return result;
     }
 
     @Override
     public AuthTokenDTO createActivateAccountToken(UUID userId) {
-        UUID id = RandomUtils.secure().randomTimeBasedUUID();
-        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(id);
-
-        AuthToken authToken = new AuthToken();
-        authToken.setId(id);
-        authToken.setUserId(userId);
-        authToken.setExpiresAt(jwtPayload.getExpiresAt());
-        authToken.setType(CommonType.ACTIVATE_ACCOUNT);
-        authToken.setStatus(CommonStatus.ACTIVE);
-
-        AuthTokenDTO result = commonMapper.toDTO(authTokenRepository.save(authToken));
+        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, CommonType.ACTIVATE_ACCOUNT);
+        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
         result.setValue(jwtPayload.getValue());
         return result;
     }

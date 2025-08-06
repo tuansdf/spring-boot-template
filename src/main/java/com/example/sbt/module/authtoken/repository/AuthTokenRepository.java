@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -14,21 +13,16 @@ import java.util.UUID;
 @Repository
 public interface AuthTokenRepository extends JpaRepository<AuthToken, UUID> {
     @Modifying
-    @Query(value = "update auth_token set status = :status, updated_at = now() " +
-            "where user_id = :userId and type = :type and status <> :status", nativeQuery = true)
-    void updateStatusByUserIdAndType(UUID userId, String type, String status);
+    @Query(value = "update auth_token set valid_from = now(), updated_at = now() where user_id = :userId and type = :type", nativeQuery = true)
+    void invalidateByUserIdAndType(UUID userId, String type);
 
     @Modifying
-    @Query(value = "update auth_token set status = :status, updated_at = now() " +
-            "where user_id = :userId and type in :types and status <> :status", nativeQuery = true)
-    void updateStatusByUserIdAndTypes(UUID userId, List<String> types, String status);
+    @Query(value = "update auth_token set valid_from = now(), updated_at = now() where user_id = :userId and type in :types", nativeQuery = true)
+    void invalidateByUserIdAndTypes(UUID userId, List<String> types);
 
     @Modifying
-    @Query(value = "update auth_token set status = :status, updated_at = now() " +
-            "where user_id = :userId and status <> :status", nativeQuery = true)
-    void updateStatusByUserId(UUID userId, String status);
+    @Query(value = "update auth_token set valid_from = now(), updated_at = now() where user_id = :userId", nativeQuery = true)
+    void invalidateByUserId(UUID userId);
 
-    Optional<AuthToken> findTopByIdAndStatusAndExpiresAtAfter(UUID tokenId, String status, Instant now);
-
-    void deleteByExpiresAtBefore(Instant expiresAt);
+    Optional<AuthToken> findTopByUserIdAndType(UUID userId, String type);
 }

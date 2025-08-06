@@ -35,10 +35,10 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public JWTPayload createRefreshJwt(UUID tokenId) {
+    public JWTPayload createRefreshJwt(UUID userId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(tokenId.toString());
+        jwtPayload.setSubject(userId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtRefreshLifetime()));
@@ -48,10 +48,10 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public JWTPayload createResetPasswordJwt(UUID tokenId) {
+    public JWTPayload createResetPasswordJwt(UUID userId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(tokenId.toString());
+        jwtPayload.setSubject(userId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtResetPasswordLifetime()));
@@ -61,10 +61,10 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public JWTPayload createActivateAccountJwt(UUID tokenId) {
+    public JWTPayload createActivateAccountJwt(UUID userId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(tokenId.toString());
+        jwtPayload.setSubject(userId.toString());
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtActivateAccountLifetime()));

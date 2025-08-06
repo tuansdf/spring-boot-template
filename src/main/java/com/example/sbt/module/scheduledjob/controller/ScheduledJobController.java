@@ -2,7 +2,6 @@ package com.example.sbt.module.scheduledjob.controller;
 
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
-import com.example.sbt.module.authtoken.service.AuthTokenService;
 import com.example.sbt.module.file.service.FileObjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/scheduled-jobs")
 public class ScheduledJobController {
-    private final AuthTokenService authTokenService;
     private final FileObjectService fileObjectService;
-
-    @GetMapping("/tokens/delete-expired")
-    public ResponseEntity<CommonResponse<Object>> deleteExpiredTokens() {
-        authTokenService.deleteExpiredTokensAsync();
-        return ResponseEntity.ok(new CommonResponse<>());
-    }
 
     @GetMapping("/files/delete-pending")
     public ResponseEntity<CommonResponse<Object>> deletePendingFiles() {

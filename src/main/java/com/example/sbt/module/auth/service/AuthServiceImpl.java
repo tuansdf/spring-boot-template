@@ -165,7 +165,7 @@ public class AuthServiceImpl implements AuthService {
         }
         user.setPassword(authHelper.hashPassword(requestDTO.getNewPassword()));
         user = userRepository.save(user);
-        authTokenService.deactivateByUserId(user.getId());
+        authTokenService.invalidateByUserId(user.getId());
     }
 
     @Override
@@ -196,7 +196,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.BAD_REQUEST);
         }
-        authTokenService.deactivateByUserIdAndType(user.getId(), CommonType.RESET_PASSWORD);
+        authTokenService.invalidateByUserIdAndType(user.getId(), CommonType.RESET_PASSWORD);
         AuthTokenDTO authTokenDTO = authTokenService.createResetPasswordToken(user.getId());
         String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
         emailService.sendResetPasswordEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
@@ -215,7 +215,7 @@ public class AuthServiceImpl implements AuthService {
         }
         user.setPassword(authHelper.hashPassword(requestDTO.getNewPassword()));
         userRepository.save(user);
-        authTokenService.deactivateByUserId(authTokenDTO.getUserId());
+        authTokenService.invalidateByUserId(authTokenDTO.getUserId());
     }
 
     @Override
@@ -225,7 +225,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
         }
-        authTokenService.deactivateByUserIdAndType(user.getId(), CommonType.ACTIVATE_ACCOUNT);
+        authTokenService.invalidateByUserIdAndType(user.getId(), CommonType.ACTIVATE_ACCOUNT);
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
         String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
         emailService.sendActivateAccountEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
@@ -247,7 +247,7 @@ public class AuthServiceImpl implements AuthService {
         user.setIsEnabled(true);
         user.setIsVerified(true);
         user = userRepository.save(user);
-        authTokenService.deactivateByUserId(authTokenDTO.getUserId());
+        authTokenService.invalidateByUserId(authTokenDTO.getUserId());
         if (!ConversionUtils.safeToBoolean(user.getIsVerified())) {
             notificationService.sendNewComerNotification(authTokenDTO.getUserId());
         }

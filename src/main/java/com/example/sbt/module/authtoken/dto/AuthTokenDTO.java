@@ -17,8 +17,7 @@ public class AuthTokenDTO {
     private UUID id;
     private UUID userId;
     private String type;
-    private String status;
-    private Instant expiresAt;
+    private Instant validFrom;
     private Instant createdAt;
     private Instant updatedAt;
 

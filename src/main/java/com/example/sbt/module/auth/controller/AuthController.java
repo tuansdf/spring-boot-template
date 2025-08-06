@@ -40,7 +40,7 @@ public class AuthController {
     @PostMapping("/token/revoke")
     public ResponseEntity<CommonResponse<Object>> revokeAllTokens() {
         UUID userId = RequestContextHolder.get().getUserId();
-        authTokenService.deactivateByUserId(userId);
+        authTokenService.invalidateByUserId(userId);
         return ResponseEntity.ok(new CommonResponse<>());
     }
 

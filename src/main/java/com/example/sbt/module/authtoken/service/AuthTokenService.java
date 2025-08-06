@@ -9,16 +9,11 @@ import java.util.UUID;
 public interface AuthTokenService {
     AuthTokenDTO findOneById(UUID id);
 
-    void deactivateByUserIdAndType(UUID userId, String type);
+    void invalidateByUserIdAndType(UUID userId, String type);
 
-    void deactivateByUserIdAndTypes(UUID userId, List<String> types);
+    void invalidateByUserIdAndTypes(UUID userId, List<String> types);
 
-    void deactivateByUserId(UUID userId);
-
-    void deleteExpiredTokens();
-
-    @Async
-    void deleteExpiredTokensAsync();
+    void invalidateByUserId(UUID userId);
 
     AuthTokenDTO findOneAndVerifyJwt(String token, String type);
 
