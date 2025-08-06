@@ -21,11 +21,11 @@ public abstract class BaseEntity implements Serializable {
     @Id
     @Column(name = "id")
     private UUID id;
-    @Column(name = "created_at", updatable = false)
     @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private Instant createdAt;
-    @Column(name = "updated_at")
     @UpdateTimestamp
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
     @PrePersist
