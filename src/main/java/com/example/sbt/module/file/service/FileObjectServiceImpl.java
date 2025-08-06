@@ -5,7 +5,6 @@ import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.exception.NoRollbackException;
-import com.example.sbt.core.helper.CommonHelper;
 import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.file.dto.FileObjectDTO;
@@ -44,19 +43,11 @@ import java.util.UUID;
 @Transactional(rollbackOn = Exception.class, dontRollbackOn = NoRollbackException.class)
 public class FileObjectServiceImpl implements FileObjectService {
     private final SQLHelper sqlHelper;
-    private final CommonHelper commonHelper;
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final UploadFileService uploadFileService;
     private final FileObjectRepository fileObjectRepository;
     private final FileObjectPendingRepository fileObjectPendingRepository;
-
-    private FileObjectDTO findOneByCacheKey(String cacheKey) {
-        if (StringUtils.isBlank(cacheKey)) {
-            return null;
-        }
-        return fileObjectRepository.findTopByCacheKeyOrderByIdDesc(cacheKey).map(commonMapper::toDTO).orElse(null);
-    }
 
     @Override
     public FileObjectDTO uploadFile(MultipartFile file, String dirPath) {
@@ -67,32 +58,15 @@ public class FileObjectServiceImpl implements FileObjectService {
         if (!isFileValid) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        String cacheKey = commonHelper.createFileKey(file);
-        boolean expired = false;
-        FileObjectDTO existed = findOneByCacheKey(cacheKey);
-        if (existed != null) {
-            expired = !uploadFileService.existsFile(existed.getFilePath());
-            if (!expired) {
-                existed.setId(null);
-                FileObject result = commonMapper.toEntity(existed);
-                result.setFilename(FileUtils.truncateFilename(file.getOriginalFilename()));
-                result.setCreatedBy(RequestContextHolder.get().getUserId());
-                return commonMapper.toDTO(fileObjectRepository.save(result));
-            }
-        }
         String filePath = uploadFileService.uploadFile(file, dirPath, file.getOriginalFilename());
         if (filePath == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        if (expired) {
-            fileObjectRepository.updateFilePathByCacheKey(cacheKey, filePath);
         }
         FileObject result = new FileObject();
         result.setFilePath(filePath);
         result.setFilename(FileUtils.truncateFilename(file.getOriginalFilename()));
         result.setFileType(file.getContentType());
         result.setFileSize(file.getSize());
-        result.setCacheKey(cacheKey);
         result.setCreatedBy(RequestContextHolder.get().getUserId());
         return commonMapper.toDTO(fileObjectRepository.save(result));
     }
@@ -148,8 +122,8 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     private void deletePendingUpload(UUID id, String filePath) {
-        fileObjectPendingRepository.deleteById(id);
         uploadFileService.deleteFile(filePath);
+        fileObjectPendingRepository.deleteById(id);
     }
 
     @Override
@@ -196,7 +170,7 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public FileObjectDTO getFileUrls(FileObjectDTO dto) {
+    public FileObjectDTO setFileUrls(FileObjectDTO dto) {
         if (dto == null) return null;
         dto.setFileUrl(uploadFileService.createPresignedGetUrl(dto.getFilePath(), dto.getFilename()));
         dto.setPreviewFileUrl(uploadFileService.createPresignedGetUrl(dto.getPreviewFilePath(), dto.getFilename()));

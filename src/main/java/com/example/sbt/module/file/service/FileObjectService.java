@@ -23,7 +23,7 @@ public interface FileObjectService {
 
     FileObjectDTO getFileById(UUID id);
 
-    FileObjectDTO getFileUrls(FileObjectDTO dto);
+    FileObjectDTO setFileUrls(FileObjectDTO dto);
 
     void deleteFilesByIds(List<UUID> ids, UUID userId);
 

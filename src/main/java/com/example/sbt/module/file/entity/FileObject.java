@@ -18,7 +18,6 @@ import java.util.UUID;
 @Table(
         name = "file_object",
         indexes = {
-                @Index(name = "file_object_cache_key_idx", columnList = "cache_key"),
                 @Index(name = "file_object_created_by_idx", columnList = "created_by"),
                 @Index(name = "file_object_created_at_idx", columnList = "created_at"),
         }
@@ -47,8 +46,6 @@ public class FileObject extends BaseEntity {
     private String fileType;
     @Column(name = "file_size")
     private Long fileSize;
-    @Column(name = "cache_key", length = 64)
-    private String cacheKey;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
 }
