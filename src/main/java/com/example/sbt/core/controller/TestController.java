@@ -390,6 +390,7 @@ public class TestController {
     public Object testRegex(
             @RequestBody TestBody body
     ) {
+        fileObjectService.deleteExpiredPendingUploadAsync();
         Map<String, Object> result = new HashMap<>();
         Matcher matcher = Pattern.compile(body.getRegex()).matcher(body.getText());
         result.put("replace", matcher.replaceAll(body.getReplaceWith()));
