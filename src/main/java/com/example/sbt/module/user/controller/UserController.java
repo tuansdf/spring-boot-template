@@ -9,6 +9,7 @@ import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.user.dto.SearchUserRequestDTO;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.service.UserService;
+import com.example.sbt.shared.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -68,6 +69,7 @@ public class UserController {
     public ResponseEntity<CommonResponse<PaginationData<UserDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
+            @RequestParam(required = false) UUID id,
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) Boolean isEnabled,
@@ -81,6 +83,7 @@ public class UserController {
         var requestDTO = SearchUserRequestDTO.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
+                .id(id)
                 .username(username)
                 .email(email)
                 .isEnabled(isEnabled)
@@ -91,7 +94,7 @@ public class UserController {
                 .orderDirection(orderDirection)
                 .isDetail(false)
                 .build();
-        var result = userService.search(requestDTO, count);
+        var result = userService.search(requestDTO, ConversionUtils.safeToBoolean(count));
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 

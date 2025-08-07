@@ -30,6 +30,5 @@ public class SearchUserRequestDTO {
 
     private String cacheType;
     private Instant cacheTime;
-
     private boolean isDetail = false;
 }
