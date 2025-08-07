@@ -45,5 +45,5 @@ Content-Type: application/json
 
 ###
 
-GET {{base_url}}/v1/users/search?pageSize=100000
+GET {{base_url}}/v1/users/search?pageSize=1000
 Authorization: Bearer {{access_token}}

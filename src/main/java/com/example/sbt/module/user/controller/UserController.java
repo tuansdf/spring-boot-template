@@ -89,6 +89,7 @@ public class UserController {
                 .createdAtFrom(createdAtFrom)
                 .orderBy(orderBy)
                 .orderDirection(orderDirection)
+                .isDetail(false)
                 .build();
         var result = userService.search(requestDTO, count);
         return ResponseEntity.ok(new CommonResponse<>(result));
@@ -97,7 +98,7 @@ public class UserController {
     @PostMapping("/export")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<FileObjectDTO>> export() {
-        var requestDTO = SearchUserRequestDTO.builder().build();
+        var requestDTO = SearchUserRequestDTO.builder().isDetail(true).build();
         userService.triggerExport(requestDTO);
         var message = localeHelper.getMessage("user.task.export.enqueued");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));

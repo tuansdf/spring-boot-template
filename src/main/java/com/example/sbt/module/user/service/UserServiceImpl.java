@@ -71,10 +71,15 @@ public class UserServiceImpl implements UserService {
         if (!isCount) {
             builder.append(" select ");
             builder.append(" u.id, u.username, u.email, u.name, ");
-            builder.append(" u.is_enabled, u.is_verified, u.is_otp_enabled, ");
-            builder.append(" u.created_at, u.updated_at, ");
-            builder.append(" string_agg(distinct(r.code), ',') as roles, ");
-            builder.append(" string_agg(distinct(p.code), ',') as permissions ");
+            if (requestDTO.isDetail()) {
+                builder.append(" u.is_enabled, u.is_verified, u.is_otp_enabled, ");
+                builder.append(" string_agg(distinct(r.code), ',') as roles, ");
+                builder.append(" string_agg(distinct(p.code), ',') as permissions, ");
+            } else {
+                builder.append(" null as is_enabled, null as is_verified, u.is_otp_enabled, ");
+                builder.append(" null as roles, null as permissions, ");
+            }
+            builder.append(" u.created_at, u.updated_at ");
             builder.append(" from _user u ");
             builder.append(" inner join ( ");
         }
@@ -163,13 +168,15 @@ public class UserServiceImpl implements UserService {
                 dto.setUsername(ConversionUtils.toString(x[1]));
                 dto.setEmail(ConversionUtils.toString(x[2]));
                 dto.setName(ConversionUtils.toString(x[3]));
-                dto.setIsEnabled(ConversionUtils.toBoolean(x[4]));
-                dto.setIsVerified(ConversionUtils.toBoolean(x[5]));
-                dto.setIsOtpEnabled(ConversionUtils.toBoolean(x[6]));
-                dto.setCreatedAt(DateUtils.toInstant(x[7]));
-                dto.setUpdatedAt(DateUtils.toInstant(x[8]));
-                dto.setRoleCodes(ConversionUtils.toString(x[9]));
-                dto.setPermissionCodes(ConversionUtils.toString(x[10]));
+                if (requestDTO.isDetail()) {
+                    dto.setIsEnabled(ConversionUtils.toBoolean(x[4]));
+                    dto.setIsVerified(ConversionUtils.toBoolean(x[5]));
+                    dto.setIsOtpEnabled(ConversionUtils.toBoolean(x[6]));
+                    dto.setRoleCodes(ConversionUtils.toString(x[7]));
+                    dto.setPermissionCodes(ConversionUtils.toString(x[8]));
+                }
+                dto.setCreatedAt(DateUtils.toInstant(x[9]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[10]));
                 return dto;
             }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);
@@ -237,7 +244,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneById(UUID userId) {
         if (userId == null) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().id(userId).build());
+        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().id(userId).isDetail(true).build());
         if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
@@ -254,7 +261,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneByUsername(String username) {
         if (StringUtils.isBlank(username)) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().username(username).build());
+        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().username(username).isDetail(true).build());
         if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
@@ -262,7 +269,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneByEmail(String email) {
         if (StringUtils.isBlank(email)) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().email(email).build());
+        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().email(email).isDetail(true).build());
         if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
