@@ -111,6 +111,10 @@ public class NotificationServiceImpl implements NotificationService {
         return result;
     }
 
+    private long executeSearchToCount(SearchNotificationRequestDTO requestDTO) {
+        return executeSearch(requestDTO, true).getTotalItems();
+    }
+
     @Override
     public PaginationData<NotificationDTO> search(SearchNotificationRequestDTO requestDTO, boolean isCount) {
         PaginationData<NotificationDTO> result = executeSearch(requestDTO, true);
@@ -123,8 +127,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationStatsDTO getStatsByUser(UUID userId) {
         NotificationStatsDTO result = new NotificationStatsDTO();
-        result.setTotalRead(executeSearch(SearchNotificationRequestDTO.builder().userId(userId).status(CommonStatus.READ).build(), true).getTotalItems());
-        result.setTotalUnread(executeSearch(SearchNotificationRequestDTO.builder().userId(userId).status(CommonStatus.UNREAD).build(), true).getTotalItems());
+        result.setTotalRead(executeSearchToCount(SearchNotificationRequestDTO.builder().userId(userId).status(CommonStatus.READ).build()));
+        result.setTotalUnread(executeSearchToCount(SearchNotificationRequestDTO.builder().userId(userId).status(CommonStatus.UNREAD).build()));
         return result;
     }
 

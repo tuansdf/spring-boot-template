@@ -115,6 +115,10 @@ public class EmailServiceImpl implements EmailService {
         return result;
     }
 
+    private long executeSearchToCount(SearchEmailRequestDTO requestDTO) {
+        return executeSearch(requestDTO, true).getTotalItems();
+    }
+
     @Override
     public PaginationData<EmailDTO> search(SearchEmailRequestDTO requestDTO, boolean isCount) {
         PaginationData<EmailDTO> result = executeSearch(requestDTO, true);
@@ -127,8 +131,8 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public EmailStatsDTO getStatsByUser(UUID userId) {
         EmailStatsDTO result = new EmailStatsDTO();
-        result.setTotalRead(executeSearch(SearchEmailRequestDTO.builder().userId(userId).status(CommonStatus.READ).build(), true).getTotalItems());
-        result.setTotalUnread(executeSearch(SearchEmailRequestDTO.builder().userId(userId).status(CommonStatus.UNREAD).build(), true).getTotalItems());
+        result.setTotalRead(executeSearchToCount(SearchEmailRequestDTO.builder().userId(userId).status(CommonStatus.READ).build()));
+        result.setTotalUnread(executeSearchToCount(SearchEmailRequestDTO.builder().userId(userId).status(CommonStatus.UNREAD).build()));
         return result;
     }
 

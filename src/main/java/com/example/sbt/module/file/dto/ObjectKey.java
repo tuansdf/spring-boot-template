@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public final class ObjectKey {
+public class ObjectKey {
     private String dirPath;
     private String originalFilename;
     private String filename;
