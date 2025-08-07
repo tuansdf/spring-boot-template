@@ -1,6 +1,5 @@
 package com.example.sbt.module.file.service;
 
-import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.exception.CustomException;
@@ -18,6 +17,7 @@ import com.example.sbt.module.file.repository.FileObjectRepository;
 import com.example.sbt.shared.constant.FileType;
 import com.example.sbt.shared.util.CommonUtils;
 import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
 import com.example.sbt.shared.util.FileUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -32,10 +32,10 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -211,40 +211,42 @@ public class FileObjectServiceImpl implements FileObjectService {
         requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("created_at", "file_type", "file_size")));
         requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         PaginationData<FileObjectDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
-        Map<String, Object> params = new HashMap<>();
+        List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select fo.* ");
+            builder.append(" select ");
+            builder.append(" fo.id, fo.file_path, fo.preview_file_path, fo.filename, fo.file_type, ");
+            builder.append(" fo.file_size, fo.created_by, fo.created_at, fo.updated_at ");
         }
         builder.append(" from file_object fo ");
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getFileType())) {
-            builder.append(" and fo.file_type = :fileType ");
-            params.put("fileType", requestDTO.getFileType().trim());
+            builder.append(" and fo.file_type = ? ");
+            params.add(requestDTO.getFileType().trim());
         }
         if (requestDTO.getFileSizeFrom() != null) {
-            builder.append(" and fo.file_size >= :fileSizeFrom ");
-            params.put("fileSizeFrom", requestDTO.getFileSizeFrom());
+            builder.append(" and fo.file_size >= ? ");
+            params.add(requestDTO.getFileSizeFrom());
         }
         if (requestDTO.getFileSizeTo() != null) {
-            builder.append(" and fo.file_size < :fileSizeTo ");
-            params.put("fileSizeTo", requestDTO.getFileSizeTo());
+            builder.append(" and fo.file_size < ? ");
+            params.add(requestDTO.getFileSizeTo());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
-            builder.append(" and fo.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+            builder.append(" and fo.created_at >= ? ");
+            params.add(requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and fo.created_at < :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo());
+            builder.append(" and fo.created_at < ? ");
+            params.add(requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by ");
             builder.append(CommonUtils.joinWhenNoNull(" fo.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
             builder.append(" fo.id desc ");
-            builder.append(" limit :limit offset :offset ");
+            builder.append(" limit ? offset ? ");
             sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
@@ -254,9 +256,22 @@ public class FileObjectServiceImpl implements FileObjectService {
             result.setTotalItems(count);
             result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.FILE_SEARCH);
+            Query query = entityManager.createNativeQuery(builder.toString());
             sqlHelper.setParams(query, params);
-            List<FileObjectDTO> items = query.getResultList();
+            List<Object[]> objects = query.getResultList();
+            List<FileObjectDTO> items = objects.stream().map(x -> {
+                FileObjectDTO dto = new FileObjectDTO();
+                dto.setId(ConversionUtils.toUUID(x[0]));
+                dto.setFilePath(ConversionUtils.toString(x[1]));
+                dto.setPreviewFilePath(ConversionUtils.toString(x[2]));
+                dto.setFilename(ConversionUtils.toString(x[3]));
+                dto.setFileType(ConversionUtils.toString(x[4]));
+                dto.setFileSize(ConversionUtils.toLong(x[5]));
+                dto.setCreatedBy(ConversionUtils.toUUID(x[6]));
+                dto.setCreatedAt(DateUtils.toInstant(x[7]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[8]));
+                return dto;
+            }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);
         }
         return result;

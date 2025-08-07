@@ -3,7 +3,6 @@ package com.example.sbt.module.email.service;
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
-import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.exception.CustomException;
@@ -18,6 +17,7 @@ import com.example.sbt.module.email.dto.SearchEmailRequestDTO;
 import com.example.sbt.module.email.entity.Email;
 import com.example.sbt.module.email.repository.EmailRepository;
 import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -29,10 +29,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -51,34 +51,36 @@ public class EmailServiceImpl implements EmailService {
 
     private PaginationData<EmailDTO> executeSearch(SearchEmailRequestDTO requestDTO, boolean isCount) {
         PaginationData<EmailDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
-        Map<String, Object> params = new HashMap<>();
+        List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select e.* ");
+            builder.append(" select ");
+            builder.append(" e.id, e.user_id, e.to_email, e.cc_email, e.subject, e.body, e.is_html, ");
+            builder.append(" e.retry_count, e.type, e.status, e.send_status, e.created_at, e.updated_at ");
         }
         builder.append(" from email e ");
         builder.append(" where 1=1 ");
         if (requestDTO.getUserId() != null) {
-            builder.append(" and e.user_id = :userId ");
-            params.put("userId", requestDTO.getUserId());
+            builder.append(" and e.user_id = ? ");
+            params.add(requestDTO.getUserId());
         }
         if (StringUtils.isNotBlank(requestDTO.getStatus())) {
-            builder.append(" and e.status = :status ");
-            params.put("status", requestDTO.getStatus().trim());
+            builder.append(" and e.status = ? ");
+            params.add(requestDTO.getStatus().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
-            builder.append(" and e.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+            builder.append(" and e.created_at >= ? ");
+            params.add(requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and e.created_at < :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo());
+            builder.append(" and e.created_at < ? ");
+            params.add(requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by e.id desc ");
-            builder.append(" limit :limit offset :offset ");
+            builder.append(" limit ? offset ? ");
             sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
@@ -88,9 +90,26 @@ public class EmailServiceImpl implements EmailService {
             result.setTotalItems(count);
             result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.EMAIL_SEARCH);
+            Query query = entityManager.createNativeQuery(builder.toString());
             sqlHelper.setParams(query, params);
-            List<EmailDTO> items = query.getResultList();
+            List<Object[]> objects = query.getResultList();
+            List<EmailDTO> items = objects.stream().map(x -> {
+                EmailDTO dto = new EmailDTO();
+                dto.setId(ConversionUtils.toUUID(x[0]));
+                dto.setUserId(ConversionUtils.toUUID(x[1]));
+                dto.setToEmail(ConversionUtils.toString(x[2]));
+                dto.setCcEmail(ConversionUtils.toString(x[3]));
+                dto.setSubject(ConversionUtils.toString(x[4]));
+                dto.setBody(ConversionUtils.toString(x[5]));
+                dto.setIsHtml(ConversionUtils.toBoolean(x[6]));
+                dto.setRetryCount(ConversionUtils.toInteger(x[7]));
+                dto.setType(ConversionUtils.toString(x[8]));
+                dto.setStatus(ConversionUtils.toString(x[9]));
+                dto.setSendStatus(ConversionUtils.toString(x[10]));
+                dto.setCreatedAt(DateUtils.toInstant(x[11]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[12]));
+                return dto;
+            }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);
         }
         return result;

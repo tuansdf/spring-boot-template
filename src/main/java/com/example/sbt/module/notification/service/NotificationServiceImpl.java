@@ -2,7 +2,6 @@ package com.example.sbt.module.notification.service;
 
 import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
-import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.helper.LocaleHelper;
@@ -17,6 +16,7 @@ import com.example.sbt.module.notification.entity.Notification;
 import com.example.sbt.module.notification.repository.NotificationRepository;
 import com.example.sbt.module.userdevice.service.UserDeviceService;
 import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -26,10 +26,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -48,34 +48,36 @@ public class NotificationServiceImpl implements NotificationService {
 
     private PaginationData<NotificationDTO> executeSearch(SearchNotificationRequestDTO requestDTO, boolean isCount) {
         PaginationData<NotificationDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
-        Map<String, Object> params = new HashMap<>();
+        List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select n.* ");
+            builder.append(" select ");
+            builder.append(" n.id, n.user_id, n.title, n.body, n.data, n.topic, n.retry_count, ");
+            builder.append(" n.type, n.status, n.send_status, n.created_at, n.updated_at ");
         }
         builder.append(" from notification n ");
         builder.append(" where 1=1 ");
         if (requestDTO.getUserId() != null) {
-            builder.append(" and n.user_id = :userId ");
-            params.put("userId", requestDTO.getUserId());
+            builder.append(" and n.user_id = ? ");
+            params.add(requestDTO.getUserId());
         }
         if (StringUtils.isNotBlank(requestDTO.getStatus())) {
-            builder.append(" and n.status = :status ");
-            params.put("status", requestDTO.getStatus().trim());
+            builder.append(" and n.status = ? ");
+            params.add(requestDTO.getStatus().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
-            builder.append(" and n.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+            builder.append(" and n.created_at >= ? ");
+            params.add(requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and n.created_at < :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo());
+            builder.append(" and n.created_at < ? ");
+            params.add(requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by n.id desc ");
-            builder.append(" limit :limit offset :offset ");
+            builder.append(" limit ? offset ? ");
             sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
@@ -85,9 +87,25 @@ public class NotificationServiceImpl implements NotificationService {
             result.setTotalItems(count);
             result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.NOTIFICATION_SEARCH);
+            Query query = entityManager.createNativeQuery(builder.toString());
             sqlHelper.setParams(query, params);
-            List<NotificationDTO> items = query.getResultList();
+            List<Object[]> objects = query.getResultList();
+            List<NotificationDTO> items = objects.stream().map(x -> {
+                NotificationDTO dto = new NotificationDTO();
+                dto.setId(ConversionUtils.toUUID(x[0]));
+                dto.setUserId(ConversionUtils.toUUID(x[1]));
+                dto.setTitle(ConversionUtils.toString(x[2]));
+                dto.setBody(ConversionUtils.toString(x[3]));
+                dto.setData(ConversionUtils.toString(x[4]));
+                dto.setTopic(ConversionUtils.toString(x[5]));
+                dto.setRetryCount(ConversionUtils.toInteger(x[6]));
+                dto.setType(ConversionUtils.toString(x[7]));
+                dto.setStatus(ConversionUtils.toString(x[8]));
+                dto.setSendStatus(ConversionUtils.toString(x[9]));
+                dto.setCreatedAt(DateUtils.toInstant(x[10]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[11]));
+                return dto;
+            }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);
         }
         return result;

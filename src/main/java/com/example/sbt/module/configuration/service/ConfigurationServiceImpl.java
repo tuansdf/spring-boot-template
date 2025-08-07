@@ -107,10 +107,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public String findValueByCode(String code) {
         ConfigurationKV result = findOneCachedByCode(code);
-        if (result == null) {
-            return null;
-        }
-        if (!ConversionUtils.safeToBoolean(result.getIsEnabled())) {
+        if (result == null || !ConversionUtils.safeToBoolean(result.getIsEnabled())) {
             return null;
         }
         return ConversionUtils.safeToString(result.getValue());
@@ -129,10 +126,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     @Override
     public String findPublicValueByCode(String code) {
         ConfigurationKV result = findOneCachedByCode(code);
-        if (result == null) {
-            return null;
-        }
-        if (!ConversionUtils.safeToBoolean(result.getIsEnabled()) || !ConversionUtils.safeToBoolean(result.getIsPublic())) {
+        if (result == null || !ConversionUtils.safeToBoolean(result.getIsEnabled()) || !ConversionUtils.safeToBoolean(result.getIsPublic())) {
             return null;
         }
         return ConversionUtils.safeToString(result.getValue());
