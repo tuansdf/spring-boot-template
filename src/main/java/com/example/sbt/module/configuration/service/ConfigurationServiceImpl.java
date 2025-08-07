@@ -202,8 +202,11 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                 dto.setId(ConversionUtils.toUUID(x[0]));
                 dto.setCode(ConversionUtils.toString(x[1]));
                 dto.setValue(ConversionUtils.toString(x[2]));
-                dto.setCreatedAt(DateUtils.toInstant(x[3]));
-                dto.setUpdatedAt(DateUtils.toInstant(x[4]));
+                dto.setDescription(ConversionUtils.toString(x[3]));
+                dto.setIsEnabled(ConversionUtils.toBoolean(x[4]));
+                dto.setIsPublic(ConversionUtils.toBoolean(x[5]));
+                dto.setCreatedAt(DateUtils.toInstant(x[6]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[7]));
                 return dto;
             }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);

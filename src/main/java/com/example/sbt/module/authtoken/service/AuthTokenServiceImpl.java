@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -81,7 +82,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
         if (authTokenDTO == null) {
             return null;
         }
-        if (authTokenDTO.getValidFrom().isAfter(jwtPayload.getIssuedAt())) {
+        if (authTokenDTO.getValidFrom().truncatedTo(ChronoUnit.SECONDS).isAfter(jwtPayload.getIssuedAt())) {
             return null;
         }
         return authTokenDTO;

@@ -143,7 +143,7 @@ public class AuthServiceImpl implements AuthService {
         user = userRepository.save(user);
 
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
-        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
+        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail(), "");
         emailService.sendActivateAccountEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
     }
 
