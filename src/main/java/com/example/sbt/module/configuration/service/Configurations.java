@@ -5,6 +5,9 @@ import com.example.sbt.shared.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Component
 public class Configurations {
@@ -32,5 +35,17 @@ public class Configurations {
         Integer result = ConversionUtils.toInteger(configurationService.findValueByCode(ConfigurationCode.LOGIN_TIME_WINDOW));
         if (result == null) return null;
         return Math.abs(result);
+    }
+
+    public List<String> getLoginEmailDomains() {
+        String result = ConversionUtils.toString(configurationService.findValueByCode(ConfigurationCode.LOGIN_EMAIL_DOMAINS));
+        if (result == null) return null;
+        return Arrays.stream(result.split(";")).toList();
+    }
+
+    public List<String> getRegisterEmailDomains() {
+        String result = ConversionUtils.toString(configurationService.findValueByCode(ConfigurationCode.REGISTER_EMAIL_DOMAINS));
+        if (result == null) return null;
+        return Arrays.stream(result.split(";")).toList();
     }
 }

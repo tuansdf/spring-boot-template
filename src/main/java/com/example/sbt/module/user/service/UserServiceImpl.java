@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
         StringBuilder builder = new StringBuilder();
         if (!isCount) {
             builder.append(" select ");
-            builder.append(" u.id, u.username, u.email, u.name, ");
+            builder.append(" u.id, u.username, u.email, u.name, u.created_at, u.updated_at, ");
             if (requestDTO.isDetail()) {
                 builder.append(" u.is_enabled, u.is_verified, u.is_otp_enabled, ");
                 builder.append(" string_agg(distinct(r.code), ',') as roles, ");
@@ -79,7 +79,6 @@ public class UserServiceImpl implements UserService {
                 builder.append(" null as is_enabled, null as is_verified, u.is_otp_enabled, ");
                 builder.append(" null as roles, null as permissions, ");
             }
-            builder.append(" u.created_at, u.updated_at ");
             builder.append(" from _user u ");
             builder.append(" inner join ( ");
         }
@@ -168,15 +167,15 @@ public class UserServiceImpl implements UserService {
                 dto.setUsername(ConversionUtils.toString(x[1]));
                 dto.setEmail(ConversionUtils.toString(x[2]));
                 dto.setName(ConversionUtils.toString(x[3]));
+                dto.setCreatedAt(DateUtils.toInstant(x[4]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[5]));
                 if (requestDTO.isDetail()) {
-                    dto.setIsEnabled(ConversionUtils.toBoolean(x[4]));
-                    dto.setIsVerified(ConversionUtils.toBoolean(x[5]));
-                    dto.setIsOtpEnabled(ConversionUtils.toBoolean(x[6]));
-                    dto.setRoleCodes(ConversionUtils.toString(x[7]));
-                    dto.setPermissionCodes(ConversionUtils.toString(x[8]));
+                    dto.setIsEnabled(ConversionUtils.toBoolean(x[6]));
+                    dto.setIsVerified(ConversionUtils.toBoolean(x[7]));
+                    dto.setIsOtpEnabled(ConversionUtils.toBoolean(x[8]));
+                    dto.setRoleCodes(ConversionUtils.toString(x[9]));
+                    dto.setPermissionCodes(ConversionUtils.toString(x[10]));
                 }
-                dto.setCreatedAt(DateUtils.toInstant(x[9]));
-                dto.setUpdatedAt(DateUtils.toInstant(x[10]));
                 return dto;
             }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);

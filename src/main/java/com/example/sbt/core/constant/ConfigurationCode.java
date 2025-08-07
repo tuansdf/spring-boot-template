@@ -6,4 +6,6 @@ public class ConfigurationCode {
     public static final String IP_WHITELIST = "IP_WHITELIST";
     public static final String LOGIN_MAX_ATTEMPTS = "LOGIN_MAX_ATTEMPTS";
     public static final String LOGIN_TIME_WINDOW = "LOGIN_TIME_WINDOW";
+    public static final String REGISTER_EMAIL_DOMAINS = "REGISTER_EMAIL_DOMAINS";
+    public static final String LOGIN_EMAIL_DOMAINS = "LOGIN_EMAIL_DOMAINS";
 }

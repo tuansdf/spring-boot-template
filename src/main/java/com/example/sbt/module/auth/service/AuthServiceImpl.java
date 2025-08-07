@@ -102,6 +102,14 @@ public class AuthServiceImpl implements AuthService {
             throw new NoRollbackException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
 
+        List<String> validDomains = configurations.getLoginEmailDomains();
+        if (validDomains != null) {
+            String emailDomain = userDTO.getEmail().substring(userDTO.getEmail().lastIndexOf("@") + 1);
+            if (!validDomains.contains(emailDomain)) {
+                throw new CustomException(localeHelper.getMessage("auth.error.invalid_domains"), HttpStatus.BAD_REQUEST);
+            }
+        }
+
         loginAuditService.add(userDTO.getId(), true);
 
         List<String> permissions = permissionService.findAllCodesByUserId(userDTO.getId());
@@ -124,7 +132,15 @@ public class AuthServiceImpl implements AuthService {
 
         Boolean isRegistrationEnabled = configurations.isRegistrationEnabled();
         if (isRegistrationEnabled != null && !isRegistrationEnabled) {
-            throw new CustomException(localeHelper.getMessage("auth.error.registration_disabled"), HttpStatus.UNAUTHORIZED);
+            throw new CustomException(localeHelper.getMessage("auth.error.registration_disabled"), HttpStatus.BAD_REQUEST);
+        }
+
+        List<String> validDomains = configurations.getRegisterEmailDomains();
+        if (validDomains != null) {
+            String emailDomain = requestDTO.getEmail().substring(requestDTO.getEmail().lastIndexOf("@") + 1);
+            if (!validDomains.contains(emailDomain)) {
+                throw new CustomException(localeHelper.getMessage("auth.error.invalid_domains"), HttpStatus.BAD_REQUEST);
+            }
         }
 
         boolean isUserExisted = userRepository.existsByUsernameOrEmail(requestDTO.getUsername(), requestDTO.getEmail());
