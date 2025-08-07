@@ -37,28 +37,6 @@ public class UserDTO {
     private List<String> roleCodes;
     private List<String> permissionCodes;
 
-    // USER_SEARCH_CONTACT
-    public UserDTO(UUID id, String username) {
-        this.id = id;
-        this.username = username;
-    }
-
-    // USER_SEARCH
-    public UserDTO(UUID id, String username, String email, String name, Boolean isEnabled, Boolean isVerified, Boolean isOtpEnabled,
-                   Instant createdAt, Instant updatedAt, String roleCodes, String permissionCodes) {
-        this.id = id;
-        this.username = username;
-        this.email = email;
-        this.name = name;
-        this.isEnabled = isEnabled;
-        this.isVerified = isVerified;
-        this.isOtpEnabled = isOtpEnabled;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        setRoleCodes(roleCodes);
-        setPermissionCodes(permissionCodes);
-    }
-
     public void setRoleCodes(List<String> roleCodes) {
         this.roleCodes = roleCodes;
     }

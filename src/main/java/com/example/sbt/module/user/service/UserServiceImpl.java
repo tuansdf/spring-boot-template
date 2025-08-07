@@ -1,7 +1,6 @@
 package com.example.sbt.module.user.service;
 
 import com.example.sbt.core.constant.PermissionCode;
-import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.AuthHelper;
@@ -38,7 +37,11 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -63,10 +66,13 @@ public class UserServiceImpl implements UserService {
         requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("username", "email")));
         requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
-        Map<String, Object> params = new HashMap<>();
+        List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         if (!isCount) {
-            builder.append(" select u.id, u.username, u.email, u.name, u.is_enabled, u.is_verified, u.is_otp_enabled, u.created_at, u.updated_at, ");
+            builder.append(" select ");
+            builder.append(" u.id, u.username, u.email, u.name, ");
+            builder.append(" u.is_enabled, u.is_verified, u.is_otp_enabled, ");
+            builder.append(" u.created_at, u.updated_at, ");
             builder.append(" string_agg(distinct(r.code), ',') as roles, ");
             builder.append(" string_agg(distinct(p.code), ',') as permissions ");
             builder.append(" from _user u ");
@@ -81,44 +87,44 @@ public class UserServiceImpl implements UserService {
             builder.append(" from _user u ");
             builder.append(" where 1=1 ");
             if (requestDTO.getId() != null) {
-                builder.append(" and u.id = :id ");
-                params.put("id", requestDTO.getId());
+                builder.append(" and u.id = ? ");
+                params.add(requestDTO.getId());
             }
             if (StringUtils.isNotBlank(requestDTO.getUsername())) {
-                builder.append(" and u.username = :username ");
-                params.put("username", requestDTO.getUsername());
+                builder.append(" and u.username = ? ");
+                params.add(requestDTO.getUsername());
             }
             if (StringUtils.isNotBlank(requestDTO.getEmail())) {
-                builder.append(" and u.email = :email ");
-                params.put("email", requestDTO.getEmail());
+                builder.append(" and u.email = ? ");
+                params.add(requestDTO.getEmail());
             }
             if (requestDTO.getIdFrom() != null) {
-                builder.append(" and u.id > :idFrom ");
-                params.put("idFrom", requestDTO.getIdFrom());
+                builder.append(" and u.id > ? ");
+                params.add(requestDTO.getIdFrom());
             }
             if (StringUtils.isNotBlank(requestDTO.getUsernameFrom())) {
-                builder.append(" and u.username > :usernameFrom ");
-                params.put("usernameFrom", requestDTO.getUsernameFrom());
+                builder.append(" and u.username > ? ");
+                params.add(requestDTO.getUsernameFrom());
             }
             if (StringUtils.isNotBlank(requestDTO.getEmailFrom())) {
-                builder.append(" and u.email > :emailFrom ");
-                params.put("emailFrom", requestDTO.getEmailFrom());
+                builder.append(" and u.email > ? ");
+                params.add(requestDTO.getEmailFrom());
             }
             if (requestDTO.getIsEnabled() != null) {
-                builder.append(" and u.is_enabled = :isEnabled ");
-                params.put("isEnabled", requestDTO.getIsEnabled());
+                builder.append(" and u.is_enabled = ? ");
+                params.add(requestDTO.getIsEnabled());
             }
             if (requestDTO.getIsVerified() != null) {
-                builder.append(" and u.is_verified = :isVerified ");
-                params.put("isVerified", requestDTO.getIsVerified());
+                builder.append(" and u.is_verified = ? ");
+                params.add(requestDTO.getIsVerified());
             }
             if (requestDTO.getCreatedAtFrom() != null) {
-                builder.append(" and u.created_at >= :createdAtFrom ");
-                params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+                builder.append(" and u.created_at >= ? ");
+                params.add(requestDTO.getCreatedAtFrom());
             }
             if (requestDTO.getCreatedAtTo() != null) {
-                builder.append(" and u.created_at < :createdAtTo ");
-                params.put("createdAtTo", requestDTO.getCreatedAtTo());
+                builder.append(" and u.created_at < ? ");
+                params.add(requestDTO.getCreatedAtTo());
             }
             if (!isCount) {
                 builder.append(" order by ");
@@ -126,7 +132,7 @@ public class UserServiceImpl implements UserService {
                 builder.append(" u.id asc ");
             }
             if (!isAll) {
-                builder.append(" limit :limit offset :offset ");
+                builder.append(" limit ? offset ? ");
                 sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
             }
         }
@@ -148,9 +154,24 @@ public class UserServiceImpl implements UserService {
             result.setTotalItems(count);
             result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.USER_SEARCH);
+            Query query = entityManager.createNativeQuery(builder.toString());
             sqlHelper.setParams(query, params);
-            List<UserDTO> items = query.getResultList();
+            List<Object[]> objects = query.getResultList();
+            List<UserDTO> items = objects.stream().map(x -> {
+                UserDTO dto = new UserDTO();
+                dto.setId(ConversionUtils.toUUID(x[0]));
+                dto.setUsername(ConversionUtils.toString(x[1]));
+                dto.setEmail(ConversionUtils.toString(x[2]));
+                dto.setName(ConversionUtils.toString(x[3]));
+                dto.setIsEnabled(ConversionUtils.toBoolean(x[4]));
+                dto.setIsVerified(ConversionUtils.toBoolean(x[5]));
+                dto.setIsOtpEnabled(ConversionUtils.toBoolean(x[6]));
+                dto.setCreatedAt(DateUtils.toInstant(x[7]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[8]));
+                dto.setRoleCodes(ConversionUtils.toString(x[9]));
+                dto.setPermissionCodes(ConversionUtils.toString(x[10]));
+                return dto;
+            }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);
         }
         return result;

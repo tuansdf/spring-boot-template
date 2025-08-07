@@ -3,6 +3,7 @@ package com.example.sbt.core.helper;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.shared.util.ConversionUtils;
 import jakarta.persistence.Query;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,15 @@ public class SQLHelper {
         }
     }
 
+    public void setParams(Query query, List<Object> params) {
+        if (query == null || CollectionUtils.isEmpty(params)) return;
+        int index = 1;
+        for (Object item : params) {
+            query.setParameter(index, item);
+            index++;
+        }
+    }
+
     public String toLimitOffset(long pageNumber, long pageSize) {
         return " limit " + pageSize + " offset " + ((pageNumber - 1) * pageSize) + " ";
     }
@@ -40,6 +50,12 @@ public class SQLHelper {
         if (params == null) return;
         params.put("limit", pageSize);
         params.put("offset", ((pageNumber - 1) * pageSize));
+    }
+
+    public void setLimitOffset(List<Object> params, long pageNumber, long pageSize) {
+        if (params == null) return;
+        params.add(pageSize);
+        params.add((pageNumber - 1) * pageSize);
     }
 
     public long toPages(long totalItems, long pageSize) {
