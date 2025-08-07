@@ -1,6 +1,5 @@
 package com.example.sbt.module.configuration.service;
 
-import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.SQLHelper;
@@ -12,6 +11,7 @@ import com.example.sbt.module.configuration.entity.ConfigurationKV;
 import com.example.sbt.module.configuration.repository.ConfigurationKVRepository;
 import com.example.sbt.module.configuration.repository.ConfigurationRepository;
 import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -22,10 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -161,38 +159,38 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     private PaginationData<ConfigurationDTO> executeSearch(SearchConfigurationRequestDTO requestDTO, boolean isCount) {
         PaginationData<ConfigurationDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
-        Map<String, Object> params = new HashMap<>();
+        List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select c.* ");
+            builder.append(" select c.id, c.code, c.value, c.description, c.is_enabled, c.is_public, c.created_at, c.updated_at ");
         }
         builder.append(" from configuration c ");
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
-            builder.append(" and c.code ilike :code ");
-            params.put("code", sqlHelper.escapeLikePattern(requestDTO.getCode()) + "%");
+            builder.append(" and c.code ilike ? ");
+            params.add(sqlHelper.escapeLikePattern(requestDTO.getCode()) + "%");
         }
         if (requestDTO.getIsEnabled() != null) {
-            builder.append(" and c.is_enabled = :isEnabled ");
-            params.put("isEnabled", requestDTO.getIsEnabled());
+            builder.append(" and c.is_enabled = ? ");
+            params.add(requestDTO.getIsEnabled());
         }
         if (requestDTO.getIsPublic() != null) {
-            builder.append(" and c.is_public = :isPublic ");
-            params.put("isPublic", requestDTO.getIsPublic());
+            builder.append(" and c.is_public = ? ");
+            params.add(requestDTO.getIsPublic());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
-            builder.append(" and c.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+            builder.append(" and c.created_at >= ? ");
+            params.add(requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and c.created_at < :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo());
+            builder.append(" and c.created_at < ? ");
+            params.add(requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by c.code asc, c.id asc ");
-            builder.append(" limit :limit offset :offset ");
+            builder.append(" limit ? offset ? ");
             sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
@@ -202,9 +200,18 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             result.setTotalItems(count);
             result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.CONFIGURATION_SEARCH);
+            Query query = entityManager.createNativeQuery(builder.toString());
             sqlHelper.setParams(query, params);
-            List<ConfigurationDTO> items = query.getResultList();
+            List<Object[]> objects = query.getResultList();
+            List<ConfigurationDTO> items = objects.stream().map(x -> {
+                ConfigurationDTO dto = new ConfigurationDTO();
+                dto.setId(ConversionUtils.toUUID(x[0]));
+                dto.setCode(ConversionUtils.toString(x[1]));
+                dto.setValue(ConversionUtils.toString(x[2]));
+                dto.setCreatedAt(DateUtils.toInstant(x[3]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[4]));
+                return dto;
+            }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);
         }
         return result;

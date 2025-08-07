@@ -1,6 +1,5 @@
 package com.example.sbt.module.permission.service;
 
-import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.SQLHelper;
@@ -12,6 +11,7 @@ import com.example.sbt.module.permission.repository.PermissionRepository;
 import com.example.sbt.module.role.entity.RolePermission;
 import com.example.sbt.module.role.repository.RolePermissionRepository;
 import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -155,30 +155,30 @@ public class PermissionServiceImpl implements PermissionService {
 
     private PaginationData<PermissionDTO> executeSearch(SearchPermissionRequestDTO requestDTO, boolean isCount) {
         PaginationData<PermissionDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
-        Map<String, Object> params = new HashMap<>();
+        List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select p.* ");
+            builder.append(" select p.id, p.code, p.name, p.created_at, p.updated_at ");
         }
         builder.append(" from permission p ");
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
-            builder.append(" and p.code = :code ");
-            params.put("code", requestDTO.getCode().trim());
+            builder.append(" and p.code = ? ");
+            params.add(requestDTO.getCode().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
-            builder.append(" and p.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+            builder.append(" and p.created_at >= ? ");
+            params.add(requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and p.created_at < :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo());
+            builder.append(" and p.created_at < ? ");
+            params.add(requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by p.code asc, p.id asc ");
-            builder.append(" limit :limit offset :offset ");
+            builder.append(" limit ? offset ? ");
             sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
@@ -188,9 +188,18 @@ public class PermissionServiceImpl implements PermissionService {
             result.setTotalItems(count);
             result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.PERMISSION_SEARCH);
+            Query query = entityManager.createNativeQuery(builder.toString());
             sqlHelper.setParams(query, params);
-            List<PermissionDTO> items = query.getResultList();
+            List<Object[]> objects = query.getResultList();
+            List<PermissionDTO> items = objects.stream().map(x -> {
+                PermissionDTO dto = new PermissionDTO();
+                dto.setId(ConversionUtils.toUUID(x[0]));
+                dto.setCode(ConversionUtils.toString(x[1]));
+                dto.setName(ConversionUtils.toString(x[2]));
+                dto.setCreatedAt(DateUtils.toInstant(x[3]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[4]));
+                return dto;
+            }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);
         }
         return result;

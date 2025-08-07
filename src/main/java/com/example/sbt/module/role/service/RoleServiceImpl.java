@@ -1,6 +1,5 @@
 package com.example.sbt.module.role.service;
 
-import com.example.sbt.core.constant.ResultSetName;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.SQLHelper;
@@ -13,6 +12,7 @@ import com.example.sbt.module.role.repository.RoleRepository;
 import com.example.sbt.module.user.entity.UserRole;
 import com.example.sbt.module.user.repository.UserRoleRepository;
 import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.shared.util.DateUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -136,30 +136,30 @@ public class RoleServiceImpl implements RoleService {
 
     private PaginationData<RoleDTO> executeSearch(SearchRoleRequestDTO requestDTO, boolean isCount) {
         PaginationData<RoleDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
-        Map<String, Object> params = new HashMap<>();
+        List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         if (isCount) {
             builder.append(" select count(*) ");
         } else {
-            builder.append(" select r.* ");
+            builder.append(" select r.id, r.code, r.name, r.description, r.created_at, r.updated_at ");
         }
         builder.append(" from role r ");
         builder.append(" where 1=1 ");
         if (StringUtils.isNotBlank(requestDTO.getCode())) {
-            builder.append(" and r.code = :code ");
-            params.put("code", requestDTO.getCode().trim());
+            builder.append(" and r.code = ? ");
+            params.add(requestDTO.getCode().trim());
         }
         if (requestDTO.getCreatedAtFrom() != null) {
-            builder.append(" and r.created_at >= :createdAtFrom ");
-            params.put("createdAtFrom", requestDTO.getCreatedAtFrom());
+            builder.append(" and r.created_at >= ? ");
+            params.add(requestDTO.getCreatedAtFrom());
         }
         if (requestDTO.getCreatedAtTo() != null) {
-            builder.append(" and r.created_at < :createdAtTo ");
-            params.put("createdAtTo", requestDTO.getCreatedAtTo());
+            builder.append(" and r.created_at < ? ");
+            params.add(requestDTO.getCreatedAtTo());
         }
         if (!isCount) {
             builder.append(" order by r.code asc, r.id asc ");
-            builder.append(" limit :limit offset :offset ");
+            builder.append(" limit ? offset ? ");
             sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
         }
         if (isCount) {
@@ -169,9 +169,19 @@ public class RoleServiceImpl implements RoleService {
             result.setTotalItems(count);
             result.setTotalPages(sqlHelper.toPages(count, result.getPageSize()));
         } else {
-            Query query = entityManager.createNativeQuery(builder.toString(), ResultSetName.ROLE_SEARCH);
+            Query query = entityManager.createNativeQuery(builder.toString());
             sqlHelper.setParams(query, params);
-            List<RoleDTO> items = query.getResultList();
+            List<Object[]> objects = query.getResultList();
+            List<RoleDTO> items = objects.stream().map(x -> {
+                RoleDTO dto = new RoleDTO();
+                dto.setId(ConversionUtils.toUUID(x[0]));
+                dto.setCode(ConversionUtils.toString(x[1]));
+                dto.setName(ConversionUtils.toString(x[2]));
+                dto.setDescription(ConversionUtils.toString(x[3]));
+                dto.setCreatedAt(DateUtils.toInstant(x[4]));
+                dto.setUpdatedAt(DateUtils.toInstant(x[5]));
+                return dto;
+            }).collect(Collectors.toCollection(ArrayList::new));
             result.setItems(items);
         }
         return result;
