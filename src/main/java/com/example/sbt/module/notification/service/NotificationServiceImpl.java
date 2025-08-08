@@ -115,11 +115,15 @@ public class NotificationServiceImpl implements NotificationService {
         return executeSearch(requestDTO, true).getTotalItems();
     }
 
+    private List<NotificationDTO> executeSearchToList(SearchNotificationRequestDTO requestDTO) {
+        return executeSearch(requestDTO, false).getItems();
+    }
+
     @Override
     public PaginationData<NotificationDTO> search(SearchNotificationRequestDTO requestDTO, boolean isCount) {
         PaginationData<NotificationDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
-            result.setItems(executeSearch(requestDTO, false).getItems());
+            result.setItems(executeSearchToList(requestDTO));
         }
         return result;
     }

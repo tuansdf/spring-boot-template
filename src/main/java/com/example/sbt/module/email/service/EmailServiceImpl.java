@@ -119,11 +119,15 @@ public class EmailServiceImpl implements EmailService {
         return executeSearch(requestDTO, true).getTotalItems();
     }
 
+    private List<EmailDTO> executeSearchToList(SearchEmailRequestDTO requestDTO) {
+        return executeSearch(requestDTO, false).getItems();
+    }
+
     @Override
     public PaginationData<EmailDTO> search(SearchEmailRequestDTO requestDTO, boolean isCount) {
         PaginationData<EmailDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
-            result.setItems(executeSearch(requestDTO, false).getItems());
+            result.setItems(executeSearchToList(requestDTO));
         }
         return result;
     }
