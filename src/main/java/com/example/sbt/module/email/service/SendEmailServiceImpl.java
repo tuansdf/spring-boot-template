@@ -1,8 +1,8 @@
 package com.example.sbt.module.email.service;
 
+import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.module.email.dto.SendEmailRequest;
 import com.example.sbt.shared.util.ConversionUtils;
-import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,22 +18,28 @@ import org.springframework.stereotype.Service;
 @Transactional(rollbackOn = Exception.class)
 public class SendEmailServiceImpl implements SendEmailService {
     private final JavaMailSender mailSender;
+    private final ApplicationProperties applicationProperties;
 
     @Override
-    public void send(SendEmailRequest request) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+    public void send(SendEmailRequest request) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setTo(request.getToEmail());
-        helper.setSubject(request.getSubject());
-        helper.setText(request.getBody(), ConversionUtils.safeToBoolean(request.getIsHtml()));
+            helper.setTo(request.getToEmail());
+            helper.setSubject(request.getSubject());
+            helper.setText(request.getBody(), ConversionUtils.safeToBoolean(request.getIsHtml()));
+            helper.setFrom(applicationProperties.getMailFrom(), applicationProperties.getMailFromName());
 
-        mailSender.send(message);
+            mailSender.send(message);
+        } catch (Exception e) {
+            log.error("SendEmailService.send ", e);
+        }
     }
 
     @Async
     @Override
-    public void sendAsync(SendEmailRequest request) throws MessagingException {
+    public void sendAsync(SendEmailRequest request) {
         send(request);
     }
 }

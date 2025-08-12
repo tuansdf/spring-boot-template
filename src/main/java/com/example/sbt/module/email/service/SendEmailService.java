@@ -5,8 +5,8 @@ import jakarta.mail.MessagingException;
 import org.springframework.scheduling.annotation.Async;
 
 public interface SendEmailService {
-    void send(SendEmailRequest request) throws MessagingException;
+    void send(SendEmailRequest request);
 
     @Async
-    void sendAsync(SendEmailRequest request) throws MessagingException;
+    void sendAsync(SendEmailRequest request);
 }

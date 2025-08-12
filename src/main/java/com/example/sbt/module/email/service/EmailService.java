@@ -17,7 +17,7 @@ public interface EmailService {
 
     EmailDTO triggerSend(EmailDTO emailDTO);
 
-    void executeSend(EmailDTO emailDTO) throws MessagingException;
+    void executeSend(EmailDTO emailDTO);
 
     EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID userId);
 

@@ -18,7 +18,6 @@ import com.example.sbt.module.email.entity.Email;
 import com.example.sbt.module.email.repository.EmailRepository;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.DateUtils;
-import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -165,7 +164,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void executeSend(EmailDTO email) throws MessagingException {
+    public void executeSend(EmailDTO email) {
         if (email == null || !CommonStatus.PENDING.equals(email.getSendStatus())) return;
         sendEmailService.send(commonMapper.toSendRequest(email));
         email.setStatus(CommonStatus.SENT);

@@ -5,6 +5,8 @@ import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.exception.ValidationException;
 import com.example.sbt.core.helper.LocaleHelper;
+import com.example.sbt.module.email.dto.SendEmailRequest;
+import com.example.sbt.module.email.service.SendEmailService;
 import com.example.sbt.module.file.service.FileObjectService;
 import com.example.sbt.module.file.service.UploadFileService;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
@@ -15,6 +17,7 @@ import com.example.sbt.shared.util.*;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+import jakarta.mail.MessagingException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.ListUtils;
@@ -49,6 +52,7 @@ public class TestController {
     private final SendNotificationService sendNotificationService;
     private final FileObjectService fileObjectService;
     private final UploadFileService uploadFileService;
+    private final SendEmailService sendEmailService;
 
     @GetMapping("/health")
     public String check() {
@@ -383,6 +387,12 @@ public class TestController {
         for (int i = 0; i < 10_000; i++) {
             FileUtils.validateFileType(file, fileTypes);
         }
+        return "OK";
+    }
+
+    @GetMapping(value = "/mail/send", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object sendMail(@RequestBody SendEmailRequest body) {
+        sendEmailService.sendAsync(body);
         return "OK";
     }
 
