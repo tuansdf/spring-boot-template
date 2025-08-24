@@ -1,4 +1,4 @@
-package com.example.sbt.module.auth.dto;
+package com.example.sbt.module.email.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DisableOtpRequestDTO {
-    private String otpCode;
-    private String password;
+public class EmailStatsResponse {
+    private Long totalUnread;
+    private Long totalRead;
 }

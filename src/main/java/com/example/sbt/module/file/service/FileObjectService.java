@@ -3,7 +3,7 @@ package com.example.sbt.module.file.service;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
-import com.example.sbt.module.file.dto.SearchFileRequestDTO;
+import com.example.sbt.module.file.dto.SearchFileRequest;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,5 +32,5 @@ public interface FileObjectService {
     @Async
     void deleteExpiredPendingUploadAsync();
 
-    PaginationData<FileObjectDTO> search(SearchFileRequestDTO requestDTO, boolean isCount);
+    PaginationData<FileObjectDTO> search(SearchFileRequest requestDTO, boolean isCount);
 }

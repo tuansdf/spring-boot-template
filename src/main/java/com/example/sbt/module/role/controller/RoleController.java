@@ -4,7 +4,7 @@ import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.role.dto.RoleDTO;
-import com.example.sbt.module.role.dto.SearchRoleRequestDTO;
+import com.example.sbt.module.role.dto.SearchRoleRequest;
 import com.example.sbt.module.role.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ public class RoleController {
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count
     ) {
-        var requestDTO = SearchRoleRequestDTO.builder()
+        var requestDTO = SearchRoleRequest.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .code(code)

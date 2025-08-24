@@ -2,7 +2,7 @@ package com.example.sbt.module.permission.service;
 
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.permission.dto.PermissionDTO;
-import com.example.sbt.module.permission.dto.SearchPermissionRequestDTO;
+import com.example.sbt.module.permission.dto.SearchPermissionRequest;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,5 +30,5 @@ public interface PermissionService {
 
     List<PermissionDTO> findAllByUserId(UUID userId);
 
-    PaginationData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount);
+    PaginationData<PermissionDTO> search(SearchPermissionRequest requestDTO, boolean isCount);
 }

@@ -14,7 +14,7 @@ import com.example.sbt.module.backgroundtask.service.BackgroundTaskService;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.service.FileObjectService;
 import com.example.sbt.module.role.service.RoleService;
-import com.example.sbt.module.user.dto.SearchUserRequestDTO;
+import com.example.sbt.module.user.dto.SearchUserRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.mapper.UserMapper;
@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     private final ExportUserEventPublisher exportUserEventPublisher;
     private final BackgroundTaskService backgroundTaskService;
 
-    private PaginationData<UserDTO> executeSearch(SearchUserRequestDTO requestDTO, boolean isCount, boolean isAll) {
+    private PaginationData<UserDTO> executeSearch(SearchUserRequest requestDTO, boolean isCount, boolean isAll) {
         requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("username", "email")));
         requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    private List<UserDTO> executeSearchToList(SearchUserRequestDTO requestDTO) {
+    private List<UserDTO> executeSearchToList(SearchUserRequest requestDTO) {
         PaginationData<UserDTO> result = executeSearch(requestDTO, false, false);
         if (CollectionUtils.isEmpty(result.getItems())) {
             return new ArrayList<>();
@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PaginationData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount) {
+    public PaginationData<UserDTO> search(SearchUserRequest requestDTO, boolean isCount) {
         PaginationData<UserDTO> result = executeSearch(requestDTO, true, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearchToList(requestDTO));
@@ -243,7 +243,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneById(UUID userId) {
         if (userId == null) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().id(userId).isDetail(true).build());
+        List<UserDTO> result = executeSearchToList(SearchUserRequest.builder().id(userId).isDetail(true).build());
         if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
@@ -260,7 +260,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneByUsername(String username) {
         if (StringUtils.isBlank(username)) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().username(username).isDetail(true).build());
+        List<UserDTO> result = executeSearchToList(SearchUserRequest.builder().username(username).isDetail(true).build());
         if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
@@ -268,13 +268,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneByEmail(String email) {
         if (StringUtils.isBlank(email)) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequestDTO.builder().email(email).isDetail(true).build());
+        List<UserDTO> result = executeSearchToList(SearchUserRequest.builder().email(email).isDetail(true).build());
         if (CollectionUtils.isEmpty(result)) return null;
         return result.getFirst();
     }
 
     @Override
-    public void triggerExport(SearchUserRequestDTO requestDTO) {
+    public void triggerExport(SearchUserRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -293,7 +293,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void handleExportTask(UUID backgroundTaskId, SearchUserRequestDTO requestDTO) {
+    public void handleExportTask(UUID backgroundTaskId, SearchUserRequest requestDTO) {
         try {
             String cacheKey = commonHelper.createCacheKey(requestDTO);
             boolean succeeded = backgroundTaskService.completeByCacheKeyIfExist(cacheKey, BackgroundTaskType.EXPORT_USER, backgroundTaskId);
@@ -312,7 +312,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private FileObjectDTO export(SearchUserRequestDTO requestDTO) throws IOException {
+    private FileObjectDTO export(SearchUserRequest requestDTO) throws IOException {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }

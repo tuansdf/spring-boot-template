@@ -4,7 +4,7 @@ import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
-import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
+import com.example.sbt.module.configuration.dto.SearchConfigurationRequest;
 import com.example.sbt.module.configuration.service.ConfigurationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class ConfigurationController {
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count
     ) {
-        var requestDTO = SearchConfigurationRequestDTO.builder()
+        var requestDTO = SearchConfigurationRequest.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .code(code)

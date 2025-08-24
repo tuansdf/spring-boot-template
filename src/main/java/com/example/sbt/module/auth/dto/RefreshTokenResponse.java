@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RequestActivateAccountRequestDTO {
-    private String email;
+public class RefreshTokenResponse {
+    private String accessToken;
 }

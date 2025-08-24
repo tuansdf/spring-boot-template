@@ -4,8 +4,8 @@ import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.module.notification.dto.NotificationDTO;
-import com.example.sbt.module.notification.dto.NotificationStatsDTO;
-import com.example.sbt.module.notification.dto.SearchNotificationRequestDTO;
+import com.example.sbt.module.notification.dto.NotificationStatsResponse;
+import com.example.sbt.module.notification.dto.SearchNotificationRequest;
 import com.example.sbt.module.notification.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class NotificationController {
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count
     ) {
-        var requestDTO = SearchNotificationRequestDTO.builder()
+        var requestDTO = SearchNotificationRequest.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .userId(RequestContextHolder.get().getUserId())
@@ -52,7 +52,7 @@ public class NotificationController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<CommonResponse<NotificationStatsDTO>> getStats() {
+    public ResponseEntity<CommonResponse<NotificationStatsResponse>> getStats() {
         var result = notificationService.getStatsByUser(RequestContextHolder.get().getUserId());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }

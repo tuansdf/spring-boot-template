@@ -1,4 +1,4 @@
-package com.example.sbt.module.permission.dto;
+package com.example.sbt.module.email.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,15 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchPermissionRequestDTO {
+public class SearchEmailRequest {
     private Long pageNumber;
     private Long pageSize;
-    private String code;
+    private UUID userId;
+    private String status;
     private Instant createdAtFrom;
     private Instant createdAtTo;
 }

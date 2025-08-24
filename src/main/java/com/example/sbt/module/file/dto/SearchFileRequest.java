@@ -1,4 +1,4 @@
-package com.example.sbt.module.notification.dto;
+package com.example.sbt.module.file.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,11 +12,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchNotificationRequestDTO {
+public class SearchFileRequest {
     private Long pageNumber;
     private Long pageSize;
-    private UUID userId;
-    private String status;
+    private String fileType;
+    private Long fileSizeFrom;
+    private Long fileSizeTo;
     private Instant createdAtFrom;
     private Instant createdAtTo;
+    private String orderBy;
+    private String orderDirection;
+    private UUID createdBy;
 }

@@ -1,4 +1,4 @@
-package com.example.sbt.module.email.dto;
+package com.example.sbt.module.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EmailStatsDTO {
-    private Long totalUnread;
-    private Long totalRead;
+public class ResetPasswordRequest {
+    private String token;
+    private String newPassword;
 }

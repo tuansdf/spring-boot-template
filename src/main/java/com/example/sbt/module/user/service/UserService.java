@@ -1,7 +1,7 @@
 package com.example.sbt.module.user.service;
 
 import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.module.user.dto.SearchUserRequestDTO;
+import com.example.sbt.module.user.dto.SearchUserRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 
 import java.io.IOException;
@@ -18,9 +18,9 @@ public interface UserService {
 
     UserDTO findOneByEmail(String email);
 
-    PaginationData<UserDTO> search(SearchUserRequestDTO requestDTO, boolean isCount);
+    PaginationData<UserDTO> search(SearchUserRequest requestDTO, boolean isCount);
 
-    void triggerExport(SearchUserRequestDTO requestDTO);
+    void triggerExport(SearchUserRequest requestDTO);
 
-    void handleExportTask(UUID backgroundTaskId, SearchUserRequestDTO requestDTO) throws IOException;
+    void handleExportTask(UUID backgroundTaskId, SearchUserRequest requestDTO) throws IOException;
 }

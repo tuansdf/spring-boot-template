@@ -2,16 +2,16 @@ package com.example.sbt.module.notification.service;
 
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.notification.dto.NotificationDTO;
-import com.example.sbt.module.notification.dto.NotificationStatsDTO;
-import com.example.sbt.module.notification.dto.SearchNotificationRequestDTO;
+import com.example.sbt.module.notification.dto.NotificationStatsResponse;
+import com.example.sbt.module.notification.dto.SearchNotificationRequest;
 import com.google.firebase.messaging.FirebaseMessagingException;
 
 import java.util.UUID;
 
 public interface NotificationService {
-    PaginationData<NotificationDTO> search(SearchNotificationRequestDTO requestDTO, boolean isCount);
+    PaginationData<NotificationDTO> search(SearchNotificationRequest requestDTO, boolean isCount);
 
-    NotificationStatsDTO getStatsByUser(UUID userId);
+    NotificationStatsResponse getStatsByUser(UUID userId);
 
     NotificationDTO findOneById(UUID id);
 

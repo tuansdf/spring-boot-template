@@ -2,16 +2,15 @@ package com.example.sbt.module.email.service;
 
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.email.dto.EmailDTO;
-import com.example.sbt.module.email.dto.EmailStatsDTO;
-import com.example.sbt.module.email.dto.SearchEmailRequestDTO;
-import jakarta.mail.MessagingException;
+import com.example.sbt.module.email.dto.EmailStatsResponse;
+import com.example.sbt.module.email.dto.SearchEmailRequest;
 
 import java.util.UUID;
 
 public interface EmailService {
-    PaginationData<EmailDTO> search(SearchEmailRequestDTO requestDTO, boolean isCount);
+    PaginationData<EmailDTO> search(SearchEmailRequest requestDTO, boolean isCount);
 
-    EmailStatsDTO getStatsByUser(UUID userId);
+    EmailStatsResponse getStatsByUser(UUID userId);
 
     EmailDTO findOneById(UUID id);
 

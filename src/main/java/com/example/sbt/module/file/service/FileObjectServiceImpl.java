@@ -9,7 +9,7 @@ import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.dto.ObjectKey;
-import com.example.sbt.module.file.dto.SearchFileRequestDTO;
+import com.example.sbt.module.file.dto.SearchFileRequest;
 import com.example.sbt.module.file.entity.FileObject;
 import com.example.sbt.module.file.entity.FileObjectPending;
 import com.example.sbt.module.file.repository.FileObjectPendingRepository;
@@ -199,7 +199,7 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public PaginationData<FileObjectDTO> search(SearchFileRequestDTO requestDTO, boolean isCount) {
+    public PaginationData<FileObjectDTO> search(SearchFileRequest requestDTO, boolean isCount) {
         PaginationData<FileObjectDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
@@ -207,7 +207,7 @@ public class FileObjectServiceImpl implements FileObjectService {
         return result;
     }
 
-    private PaginationData<FileObjectDTO> executeSearch(SearchFileRequestDTO requestDTO, boolean isCount) {
+    private PaginationData<FileObjectDTO> executeSearch(SearchFileRequest requestDTO, boolean isCount) {
         requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("created_at", "file_type", "file_size")));
         requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         PaginationData<FileObjectDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());

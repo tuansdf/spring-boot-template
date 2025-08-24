@@ -5,7 +5,7 @@ import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.module.permission.service.PermissionService;
 import com.example.sbt.module.role.dto.RoleDTO;
-import com.example.sbt.module.role.dto.SearchRoleRequestDTO;
+import com.example.sbt.module.role.dto.SearchRoleRequest;
 import com.example.sbt.module.role.entity.Role;
 import com.example.sbt.module.role.mapper.RoleMapper;
 import com.example.sbt.module.role.repository.RoleRepository;
@@ -126,7 +126,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public PaginationData<RoleDTO> search(SearchRoleRequestDTO requestDTO, boolean isCount) {
+    public PaginationData<RoleDTO> search(SearchRoleRequest requestDTO, boolean isCount) {
         PaginationData<RoleDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
@@ -134,7 +134,7 @@ public class RoleServiceImpl implements RoleService {
         return result;
     }
 
-    private PaginationData<RoleDTO> executeSearch(SearchRoleRequestDTO requestDTO, boolean isCount) {
+    private PaginationData<RoleDTO> executeSearch(SearchRoleRequest requestDTO, boolean isCount) {
         PaginationData<RoleDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();

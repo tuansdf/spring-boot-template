@@ -2,7 +2,7 @@ package com.example.sbt.module.role.service;
 
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.role.dto.RoleDTO;
-import com.example.sbt.module.role.dto.SearchRoleRequestDTO;
+import com.example.sbt.module.role.dto.SearchRoleRequest;
 
 import java.util.List;
 import java.util.UUID;
@@ -24,5 +24,5 @@ public interface RoleService {
 
     List<RoleDTO> findAllByUserId(UUID userId);
 
-    PaginationData<RoleDTO> search(SearchRoleRequestDTO requestDTO, boolean isCount);
+    PaginationData<RoleDTO> search(SearchRoleRequest requestDTO, boolean isCount);
 }

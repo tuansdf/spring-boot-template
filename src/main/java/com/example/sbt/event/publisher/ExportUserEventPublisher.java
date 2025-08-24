@@ -3,7 +3,7 @@ package com.example.sbt.event.publisher;
 import com.example.sbt.core.constant.EventKey;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.event.dto.ExportUserEventRequest;
-import com.example.sbt.module.user.dto.SearchUserRequestDTO;
+import com.example.sbt.module.user.dto.SearchUserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.ObjectRecord;
@@ -19,7 +19,7 @@ import java.util.UUID;
 public class ExportUserEventPublisher {
     private final StringRedisTemplate redisTemplate;
 
-    public void publish(UUID id, SearchUserRequestDTO requestDTO) {
+    public void publish(UUID id, SearchUserRequest requestDTO) {
         ExportUserEventRequest request = ExportUserEventRequest.builder()
                 .requestContext(RequestContextHolder.get())
                 .searchRequest(requestDTO)

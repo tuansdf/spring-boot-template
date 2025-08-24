@@ -5,7 +5,7 @@ import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.core.helper.ValidationHelper;
 import com.example.sbt.module.auth.dto.*;
-import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
+import com.example.sbt.module.user.dto.ChangePasswordRequest;
 import com.example.sbt.shared.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -17,7 +17,7 @@ public class AuthValidator {
     private final LocaleHelper localeHelper;
     private final ValidationHelper validationHelper;
 
-    public void validateRegister(RegisterRequestDTO requestDTO) {
+    public void validateRegister(RegisterRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
@@ -38,7 +38,7 @@ public class AuthValidator {
         }
     }
 
-    public void validateLogin(LoginRequestDTO requestDTO) {
+    public void validateLogin(LoginRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
@@ -53,7 +53,7 @@ public class AuthValidator {
         }
     }
 
-    public void validateRequestResetPassword(RequestResetPasswordRequestDTO requestDTO) {
+    public void validateRequestResetPassword(RequestResetPasswordRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
@@ -64,7 +64,7 @@ public class AuthValidator {
         }
     }
 
-    public void validateRequestActivateAccount(RequestActivateAccountRequestDTO requestDTO) {
+    public void validateRequestActivateAccount(RequestActivateAccountRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
@@ -74,7 +74,7 @@ public class AuthValidator {
         }
     }
 
-    public void validateResetPassword(ResetPasswordRequestDTO requestDTO) {
+    public void validateResetPassword(ResetPasswordRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
@@ -87,7 +87,7 @@ public class AuthValidator {
         }
     }
 
-    public void validateChangePassword(ChangePasswordRequestDTO requestDTO) {
+    public void validateChangePassword(ChangePasswordRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }

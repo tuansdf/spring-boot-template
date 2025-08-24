@@ -12,8 +12,8 @@ import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.event.publisher.SendEmailEventPublisher;
 import com.example.sbt.module.configuration.service.Configurations;
 import com.example.sbt.module.email.dto.EmailDTO;
-import com.example.sbt.module.email.dto.EmailStatsDTO;
-import com.example.sbt.module.email.dto.SearchEmailRequestDTO;
+import com.example.sbt.module.email.dto.EmailStatsResponse;
+import com.example.sbt.module.email.dto.SearchEmailRequest;
 import com.example.sbt.module.email.entity.Email;
 import com.example.sbt.module.email.repository.EmailRepository;
 import com.example.sbt.shared.util.ConversionUtils;
@@ -48,7 +48,7 @@ public class EmailServiceImpl implements EmailService {
     private final Configurations configurations;
     private final EntityManager entityManager;
 
-    private PaginationData<EmailDTO> executeSearch(SearchEmailRequestDTO requestDTO, boolean isCount) {
+    private PaginationData<EmailDTO> executeSearch(SearchEmailRequest requestDTO, boolean isCount) {
         PaginationData<EmailDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
@@ -114,16 +114,16 @@ public class EmailServiceImpl implements EmailService {
         return result;
     }
 
-    private long executeSearchToCount(SearchEmailRequestDTO requestDTO) {
+    private long executeSearchToCount(SearchEmailRequest requestDTO) {
         return executeSearch(requestDTO, true).getTotalItems();
     }
 
-    private List<EmailDTO> executeSearchToList(SearchEmailRequestDTO requestDTO) {
+    private List<EmailDTO> executeSearchToList(SearchEmailRequest requestDTO) {
         return executeSearch(requestDTO, false).getItems();
     }
 
     @Override
-    public PaginationData<EmailDTO> search(SearchEmailRequestDTO requestDTO, boolean isCount) {
+    public PaginationData<EmailDTO> search(SearchEmailRequest requestDTO, boolean isCount) {
         PaginationData<EmailDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearchToList(requestDTO));
@@ -132,10 +132,10 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public EmailStatsDTO getStatsByUser(UUID userId) {
-        EmailStatsDTO result = new EmailStatsDTO();
-        result.setTotalRead(executeSearchToCount(SearchEmailRequestDTO.builder().userId(userId).status(CommonStatus.READ).build()));
-        result.setTotalUnread(executeSearchToCount(SearchEmailRequestDTO.builder().userId(userId).status(CommonStatus.UNREAD).build()));
+    public EmailStatsResponse getStatsByUser(UUID userId) {
+        EmailStatsResponse result = new EmailStatsResponse();
+        result.setTotalRead(executeSearchToCount(SearchEmailRequest.builder().userId(userId).status(CommonStatus.READ).build()));
+        result.setTotalUnread(executeSearchToCount(SearchEmailRequest.builder().userId(userId).status(CommonStatus.UNREAD).build()));
         return result;
     }
 

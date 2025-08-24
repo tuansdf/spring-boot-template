@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class EnableOtpRequestDTO {
-    private String password;
+public class EnableOtpResponse {
+    private String otpSecret;
 }

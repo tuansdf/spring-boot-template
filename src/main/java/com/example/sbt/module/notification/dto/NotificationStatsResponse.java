@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NotificationStatsDTO {
+public class NotificationStatsResponse {
     private Long totalUnread;
     private Long totalRead;
 }

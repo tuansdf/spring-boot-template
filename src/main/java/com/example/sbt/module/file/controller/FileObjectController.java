@@ -5,7 +5,7 @@ import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
-import com.example.sbt.module.file.dto.SearchFileRequestDTO;
+import com.example.sbt.module.file.dto.SearchFileRequest;
 import com.example.sbt.module.file.service.FileObjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public class FileObjectController {
             @RequestParam(required = false) String orderDirection,
             @RequestParam(required = false, defaultValue = "false") Boolean count
     ) {
-        var requestDTO = SearchFileRequestDTO.builder()
+        var requestDTO = SearchFileRequest.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .fileSizeFrom(fileSizeFrom)

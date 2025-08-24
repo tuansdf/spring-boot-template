@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChangePasswordRequestDTO {
+public class ChangePasswordRequest {
     private String oldPassword;
     private String newPassword;
     private String otpCode;

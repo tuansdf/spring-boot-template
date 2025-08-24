@@ -4,7 +4,7 @@ import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.module.permission.dto.PermissionDTO;
-import com.example.sbt.module.permission.dto.SearchPermissionRequestDTO;
+import com.example.sbt.module.permission.dto.SearchPermissionRequest;
 import com.example.sbt.module.permission.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,7 +59,7 @@ public class PermissionController {
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count
     ) {
-        var requestDTO = SearchPermissionRequestDTO.builder()
+        var requestDTO = SearchPermissionRequest.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .code(code)

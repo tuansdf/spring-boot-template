@@ -25,8 +25,8 @@ public class PublicAuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<AuthDTO>> login(
-            @RequestBody LoginRequestDTO requestDTO
+    public ResponseEntity<CommonResponse<LoginResponse>> login(
+            @RequestBody LoginRequest requestDTO
     ) {
         RequestContextHolder.get().setUsername(requestDTO.getUsername());
         RequestContextHolder.syncWithLogger();
@@ -36,7 +36,7 @@ public class PublicAuthController {
 
     @PostMapping("/register")
     public ResponseEntity<CommonResponse<Object>> register(
-            @RequestBody RegisterRequestDTO requestDTO
+            @RequestBody RegisterRequest requestDTO
     ) {
         authService.register(requestDTO);
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
@@ -45,7 +45,7 @@ public class PublicAuthController {
 
     @PostMapping("/password/reset/request")
     public ResponseEntity<CommonResponse<Object>> requestResetPassword(
-            @RequestBody RequestResetPasswordRequestDTO requestDTO
+            @RequestBody RequestResetPasswordRequest requestDTO
     ) {
         authService.requestResetPassword(requestDTO);
         var message = localeHelper.getMessage("auth.reset_password_email_sent");
@@ -54,7 +54,7 @@ public class PublicAuthController {
 
     @PostMapping("/password/reset")
     public ResponseEntity<CommonResponse<Object>> resetPassword(
-            @RequestBody ResetPasswordRequestDTO requestDTO
+            @RequestBody ResetPasswordRequest requestDTO
     ) {
         authService.resetPassword(requestDTO);
         var message = localeHelper.getMessage("auth.reset_password_success");
@@ -62,8 +62,8 @@ public class PublicAuthController {
     }
 
     @PostMapping("/token/refresh")
-    public ResponseEntity<CommonResponse<RefreshTokenResponseDTO>> refreshAccessToken(
-            @RequestBody AuthDTO requestDTO
+    public ResponseEntity<CommonResponse<RefreshTokenResponse>> refreshAccessToken(
+            @RequestBody RefreshTokenRequest requestDTO
     ) {
         var result = authService.refreshAccessToken(requestDTO.getToken());
         return ResponseEntity.ok(new CommonResponse<>(result));
@@ -87,7 +87,7 @@ public class PublicAuthController {
 
     @PostMapping("/account/activate/request")
     public ResponseEntity<CommonResponse<Object>> requestActivateAccount(
-            @RequestBody RequestActivateAccountRequestDTO requestDTO
+            @RequestBody RequestActivateAccountRequest requestDTO
     ) {
         authService.requestActivateAccount(requestDTO);
         var message = localeHelper.getMessage("auth.activate_account_email_sent");

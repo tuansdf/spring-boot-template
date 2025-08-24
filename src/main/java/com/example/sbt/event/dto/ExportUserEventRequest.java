@@ -1,7 +1,7 @@
 package com.example.sbt.event.dto;
 
 import com.example.sbt.core.dto.RequestContext;
-import com.example.sbt.module.user.dto.SearchUserRequestDTO;
+import com.example.sbt.module.user.dto.SearchUserRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +16,6 @@ import java.util.UUID;
 @Builder
 public class ExportUserEventRequest implements Serializable {
     private RequestContext requestContext;
-    private SearchUserRequestDTO searchRequest;
+    private SearchUserRequest searchRequest;
     private UUID backgroundTaskId;
 }

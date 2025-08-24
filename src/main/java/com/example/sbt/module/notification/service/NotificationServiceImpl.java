@@ -9,8 +9,8 @@ import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.event.publisher.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.dto.NotificationDTO;
-import com.example.sbt.module.notification.dto.NotificationStatsDTO;
-import com.example.sbt.module.notification.dto.SearchNotificationRequestDTO;
+import com.example.sbt.module.notification.dto.NotificationStatsResponse;
+import com.example.sbt.module.notification.dto.SearchNotificationRequest;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.notification.entity.Notification;
 import com.example.sbt.module.notification.repository.NotificationRepository;
@@ -46,7 +46,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final UserDeviceService userDeviceService;
     private final EntityManager entityManager;
 
-    private PaginationData<NotificationDTO> executeSearch(SearchNotificationRequestDTO requestDTO, boolean isCount) {
+    private PaginationData<NotificationDTO> executeSearch(SearchNotificationRequest requestDTO, boolean isCount) {
         PaginationData<NotificationDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
@@ -111,16 +111,16 @@ public class NotificationServiceImpl implements NotificationService {
         return result;
     }
 
-    private long executeSearchToCount(SearchNotificationRequestDTO requestDTO) {
+    private long executeSearchToCount(SearchNotificationRequest requestDTO) {
         return executeSearch(requestDTO, true).getTotalItems();
     }
 
-    private List<NotificationDTO> executeSearchToList(SearchNotificationRequestDTO requestDTO) {
+    private List<NotificationDTO> executeSearchToList(SearchNotificationRequest requestDTO) {
         return executeSearch(requestDTO, false).getItems();
     }
 
     @Override
-    public PaginationData<NotificationDTO> search(SearchNotificationRequestDTO requestDTO, boolean isCount) {
+    public PaginationData<NotificationDTO> search(SearchNotificationRequest requestDTO, boolean isCount) {
         PaginationData<NotificationDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearchToList(requestDTO));
@@ -129,10 +129,10 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public NotificationStatsDTO getStatsByUser(UUID userId) {
-        NotificationStatsDTO result = new NotificationStatsDTO();
-        result.setTotalRead(executeSearchToCount(SearchNotificationRequestDTO.builder().userId(userId).status(CommonStatus.READ).build()));
-        result.setTotalUnread(executeSearchToCount(SearchNotificationRequestDTO.builder().userId(userId).status(CommonStatus.UNREAD).build()));
+    public NotificationStatsResponse getStatsByUser(UUID userId) {
+        NotificationStatsResponse result = new NotificationStatsResponse();
+        result.setTotalRead(executeSearchToCount(SearchNotificationRequest.builder().userId(userId).status(CommonStatus.READ).build()));
+        result.setTotalUnread(executeSearchToCount(SearchNotificationRequest.builder().userId(userId).status(CommonStatus.UNREAD).build()));
         return result;
     }
 

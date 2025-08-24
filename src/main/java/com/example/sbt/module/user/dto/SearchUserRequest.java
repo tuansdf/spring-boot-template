@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchUserRequestDTO {
+public class SearchUserRequest {
     private Long pageNumber;
     private Long pageSize;
     private UUID id;

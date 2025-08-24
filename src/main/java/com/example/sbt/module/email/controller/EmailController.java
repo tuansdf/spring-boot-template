@@ -4,8 +4,8 @@ import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.module.email.dto.EmailDTO;
-import com.example.sbt.module.email.dto.EmailStatsDTO;
-import com.example.sbt.module.email.dto.SearchEmailRequestDTO;
+import com.example.sbt.module.email.dto.EmailStatsResponse;
+import com.example.sbt.module.email.dto.SearchEmailRequest;
 import com.example.sbt.module.email.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class EmailController {
             @RequestParam(required = false) Instant createdAtTo,
             @RequestParam(required = false, defaultValue = "false") Boolean count
     ) {
-        var requestDTO = SearchEmailRequestDTO.builder()
+        var requestDTO = SearchEmailRequest.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .userId(RequestContextHolder.get().getUserId())
@@ -52,7 +52,7 @@ public class EmailController {
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<CommonResponse<EmailStatsDTO>> getStats() {
+    public ResponseEntity<CommonResponse<EmailStatsResponse>> getStats() {
         var result = emailService.getStatsByUser(RequestContextHolder.get().getUserId());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }

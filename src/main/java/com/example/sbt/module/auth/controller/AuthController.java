@@ -2,12 +2,12 @@ package com.example.sbt.module.auth.controller;
 
 import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.dto.RequestContextHolder;
-import com.example.sbt.module.auth.dto.ConfirmOtpRequestDTO;
-import com.example.sbt.module.auth.dto.DisableOtpRequestDTO;
-import com.example.sbt.module.auth.dto.EnableOtpRequestDTO;
+import com.example.sbt.module.auth.dto.ConfirmOtpRequest;
+import com.example.sbt.module.auth.dto.DisableOtpRequest;
+import com.example.sbt.module.auth.dto.EnableOtpRequest;
 import com.example.sbt.module.auth.service.AuthService;
 import com.example.sbt.module.authtoken.service.AuthTokenService;
-import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
+import com.example.sbt.module.user.dto.ChangePasswordRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class AuthController {
 
     @PatchMapping("/password")
     public ResponseEntity<CommonResponse<Object>> changePassword(
-            @RequestBody ChangePasswordRequestDTO requestDTO
+            @RequestBody ChangePasswordRequest requestDTO
     ) {
         UUID userId = RequestContextHolder.get().getUserId();
         authService.changePassword(requestDTO, userId);
@@ -46,7 +46,7 @@ public class AuthController {
 
     @PostMapping("/2fa/enable")
     public ResponseEntity<CommonResponse<Object>> enableOtp(
-            @RequestBody EnableOtpRequestDTO requestDTO
+            @RequestBody EnableOtpRequest requestDTO
     ) {
         UUID userId = RequestContextHolder.get().getUserId();
         var result = authService.enableOtp(requestDTO, userId);
@@ -55,7 +55,7 @@ public class AuthController {
 
     @PostMapping("/2fa/confirm")
     public ResponseEntity<CommonResponse<Object>> confirmOtp(
-            @RequestBody ConfirmOtpRequestDTO requestDTO
+            @RequestBody ConfirmOtpRequest requestDTO
     ) {
         UUID userId = RequestContextHolder.get().getUserId();
         authService.confirmOtp(requestDTO, userId);
@@ -64,7 +64,7 @@ public class AuthController {
 
     @PostMapping("/2fa/disable")
     public ResponseEntity<CommonResponse<Object>> disableOtp(
-            @RequestBody DisableOtpRequestDTO requestDTO
+            @RequestBody DisableOtpRequest requestDTO
     ) {
         UUID userId = RequestContextHolder.get().getUserId();
         authService.disableOtp(requestDTO, userId);

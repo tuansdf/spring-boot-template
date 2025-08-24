@@ -6,7 +6,7 @@ import com.example.sbt.core.dto.PaginationData;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.module.file.dto.FileObjectDTO;
-import com.example.sbt.module.user.dto.SearchUserRequestDTO;
+import com.example.sbt.module.user.dto.SearchUserRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.service.UserService;
 import com.example.sbt.shared.util.ConversionUtils;
@@ -80,7 +80,7 @@ public class UserController {
             @RequestParam(required = false) String orderDirection,
             @RequestParam(required = false, defaultValue = "false") Boolean count
     ) {
-        var requestDTO = SearchUserRequestDTO.builder()
+        var requestDTO = SearchUserRequest.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
                 .id(id)
@@ -101,7 +101,7 @@ public class UserController {
     @PostMapping("/export")
     @Secured({PermissionCode.SYSTEM_ADMIN})
     public ResponseEntity<CommonResponse<FileObjectDTO>> export() {
-        var requestDTO = SearchUserRequestDTO.builder().isDetail(true).build();
+        var requestDTO = SearchUserRequest.builder().isDetail(true).build();
         userService.triggerExport(requestDTO);
         var message = localeHelper.getMessage("user.task.export.enqueued");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));

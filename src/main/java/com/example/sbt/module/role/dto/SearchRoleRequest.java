@@ -11,7 +11,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchRoleRequestDTO {
+public class SearchRoleRequest {
     private Long pageNumber;
     private Long pageSize;
     private String code;

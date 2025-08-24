@@ -1,4 +1,4 @@
-package com.example.sbt.module.configuration.dto;
+package com.example.sbt.module.permission.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +11,10 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchConfigurationRequestDTO {
+public class SearchPermissionRequest {
     private Long pageNumber;
     private Long pageSize;
     private String code;
-    private Boolean isEnabled;
-    private Boolean isPublic;
     private Instant createdAtFrom;
     private Instant createdAtTo;
 }

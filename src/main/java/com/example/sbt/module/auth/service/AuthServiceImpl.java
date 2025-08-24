@@ -15,8 +15,7 @@ import com.example.sbt.module.email.service.EmailService;
 import com.example.sbt.module.loginaudit.service.LoginAuditService;
 import com.example.sbt.module.notification.service.NotificationService;
 import com.example.sbt.module.permission.service.PermissionService;
-import com.example.sbt.module.role.service.RoleService;
-import com.example.sbt.module.user.dto.ChangePasswordRequestDTO;
+import com.example.sbt.module.user.dto.ChangePasswordRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.entity.User;
 import com.example.sbt.module.user.mapper.UserMapper;
@@ -48,23 +47,22 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
     private final JWTService jwtService;
     private final PermissionService permissionService;
-    private final RoleService roleService;
     private final AuthTokenService authTokenService;
     private final EmailService emailService;
     private final NotificationService notificationService;
     private final LoginAuditService loginAuditService;
 
-    private AuthDTO createAuthResponse(UUID userId, List<String> permissionCodes) {
+    private LoginResponse createLoginResponse(UUID userId, List<String> permissionCodes) {
         JWTPayload accessJwt = jwtService.createAccessJwt(userId, permissionCodes);
         AuthTokenDTO refreshToken = authTokenService.createRefreshToken(userId);
-        return AuthDTO.builder()
+        return LoginResponse.builder()
                 .accessToken(accessJwt.getValue())
                 .refreshToken(refreshToken.getValue())
                 .build();
     }
 
     @Override
-    public AuthDTO login(LoginRequestDTO requestDTO) {
+    public LoginResponse login(LoginRequest requestDTO) {
         authValidator.validateLogin(requestDTO);
 
         UserDTO userDTO = userRepository.findTopByUsername(requestDTO.getUsername()).map(userMapper::toDTO).orElse(null);
@@ -113,21 +111,12 @@ public class AuthServiceImpl implements AuthService {
         loginAuditService.add(userDTO.getId(), true);
 
         List<String> permissions = permissionService.findAllCodesByUserId(userDTO.getId());
-        List<String> roles = roleService.findAllCodesByUserId(userDTO.getId());
 
-        AuthDTO responseDTO = createAuthResponse(userDTO.getId(), permissions);
-        responseDTO.setUserId(userDTO.getId());
-        responseDTO.setUsername(userDTO.getUsername());
-        responseDTO.setEmail(userDTO.getEmail());
-        responseDTO.setName(userDTO.getName());
-        responseDTO.setPermissions(permissions);
-        responseDTO.setRoles(roles);
-
-        return responseDTO;
+        return createLoginResponse(userDTO.getId(), permissions);
     }
 
     @Override
-    public void register(RegisterRequestDTO requestDTO) {
+    public void register(RegisterRequest requestDTO) {
         authValidator.validateRegister(requestDTO);
 
         Boolean isRegistrationEnabled = configurations.isRegistrationEnabled();
@@ -164,7 +153,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void changePassword(ChangePasswordRequestDTO requestDTO, UUID userId) {
+    public void changePassword(ChangePasswordRequest requestDTO, UUID userId) {
         authValidator.validateChangePassword(requestDTO);
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
@@ -185,7 +174,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RefreshTokenResponseDTO refreshAccessToken(String refreshJwt) {
+    public RefreshTokenResponse refreshAccessToken(String refreshJwt) {
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(refreshJwt, CommonType.REFRESH_TOKEN);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
@@ -200,13 +189,13 @@ public class AuthServiceImpl implements AuthService {
         }
         List<String> permissions = permissionService.findAllCodesByUserId(authTokenDTO.getUserId());
         JWTPayload accessJwt = jwtService.createAccessJwt(authTokenDTO.getUserId(), permissions);
-        return RefreshTokenResponseDTO.builder()
+        return RefreshTokenResponse.builder()
                 .accessToken(accessJwt.getValue())
                 .build();
     }
 
     @Override
-    public void requestResetPassword(RequestResetPasswordRequestDTO requestDTO) {
+    public void requestResetPassword(RequestResetPasswordRequest requestDTO) {
         authValidator.validateRequestResetPassword(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
         if (user == null) {
@@ -219,7 +208,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void resetPassword(ResetPasswordRequestDTO requestDTO) {
+    public void resetPassword(ResetPasswordRequest requestDTO) {
         authValidator.validateResetPassword(requestDTO);
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(requestDTO.getToken(), CommonType.RESET_PASSWORD);
         if (authTokenDTO == null) {
@@ -235,7 +224,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void requestActivateAccount(RequestActivateAccountRequestDTO requestDTO) {
+    public void requestActivateAccount(RequestActivateAccountRequest requestDTO) {
         authValidator.validateRequestActivateAccount(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
         if (user == null) {
@@ -270,7 +259,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public EnableOtpResponseDTO enableOtp(EnableOtpRequestDTO requestDTO, UUID userId) {
+    public EnableOtpResponse enableOtp(EnableOtpRequest requestDTO, UUID userId) {
         User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
@@ -286,11 +275,11 @@ public class AuthServiceImpl implements AuthService {
         user.setOtpSecret(secret);
         user.setIsOtpEnabled(false);
         userRepository.save(user);
-        return EnableOtpResponseDTO.builder().otpSecret(secret).build();
+        return EnableOtpResponse.builder().otpSecret(secret).build();
     }
 
     @Override
-    public void confirmOtp(ConfirmOtpRequestDTO requestDTO, UUID userId) {
+    public void confirmOtp(ConfirmOtpRequest requestDTO, UUID userId) {
         User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
@@ -307,7 +296,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void disableOtp(DisableOtpRequestDTO requestDTO, UUID userId) {
+    public void disableOtp(DisableOtpRequest requestDTO, UUID userId) {
         User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);

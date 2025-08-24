@@ -5,7 +5,7 @@ import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.permission.dto.PermissionDTO;
-import com.example.sbt.module.permission.dto.SearchPermissionRequestDTO;
+import com.example.sbt.module.permission.dto.SearchPermissionRequest;
 import com.example.sbt.module.permission.entity.Permission;
 import com.example.sbt.module.permission.repository.PermissionRepository;
 import com.example.sbt.module.role.entity.RolePermission;
@@ -145,7 +145,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public PaginationData<PermissionDTO> search(SearchPermissionRequestDTO requestDTO, boolean isCount) {
+    public PaginationData<PermissionDTO> search(SearchPermissionRequest requestDTO, boolean isCount) {
         PaginationData<PermissionDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
@@ -153,7 +153,7 @@ public class PermissionServiceImpl implements PermissionService {
         return result;
     }
 
-    private PaginationData<PermissionDTO> executeSearch(SearchPermissionRequestDTO requestDTO, boolean isCount) {
+    private PaginationData<PermissionDTO> executeSearch(SearchPermissionRequest requestDTO, boolean isCount) {
         PaginationData<PermissionDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();

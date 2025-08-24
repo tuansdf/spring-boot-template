@@ -1,4 +1,4 @@
-package com.example.sbt.module.email.dto;
+package com.example.sbt.module.notification.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SearchEmailRequestDTO {
+public class SearchNotificationRequest {
     private Long pageNumber;
     private Long pageSize;
     private UUID userId;

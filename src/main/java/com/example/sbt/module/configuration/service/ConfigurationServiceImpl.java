@@ -5,7 +5,7 @@ import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.SQLHelper;
 import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
-import com.example.sbt.module.configuration.dto.SearchConfigurationRequestDTO;
+import com.example.sbt.module.configuration.dto.SearchConfigurationRequest;
 import com.example.sbt.module.configuration.entity.Configuration;
 import com.example.sbt.module.configuration.entity.ConfigurationKV;
 import com.example.sbt.module.configuration.repository.ConfigurationKVRepository;
@@ -143,7 +143,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public PaginationData<ConfigurationDTO> search(SearchConfigurationRequestDTO requestDTO, boolean isCount) {
+    public PaginationData<ConfigurationDTO> search(SearchConfigurationRequest requestDTO, boolean isCount) {
         PaginationData<ConfigurationDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
             result.setItems(executeSearch(requestDTO, false).getItems());
@@ -151,7 +151,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         return result;
     }
 
-    private PaginationData<ConfigurationDTO> executeSearch(SearchConfigurationRequestDTO requestDTO, boolean isCount) {
+    private PaginationData<ConfigurationDTO> executeSearch(SearchConfigurationRequest requestDTO, boolean isCount) {
         PaginationData<ConfigurationDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
