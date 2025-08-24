@@ -106,7 +106,7 @@ public class TestController {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
         try (CSVWriter writer = new CSVWriter(new FileWriter(exportPath))) {
-            String[] header = {"Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
+            String[] header = {"Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At"};
             writer.writeNext(header);
             int idx = 1;
             for (var item : data) {
@@ -154,15 +154,16 @@ public class TestController {
                         .email(ConversionUtils.toString(CommonUtils.get(data, 3)))
                         .name(ConversionUtils.toString(CommonUtils.get(data, 4)))
                         .isEnabled(ConversionUtils.toBoolean(CommonUtils.get(data, 5)))
-                        .createdAt(DateUtils.toInstant(CommonUtils.get(data, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .updatedAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .isVerified(ConversionUtils.toBoolean(CommonUtils.get(data, 6)))
+                        .createdAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
+                        .updatedAt(DateUtils.toInstant(CommonUtils.get(data, 8), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
                         .build();
                 items.add(temp);
             }
         } catch (Exception e) {
             log.error("test import ", e);
         }
-        log.info("items: {}", items.subList(0, Math.min(items.size(), 100)));
+        log.atInfo().setMessage("users: {}").addArgument(() -> items).log();
         return "OK";
     }
 

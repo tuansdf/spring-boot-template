@@ -44,7 +44,6 @@ public class RequestResponseLoggingFilter implements Filter {
             long elapsedMs = DateUtils.currentEpochMillis() - start;
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
-                    .addKeyValue(LoggerKey.USER_ID, RequestContextHolder.get().getUserId())
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
                     .addKeyValue(LoggerKey.HTTP_METHOD, httpRequest.getMethod())
                     .addKeyValue(LoggerKey.HTTP_PATH, httpRequest.getServletPath())

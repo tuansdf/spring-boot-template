@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Component
 public class LoggingAspect {
-    private static final int MAX_RESULT_LENGTH = 10000;
-
     @Around("within(@org.springframework.web.bind.annotation.RestController *) || " +
             "within(@org.springframework.stereotype.Service *) || " +
             "within(@org.springframework.stereotype.Repository *)")
@@ -45,17 +43,13 @@ public class LoggingAspect {
         try {
             result = joinPoint.proceed();
             long elapsedMs = DateUtils.currentEpochMillis() - start;
-            String resultString = ConversionUtils.toString(result);
-            if (resultString != null && resultString.length() > MAX_RESULT_LENGTH) {
-                resultString = resultString.substring(0, MAX_RESULT_LENGTH);
-            }
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
                     .addKeyValue(LoggerKey.METHOD, methodName)
                     .addKeyValue(LoggerKey.ARGUMENTS, arguments)
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
-                    .log(resultString);
+                    .log(ConversionUtils.toString(result));
         } catch (Throwable e) {
             long elapsedMs = DateUtils.currentEpochMillis() - start;
             log.atError()

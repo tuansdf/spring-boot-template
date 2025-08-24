@@ -1,6 +1,5 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
-    <include resource="co/elastic/logging/logback/boot/ecs-console-appender.xml"/>
 
     <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
@@ -11,18 +10,30 @@
                 <loggerName/>
                 <threadName/>
                 <logLevel/>
-                <message/>
+                <provider class="net.logstash.logback.composite.loggingevent.LoggingEventPatternJsonProvider">
+                    <pattern>{"message":"%.-10240message"}</pattern>
+                </provider>
                 <mdc/>
-                <arguments/>
-                <markers/>
-                <stackTrace/>
+                <keyValuePairs/>
+                <stackTrace>
+                    <throwableConverter class="net.logstash.logback.stacktrace.ShortenedThrowableConverter">
+                        <maxDepthPerThrowable>30</maxDepthPerThrowable>
+                        <maxLength>20480</maxLength>
+                        <shortenedClassNameLength>20</shortenedClassNameLength>
+                        <exclude>sun\.reflect\..*</exclude>
+                        <exclude>java\.lang\.reflect\..*</exclude>
+                        <exclude>org\.springframework\.cglib\..*</exclude>
+                    </throwableConverter>
+                </stackTrace>
             </providers>
         </encoder>
     </appender>
 
     <appender name="ASYNC_JSON_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
-        <queueSize>1024</queueSize>
-        <discardingThreshold>0</discardingThreshold>
+        <includeCallerData>false</includeCallerData>
+        <queueSize>10240</queueSize>
+        <discardingThreshold>20</discardingThreshold>
+        <neverBlock>true</neverBlock>
         <appender-ref ref="JSON_CONSOLE"/>
     </appender>
 
@@ -30,7 +41,9 @@
         <appender-ref ref="ASYNC_JSON_CONSOLE"/>
     </root>
 
-    <logger name="org.hibernate.SQL" level="debug" additivity="false">
+    <logger name="org.hibernate.SQL" level="info" additivity="false">
         <appender-ref ref="ASYNC_JSON_CONSOLE"/>
     </logger>
+
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 </configuration>
