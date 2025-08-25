@@ -163,7 +163,7 @@ public class TestController {
         } catch (Exception e) {
             log.error("test import ", e);
         }
-        log.atInfo().setMessage("users: {}").addArgument(() -> items).log();
+        System.out.println("Users: " + ConversionUtils.toString(CommonUtils.subList(items, 0, 10)));
         return "OK";
     }
 

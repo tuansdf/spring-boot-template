@@ -92,6 +92,16 @@ public class CommonUtils {
         return items.get(index);
     }
 
+    public static <T> List<T> subList(List<T> items, int from, int to) {
+        if (CollectionUtils.isEmpty(items)) return new ArrayList<>();
+        if (from < 0) from = 0;
+        if (to < 0) to = 0;
+        if (from >= items.size()) from = items.size() - 1;
+        if (to > items.size()) to = items.size();
+        if (to <= from) to = from + 1;
+        return items.subList(from, to);
+    }
+
     public static <T> T inListOrNull(T input, List<T> values) {
         if (input == null || CollectionUtils.isEmpty(values)) {
             return null;
