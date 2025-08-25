@@ -4,7 +4,6 @@ import com.example.sbt.core.dto.CommonResponse;
 import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.core.helper.ServletHelper;
 import com.example.sbt.module.configuration.service.Configurations;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,17 +26,13 @@ public class IPWhitelistFilter extends OncePerRequestFilter {
     private final LocaleHelper localeHelper;
     private final Configurations configurations;
     private final ServletHelper servletHelper;
-    private final ObjectMapper objectMapper;
 
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         if (!isIpWhitelisted(servletHelper.getClientIp(request))) {
             CommonResponse<Object> commonResponse = new CommonResponse<>();
             commonResponse.setMessage(localeHelper.getMessage("auth.error.invalid_ip"));
             commonResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-            response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
-            response.getWriter().flush();
+            servletHelper.sendJson(response, commonResponse, HttpStatus.UNAUTHORIZED);
             return;
         }
         filterChain.doFilter(request, response);

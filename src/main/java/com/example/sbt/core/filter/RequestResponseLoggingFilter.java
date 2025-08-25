@@ -4,7 +4,6 @@ import com.example.sbt.core.constant.HTTPHeader;
 import com.example.sbt.core.constant.LoggerKey;
 import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.shared.util.ConversionUtils;
-import com.example.sbt.shared.util.DateUtils;
 import com.example.sbt.shared.util.RandomUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +20,7 @@ import java.io.IOException;
 public class RequestResponseLoggingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        long start = DateUtils.currentEpochMillis();
+        long start = System.nanoTime();
 
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
@@ -41,7 +40,7 @@ public class RequestResponseLoggingFilter implements Filter {
                     .log();
             filterChain.doFilter(request, response);
         } finally {
-            long elapsedMs = DateUtils.currentEpochMillis() - start;
+            double elapsedMs = (System.nanoTime() - start) / 1_000_000.0;
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)

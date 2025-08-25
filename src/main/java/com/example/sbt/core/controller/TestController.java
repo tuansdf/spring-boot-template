@@ -243,6 +243,7 @@ public class TestController {
         result.put("DateUtils.currentEpochMillis", DateUtils.currentEpochMillis());
         result.put("DateUtils.currentEpochMicros", DateUtils.currentEpochMicros());
         result.put("DateUtils.currentEpochNanos", DateUtils.currentEpochNanos());
+        result.put("System.nanoTime", System.nanoTime());
         return result;
     }
 
@@ -276,6 +277,8 @@ public class TestController {
             ConversionUtils.toString(DateUtils.currentEpochMillis());
             ConversionUtils.toString(DateUtils.currentEpochMicros());
             ConversionUtils.toString(DateUtils.currentEpochNanos());
+            System.nanoTime();
+            ConversionUtils.toString(System.nanoTime());
         }
         return "OK";
     }

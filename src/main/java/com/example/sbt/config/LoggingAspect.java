@@ -2,7 +2,6 @@ package com.example.sbt.config;
 
 import com.example.sbt.core.constant.LoggerKey;
 import com.example.sbt.shared.util.ConversionUtils;
-import com.example.sbt.shared.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -18,7 +17,7 @@ public class LoggingAspect {
             "within(@org.springframework.stereotype.Service *) || " +
             "within(@org.springframework.stereotype.Repository *)")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
-        long start = DateUtils.currentEpochMillis();
+        long start = System.nanoTime();
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String methodName = signature.toShortString();
@@ -42,7 +41,7 @@ public class LoggingAspect {
         Object result = null;
         try {
             result = joinPoint.proceed();
-            long elapsedMs = DateUtils.currentEpochMillis() - start;
+            double elapsedMs = (System.nanoTime() - start) / 1_000_000.0;
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
@@ -51,7 +50,7 @@ public class LoggingAspect {
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
                     .log(ConversionUtils.toString(result));
         } catch (Throwable e) {
-            long elapsedMs = DateUtils.currentEpochMillis() - start;
+            double elapsedMs = (System.nanoTime() - start) / 1_000_000.0;
             log.atError()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)

@@ -1,16 +1,25 @@
 package com.example.sbt.core.helper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
+@RequiredArgsConstructor
 @Component
 public class ServletHelper {
     private static final String AUTHORIZATION_START_WITH = "Bearer ";
     private static final int TOKEN_START_AT = AUTHORIZATION_START_WITH.length();
+
+    private final ObjectMapper objectMapper;
 
     private boolean isValidIp(String ip) {
         return StringUtils.isNotBlank(ip) && !"unknown".equalsIgnoreCase(ip);
@@ -51,5 +60,14 @@ public class ServletHelper {
             return null;
         }
         return bearerToken.substring(TOKEN_START_AT);
+    }
+
+    public void sendJson(HttpServletResponse response, Object json, HttpStatus status) throws IOException {
+        response.setStatus(status.value());
+        response.setContentType("application/json;charset=UTF-8");
+        if (json != null) {
+            response.getWriter().write(objectMapper.writeValueAsString(json));
+        }
+        response.getWriter().flush();
     }
 }
