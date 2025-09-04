@@ -85,12 +85,10 @@ public class ExcelUtils {
     }
 
     public static Object getCellValue(Row row, Integer colIdx) {
-        if (row == null || colIdx == null) return null;
         return getCellValue(getCell(row, colIdx));
     }
 
     public static Object getCellValue(Sheet sheet, Integer rowIdx, Integer colIdx) {
-        if (sheet == null || rowIdx == null || colIdx == null) return null;
         return getCellValue(getCell(getRow(sheet, rowIdx), colIdx));
     }
 
@@ -113,12 +111,10 @@ public class ExcelUtils {
     }
 
     public static void setCellValue(Sheet sheet, Integer rowIdx, Integer colIdx, Object value) {
-        if (sheet == null || rowIdx == null || colIdx == null || value == null) return;
         setCellValue(getCell(getRow(sheet, rowIdx), colIdx), value);
     }
 
     public static void setCellValue(Row row, Integer colIdx, Object value) {
-        if (row == null || colIdx == null || value == null) return;
         setCellValue(getCell(row, colIdx), value);
     }
 
@@ -132,7 +128,7 @@ public class ExcelUtils {
     }
 
     public static void setCellValues(Sheet sheet, Integer rowIdx, List<Object> objects) {
-        if (sheet == null || rowIdx == null || CollectionUtils.isEmpty(objects)) return;
+        if (CollectionUtils.isEmpty(objects)) return;
         Row row = getRow(sheet, rowIdx);
         if (row == null) return;
         int i = 0;
@@ -150,6 +146,7 @@ public class ExcelUtils {
     }
 
     public static Workbook toWorkbook(String filePath) {
+        if (StringUtils.isBlank(filePath)) return null;
         try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
@@ -157,8 +154,9 @@ public class ExcelUtils {
         }
     }
 
-    public static Workbook toWorkbook(byte[] bytes) {
-        try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
+    public static Workbook toWorkbook(byte[] file) {
+        if (file == null) return null;
+        try (InputStream inputStream = new ByteArrayInputStream(file)) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
             return null;
@@ -166,6 +164,7 @@ public class ExcelUtils {
     }
 
     public static Workbook toWorkbook(MultipartFile file) {
+        if (file == null) return null;
         try (InputStream inputStream = file.getInputStream()) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
@@ -194,6 +193,7 @@ public class ExcelUtils {
     }
 
     public static <T> List<T> toData(MultipartFile file, Function<List<Object>, T> rowProcessor) {
+        if (file == null) return null;
         try (Workbook workbook = toWorkbook(file)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
@@ -202,6 +202,7 @@ public class ExcelUtils {
     }
 
     public static <T> List<T> toData(String filePath, Function<List<Object>, T> rowProcessor) {
+        if (StringUtils.isBlank(filePath)) return null;
         try (Workbook workbook = toWorkbook(filePath)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
@@ -210,6 +211,7 @@ public class ExcelUtils {
     }
 
     public static <T> List<T> toData(byte[] file, Function<List<Object>, T> rowProcessor) {
+        if (file == null) return null;
         try (Workbook workbook = toWorkbook(file)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
