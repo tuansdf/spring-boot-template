@@ -21,8 +21,6 @@ import java.util.function.Function;
 
 @Slf4j
 public class ExcelUtils {
-    public static final int BUFFER_SIZE = 4096;
-    public static final int ROW_CACHE_SIZE = 100;
     private static final String DEFAULT_SHEET = "Sheet1";
 
     public static void writeFile(Workbook workbook, String outputPath) {
@@ -110,7 +108,7 @@ public class ExcelUtils {
         switch (value) {
             case String v -> cell.setCellValue(v);
             case Number v -> cell.setCellValue(v.doubleValue());
-            default -> ConversionUtils.toString(value);
+            default -> cell.setCellValue(ConversionUtils.toString(value));
         }
     }
 
@@ -153,7 +151,7 @@ public class ExcelUtils {
 
     public static Workbook toWorkbook(String filePath) {
         try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
-            return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
+            return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
             return null;
         }
@@ -161,7 +159,7 @@ public class ExcelUtils {
 
     public static Workbook toWorkbook(byte[] bytes) {
         try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
-            return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
+            return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
             return null;
         }
@@ -169,7 +167,7 @@ public class ExcelUtils {
 
     public static Workbook toWorkbook(MultipartFile file) {
         try (InputStream inputStream = file.getInputStream()) {
-            return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
+            return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
             return null;
         }
@@ -220,20 +218,17 @@ public class ExcelUtils {
     }
 
     public static <T> void writeData(Workbook workbook, List<Object> header, List<T> data, Function<T, List<Object>> rowProcessor) {
-        try (workbook) {
-            if (workbook == null) return;
-            Sheet sheet = getSheet(workbook);
-            if (CollectionUtils.isNotEmpty(header)) {
-                ExcelUtils.setCellValues(sheet, 0, header);
+        if (workbook == null) return;
+        Sheet sheet = getSheet(workbook);
+        if (CollectionUtils.isNotEmpty(header)) {
+            ExcelUtils.setCellValues(sheet, 0, header);
+        }
+        if (CollectionUtils.isNotEmpty(data) && rowProcessor != null) {
+            int idx = 1;
+            for (T item : data) {
+                ExcelUtils.setCellValues(sheet, idx, rowProcessor.apply(item));
+                idx++;
             }
-            if (CollectionUtils.isNotEmpty(data) && rowProcessor != null) {
-                int idx = 1;
-                for (T item : data) {
-                    ExcelUtils.setCellValues(sheet, idx, rowProcessor.apply(item));
-                    idx++;
-                }
-            }
-        } catch (Exception ignored) {
         }
     }
 

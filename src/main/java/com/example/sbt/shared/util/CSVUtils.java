@@ -17,12 +17,12 @@ import java.util.function.Function;
 
 @Slf4j
 public class CSVUtils {
-    public static <T> List<T> toData(Reader input, Function<String[], T> rowProcessor) {
-        if (input == null) return null;
-        try (CSVReader reader = new CSVReader(input)) {
+    public static <T> List<T> toData(Reader reader, Function<String[], T> rowProcessor) {
+        if (reader == null) return null;
+        try (CSVReader csvReader = new CSVReader(reader)) {
             List<T> result = new ArrayList<>();
             boolean isHeader = true;
-            for (String[] row : reader) {
+            for (String[] row : csvReader) {
                 if (isHeader) {
                     isHeader = false;
                     continue;
@@ -59,15 +59,15 @@ public class CSVUtils {
         }
     }
 
-    public static <T> void writeData(Writer input, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
-        if (input == null) return;
-        try (input; CSVWriter writer = new CSVWriter(input)) {
+    public static <T> void writeData(Writer writer, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
+        if (writer == null) return;
+        try (CSVWriter csvWriter = new CSVWriter(writer)) {
             if (ArrayUtils.isNotEmpty(header)) {
-                writer.writeNext(header);
+                csvWriter.writeNext(header);
             }
             if (CollectionUtils.isNotEmpty(data) && rowProcessor != null) {
                 for (T item : data) {
-                    writer.writeNext(rowProcessor.apply(item));
+                    csvWriter.writeNext(rowProcessor.apply(item));
                 }
             }
         } catch (Exception ignored) {
