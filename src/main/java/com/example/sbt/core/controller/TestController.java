@@ -2,7 +2,6 @@ package com.example.sbt.core.controller;
 
 import com.example.sbt.core.constant.PermissionCode;
 import com.example.sbt.core.dto.RequestContextHolder;
-import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.exception.ValidationException;
 import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.module.email.dto.SendEmailRequest;
@@ -15,26 +14,16 @@ import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.shared.constant.FileType;
 import com.example.sbt.shared.util.*;
 import com.google.firebase.messaging.FirebaseMessagingException;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-import jakarta.mail.MessagingException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -80,132 +69,83 @@ public class TestController {
     }
 
     @GetMapping("/excel/export")
-    public String testExportExcel(
-            @RequestParam(required = false, defaultValue = "1000") Integer total
-    ) throws IOException {
+    public String testExportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
-        try (Workbook workbook = new SXSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet();
-            List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At");
-            ExcelUtils.setCellValues(sheet, 0, header);
-            int idx = 1;
-            for (var item : data) {
-                ExcelUtils.setCellValues(sheet, idx, Arrays.asList(idx, item.getId(), item.getUsername(), item.getEmail(), item.getName(), item.getIsEnabled(), item.getIsVerified(), item.getCreatedAt(), item.getUpdatedAt()));
-                idx++;
-            }
-            ExcelUtils.writeFile(workbook, exportPath);
-        }
+        List<Object> header = List.of("ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At");
+        ExcelUtils.writeDataToFile(exportPath, header, data, (row) -> Arrays.asList(
+                row.getId(),
+                row.getUsername(),
+                row.getEmail(),
+                row.getName(),
+                row.getIsEnabled(),
+                row.getIsVerified(),
+                row.getCreatedAt(),
+                row.getUpdatedAt()
+        ));
         return "OK";
     }
 
     @GetMapping("/csv/export")
-    public String testExportCsv(
-            @RequestParam(required = false, defaultValue = "1000") Integer total
-    ) {
+    public String testExportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
         List<UserDTO> data = createData(total);
         String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
-        try (CSVWriter writer = new CSVWriter(new FileWriter(exportPath))) {
-            String[] header = {"Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At"};
-            writer.writeNext(header);
-            int idx = 1;
-            for (var item : data) {
-                writer.writeNext(new String[]{
-                        ConversionUtils.safeToString(idx),
-                        ConversionUtils.safeToString(item.getId()),
-                        ConversionUtils.safeToString(item.getUsername()),
-                        ConversionUtils.safeToString(item.getEmail()),
-                        ConversionUtils.safeToString(item.getName()),
-                        ConversionUtils.safeToString(item.getIsEnabled()),
-                        ConversionUtils.safeToString(item.getIsVerified()),
-                        ConversionUtils.safeToString(item.getCreatedAt()),
-                        ConversionUtils.safeToString(item.getUpdatedAt())
-                });
-                idx++;
-            }
-        } catch (IOException e) {
-            log.error("test import ", e);
-        }
+        String[] header = new String[]{"ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At"};
+        CSVUtils.writeDataToFile(exportPath, header, data, (row) -> new String[]{
+                ConversionUtils.safeToString(row.getId()),
+                ConversionUtils.safeToString(row.getUsername()),
+                ConversionUtils.safeToString(row.getEmail()),
+                ConversionUtils.safeToString(row.getName()),
+                ConversionUtils.safeToString(row.getIsEnabled()),
+                ConversionUtils.safeToString(row.getIsVerified()),
+                ConversionUtils.safeToString(row.getCreatedAt()),
+                ConversionUtils.safeToString(row.getUpdatedAt())
+        });
         return "OK";
     }
 
     @GetMapping("/excel/import")
-    public String testImportExcel(
-            @RequestParam String filePath
-    ) {
-        List<UserDTO> items = new ArrayList<>();
-        try (Workbook workbook = ExcelUtils.toWorkbook(filePath)) {
-            if (workbook == null) return null;
-            List<Object> header = List.of("Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At");
-            Sheet sheet = workbook.getSheetAt(0);
-            boolean isHeader = true;
-            for (var row : sheet) {
-                List<Object> data = ExcelUtils.getRowCellValues(row);
-                if (isHeader) {
-                    if (!ListUtils.isEqualList(header, data)) {
-                        throw new CustomException("Invalid template");
-                    }
-                    isHeader = false;
-                    continue;
-                }
-                UserDTO temp = UserDTO.builder()
-                        .id(ConversionUtils.toUUID(CommonUtils.get(data, 1)))
-                        .username(ConversionUtils.toString(CommonUtils.get(data, 2)))
-                        .email(ConversionUtils.toString(CommonUtils.get(data, 3)))
-                        .name(ConversionUtils.toString(CommonUtils.get(data, 4)))
-                        .isEnabled(ConversionUtils.toBoolean(CommonUtils.get(data, 5)))
-                        .isVerified(ConversionUtils.toBoolean(CommonUtils.get(data, 6)))
-                        .createdAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .updatedAt(DateUtils.toInstant(CommonUtils.get(data, 8), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .build();
-                items.add(temp);
-            }
-        } catch (Exception e) {
-            log.error("test import ", e);
+    public String testImportExcel(@RequestParam String filePath) {
+        List<UserDTO> items = ExcelUtils.toData(filePath, (data) -> {
+            UserDTO temp = new UserDTO();
+            temp.setId(ConversionUtils.toUUID(CommonUtils.get(data, 0)));
+            temp.setUsername(ConversionUtils.toString(CommonUtils.get(data, 1)));
+            temp.setEmail(ConversionUtils.toString(CommonUtils.get(data, 2)));
+            temp.setName(ConversionUtils.toString(CommonUtils.get(data, 3)));
+            temp.setIsEnabled(ConversionUtils.toBoolean(CommonUtils.get(data, 4)));
+            temp.setIsVerified(ConversionUtils.toBoolean(CommonUtils.get(data, 5)));
+            temp.setCreatedAt(DateUtils.toInstant(CommonUtils.get(data, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+            temp.setUpdatedAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+            return temp;
+        });
+        if (CollectionUtils.isNotEmpty(items)) {
+            log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         }
-        System.out.println("Users: " + ConversionUtils.toString(CommonUtils.subList(items, 0, 10)));
         return "OK";
     }
 
     @GetMapping("/csv/import")
-    public String testImportCsv(
-            @RequestParam String filePath
-    ) {
-        List<UserDTO> items = new ArrayList<>();
-        try (CSVReader reader = new CSVReader(Files.newBufferedReader(Paths.get(filePath)))) {
-            String[] header = {"Order", "ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At", "Temp", "Temp", "Temp", "Temp"};
-            boolean isHeader = true;
-            for (var row : reader) {
-                if (isHeader) {
-                    if (!Arrays.equals(header, row)) {
-                        throw new CustomException("Invalid template");
-                    }
-                    isHeader = false;
-                    continue;
-                }
-                UserDTO temp = UserDTO.builder()
-                        .id(ConversionUtils.toUUID(CommonUtils.get(row, 1)))
-                        .username(ConversionUtils.toString(CommonUtils.get(row, 2)))
-                        .email(ConversionUtils.toString(CommonUtils.get(row, 3)))
-                        .name(ConversionUtils.toString(CommonUtils.get(row, 4)))
-                        .isEnabled(ConversionUtils.toBoolean(CommonUtils.get(row, 5)))
-                        .isVerified(ConversionUtils.toBoolean(CommonUtils.get(row, 6)))
-                        .createdAt(DateUtils.toInstant(CommonUtils.get(row, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .updatedAt(DateUtils.toInstant(CommonUtils.get(row, 8), DateTimeFormatter.ISO_OFFSET_DATE_TIME))
-                        .build();
-                items.add(temp);
-            }
-        } catch (Exception e) {
-            log.error("test import ", e);
+    public String testImportCsv(@RequestParam String filePath) {
+        List<UserDTO> items = CSVUtils.toData(filePath, (data) -> {
+            UserDTO temp = new UserDTO();
+            temp.setId(ConversionUtils.toUUID(CommonUtils.get(data, 0)));
+            temp.setUsername(ConversionUtils.toString(CommonUtils.get(data, 1)));
+            temp.setEmail(ConversionUtils.toString(CommonUtils.get(data, 2)));
+            temp.setName(ConversionUtils.toString(CommonUtils.get(data, 3)));
+            temp.setIsEnabled(ConversionUtils.toBoolean(CommonUtils.get(data, 4)));
+            temp.setIsVerified(ConversionUtils.toBoolean(CommonUtils.get(data, 5)));
+            temp.setCreatedAt(DateUtils.toInstant(CommonUtils.get(data, 6), DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+            temp.setUpdatedAt(DateUtils.toInstant(CommonUtils.get(data, 7), DateTimeFormatter.ISO_OFFSET_DATE_TIME));
+            return temp;
+        });
+        if (CollectionUtils.isNotEmpty(items)) {
+            log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         }
-        log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
         return "OK";
     }
 
     @GetMapping(value = "/i18n", produces = MediaType.TEXT_PLAIN_VALUE)
-    public String testI18n(
-            @RequestParam String key
-    ) {
+    public String testI18n(@RequestParam String key) {
         return localeHelper.getMessage(key);
     }
 

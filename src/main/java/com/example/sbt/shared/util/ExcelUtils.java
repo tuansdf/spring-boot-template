@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -16,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 @Slf4j
 public class ExcelUtils {
@@ -75,7 +77,6 @@ public class ExcelUtils {
         if (cell == null) return null;
         try {
             return switch (cell.getCellType()) {
-                case BOOLEAN -> cell.getBooleanCellValue();
                 case NUMERIC -> cell.getNumericCellValue();
                 case STRING -> cell.getStringCellValue();
                 default -> null;
@@ -107,17 +108,9 @@ public class ExcelUtils {
     public static void setCellValue(Cell cell, Object value) {
         if (cell == null || value == null) return;
         switch (value) {
-            case Boolean v -> cell.setCellValue(v);
             case String v -> cell.setCellValue(v);
-            case Double v -> cell.setCellValue(v);
-            case Integer v -> cell.setCellValue(v);
-            case Long v -> cell.setCellValue(v);
-            case Number v -> {
-                Double vDouble = ConversionUtils.toDouble(v);
-                if (vDouble != null) cell.setCellValue(vDouble);
-            }
-            default -> {
-            }
+            case Number v -> cell.setCellValue(v.doubleValue());
+            default -> ConversionUtils.toString(value);
         }
     }
 
@@ -162,7 +155,6 @@ public class ExcelUtils {
         try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
             return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
         } catch (Exception e) {
-            log.error("toWorkbook {}", e.toString());
             return null;
         }
     }
@@ -171,7 +163,6 @@ public class ExcelUtils {
         try (InputStream inputStream = new ByteArrayInputStream(bytes)) {
             return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
         } catch (Exception e) {
-            log.error("toWorkbook {}", e.toString());
             return null;
         }
     }
@@ -180,8 +171,86 @@ public class ExcelUtils {
         try (InputStream inputStream = file.getInputStream()) {
             return StreamingReader.builder().rowCacheSize(ROW_CACHE_SIZE).bufferSize(BUFFER_SIZE).open(inputStream);
         } catch (Exception e) {
-            log.error("toWorkbook {}", e.toString());
             return null;
+        }
+    }
+
+    public static <T> List<T> toData(Workbook workbook, Function<List<Object>, T> rowProcessor) {
+        try (workbook) {
+            if (workbook == null) return null;
+            List<T> result = new ArrayList<>();
+            Sheet sheet = workbook.getSheetAt(0);
+            if (sheet == null) return null;
+            boolean isHeader = true;
+            for (Row row : sheet) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                result.add(rowProcessor.apply(ExcelUtils.getRowCellValues(row)));
+            }
+            return result;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static <T> List<T> toData(MultipartFile file, Function<List<Object>, T> rowProcessor) {
+        try (Workbook workbook = toWorkbook(file)) {
+            return toData(workbook, rowProcessor);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static <T> List<T> toData(String filePath, Function<List<Object>, T> rowProcessor) {
+        try (Workbook workbook = toWorkbook(filePath)) {
+            return toData(workbook, rowProcessor);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static <T> List<T> toData(byte[] file, Function<List<Object>, T> rowProcessor) {
+        try (Workbook workbook = toWorkbook(file)) {
+            return toData(workbook, rowProcessor);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static <T> void writeData(Workbook workbook, List<Object> header, List<T> data, Function<T, List<Object>> rowProcessor) {
+        try (workbook) {
+            if (workbook == null) return;
+            Sheet sheet = getSheet(workbook);
+            if (CollectionUtils.isNotEmpty(header)) {
+                ExcelUtils.setCellValues(sheet, 0, header);
+            }
+            if (CollectionUtils.isNotEmpty(data) && rowProcessor != null) {
+                int idx = 1;
+                for (T item : data) {
+                    ExcelUtils.setCellValues(sheet, idx, rowProcessor.apply(item));
+                    idx++;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    public static <T> byte[] writeDataToBytes(List<Object> header, List<T> data, Function<T, List<Object>> rowProcessor) {
+        try (Workbook workbook = new SXSSFWorkbook()) {
+            writeData(workbook, header, data, rowProcessor);
+            return toBytes(workbook);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static <T> void writeDataToFile(String filePath, List<Object> header, List<T> data, Function<T, List<Object>> rowProcessor) {
+        try (Workbook workbook = new SXSSFWorkbook()) {
+            writeData(workbook, header, data, rowProcessor);
+            writeFile(workbook, filePath);
+        } catch (Exception ignored) {
         }
     }
 }
