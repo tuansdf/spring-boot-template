@@ -156,7 +156,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationDTO.setStatus(CommonStatus.UNREAD);
         notificationDTO.setSendStatus(CommonStatus.PENDING);
         NotificationDTO result = commonMapper.toDTO(notificationRepository.save(commonMapper.toEntity(notificationDTO)));
-        sendNotificationEventPublisher.publish(notificationDTO);
+        sendNotificationEventPublisher.publish(result);
         return result;
     }
 
@@ -174,11 +174,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public NotificationDTO sendNewComerNotification(UUID userId) {
-        NotificationDTO notificationDTO = NotificationDTO.builder()
-                .title(localeHelper.getMessage("notification.new_comer_title", applicationProperties.getApplicationName()))
-                .body(localeHelper.getMessage("notification.new_comer_content"))
-                .userId(userId)
-                .build();
+        NotificationDTO notificationDTO = new NotificationDTO();
+        notificationDTO.setTitle(localeHelper.getMessage("notification.new_comer_title", applicationProperties.getApplicationName()));
+        notificationDTO.setBody(localeHelper.getMessage("notification.new_comer_content"));
+        notificationDTO.setUserId(userId);
         return triggerSend(notificationDTO);
     }
 }

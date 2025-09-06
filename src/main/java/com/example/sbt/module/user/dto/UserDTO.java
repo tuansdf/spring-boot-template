@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class UserDTO {
     private UUID id;
     private String username;

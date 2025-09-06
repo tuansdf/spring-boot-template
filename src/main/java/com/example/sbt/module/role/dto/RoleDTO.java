@@ -12,7 +12,6 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class RoleDTO {
     private UUID id;
     private String code;

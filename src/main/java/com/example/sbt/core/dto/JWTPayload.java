@@ -15,7 +15,6 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class JWTPayload {
     @JsonProperty(JWTPayloadKey.ISSUED_AT)
     private Instant issuedAt;

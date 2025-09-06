@@ -185,13 +185,12 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID userId) {
         throttleSend(userId, CommonType.RESET_PASSWORD, "auth.reset_password_email_sent");
-        EmailDTO emailDTO = EmailDTO.builder()
-                .userId(userId)
-                .toEmail(email)
-                .subject(localeHelper.getMessage("email.reset_password_subject"))
-                .body(localeHelper.getMessage("email.reset_password_content", name, token))
-                .type(CommonType.RESET_PASSWORD)
-                .build();
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setUserId(userId);
+        emailDTO.setToEmail(email);
+        emailDTO.setSubject(localeHelper.getMessage("email.reset_password_subject"));
+        emailDTO.setBody(localeHelper.getMessage("email.reset_password_content", name, token));
+        emailDTO.setType(CommonType.RESET_PASSWORD);
         return triggerSend(emailDTO);
     }
 
@@ -204,13 +203,12 @@ public class EmailServiceImpl implements EmailService {
             return null;
         }
         url = url.replace("{{{token}}}", token);
-        EmailDTO emailDTO = EmailDTO.builder()
-                .userId(userId)
-                .toEmail(email)
-                .subject(localeHelper.getMessage("email.activate_account_subject"))
-                .body(localeHelper.getMessage("email.activate_account_content", name, url))
-                .type(CommonType.ACTIVATE_ACCOUNT)
-                .build();
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setUserId(userId);
+        emailDTO.setToEmail(email);
+        emailDTO.setSubject(localeHelper.getMessage("email.activate_account_subject"));
+        emailDTO.setBody(localeHelper.getMessage("email.activate_account_content", name, url));
+        emailDTO.setType(CommonType.ACTIVATE_ACCOUNT);
         return triggerSend(emailDTO);
     }
 }

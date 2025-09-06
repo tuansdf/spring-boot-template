@@ -30,5 +30,5 @@ public class SearchUserRequest {
 
     private String cacheType;
     private Instant cacheTime;
-    private boolean isDetail = false;
+    private Boolean isDetail;
 }

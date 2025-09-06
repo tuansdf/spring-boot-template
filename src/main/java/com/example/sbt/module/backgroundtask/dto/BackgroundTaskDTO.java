@@ -11,7 +11,6 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class BackgroundTaskDTO {
     private UUID id;
     private UUID fileId;

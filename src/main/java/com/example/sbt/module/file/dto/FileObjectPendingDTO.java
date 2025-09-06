@@ -11,7 +11,6 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class FileObjectPendingDTO {
     private UUID id;
     private String filePath;

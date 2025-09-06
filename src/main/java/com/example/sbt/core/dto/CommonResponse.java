@@ -1,16 +1,13 @@
 package com.example.sbt.core.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 @Data
 @AllArgsConstructor
-@Builder
 public class CommonResponse<T> {
     private String message;
-    @Builder.Default
     private int status = HttpStatus.OK.value();
     private T data;
 

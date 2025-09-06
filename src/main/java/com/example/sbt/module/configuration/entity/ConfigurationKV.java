@@ -10,7 +10,6 @@ import org.springframework.data.redis.core.RedisHash;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @RedisHash(value = "configuration", timeToLive = 86400)
 public class ConfigurationKV {
     @Id

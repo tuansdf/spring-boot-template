@@ -12,7 +12,6 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class FileObjectDTO {
     private UUID id;
     @JsonIgnore

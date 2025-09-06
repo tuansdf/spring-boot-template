@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
         if (!isCount) {
             builder.append(" select ");
             builder.append(" u.id, u.username, u.email, u.name, u.created_at, u.updated_at, ");
-            if (requestDTO.isDetail()) {
+            if (Boolean.TRUE.equals(requestDTO.getIsDetail())) {
                 builder.append(" u.is_enabled, u.is_verified, u.is_otp_enabled, ");
                 builder.append(" string_agg(distinct(r.code), ',') as roles, ");
                 builder.append(" string_agg(distinct(p.code), ',') as permissions, ");
@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
                 dto.setName(ConversionUtils.toString(x[3]));
                 dto.setCreatedAt(DateUtils.toInstant(x[4]));
                 dto.setUpdatedAt(DateUtils.toInstant(x[5]));
-                if (requestDTO.isDetail()) {
+                if (Boolean.TRUE.equals(requestDTO.getIsDetail())) {
                     dto.setIsEnabled(ConversionUtils.toBoolean(x[6]));
                     dto.setIsVerified(ConversionUtils.toBoolean(x[7]));
                     dto.setIsOtpEnabled(ConversionUtils.toBoolean(x[8]));

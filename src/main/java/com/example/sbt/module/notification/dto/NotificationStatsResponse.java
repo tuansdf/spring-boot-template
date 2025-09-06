@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class NotificationStatsResponse {
     private Long totalUnread;
     private Long totalRead;

@@ -12,7 +12,6 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class AuthTokenDTO {
     private UUID id;
     private UUID userId;
