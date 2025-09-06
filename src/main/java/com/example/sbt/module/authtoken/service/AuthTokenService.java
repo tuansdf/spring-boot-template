@@ -1,7 +1,6 @@
 package com.example.sbt.module.authtoken.service;
 
 import com.example.sbt.module.authtoken.dto.AuthTokenDTO;
-import org.springframework.scheduling.annotation.Async;
 
 import java.util.List;
 import java.util.UUID;

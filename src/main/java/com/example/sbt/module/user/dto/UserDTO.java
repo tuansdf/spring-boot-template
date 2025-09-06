@@ -3,7 +3,6 @@ package com.example.sbt.module.user.dto;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
