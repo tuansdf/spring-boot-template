@@ -1,38 +1,71 @@
 package com.example.sbt.config;
 
-import com.example.sbt.core.constant.ApplicationProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.transaction.TransactionAwareCacheManagerProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheConfiguration;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import java.time.Duration;
 
 @RequiredArgsConstructor
 @Configuration
 public class RedisConfig {
-    private final ApplicationProperties applicationProperties;
-
     @Bean
-    public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration configuration = new RedisStandaloneConfiguration();
-        configuration.setHostName(applicationProperties.getRedisHost());
-        configuration.setPort(applicationProperties.getRedisPort());
-        if (StringUtils.isNotBlank(applicationProperties.getRedisUsername())) {
-            configuration.setUsername(applicationProperties.getRedisUsername());
+    public LettuceConnectionFactory redisConnectionFactory(RedisProperties properties) {
+        var configuration = new RedisStandaloneConfiguration();
+        configuration.setHostName(properties.getHost());
+        configuration.setPort(properties.getPort());
+        if (StringUtils.isNotBlank(properties.getUsername())) {
+            configuration.setUsername(properties.getUsername());
         }
-        if (StringUtils.isNotBlank(applicationProperties.getRedisPassword())) {
-            configuration.setPassword(applicationProperties.getRedisPassword());
+        if (StringUtils.isNotBlank(properties.getPassword())) {
+            configuration.setPassword(properties.getPassword());
         }
         return new LettuceConnectionFactory(configuration);
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(redisConnectionFactory);
-        return template;
+    public RedisCacheConfiguration baseRedisCacheConfig() {
+        var smileMapper = SmileMapper.builder().build()
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+                .registerModule(new JavaTimeModule())
+                .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+
+        RedisSerializationContext.SerializationPair<String> keySer =
+                RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer());
+
+        RedisSerializationContext.SerializationPair<Object> valueSer =
+                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(smileMapper));
+
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .serializeKeysWith(keySer)
+                .serializeValuesWith(valueSer)
+                .entryTtl(Duration.ofDays(1));
+    }
+
+    @Bean
+    public CacheManager cacheManager(RedisConnectionFactory connectionFactory, RedisCacheConfiguration configuration) {
+        return new TransactionAwareCacheManagerProxy(RedisCacheManager.builder(RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory))
+                .cacheDefaults(configuration)
+                .transactionAware()
+                .build());
     }
 }
