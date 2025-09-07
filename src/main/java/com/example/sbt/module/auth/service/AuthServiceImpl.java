@@ -2,6 +2,7 @@ package com.example.sbt.module.auth.service;
 
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.dto.JWTPayload;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.exception.NoRollbackException;
 import com.example.sbt.core.helper.AuthHelper;
@@ -174,7 +175,11 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RefreshTokenResponse refreshAccessToken(String refreshJwt) {
+    public RefreshTokenResponse refreshAccessToken(String refreshJwt, RequestContext requestContext) {
+        String whitelistedIps = configurations.getWhitelistedIps();
+        if (whitelistedIps != null && !whitelistedIps.contains(requestContext.getIp())) {
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_ip"), HttpStatus.BAD_REQUEST);
+        }
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(refreshJwt, CommonType.REFRESH_TOKEN);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);

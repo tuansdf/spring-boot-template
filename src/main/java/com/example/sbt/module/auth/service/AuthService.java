@@ -1,5 +1,6 @@
 package com.example.sbt.module.auth.service;
 
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.user.dto.ChangePasswordRequest;
 
@@ -16,7 +17,7 @@ public interface AuthService {
 
     void resetPassword(ResetPasswordRequest requestDTO);
 
-    RefreshTokenResponse refreshAccessToken(String refreshJwt);
+    RefreshTokenResponse refreshAccessToken(String refreshJwt, RequestContext requestContext);
 
     void requestActivateAccount(RequestActivateAccountRequest requestDTO);
 

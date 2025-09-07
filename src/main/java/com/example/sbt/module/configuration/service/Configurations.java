@@ -22,8 +22,8 @@ public class Configurations {
         return configurationService.findValueByCode(ConfigurationCode.ACTIVATE_ACCOUNT_URL);
     }
 
-    public String getIpWhitelist() {
-        return configurationService.findValueByCode(ConfigurationCode.IP_WHITELIST);
+    public String getWhitelistedIps() {
+        return configurationService.findValueByCode(ConfigurationCode.WHITELISTED_IPS);
     }
 
     public Integer getLoginMaxAttempts() {

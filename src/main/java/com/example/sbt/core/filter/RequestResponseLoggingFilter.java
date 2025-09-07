@@ -3,11 +3,13 @@ package com.example.sbt.core.filter;
 import com.example.sbt.core.constant.HTTPHeader;
 import com.example.sbt.core.constant.LoggerKey;
 import com.example.sbt.core.dto.RequestContextHolder;
+import com.example.sbt.core.helper.ServletHelper;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.RandomUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -15,9 +17,12 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 @Order(1)
 public class RequestResponseLoggingFilter implements Filter {
+    private final ServletHelper servletHelper;
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         long start = System.nanoTime();
@@ -29,6 +34,7 @@ public class RequestResponseLoggingFilter implements Filter {
             RequestContextHolder.get().setRequestId(ConversionUtils.safeToString(RandomUtils.insecure().randomUUID()));
             RequestContextHolder.get().setLocale(httpRequest.getLocale());
             RequestContextHolder.get().setTenantId(httpRequest.getHeader(HTTPHeader.X_TENANT_ID));
+            RequestContextHolder.get().setIp(servletHelper.getClientIp(httpRequest));
             RequestContextHolder.syncWithLogger();
 
             log.atInfo()

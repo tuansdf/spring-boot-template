@@ -25,9 +25,7 @@ public class PublicAuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<LoginResponse>> login(
-            @RequestBody LoginRequest requestDTO
-    ) {
+    public ResponseEntity<CommonResponse<LoginResponse>> login(@RequestBody LoginRequest requestDTO) {
         RequestContextHolder.get().setUsername(requestDTO.getUsername());
         RequestContextHolder.syncWithLogger();
         var result = authService.login(requestDTO);
@@ -35,44 +33,34 @@ public class PublicAuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<CommonResponse<Object>> register(
-            @RequestBody RegisterRequest requestDTO
-    ) {
+    public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequest requestDTO) {
         authService.register(requestDTO);
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
     @PostMapping("/password/reset/request")
-    public ResponseEntity<CommonResponse<Object>> requestResetPassword(
-            @RequestBody RequestResetPasswordRequest requestDTO
-    ) {
+    public ResponseEntity<CommonResponse<Object>> requestResetPassword(@RequestBody RequestResetPasswordRequest requestDTO) {
         authService.requestResetPassword(requestDTO);
         var message = localeHelper.getMessage("auth.reset_password_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
     @PostMapping("/password/reset")
-    public ResponseEntity<CommonResponse<Object>> resetPassword(
-            @RequestBody ResetPasswordRequest requestDTO
-    ) {
+    public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequest requestDTO) {
         authService.resetPassword(requestDTO);
         var message = localeHelper.getMessage("auth.reset_password_success");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
     @PostMapping("/token/refresh")
-    public ResponseEntity<CommonResponse<RefreshTokenResponse>> refreshAccessToken(
-            @RequestBody RefreshTokenRequest requestDTO
-    ) {
-        var result = authService.refreshAccessToken(requestDTO.getToken());
+    public ResponseEntity<CommonResponse<RefreshTokenResponse>> refreshAccessToken(@RequestBody RefreshTokenRequest requestDTO) {
+        var result = authService.refreshAccessToken(requestDTO.getToken(), RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping(value = "/account/activate", produces = MediaType.TEXT_HTML_VALUE)
-    public String activateAccount(
-            @RequestParam(required = false) String token
-    ) {
+    public String activateAccount(@RequestParam(required = false) String token) {
         String result = localeHelper.getMessage("common.error");
         try {
             if (StringUtils.isNotEmpty(token)) {
@@ -86,9 +74,7 @@ public class PublicAuthController {
     }
 
     @PostMapping("/account/activate/request")
-    public ResponseEntity<CommonResponse<Object>> requestActivateAccount(
-            @RequestBody RequestActivateAccountRequest requestDTO
-    ) {
+    public ResponseEntity<CommonResponse<Object>> requestActivateAccount(@RequestBody RequestActivateAccountRequest requestDTO) {
         authService.requestActivateAccount(requestDTO);
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));

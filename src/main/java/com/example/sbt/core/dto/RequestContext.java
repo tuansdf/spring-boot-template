@@ -16,4 +16,5 @@ public class RequestContext {
     private Locale locale;
     private UUID userId;
     private String username;
+    private String ip;
 }
