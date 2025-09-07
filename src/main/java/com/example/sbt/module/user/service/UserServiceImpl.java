@@ -26,7 +26,6 @@ import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -183,19 +182,24 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
-    private List<UserDTO> executeSearchToList(SearchUserRequest requestDTO) {
-        PaginationData<UserDTO> result = executeSearch(requestDTO, false, false);
-        if (CollectionUtils.isEmpty(result.getItems())) {
-            return new ArrayList<>();
+    private List<UserDTO> executeSearchList(SearchUserRequest requestDTO) {
+        return ConversionUtils.safeToList(executeSearch(requestDTO, false, false).getItems());
+    }
+
+    private UserDTO executeSearchOne(SearchUserRequest requestDTO) {
+        if (requestDTO == null) {
+            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return result.getItems();
+        requestDTO.setPageNumber(1L);
+        requestDTO.setPageSize(1L);
+        return executeSearchList(requestDTO).getFirst();
     }
 
     @Override
     public PaginationData<UserDTO> search(SearchUserRequest requestDTO, boolean isCount) {
         PaginationData<UserDTO> result = executeSearch(requestDTO, true, true);
         if (!isCount && result.getTotalItems() > 0) {
-            result.setItems(executeSearchToList(requestDTO));
+            result.setItems(executeSearchList(requestDTO));
         }
         return result;
     }
@@ -243,9 +247,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneById(UUID userId) {
         if (userId == null) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequest.builder().id(userId).isDetail(true).build());
-        if (CollectionUtils.isEmpty(result)) return null;
-        return result.getFirst();
+        return executeSearchOne(SearchUserRequest.builder().id(userId).isDetail(true).build());
     }
 
     @Override
@@ -260,17 +262,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO findOneByUsername(String username) {
         if (StringUtils.isBlank(username)) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequest.builder().username(username).isDetail(true).build());
-        if (CollectionUtils.isEmpty(result)) return null;
-        return result.getFirst();
+        return executeSearchOne(SearchUserRequest.builder().username(username).isDetail(true).build());
     }
 
     @Override
     public UserDTO findOneByEmail(String email) {
         if (StringUtils.isBlank(email)) return null;
-        List<UserDTO> result = executeSearchToList(SearchUserRequest.builder().email(email).isDetail(true).build());
-        if (CollectionUtils.isEmpty(result)) return null;
-        return result.getFirst();
+        return executeSearchOne(SearchUserRequest.builder().email(email).isDetail(true).build());
     }
 
     @Override
@@ -316,7 +314,7 @@ public class UserServiceImpl implements UserService {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
-        List<UserDTO> users = executeSearchToList(requestDTO);
+        List<UserDTO> users = executeSearchList(requestDTO);
         byte[] file = null;
         try (Workbook workbook = new SXSSFWorkbook()) {
             Sheet sheet = workbook.createSheet();

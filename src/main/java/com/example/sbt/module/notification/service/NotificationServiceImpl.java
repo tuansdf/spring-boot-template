@@ -111,19 +111,19 @@ public class NotificationServiceImpl implements NotificationService {
         return result;
     }
 
-    private long executeSearchToCount(SearchNotificationRequest requestDTO) {
+    private long executeSearchCount(SearchNotificationRequest requestDTO) {
         return executeSearch(requestDTO, true).getTotalItems();
     }
 
-    private List<NotificationDTO> executeSearchToList(SearchNotificationRequest requestDTO) {
-        return executeSearch(requestDTO, false).getItems();
+    private List<NotificationDTO> executeSearchList(SearchNotificationRequest requestDTO) {
+        return ConversionUtils.safeToList(executeSearch(requestDTO, false).getItems());
     }
 
     @Override
     public PaginationData<NotificationDTO> search(SearchNotificationRequest requestDTO, boolean isCount) {
         PaginationData<NotificationDTO> result = executeSearch(requestDTO, true);
         if (!isCount && result.getTotalItems() > 0) {
-            result.setItems(executeSearchToList(requestDTO));
+            result.setItems(executeSearchList(requestDTO));
         }
         return result;
     }
@@ -131,8 +131,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationStatsResponse getStatsByUser(UUID userId) {
         NotificationStatsResponse result = new NotificationStatsResponse();
-        result.setTotalRead(executeSearchToCount(SearchNotificationRequest.builder().userId(userId).status(CommonStatus.READ).build()));
-        result.setTotalUnread(executeSearchToCount(SearchNotificationRequest.builder().userId(userId).status(CommonStatus.UNREAD).build()));
+        result.setTotalRead(executeSearchCount(SearchNotificationRequest.builder().userId(userId).status(CommonStatus.READ).build()));
+        result.setTotalUnread(executeSearchCount(SearchNotificationRequest.builder().userId(userId).status(CommonStatus.UNREAD).build()));
         return result;
     }
 
