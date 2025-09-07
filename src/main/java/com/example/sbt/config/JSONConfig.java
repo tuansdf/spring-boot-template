@@ -14,10 +14,10 @@ public class JSONConfig {
     @Bean
     public ObjectMapper getObjectMapperConfig() {
         return JsonMapper.builder()
+                .build()
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .build()
                 .registerModule(new JavaTimeModule())
                 .setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }

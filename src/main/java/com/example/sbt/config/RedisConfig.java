@@ -1,6 +1,7 @@
 package com.example.sbt.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
@@ -44,9 +45,11 @@ public class RedisConfig {
     @Bean
     public RedisCacheConfiguration baseRedisCacheConfig() {
         var smileMapper = SmileMapper.builder().build()
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .registerModule(new JavaTimeModule())
                 .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .registerModule(new JavaTimeModule())
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
 
         RedisSerializationContext.SerializationPair<String> keySer =
