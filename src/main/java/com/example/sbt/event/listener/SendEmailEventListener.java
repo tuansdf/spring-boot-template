@@ -23,7 +23,7 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
         try {
             SendEmailEventRequest request = message.getValue();
             RequestContextHolder.set(request.getRequestContext());
-            log.info("SendEmailEventListener.start ");
+            log.info("SendEmailEventListener.start {}", request.getEmail().getId());
 
             emailService.executeSend(request.getEmail());
         } catch (Exception e) {
@@ -32,7 +32,7 @@ public class SendEmailEventListener implements StreamListener<String, ObjectReco
             try {
                 redisTemplate.opsForStream().acknowledge(EventKey.SEND_EMAIL, message);
                 redisTemplate.opsForStream().delete(EventKey.SEND_EMAIL, message.getId());
-                log.info("SendEmailEventListener.end ");
+                log.info("SendEmailEventListener.end");
             } catch (Exception ignore) {
             }
             RequestContextHolder.clear();

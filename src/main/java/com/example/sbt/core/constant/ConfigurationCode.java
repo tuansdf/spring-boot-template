@@ -8,4 +8,5 @@ public class ConfigurationCode {
     public static final String LOGIN_TIME_WINDOW = "LOGIN_TIME_WINDOW";
     public static final String REGISTER_EMAIL_DOMAINS = "REGISTER_EMAIL_DOMAINS";
     public static final String LOGIN_EMAIL_DOMAINS = "LOGIN_EMAIL_DOMAINS";
+    public static final String EMAIL_THROTTLE_TIME_WINDOW = "EMAIL_THROTTLE_TIME_WINDOW";
 }

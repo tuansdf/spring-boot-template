@@ -1,6 +1,5 @@
 package com.example.sbt.module.email.service;
 
-import com.example.sbt.core.constant.ApplicationProperties;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.dto.PaginationData;
@@ -40,7 +39,6 @@ import java.util.stream.Collectors;
 public class EmailServiceImpl implements EmailService {
     private final SQLHelper sqlHelper;
     private final LocaleHelper localeHelper;
-    private final ApplicationProperties applicationProperties;
     private final CommonMapper commonMapper;
     private final EmailRepository emailRepository;
     private final SendEmailEventPublisher sendEmailEventPublisher;
@@ -173,7 +171,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void throttleSend(UUID userId, String type, Runnable onError) {
-        Integer timeWindow = applicationProperties.getEmailThrottleTimeWindow();
+        Integer timeWindow = configurations.getEmailThrottleTimeWindow();
         if (timeWindow == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }

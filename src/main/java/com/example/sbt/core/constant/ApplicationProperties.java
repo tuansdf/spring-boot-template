@@ -39,12 +39,6 @@ public class ApplicationProperties {
     @Value("${custom.aws.s3-bucket}")
     private String awsS3Bucket;
 
-    @Value("${custom.login.max-attempts}")
-    private Integer loginMaxAttempts;
-    @Value("${custom.login.time-window}")
-    private Integer loginTimeWindow;
-    @Value("${custom.email.throttle-time-window}")
-    private Integer emailThrottleTimeWindow;
     @Value("${custom.mail.from}")
     private String mailFrom;
     @Value("${custom.mail.from-name}")
