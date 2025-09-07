@@ -23,7 +23,7 @@ public class RoleValidator {
 
     public void cleanRequest(RoleDTO requestDTO) {
         if (requestDTO == null) return;
-        requestDTO.setCode(ConversionUtils.safeTrim(requestDTO.getCode()).toUpperCase());
+        requestDTO.setCode(ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase());
         requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
         requestDTO.setDescription(ConversionUtils.safeTrim(requestDTO.getDescription()));
     }

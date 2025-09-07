@@ -40,7 +40,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     private final S3Presigner s3Presigner;
 
     private ObjectKey cleanObjectKey(String dirPath, String originalFilename) {
-        dirPath = ConversionUtils.safeTrim(dirPath);
+        dirPath = ConversionUtils.safeToString(dirPath).trim();
         originalFilename = FileUtils.truncateFilename(FileUtils.cleanFilename(originalFilename));
         FileType fileType = FileType.fromExtension(FileUtils.getFileExtension(originalFilename));
         String filename = RandomUtils.secure().randomUUID().toString();

@@ -19,7 +19,7 @@ public class ConfigurationValidator {
 
     public void cleanRequest(ConfigurationDTO requestDTO) {
         if (requestDTO == null) return;
-        requestDTO.setCode(ConversionUtils.safeTrim(requestDTO.getCode()).toUpperCase());
+        requestDTO.setCode(ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase());
         requestDTO.setDescription(ConversionUtils.safeTrim(requestDTO.getDescription()));
         requestDTO.setValue(ConversionUtils.safeToString(requestDTO.getValue()));
         requestDTO.setIsEnabled(ConversionUtils.safeToBoolean(requestDTO.getIsEnabled()));

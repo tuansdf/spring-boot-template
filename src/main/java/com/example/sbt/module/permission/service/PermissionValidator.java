@@ -20,7 +20,7 @@ public class PermissionValidator {
 
     public void cleanRequest(PermissionDTO requestDTO) {
         if (requestDTO == null) return;
-        requestDTO.setCode(ConversionUtils.safeTrim(requestDTO.getCode()).toUpperCase());
+        requestDTO.setCode(ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase());
         requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
     }
 

@@ -32,10 +32,10 @@ public class ConversionUtils {
 
     public static String safeTrim(Object input) {
         try {
-            if (input == null) return "";
+            if (input == null) return null;
             return safeToString(input).trim();
         } catch (Exception e) {
-            return "";
+            return null;
         }
     }
 

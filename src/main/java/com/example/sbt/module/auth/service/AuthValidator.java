@@ -68,6 +68,7 @@ public class AuthValidator {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
+        requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
         String emailError = validationHelper.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
             throw new CustomException(emailError);
