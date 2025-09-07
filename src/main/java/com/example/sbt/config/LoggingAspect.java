@@ -1,6 +1,7 @@
 package com.example.sbt.config;
 
 import com.example.sbt.core.constant.LoggerKey;
+import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.shared.util.ConversionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -57,7 +58,7 @@ public class LoggingAspect {
                     .addKeyValue(LoggerKey.METHOD, methodName)
                     .addKeyValue(LoggerKey.ARGUMENTS, arguments)
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
-                    .setCause(e)
+                    .setCause(e instanceof CustomException ? null : e)
                     .log(e.toString());
             throw e;
         }

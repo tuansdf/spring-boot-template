@@ -18,12 +18,17 @@ public class CustomException extends RuntimeException {
     }
 
     public CustomException(HttpStatus status) {
-        super(status.getReasonPhrase());
+        super(status != null ? status.getReasonPhrase() : null);
         this.status = status;
     }
 
     public CustomException(String message, HttpStatus status) {
         super(message);
         this.status = status;
+    }
+
+    @Override
+    public String toString() {
+        return "CustomException(status=" + status + ", message=" + super.getMessage() + ")";
     }
 }
