@@ -199,7 +199,7 @@ public class AuthServiceImpl implements AuthService {
         authValidator.validateRequestResetPassword(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
         if (user == null) {
-            throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("auth.reset_password_email_sent"), HttpStatus.BAD_REQUEST);
         }
         authTokenService.invalidateByUserIdAndType(user.getId(), CommonType.RESET_PASSWORD);
         AuthTokenDTO authTokenDTO = authTokenService.createResetPasswordToken(user.getId());
@@ -226,9 +226,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void requestActivateAccount(RequestActivateAccountRequest requestDTO) {
         authValidator.validateRequestActivateAccount(requestDTO);
-        User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
+        User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), false).orElse(null);
         if (user == null) {
-            throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
+            throw new CustomException(localeHelper.getMessage("auth.activate_account_email_sent"), HttpStatus.UNAUTHORIZED);
         }
         authTokenService.invalidateByUserIdAndType(user.getId(), CommonType.ACTIVATE_ACCOUNT);
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());

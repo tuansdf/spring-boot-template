@@ -172,19 +172,25 @@ public class EmailServiceImpl implements EmailService {
         log.info("Email {} sent", ConversionUtils.safeToString(email.getId()));
     }
 
-    private void throttleSend(UUID userId, String type, String messageKey) {
+    private void throttleSend(UUID userId, String type, Runnable onError) {
         Integer timeWindow = applicationProperties.getEmailThrottleTimeWindow();
         if (timeWindow == null) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        if (ConversionUtils.safeToBoolean(emailRepository.existsRecentByUserIdAndType(userId, type, Instant.now().minusSeconds(timeWindow)))) {
-            throw new CustomException(localeHelper.getMessage(messageKey), HttpStatus.OK);
+        if (ConversionUtils.safeToBoolean(emailRepository.existsByUserIdAndTypeAndCreatedAtAfter(userId, type, Instant.now().minusSeconds(timeWindow)))) {
+            if (onError != null) {
+                onError.run();
+            } else {
+                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
 
     @Override
     public EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID userId) {
-        throttleSend(userId, CommonType.RESET_PASSWORD, "auth.reset_password_email_sent");
+        throttleSend(userId, CommonType.RESET_PASSWORD, () -> {
+            throw new CustomException(localeHelper.getMessage("auth.reset_password_email_sent"), HttpStatus.OK);
+        });
         EmailDTO emailDTO = new EmailDTO();
         emailDTO.setUserId(userId);
         emailDTO.setToEmail(email);
@@ -196,7 +202,9 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
-        throttleSend(userId, CommonType.ACTIVATE_ACCOUNT, "auth.activate_account_email_sent");
+        throttleSend(userId, CommonType.ACTIVATE_ACCOUNT, () -> {
+            throw new CustomException(localeHelper.getMessage("auth.activate_account_email_sent"), HttpStatus.OK);
+        });
         String url = configurations.getActivateAccountUrl();
         if (StringUtils.isBlank(url)) {
             log.info("Activate account url is empty");

@@ -16,7 +16,7 @@ public class LocaleHelper {
     private final MessageSource messageSource;
 
     public String getMessage(String code, Locale locale, Object... args) {
-        if (StringUtils.isEmpty(code)) {
+        if (StringUtils.isBlank(code)) {
             return "";
         }
         if (locale == null) {
@@ -26,11 +26,11 @@ public class LocaleHelper {
             if (ArrayUtils.isNotEmpty(args)) {
                 for (int i = 0; i < args.length; i++) {
                     if (args[i] != null && args[i] instanceof LocaleKey(String arg) && arg != null) {
-                        args[i] = getMessage(arg, locale);
+                        args[i] = getMessage(arg, locale, (Object) null);
                     }
                 }
             }
-            return messageSource.getMessage(code, args, code, locale);
+            return messageSource.getMessage(code, args, "", locale);
         } catch (Exception e) {
             return code;
         }
@@ -38,7 +38,7 @@ public class LocaleHelper {
 
     public String getMessage(String code, Object... args) {
         try {
-            return getMessage(code, RequestContextHolder.get().getLocale(), args);
+            return getMessage(code, null, args);
         } catch (Exception e) {
             return code;
         }
@@ -54,7 +54,7 @@ public class LocaleHelper {
 
     public String getMessage(String code) {
         try {
-            return getMessage(code, RequestContextHolder.get().getLocale());
+            return getMessage(code, null, (Object) null);
         } catch (Exception e) {
             return code;
         }
