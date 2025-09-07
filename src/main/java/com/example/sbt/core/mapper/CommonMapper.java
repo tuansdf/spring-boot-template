@@ -4,7 +4,6 @@ import com.example.sbt.module.authtoken.dto.AuthTokenDTO;
 import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import com.example.sbt.module.configuration.entity.Configuration;
-import com.example.sbt.module.configuration.entity.ConfigurationKV;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.SendEmailRequest;
 import com.example.sbt.module.email.entity.Email;
@@ -43,10 +42,6 @@ public interface CommonMapper {
     Configuration toEntity(ConfigurationDTO v);
 
     ConfigurationDTO toDTO(Configuration v);
-
-    ConfigurationKV toKV(ConfigurationDTO v);
-
-    ConfigurationDTO toDTO(ConfigurationKV v);
 
     ConfigurationDTO clone(ConfigurationDTO v);
 

@@ -25,27 +25,21 @@ public class ConfigurationController {
     private final ConfigurationService configurationService;
 
     @GetMapping("/values")
-    public ResponseEntity<CommonResponse<Map<String, String>>> findValues(
-            @RequestParam Set<String> keys
-    ) {
+    public ResponseEntity<CommonResponse<Map<String, String>>> findValues(@RequestParam Set<String> keys) {
         var result = configurationService.findPublicValuesByCodes(new ArrayList<>(keys));
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @GetMapping("/{code}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(
-            @PathVariable String code
-    ) {
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> findOneByCode(@PathVariable String code) {
         var result = configurationService.findOneByCodeOrThrow(code);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PutMapping
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<ConfigurationDTO>> save(
-            @RequestBody ConfigurationDTO requestDTO
-    ) {
+    public ResponseEntity<CommonResponse<ConfigurationDTO>> save(@RequestBody ConfigurationDTO requestDTO) {
         var result = configurationService.save(requestDTO);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
@@ -55,7 +49,6 @@ public class ConfigurationController {
     public ResponseEntity<CommonResponse<PaginationData<ConfigurationDTO>>> search(
             @RequestParam(required = false) Long pageNumber,
             @RequestParam(required = false) Long pageSize,
-            @RequestParam(required = false) String code,
             @RequestParam(required = false) Boolean isEnabled,
             @RequestParam(required = false) Boolean isPublic,
             @RequestParam(required = false) Instant createdAtFrom,
@@ -65,7 +58,6 @@ public class ConfigurationController {
         var requestDTO = SearchConfigurationRequest.builder()
                 .pageNumber(pageNumber)
                 .pageSize(pageSize)
-                .code(code)
                 .isEnabled(isEnabled)
                 .isPublic(isPublic)
                 .createdAtTo(createdAtTo)

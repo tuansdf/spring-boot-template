@@ -4,6 +4,7 @@ import com.example.sbt.module.configuration.entity.Configuration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,4 +13,6 @@ public interface ConfigurationRepository extends JpaRepository<Configuration, UU
     boolean existsByCode(String code);
 
     Optional<Configuration> findTopByCode(String code);
+
+    List<Configuration> findAllByCodeIn(List<String> codes);
 }

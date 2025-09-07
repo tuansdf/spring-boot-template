@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class UserServiceImpl implements UserService {
-    private static final long MAX_ITEMS = 1000000L;
+    private static final long MAX_ITEMS = 1_000_000L;
 
     private final CommonHelper commonHelper;
     private final SQLHelper sqlHelper;

@@ -7,8 +7,6 @@ import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.configuration.dto.ConfigurationDTO;
 import com.example.sbt.module.configuration.dto.SearchConfigurationRequest;
 import com.example.sbt.module.configuration.entity.Configuration;
-import com.example.sbt.module.configuration.entity.ConfigurationKV;
-import com.example.sbt.module.configuration.repository.ConfigurationKVRepository;
 import com.example.sbt.module.configuration.repository.ConfigurationRepository;
 import com.example.sbt.shared.util.ConversionUtils;
 import com.example.sbt.shared.util.DateUtils;
@@ -19,10 +17,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,16 +34,18 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class ConfigurationServiceImpl implements ConfigurationService {
-    private static final int MAX_PUBLIC_CODES = 10;
-
     private final SQLHelper sqlHelper;
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final ConfigurationRepository configurationRepository;
-    private final ConfigurationKVRepository configurationKVRepository;
     private final ConfigurationValidator configurationValidator;
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "configurations", key = "#requestDTO.code"),
+            @CacheEvict(value = "configuration_values", key = "#requestDTO.code"),
+            @CacheEvict(value = "configuration_maps", allEntries = true),
+    })
     public ConfigurationDTO save(ConfigurationDTO requestDTO) {
         configurationValidator.cleanRequest(requestDTO);
         configurationValidator.validateUpdate(requestDTO);
@@ -57,33 +63,18 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         result.setIsEnabled(requestDTO.getIsEnabled());
         result.setIsPublic(requestDTO.getIsPublic());
         result = configurationRepository.save(result);
-        ConfigurationDTO resultDTO = commonMapper.toDTO(result);
-        configurationKVRepository.save(commonMapper.toKV(resultDTO));
-        return resultDTO;
+        return commonMapper.toDTO(result);
     }
 
     @Override
-    public ConfigurationDTO findOneById(UUID id) {
-        if (id == null) return null;
-        return configurationRepository.findById(id).map(commonMapper::toDTO).orElse(null);
-    }
-
-    @Override
-    public ConfigurationDTO findOneByIdOrThrow(UUID id) {
-        ConfigurationDTO result = findOneById(id);
-        if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
-        }
-        return result;
-    }
-
-    @Override
+    @Cacheable(value = "configurations", key = "#code", sync = true)
     public ConfigurationDTO findOneByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
         return configurationRepository.findTopByCode(code).map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
+    @Cacheable(value = "configurations", key = "#code", sync = true)
     public ConfigurationDTO findOneByCodeOrThrow(String code) {
         ConfigurationDTO result = findOneByCode(code);
         if (result == null) {
@@ -93,20 +84,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public ConfigurationKV findOneCachedByCode(String code) {
-        if (StringUtils.isBlank(code)) return null;
-        ConfigurationKV result = configurationKVRepository.findById(code).orElse(null);
-        if (result == null) {
-            result = commonMapper.toKV(findOneByCode(code));
-            if (result == null) return null;
-            configurationKVRepository.save(result);
-        }
-        return result;
-    }
-
-    @Override
+    @Cacheable(value = "configuration_values", key = "#code", sync = true)
     public String findValueByCode(String code) {
-        ConfigurationKV result = findOneCachedByCode(code);
+        ConfigurationDTO result = findOneByCode(code);
         if (result == null || !ConversionUtils.safeToBoolean(result.getIsEnabled())) {
             return null;
         }
@@ -114,30 +94,17 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    public Map<String, String> findValuesByCodes(List<String> codes) {
-        Map<String, String> result = new HashMap<>();
-        if (CollectionUtils.isEmpty(codes)) return result;
-        for (String code : codes) {
-            result.put(code, findValueByCode(code));
-        }
-        return result;
-    }
-
-    @Override
-    public String findPublicValueByCode(String code) {
-        ConfigurationKV result = findOneCachedByCode(code);
-        if (result == null || !ConversionUtils.safeToBoolean(result.getIsEnabled()) || !ConversionUtils.safeToBoolean(result.getIsPublic())) {
-            return null;
-        }
-        return ConversionUtils.safeToString(result.getValue());
-    }
-
-    @Override
+    @Cacheable(value = "configuration_maps", key = "#codes", sync = true)
     public Map<String, String> findPublicValuesByCodes(List<String> codes) {
         Map<String, String> result = new HashMap<>();
         if (CollectionUtils.isEmpty(codes)) return result;
-        for (String code : codes.subList(0, MAX_PUBLIC_CODES)) {
-            result.put(code, findPublicValueByCode(code));
+        List<Configuration> configurations = configurationRepository.findAllByCodeIn(codes);
+        if (CollectionUtils.isEmpty(configurations)) return result;
+        for (Configuration configuration : configurations) {
+            if (!ConversionUtils.safeToBoolean(configuration.getIsEnabled()) || !ConversionUtils.safeToBoolean(configuration.getIsPublic())) {
+                continue;
+            }
+            result.put(configuration.getCode(), configuration.getValue());
         }
         return result;
     }
