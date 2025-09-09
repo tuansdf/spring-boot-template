@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +33,7 @@ public class RequestResponseLoggingFilter implements Filter {
 
         try {
             RequestContextHolder.get().setRequestId(ConversionUtils.safeToString(RandomUtils.insecure().randomUUID()));
-            RequestContextHolder.get().setLocale(httpRequest.getLocale());
+            RequestContextHolder.get().setLocale(LocaleContextHolder.getLocale());
             RequestContextHolder.get().setTenantId(httpRequest.getHeader(HTTPHeader.X_TENANT_ID));
             RequestContextHolder.get().setIp(servletHelper.getClientIp(httpRequest));
             RequestContextHolder.syncWithLogger();

@@ -25,12 +25,12 @@ public class LocaleHelper {
         try {
             if (ArrayUtils.isNotEmpty(args)) {
                 for (int i = 0; i < args.length; i++) {
-                    if (args[i] != null && args[i] instanceof LocaleKey(String arg) && arg != null) {
-                        args[i] = getMessage(arg, locale, (Object) null);
+                    if (args[i] != null && args[i] instanceof LocaleKey(String arg) && StringUtils.isNotBlank(arg)) {
+                        args[i] = getMessage(arg, locale);
                     }
                 }
             }
-            return messageSource.getMessage(code, args, "", locale);
+            return messageSource.getMessage(code, args, code, locale);
         } catch (Exception e) {
             return code;
         }
@@ -39,22 +39,6 @@ public class LocaleHelper {
     public String getMessage(String code, Object... args) {
         try {
             return getMessage(code, null, args);
-        } catch (Exception e) {
-            return code;
-        }
-    }
-
-    public String getMessage(String code, Locale locale) {
-        try {
-            return getMessage(code, locale, (Object) null);
-        } catch (Exception e) {
-            return code;
-        }
-    }
-
-    public String getMessage(String code) {
-        try {
-            return getMessage(code, null, (Object) null);
         } catch (Exception e) {
             return code;
         }
