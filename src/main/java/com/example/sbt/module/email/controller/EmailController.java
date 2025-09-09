@@ -44,10 +44,8 @@ public class EmailController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CommonResponse<EmailDTO>> findOneById(
-            @PathVariable UUID id
-    ) {
-        var result = emailService.findOneById(id);
+    public ResponseEntity<CommonResponse<EmailDTO>> findOneById(@PathVariable UUID id) {
+        var result = emailService.findOneById(id, RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 

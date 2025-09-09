@@ -1,11 +1,12 @@
 package com.example.sbt.module.backgroundtask.service;
 
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.backgroundtask.dto.BackgroundTaskDTO;
 
 import java.util.UUID;
 
 public interface BackgroundTaskService {
-    BackgroundTaskDTO init(String cacheKey, String type);
+    BackgroundTaskDTO init(String cacheKey, String type, RequestContext requestContext);
 
     BackgroundTaskDTO findOneByCacheKey(String cacheKey, String type);
 

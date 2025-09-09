@@ -25,7 +25,7 @@ public class ExportUserEventListener implements StreamListener<String, ObjectRec
             RequestContextHolder.set(request.getRequestContext());
             log.info("ExportUserEventListener.start ");
 
-            userService.handleExportTask(request.getBackgroundTaskId(), request.getSearchRequest());
+            userService.handleExportTask(request.getBackgroundTaskId(), request.getSearchRequest(), RequestContextHolder.get());
         } catch (Exception e) {
             log.error("ExportUserEventListener.error {}", e.toString());
         } finally {

@@ -1,6 +1,7 @@
 package com.example.sbt.module.email.service;
 
 import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.EmailStatsResponse;
 import com.example.sbt.module.email.dto.SearchEmailRequest;
@@ -12,7 +13,7 @@ public interface EmailService {
 
     EmailStatsResponse getStatsByUser(UUID userId);
 
-    EmailDTO findOneById(UUID id);
+    EmailDTO findOneById(UUID id, RequestContext requestContext);
 
     EmailDTO triggerSend(EmailDTO emailDTO);
 

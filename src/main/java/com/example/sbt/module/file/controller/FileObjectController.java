@@ -27,7 +27,7 @@ public class FileObjectController {
     public ResponseEntity<CommonResponse<Object>> uploadImage(
             @RequestParam MultipartFile file
     ) {
-        var result = fileObjectService.uploadFile(file, null);
+        var result = fileObjectService.uploadFile(file, null, RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
@@ -35,7 +35,7 @@ public class FileObjectController {
     public ResponseEntity<CommonResponse<FileObjectDTO>> findOne(
             @PathVariable UUID id
     ) {
-        var result = fileObjectService.getFileById(id);
+        var result = fileObjectService.getFileById(id, RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
@@ -43,7 +43,7 @@ public class FileObjectController {
     public ResponseEntity<CommonResponse<FileObjectPendingDTO>> createPendingFileUpload(
             @RequestBody TemporaryUploadRequest request
     ) {
-        var result = fileObjectService.createPendingUpload(request.filename());
+        var result = fileObjectService.createPendingUpload(request.filename(), RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
@@ -51,7 +51,7 @@ public class FileObjectController {
     public ResponseEntity<CommonResponse<FileObjectDTO>> savePendingFileUpload(
             @PathVariable UUID id
     ) {
-        var result = fileObjectService.savePendingUpload(id);
+        var result = fileObjectService.savePendingUpload(id, RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 

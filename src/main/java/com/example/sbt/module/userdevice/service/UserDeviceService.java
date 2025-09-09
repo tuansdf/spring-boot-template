@@ -1,12 +1,13 @@
 package com.example.sbt.module.userdevice.service;
 
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface UserDeviceService {
-    UserDeviceDTO save(UserDeviceDTO userDeviceDTO);
+    UserDeviceDTO save(UserDeviceDTO userDeviceDTO, RequestContext requestContext);
 
     UserDeviceDTO findOneById(UUID id);
 

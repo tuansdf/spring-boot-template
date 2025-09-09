@@ -1,10 +1,10 @@
 package com.example.sbt.module.user.service;
 
 import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.module.user.dto.SearchUserRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 
-import java.io.IOException;
 import java.util.UUID;
 
 public interface UserService {
@@ -22,5 +22,5 @@ public interface UserService {
 
     void triggerExport(SearchUserRequest requestDTO);
 
-    void handleExportTask(UUID backgroundTaskId, SearchUserRequest requestDTO) throws IOException;
+    void handleExportTask(UUID backgroundTaskId, SearchUserRequest requestDTO, RequestContext requestContext);
 }

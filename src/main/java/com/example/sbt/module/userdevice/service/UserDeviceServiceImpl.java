@@ -1,6 +1,6 @@
 package com.example.sbt.module.userdevice.service;
 
-import com.example.sbt.core.dto.RequestContextHolder;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.core.mapper.CommonMapper;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import com.example.sbt.module.userdevice.entity.UserDevice;
@@ -24,14 +24,14 @@ public class UserDeviceServiceImpl implements UserDeviceService {
     private final UserDeviceRepository userDeviceRepository;
 
     @Override
-    public UserDeviceDTO save(UserDeviceDTO userDeviceDTO) {
+    public UserDeviceDTO save(UserDeviceDTO userDeviceDTO, RequestContext requestContext) {
         UserDevice result = null;
         if (userDeviceDTO.getId() != null) {
             result = userDeviceRepository.findById(userDeviceDTO.getId()).orElse(null);
         }
         if (result == null) {
             result = new UserDevice();
-            result.setUserId(RequestContextHolder.get().getUserId());
+            result.setUserId(requestContext.getUserId());
         }
         result.setFcmToken(userDeviceDTO.getFcmToken());
         return commonMapper.toDTO(userDeviceRepository.save(result));

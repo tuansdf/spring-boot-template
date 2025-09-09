@@ -3,7 +3,7 @@ package com.example.sbt.module.email.service;
 import com.example.sbt.core.constant.CommonStatus;
 import com.example.sbt.core.constant.CommonType;
 import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.dto.RequestContextHolder;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.helper.LocaleHelper;
 import com.example.sbt.core.helper.SQLHelper;
@@ -138,9 +138,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public EmailDTO findOneById(UUID id) {
+    public EmailDTO findOneById(UUID id, RequestContext requestContext) {
         if (id == null) return null;
-        Email result = emailRepository.findTopByIdAndUserId(id, RequestContextHolder.get().getUserId()).orElse(null);
+        Email result = emailRepository.findTopByIdAndUserId(id, requestContext.getUserId()).orElse(null);
         if (result == null) {
             return null;
         }

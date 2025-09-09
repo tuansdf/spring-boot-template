@@ -28,13 +28,13 @@ public class PublicAuthController {
     public ResponseEntity<CommonResponse<LoginResponse>> login(@RequestBody LoginRequest requestDTO) {
         RequestContextHolder.get().setUsername(requestDTO.getUsername());
         RequestContextHolder.syncWithLogger();
-        var result = authService.login(requestDTO);
+        var result = authService.login(requestDTO, RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PostMapping("/register")
     public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequest requestDTO) {
-        authService.register(requestDTO);
+        authService.register(requestDTO, RequestContextHolder.get());
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }

@@ -62,8 +62,19 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    private void validateIp(String ip) {
+        List<String> whitelistedIps = configurations.getWhitelistedIps();
+        if (whitelistedIps != null) {
+            if (StringUtils.isBlank(ip) || !whitelistedIps.contains(ip)) {
+                throw new CustomException(localeHelper.getMessage("auth.error.invalid_ip"), HttpStatus.BAD_REQUEST);
+            }
+        }
+    }
+
     @Override
-    public LoginResponse login(LoginRequest requestDTO) {
+    public LoginResponse login(LoginRequest requestDTO, RequestContext requestContext) {
+        validateIp(requestContext.getIp());
+
         authValidator.validateLogin(requestDTO);
 
         UserDTO userDTO = userRepository.findTopByUsername(requestDTO.getUsername()).map(userMapper::toDTO).orElse(null);
@@ -91,14 +102,14 @@ public class AuthServiceImpl implements AuthService {
             boolean isOtpCorrect = TOTPUtils.verify(requestDTO.getOtpCode(), userDTO.getOtpSecret());
             if (!isOtpCorrect) {
                 loginAuditService.add(userDTO.getId(), false);
-                throw new NoRollbackException(localeHelper.getMessage("auth.error.invalid_otp_code"), HttpStatus.UNAUTHORIZED);
+                throw new CustomException(localeHelper.getMessage("auth.error.invalid_otp_code"), HttpStatus.UNAUTHORIZED);
             }
         }
 
         boolean isPasswordCorrect = authHelper.verifyPassword(requestDTO.getPassword(), userDTO.getPassword());
         if (!isPasswordCorrect) {
             loginAuditService.add(userDTO.getId(), false);
-            throw new NoRollbackException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
 
         List<String> validDomains = configurations.getLoginEmailDomains();
@@ -117,7 +128,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void register(RegisterRequest requestDTO) {
+    public void register(RegisterRequest requestDTO, RequestContext requestContext) {
+        validateIp(requestContext.getIp());
+
         authValidator.validateRegister(requestDTO);
 
         Boolean isRegistrationEnabled = configurations.isRegistrationEnabled();
@@ -176,10 +189,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public RefreshTokenResponse refreshAccessToken(String refreshJwt, RequestContext requestContext) {
-        String whitelistedIps = configurations.getWhitelistedIps();
-        if (whitelistedIps != null && !whitelistedIps.contains(requestContext.getIp())) {
-            throw new CustomException(localeHelper.getMessage("auth.error.invalid_ip"), HttpStatus.BAD_REQUEST);
-        }
+        validateIp(requestContext.getIp());
+
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(refreshJwt, CommonType.REFRESH_TOKEN);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);

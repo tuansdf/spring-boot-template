@@ -1,6 +1,7 @@
 package com.example.sbt.module.userdevice.controller;
 
 import com.example.sbt.core.dto.CommonResponse;
+import com.example.sbt.core.dto.RequestContextHolder;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import com.example.sbt.module.userdevice.service.UserDeviceService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class UserDeviceController {
     public ResponseEntity<CommonResponse<UserDeviceDTO>> save(
             @RequestBody UserDeviceDTO requestDTO
     ) {
-        var result = userDeviceService.save(requestDTO);
+        var result = userDeviceService.save(requestDTO, RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 }

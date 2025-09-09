@@ -1,7 +1,7 @@
 package com.example.sbt.module.file.service;
 
 import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.dto.RequestContextHolder;
+import com.example.sbt.core.dto.RequestContext;
 import com.example.sbt.core.exception.CustomException;
 import com.example.sbt.core.exception.NoRollbackException;
 import com.example.sbt.core.helper.SQLHelper;
@@ -50,7 +50,7 @@ public class FileObjectServiceImpl implements FileObjectService {
     private final FileObjectPendingRepository fileObjectPendingRepository;
 
     @Override
-    public FileObjectDTO uploadFile(MultipartFile file, String dirPath) {
+    public FileObjectDTO uploadFile(MultipartFile file, String dirPath, RequestContext requestContext) {
         if (file == null || file.isEmpty()) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -67,12 +67,12 @@ public class FileObjectServiceImpl implements FileObjectService {
         result.setFilename(FileUtils.truncateFilename(file.getOriginalFilename()));
         result.setFileType(file.getContentType());
         result.setFileSize(file.getSize());
-        result.setCreatedBy(RequestContextHolder.get().getUserId());
+        result.setCreatedBy(requestContext.getUserId());
         return commonMapper.toDTO(fileObjectRepository.save(result));
     }
 
     @Override
-    public FileObjectDTO uploadFile(byte[] file, String dirPath, String filename) {
+    public FileObjectDTO uploadFile(byte[] file, String dirPath, String filename, RequestContext requestContext) {
         if (file == null || file.length == 0) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -89,12 +89,12 @@ public class FileObjectServiceImpl implements FileObjectService {
         result.setFilename(FileUtils.truncateFilename(filename));
         result.setFileType(fileType.getMimeType());
         result.setFileSize(ConversionUtils.safeToLong(file.length));
-        result.setCreatedBy(RequestContextHolder.get().getUserId());
+        result.setCreatedBy(requestContext.getUserId());
         return commonMapper.toDTO(fileObjectRepository.save(result));
     }
 
     @Override
-    public FileObjectPendingDTO createPendingUpload(String filename, String dirPath) {
+    public FileObjectPendingDTO createPendingUpload(String filename, String dirPath, RequestContext requestContext) {
         final long EXPIRES_SECONDS = 10L * 60L;
         String extension = FileUtils.getFileExtension(filename);
         FileType fileType = FileType.fromExtension(extension);
@@ -110,15 +110,15 @@ public class FileObjectServiceImpl implements FileObjectService {
         result.setFileType(fileType.getMimeType());
         result.setFilename(FileUtils.truncateFilename(filename));
         result.setExpiresAt(Instant.now().plusSeconds(EXPIRES_SECONDS));
-        result.setCreatedBy(RequestContextHolder.get().getUserId());
+        result.setCreatedBy(requestContext.getUserId());
         FileObjectPendingDTO dto = commonMapper.toDTO(fileObjectPendingRepository.save(result));
         dto.setFileUploadUrl(objectKey.getFileUrl());
         return dto;
     }
 
     @Override
-    public FileObjectPendingDTO createPendingUpload(String mimeType) {
-        return createPendingUpload(mimeType, null);
+    public FileObjectPendingDTO createPendingUpload(String mimeType, RequestContext requestContext) {
+        return createPendingUpload(mimeType, null, requestContext);
     }
 
     private void deletePendingUpload(UUID id, String filePath) {
@@ -127,8 +127,8 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public FileObjectDTO savePendingUpload(UUID id) {
-        FileObjectPendingDTO pendingDTO = fileObjectPendingRepository.findTopByIdAndCreatedBy(id, RequestContextHolder.get().getUserId()).map(commonMapper::toDTO).orElse(null);
+    public FileObjectDTO savePendingUpload(UUID id, RequestContext requestContext) {
+        FileObjectPendingDTO pendingDTO = fileObjectPendingRepository.findTopByIdAndCreatedBy(id, requestContext.getUserId()).map(commonMapper::toDTO).orElse(null);
         if (pendingDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
@@ -161,8 +161,8 @@ public class FileObjectServiceImpl implements FileObjectService {
     }
 
     @Override
-    public FileObjectDTO getFileById(UUID id) {
-        FileObjectDTO result = fileObjectRepository.findTopByIdAndCreatedBy(id, RequestContextHolder.get().getUserId()).map(commonMapper::toDTO).orElse(null);
+    public FileObjectDTO getFileById(UUID id, RequestContext requestContext) {
+        FileObjectDTO result = fileObjectRepository.findTopByIdAndCreatedBy(id, requestContext.getUserId()).map(commonMapper::toDTO).orElse(null);
         if (result == null) return null;
         result.setFileUrl(uploadFileService.createPresignedGetUrl(result.getFilePath(), result.getFilename()));
         result.setPreviewFileUrl(uploadFileService.createPresignedGetUrl(result.getPreviewFilePath(), result.getFilename()));

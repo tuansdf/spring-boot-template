@@ -269,21 +269,21 @@ public class TestController {
             @RequestParam MultipartFile file,
             @RequestParam(defaultValue = "") String filePath
     ) {
-        return fileObjectService.uploadFile(file, filePath);
+        return fileObjectService.uploadFile(file, filePath, RequestContextHolder.get());
     }
 
     @GetMapping(value = "/s3/presigned", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object testS3Presigned(
             @RequestParam UUID id
     ) {
-        return fileObjectService.getFileById(id);
+        return fileObjectService.getFileById(id, RequestContextHolder.get());
     }
 
     @GetMapping(value = "/s3/presigned/put", produces = MediaType.APPLICATION_JSON_VALUE)
     public Object testS3PresignedPut(
             @RequestParam String extension
     ) {
-        return fileObjectService.createPendingUpload("", extension);
+        return fileObjectService.createPendingUpload("", extension, RequestContextHolder.get());
     }
 
     @GetMapping(value = "/s3/delete", produces = MediaType.TEXT_PLAIN_VALUE)

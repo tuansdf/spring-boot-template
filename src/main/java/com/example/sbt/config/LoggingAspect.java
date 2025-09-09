@@ -30,7 +30,7 @@ public class LoggingAspect {
             if (i > 0) params.append(", ");
             params.append(paramNames[i]).append("=").append(paramValues[i]);
         }
-        String arguments = !params.isEmpty() ? params.toString() : "";
+        String arguments = params.toString();
 
         log.atInfo()
                 .addKeyValue(LoggerKey.EVENT, "ENTER")

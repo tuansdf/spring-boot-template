@@ -7,9 +7,9 @@ import com.example.sbt.module.user.dto.ChangePasswordRequest;
 import java.util.UUID;
 
 public interface AuthService {
-    LoginResponse login(LoginRequest requestDTO);
+    LoginResponse login(LoginRequest requestDTO, RequestContext requestContext);
 
-    void register(RegisterRequest requestDTO);
+    void register(RegisterRequest requestDTO, RequestContext requestContext);
 
     void changePassword(ChangePasswordRequest requestDTO, UUID userId);
 
