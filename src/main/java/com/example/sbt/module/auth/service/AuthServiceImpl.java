@@ -265,11 +265,12 @@ public class AuthServiceImpl implements AuthService {
         if (ConversionUtils.safeToBoolean(user.getIsEnabled())) {
             throw new CustomException(localeHelper.getMessage("auth.error.account_already_active"), HttpStatus.BAD_REQUEST);
         }
+        boolean isVerified = user.getIsVerified();
         user.setIsEnabled(true);
         user.setIsVerified(true);
-        user = userRepository.save(user);
+        userRepository.save(user);
         authTokenService.invalidateByUserId(authTokenDTO.getUserId());
-        if (!ConversionUtils.safeToBoolean(user.getIsVerified())) {
+        if (!ConversionUtils.safeToBoolean(isVerified)) {
             notificationService.sendNewComerNotification(authTokenDTO.getUserId());
         }
     }
