@@ -44,6 +44,4 @@
     <logger name="org.hibernate.SQL" level="info" additivity="false">
         <appender-ref ref="ASYNC_JSON_CONSOLE"/>
     </logger>
-
-    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
 </configuration>
