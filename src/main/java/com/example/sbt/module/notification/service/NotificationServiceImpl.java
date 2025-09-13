@@ -4,19 +4,19 @@ import com.example.sbt.common.constant.ApplicationProperties;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestContextHolder;
+import com.example.sbt.common.mapper.CommonMapper;
+import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.infrastructure.helper.LocaleHelper;
 import com.example.sbt.infrastructure.helper.SQLHelper;
-import com.example.sbt.common.mapper.CommonMapper;
-import com.example.sbt.module.notification.event.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.dto.NotificationDTO;
 import com.example.sbt.module.notification.dto.NotificationStatsResponse;
 import com.example.sbt.module.notification.dto.SearchNotificationRequest;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.notification.entity.Notification;
+import com.example.sbt.module.notification.event.SendNotificationEventPublisher;
 import com.example.sbt.module.notification.repository.NotificationRepository;
 import com.example.sbt.module.userdevice.service.UserDeviceService;
-import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.common.util.DateUtils;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -163,7 +164,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void executeSend(NotificationDTO notificationDTO) throws FirebaseMessagingException {
         if (notificationDTO == null || !CommonStatus.PENDING.equals(notificationDTO.getSendStatus())) return;
-        List<String> tokens = userDeviceService.findAllTokensByUserId(notificationDTO.getUserId());
+        Set<String> tokens = userDeviceService.findAllTokensByUserId(notificationDTO.getUserId());
         SendNotificationRequest request = commonMapper.toSendRequest(notificationDTO);
         request.setTokens(tokens);
         sendNotificationService.send(request);

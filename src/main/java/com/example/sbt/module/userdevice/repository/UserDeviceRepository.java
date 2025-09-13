@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public interface UserDeviceRepository extends JpaRepository<UserDevice, UUID> {
     @Query(value = "select fcm_token from user_device where user_id = :userId", nativeQuery = true)
-    List<String> findAllTokensByUserId(UUID userId);
+    Set<String> findAllTokensByUserId(UUID userId);
 
     List<UserDevice> findAllByUserId(UUID userId);
 }

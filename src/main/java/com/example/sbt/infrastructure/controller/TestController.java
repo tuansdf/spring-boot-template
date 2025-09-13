@@ -1,7 +1,9 @@
 package com.example.sbt.infrastructure.controller;
 
+import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.RequestContextHolder;
+import com.example.sbt.common.util.*;
 import com.example.sbt.infrastructure.exception.ValidationException;
 import com.example.sbt.infrastructure.helper.LocaleHelper;
 import com.example.sbt.module.email.dto.SendEmailRequest;
@@ -11,8 +13,7 @@ import com.example.sbt.module.file.service.UploadFileService;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.notification.service.SendNotificationService;
 import com.example.sbt.module.user.dto.UserDTO;
-import com.example.sbt.common.constant.FileType;
-import com.example.sbt.common.util.*;
+import com.google.common.collect.Sets;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -247,7 +248,7 @@ public class TestController {
                 .title("notification title")
                 .body("notification content")
                 .topic(topic)
-                .tokens(Collections.singletonList(token))
+                .tokens(Sets.newHashSet(token))
                 .build());
         return "OK";
     }
@@ -259,7 +260,7 @@ public class TestController {
     ) throws FirebaseMessagingException {
         sendNotificationService.subscribeTopicAsync(SendNotificationRequest.builder()
                 .topic(topic)
-                .tokens(Collections.singletonList(token))
+                .tokens(Sets.newHashSet(token))
                 .build());
         return "OK";
     }

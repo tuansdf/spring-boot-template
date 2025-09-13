@@ -10,12 +10,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 @Transactional(rollbackOn = Exception.class)
 public class SendNotificationServiceImpl implements SendNotificationService {
-    private final int TOKEN_BATCH_SIZE = 500;
+    private static final int TOKEN_BATCH_SIZE = 500;
     private final FirebaseMessaging firebaseMessaging;
 
     @Override
@@ -38,11 +41,12 @@ public class SendNotificationServiceImpl implements SendNotificationService {
 
         if (CollectionUtils.isEmpty(request.getTokens())) return;
 
-        int tokenSize = request.getTokens().size();
+        List<String> tokens = new ArrayList<>(request.getTokens());
+        int tokenSize = tokens.size();
         for (int i = 0; i < tokenSize; i += TOKEN_BATCH_SIZE) {
             int to = Math.min(i + TOKEN_BATCH_SIZE, tokenSize);
             MulticastMessage message = MulticastMessage.builder()
-                    .addAllTokens(request.getTokens().subList(i, to))
+                    .addAllTokens(tokens.subList(i, to))
                     .setNotification(notification)
                     .build();
             firebaseMessaging.sendEachForMulticast(message);
@@ -60,10 +64,11 @@ public class SendNotificationServiceImpl implements SendNotificationService {
         if (request == null || StringUtils.isBlank(request.getTopic()) || CollectionUtils.isEmpty(request.getTokens())) {
             return;
         }
-        int tokenSize = request.getTokens().size();
+        List<String> tokens = new ArrayList<>(request.getTokens());
+        int tokenSize = tokens.size();
         for (int i = 0; i < tokenSize; i += TOKEN_BATCH_SIZE) {
             int to = Math.min(i + TOKEN_BATCH_SIZE, tokenSize);
-            firebaseMessaging.subscribeToTopic(request.getTokens().subList(i, to), request.getTopic());
+            firebaseMessaging.subscribeToTopic(tokens.subList(i, to), request.getTopic());
         }
     }
 

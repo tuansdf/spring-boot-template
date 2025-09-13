@@ -1,12 +1,12 @@
 package com.example.sbt.module.auth.service;
 
 import com.example.sbt.common.dto.LocaleKey;
+import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.helper.LocaleHelper;
 import com.example.sbt.infrastructure.helper.ValidationHelper;
 import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.user.dto.ChangePasswordRequest;
-import com.example.sbt.common.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
