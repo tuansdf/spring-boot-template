@@ -1,12 +1,12 @@
 package com.example.sbt.infrastructure.config;
 
 import com.example.sbt.common.constant.EventKey;
-import com.example.sbt.module.user.event.ExportUserEventRequest;
+import com.example.sbt.module.email.event.SendEmailEventListener;
 import com.example.sbt.module.email.event.SendEmailEventRequest;
+import com.example.sbt.module.notification.event.SendNotificationEventListener;
 import com.example.sbt.module.notification.event.SendNotificationEventRequest;
 import com.example.sbt.module.user.event.ExportUserEventListener;
-import com.example.sbt.module.email.event.SendEmailEventListener;
-import com.example.sbt.module.notification.event.SendNotificationEventListener;
+import com.example.sbt.module.user.event.ExportUserEventRequest;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

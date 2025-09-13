@@ -1,8 +1,8 @@
 package com.example.sbt.module.email.service;
 
 import com.example.sbt.common.constant.ApplicationProperties;
-import com.example.sbt.module.email.dto.SendEmailRequest;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.module.email.dto.SendEmailRequest;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

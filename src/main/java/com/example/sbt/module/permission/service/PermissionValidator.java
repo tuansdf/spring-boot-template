@@ -2,12 +2,12 @@ package com.example.sbt.module.permission.service;
 
 import com.example.sbt.common.constant.Constants;
 import com.example.sbt.common.dto.LocaleKey;
+import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.helper.LocaleHelper;
 import com.example.sbt.infrastructure.helper.ValidationHelper;
 import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.permission.repository.PermissionRepository;
-import com.example.sbt.common.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
