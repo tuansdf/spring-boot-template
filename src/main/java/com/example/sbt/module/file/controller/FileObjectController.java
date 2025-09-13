@@ -1,8 +1,8 @@
 package com.example.sbt.module.file.controller;
 
-import com.example.sbt.core.dto.CommonResponse;
-import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.dto.RequestContextHolder;
+import com.example.sbt.common.dto.CommonResponse;
+import com.example.sbt.common.dto.PaginationData;
+import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.dto.FileObjectPendingDTO;
 import com.example.sbt.module.file.dto.SearchFileRequest;

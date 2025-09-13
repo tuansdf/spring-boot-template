@@ -1,6 +1,6 @@
 package com.example.sbt.module.userdevice.service;
 
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 
 import java.util.List;

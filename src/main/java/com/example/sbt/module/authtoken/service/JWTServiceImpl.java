@@ -1,10 +1,10 @@
 package com.example.sbt.module.authtoken.service;
 
-import com.example.sbt.core.constant.ApplicationProperties;
-import com.example.sbt.core.constant.CommonType;
-import com.example.sbt.core.constant.PermissionCode;
-import com.example.sbt.core.dto.JWTPayload;
-import com.example.sbt.core.helper.JWTHelper;
+import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.constant.CommonType;
+import com.example.sbt.common.constant.PermissionCode;
+import com.example.sbt.common.dto.JWTPayload;
+import com.example.sbt.infrastructure.helper.JWTHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

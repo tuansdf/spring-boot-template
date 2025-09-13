@@ -1,12 +1,12 @@
 package com.example.sbt.module.authtoken.service;
 
-import com.example.sbt.core.constant.CommonType;
-import com.example.sbt.core.dto.JWTPayload;
-import com.example.sbt.core.mapper.CommonMapper;
+import com.example.sbt.common.constant.CommonType;
+import com.example.sbt.common.dto.JWTPayload;
+import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.module.authtoken.dto.AuthTokenDTO;
 import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.example.sbt.module.authtoken.repository.AuthTokenRepository;
-import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.common.util.ConversionUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

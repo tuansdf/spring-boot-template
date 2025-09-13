@@ -1,8 +1,8 @@
 package com.example.sbt.module.permission.controller;
 
-import com.example.sbt.core.constant.PermissionCode;
-import com.example.sbt.core.dto.CommonResponse;
-import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.common.constant.PermissionCode;
+import com.example.sbt.common.dto.CommonResponse;
+import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.permission.dto.SearchPermissionRequest;
 import com.example.sbt.module.permission.service.PermissionService;

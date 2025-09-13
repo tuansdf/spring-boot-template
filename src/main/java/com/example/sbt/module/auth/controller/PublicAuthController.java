@@ -1,10 +1,10 @@
 package com.example.sbt.module.auth.controller;
 
-import com.example.sbt.core.dto.CommonResponse;
-import com.example.sbt.core.dto.RequestContextHolder;
-import com.example.sbt.core.helper.ExceptionHelper;
-import com.example.sbt.core.helper.HTMLTemplate;
-import com.example.sbt.core.helper.LocaleHelper;
+import com.example.sbt.common.dto.CommonResponse;
+import com.example.sbt.common.dto.RequestContextHolder;
+import com.example.sbt.infrastructure.helper.ExceptionHelper;
+import com.example.sbt.infrastructure.helper.HTMLTemplate;
+import com.example.sbt.infrastructure.helper.LocaleHelper;
 import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;

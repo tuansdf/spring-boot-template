@@ -1,7 +1,7 @@
 package com.example.sbt.module.scheduledjob.controller;
 
-import com.example.sbt.core.constant.PermissionCode;
-import com.example.sbt.core.dto.CommonResponse;
+import com.example.sbt.common.constant.PermissionCode;
+import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.module.file.service.FileObjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

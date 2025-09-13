@@ -1,6 +1,6 @@
 package com.example.sbt.module.permission.service;
 
-import com.example.sbt.core.dto.PaginationData;
+import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.module.permission.dto.PermissionDTO;
 import com.example.sbt.module.permission.dto.SearchPermissionRequest;
 

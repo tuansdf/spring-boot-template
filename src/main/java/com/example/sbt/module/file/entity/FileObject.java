@@ -1,6 +1,6 @@
 package com.example.sbt.module.file.entity;
 
-import com.example.sbt.core.entity.BaseEntity;
+import com.example.sbt.infrastructure.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;

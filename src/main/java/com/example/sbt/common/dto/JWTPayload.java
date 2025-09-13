@@ -1,0 +1,34 @@
+package com.example.sbt.common.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.Instant;
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class JWTPayload {
+    @JsonProperty(JWTPayloadKey.ISSUED_AT)
+    private Instant issuedAt;
+    @JsonProperty(JWTPayloadKey.NOT_BEFORE)
+    private Instant notBefore;
+    @JsonProperty(JWTPayloadKey.EXPIRES_AT)
+    private Instant expiresAt;
+    @JsonProperty(JWTPayloadKey.SUBJECT)
+    private String subject;
+    @JsonProperty(JWTPayloadKey.ISSUER)
+    private String issuer;
+
+    @JsonProperty(JWTPayloadKey.TYPE)
+    private Integer type;
+    @JsonProperty(JWTPayloadKey.PERMISSIONS)
+    private List<Integer> permissions;
+
+    @JsonIgnore
+    private String value;
+}

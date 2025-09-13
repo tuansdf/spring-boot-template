@@ -1,7 +1,7 @@
 package com.example.sbt.module.auth.controller;
 
-import com.example.sbt.core.dto.CommonResponse;
-import com.example.sbt.core.dto.RequestContextHolder;
+import com.example.sbt.common.dto.CommonResponse;
+import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.module.auth.dto.ConfirmOtpRequest;
 import com.example.sbt.module.auth.dto.DisableOtpRequest;
 import com.example.sbt.module.auth.dto.EnableOtpRequest;

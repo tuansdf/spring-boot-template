@@ -1,6 +1,6 @@
 package com.example.sbt.module.auth.service;
 
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.user.dto.ChangePasswordRequest;
 

@@ -1,8 +1,8 @@
 package com.example.sbt.module.role.service;
 
-import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.exception.CustomException;
-import com.example.sbt.core.helper.SQLHelper;
+import com.example.sbt.common.dto.PaginationData;
+import com.example.sbt.infrastructure.exception.CustomException;
+import com.example.sbt.infrastructure.helper.SQLHelper;
 import com.example.sbt.module.permission.service.PermissionService;
 import com.example.sbt.module.role.dto.RoleDTO;
 import com.example.sbt.module.role.dto.SearchRoleRequest;
@@ -11,8 +11,8 @@ import com.example.sbt.module.role.mapper.RoleMapper;
 import com.example.sbt.module.role.repository.RoleRepository;
 import com.example.sbt.module.user.entity.UserRole;
 import com.example.sbt.module.user.repository.UserRoleRepository;
-import com.example.sbt.shared.util.ConversionUtils;
-import com.example.sbt.shared.util.DateUtils;
+import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.common.util.DateUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;

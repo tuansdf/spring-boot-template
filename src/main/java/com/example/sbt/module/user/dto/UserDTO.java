@@ -1,6 +1,6 @@
 package com.example.sbt.module.user.dto;
 
-import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.common.util.ConversionUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;

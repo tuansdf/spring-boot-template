@@ -1,7 +1,7 @@
 package com.example.sbt.module.userdevice.controller;
 
-import com.example.sbt.core.dto.CommonResponse;
-import com.example.sbt.core.dto.RequestContextHolder;
+import com.example.sbt.common.dto.CommonResponse;
+import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.module.userdevice.dto.UserDeviceDTO;
 import com.example.sbt.module.userdevice.service.UserDeviceService;
 import lombok.RequiredArgsConstructor;

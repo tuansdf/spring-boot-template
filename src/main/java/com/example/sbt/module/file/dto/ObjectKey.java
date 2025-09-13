@@ -1,6 +1,6 @@
 package com.example.sbt.module.file.dto;
 
-import com.example.sbt.shared.constant.FileType;
+import com.example.sbt.common.constant.FileType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

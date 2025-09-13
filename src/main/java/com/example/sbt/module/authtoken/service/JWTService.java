@@ -1,6 +1,6 @@
 package com.example.sbt.module.authtoken.service;
 
-import com.example.sbt.core.dto.JWTPayload;
+import com.example.sbt.common.dto.JWTPayload;
 
 import java.util.List;
 import java.util.UUID;

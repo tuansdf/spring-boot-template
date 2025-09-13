@@ -1,7 +1,7 @@
 package com.example.sbt.module.user.service;
 
-import com.example.sbt.core.dto.PaginationData;
-import com.example.sbt.core.dto.RequestContext;
+import com.example.sbt.common.dto.PaginationData;
+import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.module.user.dto.SearchUserRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 

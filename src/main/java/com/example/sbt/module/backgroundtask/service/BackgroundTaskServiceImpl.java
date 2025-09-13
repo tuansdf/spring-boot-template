@@ -1,7 +1,7 @@
 package com.example.sbt.module.backgroundtask.service;
 
-import com.example.sbt.core.dto.RequestContext;
-import com.example.sbt.core.exception.CustomException;
+import com.example.sbt.common.dto.RequestContext;
+import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.module.backgroundtask.constant.BackgroundTaskStatus;
 import com.example.sbt.module.backgroundtask.dto.BackgroundTaskDTO;
 import com.example.sbt.module.backgroundtask.entity.BackgroundTask;

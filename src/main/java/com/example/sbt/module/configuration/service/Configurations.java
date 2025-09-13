@@ -1,8 +1,8 @@
 package com.example.sbt.module.configuration.service;
 
-import com.example.sbt.core.constant.ConfigurationCode;
-import com.example.sbt.shared.util.CommonUtils;
-import com.example.sbt.shared.util.ConversionUtils;
+import com.example.sbt.common.constant.ConfigurationCode;
+import com.example.sbt.common.util.CommonUtils;
+import com.example.sbt.common.util.ConversionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
