@@ -29,7 +29,7 @@ public class ExcelUtils {
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
             workbook.write(bufferedOutputStream);
         } catch (Exception e) {
-            log.error("writeFile {}", e.toString());
+            log.error("writeFile ", e);
         }
     }
 
@@ -39,7 +39,7 @@ public class ExcelUtils {
             workbook.write(outputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
-            log.error("toBytes {}", e.toString());
+            log.error("toBytes ", e);
             return null;
         }
     }
@@ -80,6 +80,7 @@ public class ExcelUtils {
                 default -> null;
             };
         } catch (Exception e) {
+            log.error("getCellValue ", e);
             return null;
         }
     }
@@ -150,6 +151,7 @@ public class ExcelUtils {
         try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
+            log.error("toWorkbook ", e);
             return null;
         }
     }
@@ -159,6 +161,7 @@ public class ExcelUtils {
         try (InputStream inputStream = new ByteArrayInputStream(file)) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
+            log.error("toWorkbook ", e);
             return null;
         }
     }
@@ -168,6 +171,7 @@ public class ExcelUtils {
         try (InputStream inputStream = file.getInputStream()) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
+            log.error("toWorkbook ", e);
             return null;
         }
     }
@@ -188,6 +192,7 @@ public class ExcelUtils {
             }
             return result;
         } catch (Exception e) {
+            log.error("toData ", e);
             return null;
         }
     }
@@ -197,6 +202,7 @@ public class ExcelUtils {
         try (Workbook workbook = toWorkbook(file)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
+            log.error("toData ", e);
             return null;
         }
     }
@@ -206,6 +212,7 @@ public class ExcelUtils {
         try (Workbook workbook = toWorkbook(filePath)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
+            log.error("toData ", e);
             return null;
         }
     }
@@ -215,22 +222,27 @@ public class ExcelUtils {
         try (Workbook workbook = toWorkbook(file)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
+            log.error("toData ", e);
             return null;
         }
     }
 
     public static <T> void writeData(Workbook workbook, List<Object> header, List<T> data, Function<T, List<Object>> rowProcessor) {
-        if (workbook == null) return;
-        Sheet sheet = getSheet(workbook);
-        if (CollectionUtils.isNotEmpty(header)) {
-            ExcelUtils.setCellValues(sheet, 0, header);
-        }
-        if (CollectionUtils.isNotEmpty(data) && rowProcessor != null) {
-            int idx = 1;
-            for (T item : data) {
-                ExcelUtils.setCellValues(sheet, idx, rowProcessor.apply(item));
-                idx++;
+        try {
+            if (workbook == null) return;
+            Sheet sheet = getSheet(workbook);
+            if (CollectionUtils.isNotEmpty(header)) {
+                ExcelUtils.setCellValues(sheet, 0, header);
             }
+            if (CollectionUtils.isNotEmpty(data) && rowProcessor != null) {
+                int idx = 1;
+                for (T item : data) {
+                    ExcelUtils.setCellValues(sheet, idx, rowProcessor.apply(item));
+                    idx++;
+                }
+            }
+        } catch (Exception e) {
+            log.error("writeData ", e);
         }
     }
 
@@ -239,6 +251,7 @@ public class ExcelUtils {
             writeData(workbook, header, data, rowProcessor);
             return toBytes(workbook);
         } catch (Exception e) {
+            log.error("writeDataToBytes ", e);
             return null;
         }
     }
@@ -247,7 +260,8 @@ public class ExcelUtils {
         try (Workbook workbook = new SXSSFWorkbook()) {
             writeData(workbook, header, data, rowProcessor);
             writeFile(workbook, filePath);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            log.error("writeDataToFile ", e);
         }
     }
 }
