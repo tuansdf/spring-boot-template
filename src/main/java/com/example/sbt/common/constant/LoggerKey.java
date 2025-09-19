@@ -5,8 +5,8 @@ public class LoggerKey {
     public static final String USER_ID = "user_id";
     public static final String USERNAME = "username";
     public static final String EVENT = "event";
-    public static final String METHOD = "method";
-    public static final String ARGUMENTS = "arguments";
+    public static final String METHOD_NAME = "method_name";
+    public static final String METHOD_ARGUMENTS = "method_arguments";
     public static final String AROUND_KEY = "around_key";
     public static final String ELAPSED_MS = "elapsed_ms";
     public static final String HTTP_METHOD = "http_method";

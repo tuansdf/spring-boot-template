@@ -35,8 +35,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Secured(PermissionCode.SYSTEM_ADMIN)
 @RestController
-@RequestMapping("/test")
-public class TestController {
+@RequestMapping("/debug")
+public class DebugController {
     private final LocaleHelper localeHelper;
     private final StringRedisTemplate redisTemplate;
     private final SendNotificationService sendNotificationService;
@@ -70,9 +70,15 @@ public class TestController {
     }
 
     @GetMapping("/excel/export")
-    public String testExportExcel(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+    public String testExportExcel(
+            @RequestParam(required = false, defaultValue = "1000") Integer total,
+            @RequestParam(required = false) String folder
+    ) {
         List<UserDTO> data = createData(total);
-        String exportPath = ".temp/excel-" + DateUtils.currentEpochMicros() + ".xlsx";
+        String exportPath = "excel-" + DateUtils.currentEpochMicros() + ".xlsx";
+        if (folder != null) {
+            exportPath = folder + "/" + exportPath;
+        }
         List<Object> header = List.of("ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At");
         ExcelUtils.writeDataToFile(exportPath, header, data, (row) -> Arrays.asList(
                 row.getId(),
@@ -88,9 +94,15 @@ public class TestController {
     }
 
     @GetMapping("/csv/export")
-    public String testExportCsv(@RequestParam(required = false, defaultValue = "1000") Integer total) {
+    public String testExportCsv(
+            @RequestParam(required = false, defaultValue = "1000") Integer total,
+            @RequestParam(required = false) String folder
+    ) {
         List<UserDTO> data = createData(total);
-        String exportPath = ".temp/csv-" + DateUtils.currentEpochMicros() + ".csv";
+        String exportPath = "csv-" + DateUtils.currentEpochMicros() + ".csv";
+        if (folder != null) {
+            exportPath = folder + "/" + exportPath;
+        }
         String[] header = new String[]{"ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At"};
         CSVUtils.writeDataToFile(exportPath, header, data, (row) -> new String[]{
                 ConversionUtils.safeToString(row.getId()),

@@ -35,8 +35,8 @@ public class LoggingAspect {
         log.atInfo()
                 .addKeyValue(LoggerKey.EVENT, "ENTER")
                 .addKeyValue(LoggerKey.AROUND_KEY, start)
-                .addKeyValue(LoggerKey.METHOD, methodName)
-                .addKeyValue(LoggerKey.ARGUMENTS, arguments)
+                .addKeyValue(LoggerKey.METHOD_NAME, methodName)
+                .addKeyValue(LoggerKey.METHOD_ARGUMENTS, arguments)
                 .log();
 
         Object result = null;
@@ -46,8 +46,8 @@ public class LoggingAspect {
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
-                    .addKeyValue(LoggerKey.METHOD, methodName)
-                    .addKeyValue(LoggerKey.ARGUMENTS, arguments)
+                    .addKeyValue(LoggerKey.METHOD_NAME, methodName)
+                    .addKeyValue(LoggerKey.METHOD_ARGUMENTS, arguments)
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
                     .log(ConversionUtils.toString(result));
         } catch (Throwable e) {
@@ -55,8 +55,8 @@ public class LoggingAspect {
             log.atError()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
-                    .addKeyValue(LoggerKey.METHOD, methodName)
-                    .addKeyValue(LoggerKey.ARGUMENTS, arguments)
+                    .addKeyValue(LoggerKey.METHOD_NAME, methodName)
+                    .addKeyValue(LoggerKey.METHOD_ARGUMENTS, arguments)
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
                     .setCause(e instanceof CustomException ? null : e)
                     .log(e.toString());
