@@ -11,15 +11,14 @@ public class RequestContextHolder {
     public static RequestContext get() {
         RequestContext result = context.get();
         if (result == null) {
-            result = RequestContext.builder().build();
-            context.set(result);
+            return RequestContext.builder().build();
         }
         return result;
     }
 
     public static void set(RequestContext input) {
         context.set(input);
-        syncWithLogger();
+        syncWithLogger(input);
     }
 
     public static void clear() {
@@ -27,8 +26,8 @@ public class RequestContextHolder {
         MDC.clear();
     }
 
-    private static void syncWithLogger() {
-        RequestContext context = get();
+    private static void syncWithLogger(RequestContext context) {
+        if (context == null) return;
         String requestId = ConversionUtils.toString(context.getRequestId());
         String userId = ConversionUtils.toString(context.getUserId());
         String username = ConversionUtils.toString(context.getUsername());
