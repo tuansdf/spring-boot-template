@@ -26,8 +26,7 @@ public class PublicAuthController {
 
     @PostMapping("/login")
     public ResponseEntity<CommonResponse<LoginResponse>> login(@RequestBody LoginRequest requestDTO) {
-        RequestContextHolder.get().setUsername(requestDTO.getUsername());
-        RequestContextHolder.syncWithLogger();
+        RequestContextHolder.set(RequestContextHolder.get().withUsername(requestDTO.getUsername()));
         var result = authService.login(requestDTO, RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }

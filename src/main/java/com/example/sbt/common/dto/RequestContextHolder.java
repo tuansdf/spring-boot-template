@@ -11,7 +11,7 @@ public class RequestContextHolder {
     public static RequestContext get() {
         RequestContext result = context.get();
         if (result == null) {
-            result = new RequestContext();
+            result = RequestContext.builder().build();
             context.set(result);
         }
         return result;
@@ -27,7 +27,7 @@ public class RequestContextHolder {
         MDC.clear();
     }
 
-    public static void syncWithLogger() {
+    private static void syncWithLogger() {
         RequestContext context = get();
         String requestId = ConversionUtils.toString(context.getRequestId());
         String userId = ConversionUtils.toString(context.getUserId());

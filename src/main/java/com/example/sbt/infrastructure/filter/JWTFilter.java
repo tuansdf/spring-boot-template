@@ -21,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,9 +51,12 @@ public class JWTFilter extends OncePerRequestFilter {
                 permissions.stream().map(SimpleGrantedAuthority::new).toList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        RequestContextHolder.get().setUserId(ConversionUtils.toUUID(jwtPayload.getSubject()));
-        RequestContextHolder.get().setUsername(jwtPayload.getSubject());
-        RequestContextHolder.syncWithLogger();
+        UUID userId = ConversionUtils.toUUID(jwtPayload.getSubject());
+        String username = null;
+        if (userId == null) username = jwtPayload.getSubject();
+        RequestContextHolder.set(RequestContextHolder.get()
+                .withUserId(userId)
+                .withUsername(username));
 
         filterChain.doFilter(request, response);
     }

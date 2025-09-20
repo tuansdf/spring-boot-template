@@ -2,6 +2,7 @@ package com.example.sbt.infrastructure.filter;
 
 import com.example.sbt.common.constant.HTTPHeader;
 import com.example.sbt.common.constant.LoggerKey;
+import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.RandomUtils;
@@ -32,11 +33,13 @@ public class RequestResponseLoggingFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         try {
-            RequestContextHolder.get().setRequestId(ConversionUtils.safeToString(RandomUtils.insecure().randomUUID()));
-            RequestContextHolder.get().setLocale(LocaleContextHolder.getLocale());
-            RequestContextHolder.get().setTenantId(httpRequest.getHeader(HTTPHeader.X_TENANT_ID));
-            RequestContextHolder.get().setIp(servletHelper.getClientIp(httpRequest));
-            RequestContextHolder.syncWithLogger();
+            RequestContext requestContext = RequestContext.builder()
+                    .requestId(ConversionUtils.toString(RandomUtils.insecure().randomUUID()))
+                    .locale(LocaleContextHolder.getLocale())
+                    .tenantId(httpRequest.getHeader(HTTPHeader.X_TENANT_ID))
+                    .ip(servletHelper.getClientIp(httpRequest))
+                    .build();
+            RequestContextHolder.set(requestContext);
 
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "ENTER")

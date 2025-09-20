@@ -1,20 +1,25 @@
 package com.example.sbt.common.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
+import lombok.With;
 
 import java.util.Locale;
 import java.util.UUID;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Value
+@Builder
 public class RequestContext {
-    private String tenantId;
-    private String requestId;
-    private Locale locale;
-    private UUID userId;
-    private String username;
-    private String ip;
+    @With
+    String tenantId;
+    @With
+    String requestId;
+    @With
+    Locale locale;
+    @With
+    UUID userId;
+    @With
+    String username;
+    @With
+    String ip;
 }
