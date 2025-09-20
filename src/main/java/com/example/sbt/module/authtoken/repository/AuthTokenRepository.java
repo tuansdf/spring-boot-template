@@ -14,15 +14,15 @@ import java.util.UUID;
 public interface AuthTokenRepository extends JpaRepository<AuthToken, UUID> {
     @Modifying
     @Query(value = "update auth_token set valid_from = now(), updated_at = now() where user_id = :userId and type = :type", nativeQuery = true)
-    void invalidateByUserIdAndType(UUID userId, String type);
+    void invalidateByUserIdAndType(UUID userId, AuthToken.Type type);
 
     @Modifying
     @Query(value = "update auth_token set valid_from = now(), updated_at = now() where user_id = :userId and type in :types", nativeQuery = true)
-    void invalidateByUserIdAndTypes(UUID userId, List<String> types);
+    void invalidateByUserIdAndTypes(UUID userId, List<AuthToken.Type> types);
 
     @Modifying
     @Query(value = "update auth_token set valid_from = now(), updated_at = now() where user_id = :userId", nativeQuery = true)
     void invalidateByUserId(UUID userId);
 
-    Optional<AuthToken> findTopByUserIdAndType(UUID userId, String type);
+    Optional<AuthToken> findTopByUserIdAndType(UUID userId, AuthToken.Type type);
 }

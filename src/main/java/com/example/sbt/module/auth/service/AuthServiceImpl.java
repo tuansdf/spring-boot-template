@@ -1,6 +1,5 @@
 package com.example.sbt.module.auth.service;
 
-import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.util.CommonUtils;
@@ -12,6 +11,7 @@ import com.example.sbt.infrastructure.helper.AuthHelper;
 import com.example.sbt.infrastructure.helper.LocaleHelper;
 import com.example.sbt.module.auth.dto.*;
 import com.example.sbt.module.authtoken.dto.AuthTokenDTO;
+import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.example.sbt.module.authtoken.service.AuthTokenService;
 import com.example.sbt.module.authtoken.service.JWTService;
 import com.example.sbt.module.configuration.service.Configurations;
@@ -191,7 +191,7 @@ public class AuthServiceImpl implements AuthService {
     public RefreshTokenResponse refreshAccessToken(String refreshJwt, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
-        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(refreshJwt, CommonType.REFRESH_TOKEN);
+        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(refreshJwt, AuthToken.Type.REFRESH_TOKEN);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
@@ -217,7 +217,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.reset_password_email_sent"), HttpStatus.BAD_REQUEST);
         }
-        authTokenService.invalidateByUserIdAndType(user.getId(), CommonType.RESET_PASSWORD);
+        authTokenService.invalidateByUserIdAndType(user.getId(), AuthToken.Type.RESET_PASSWORD);
         AuthTokenDTO authTokenDTO = authTokenService.createResetPasswordToken(user.getId());
         String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
         emailService.sendResetPasswordEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
@@ -226,7 +226,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void resetPassword(ResetPasswordRequest requestDTO) {
         authValidator.validateResetPassword(requestDTO);
-        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(requestDTO.getToken(), CommonType.RESET_PASSWORD);
+        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(requestDTO.getToken(), AuthToken.Type.RESET_PASSWORD);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
@@ -246,7 +246,7 @@ public class AuthServiceImpl implements AuthService {
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.activate_account_email_sent"), HttpStatus.UNAUTHORIZED);
         }
-        authTokenService.invalidateByUserIdAndType(user.getId(), CommonType.ACTIVATE_ACCOUNT);
+        authTokenService.invalidateByUserIdAndType(user.getId(), AuthToken.Type.ACTIVATE_ACCOUNT);
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
         String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
         emailService.sendActivateAccountEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
@@ -254,7 +254,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void activateAccount(String jwt) {
-        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(jwt, CommonType.ACTIVATE_ACCOUNT);
+        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(jwt, AuthToken.Type.ACTIVATE_ACCOUNT);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }

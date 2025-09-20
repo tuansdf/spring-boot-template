@@ -1,11 +1,11 @@
 package com.example.sbt.infrastructure.filter;
 
-import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.infrastructure.helper.ServletHelper;
+import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.example.sbt.module.authtoken.service.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -38,7 +38,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (!CommonType.ACCESS_TOKEN.equals(CommonType.fromIndex(jwtPayload.getType()))) {
+        if (!AuthToken.Type.ACCESS_TOKEN.equals(jwtPayload.getType())) {
             filterChain.doFilter(request, response);
             return;
         }

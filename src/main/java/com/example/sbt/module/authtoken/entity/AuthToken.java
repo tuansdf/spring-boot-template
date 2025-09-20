@@ -1,10 +1,7 @@
 package com.example.sbt.module.authtoken.entity;
 
 import com.example.sbt.infrastructure.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,6 +28,14 @@ public class AuthToken extends BaseEntity {
     private UUID userId;
     @Column(name = "valid_from")
     private Instant validFrom;
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", length = 32)
-    private String type;
+    private Type type;
+
+    public enum Type {
+        ACCESS_TOKEN,
+        REFRESH_TOKEN,
+        RESET_PASSWORD,
+        ACTIVATE_ACCOUNT,
+    }
 }

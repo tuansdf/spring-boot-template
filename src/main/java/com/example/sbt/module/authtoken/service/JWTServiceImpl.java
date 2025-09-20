@@ -1,10 +1,10 @@
 package com.example.sbt.module.authtoken.service;
 
 import com.example.sbt.common.constant.ApplicationProperties;
-import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.infrastructure.helper.JWTHelper;
+import com.example.sbt.module.authtoken.entity.AuthToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtAccessLifetime()));
-        jwtPayload.setType(CommonType.toIndex(CommonType.ACCESS_TOKEN));
+        jwtPayload.setType(AuthToken.Type.ACCESS_TOKEN);
         jwtPayload.setValue(jwtHelper.create(jwtPayload));
         return jwtPayload;
     }
@@ -42,7 +42,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtRefreshLifetime()));
-        jwtPayload.setType(CommonType.toIndex(CommonType.REFRESH_TOKEN));
+        jwtPayload.setType(AuthToken.Type.REFRESH_TOKEN);
         jwtPayload.setValue(jwtHelper.create(jwtPayload));
         return jwtPayload;
     }
@@ -55,7 +55,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtResetPasswordLifetime()));
-        jwtPayload.setType(CommonType.toIndex(CommonType.RESET_PASSWORD));
+        jwtPayload.setType(AuthToken.Type.RESET_PASSWORD);
         jwtPayload.setValue(jwtHelper.create(jwtPayload));
         return jwtPayload;
     }
@@ -68,7 +68,7 @@ public class JWTServiceImpl implements JWTService {
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtActivateAccountLifetime()));
-        jwtPayload.setType(CommonType.toIndex(CommonType.ACTIVATE_ACCOUNT));
+        jwtPayload.setType(AuthToken.Type.ACTIVATE_ACCOUNT);
         jwtPayload.setValue(jwtHelper.create(jwtPayload));
         return jwtPayload;
     }

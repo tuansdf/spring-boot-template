@@ -1,7 +1,6 @@
 package com.example.sbt.module.email.service;
 
 import com.example.sbt.common.constant.CommonStatus;
-import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.mapper.CommonMapper;
@@ -10,6 +9,7 @@ import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.helper.LocaleHelper;
 import com.example.sbt.infrastructure.helper.SQLHelper;
+import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.example.sbt.module.configuration.service.Configurations;
 import com.example.sbt.module.email.dto.EmailDTO;
 import com.example.sbt.module.email.dto.EmailStatsResponse;
@@ -186,7 +186,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID userId) {
-        throttleSend(userId, CommonType.RESET_PASSWORD, () -> {
+        throttleSend(userId, AuthToken.Type.RESET_PASSWORD.toString(), () -> {
             throw new CustomException(localeHelper.getMessage("auth.reset_password_email_sent"), HttpStatus.OK);
         });
         EmailDTO emailDTO = new EmailDTO();
@@ -194,13 +194,13 @@ public class EmailServiceImpl implements EmailService {
         emailDTO.setToEmail(email);
         emailDTO.setSubject(localeHelper.getMessage("email.reset_password_subject"));
         emailDTO.setBody(localeHelper.getMessage("email.reset_password_content", name, token));
-        emailDTO.setType(CommonType.RESET_PASSWORD);
+        emailDTO.setType(AuthToken.Type.RESET_PASSWORD.toString());
         return triggerSend(emailDTO);
     }
 
     @Override
     public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
-        throttleSend(userId, CommonType.ACTIVATE_ACCOUNT, () -> {
+        throttleSend(userId, AuthToken.Type.ACTIVATE_ACCOUNT.toString(), () -> {
             throw new CustomException(localeHelper.getMessage("auth.activate_account_email_sent"), HttpStatus.OK);
         });
         String url = configurations.getActivateAccountUrl();
@@ -214,7 +214,7 @@ public class EmailServiceImpl implements EmailService {
         emailDTO.setToEmail(email);
         emailDTO.setSubject(localeHelper.getMessage("email.activate_account_subject"));
         emailDTO.setBody(localeHelper.getMessage("email.activate_account_content", name, url));
-        emailDTO.setType(CommonType.ACTIVATE_ACCOUNT);
+        emailDTO.setType(AuthToken.Type.ACTIVATE_ACCOUNT.toString());
         return triggerSend(emailDTO);
     }
 }

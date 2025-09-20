@@ -1,5 +1,6 @@
 package com.example.sbt.common.dto;
 
+import com.example.sbt.module.authtoken.entity.AuthToken;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class JWTPayload {
     private String issuer;
 
     @JsonProperty(JWTPayloadKey.TYPE)
-    private Integer type;
+    private AuthToken.Type type;
     @JsonProperty(JWTPayloadKey.PERMISSIONS)
     private List<Integer> permissions;
 

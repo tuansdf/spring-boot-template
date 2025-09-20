@@ -1,6 +1,5 @@
 package com.example.sbt.module.authtoken.service;
 
-import com.example.sbt.common.constant.CommonType;
 import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
@@ -27,7 +26,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     private final AuthTokenRepository authTokenRepository;
     private final JWTService jwtService;
 
-    private AuthTokenDTO findOneOrCreateByUserIdAndType(UUID userId, String type) {
+    private AuthTokenDTO findOneOrCreateByUserIdAndType(UUID userId, AuthToken.Type type) {
         Instant now = Instant.now();
         AuthTokenDTO result = authTokenRepository.findTopByUserIdAndType(userId, type).map(commonMapper::toDTO).orElse(null);
         if (result != null) return result;
@@ -38,8 +37,8 @@ public class AuthTokenServiceImpl implements AuthTokenService {
         return commonMapper.toDTO(authTokenRepository.save(authToken));
     }
 
-    private AuthTokenDTO findOneByUserIdAndType(UUID userId, String type) {
-        if (userId == null || StringUtils.isBlank(type)) return null;
+    private AuthTokenDTO findOneByUserIdAndType(UUID userId, AuthToken.Type type) {
+        if (userId == null || type == null) return null;
         return authTokenRepository.findTopByUserIdAndType(userId, type).map(commonMapper::toDTO).orElse(null);
     }
 
@@ -50,12 +49,12 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     }
 
     @Override
-    public void invalidateByUserIdAndType(UUID userId, String type) {
+    public void invalidateByUserIdAndType(UUID userId, AuthToken.Type type) {
         authTokenRepository.invalidateByUserIdAndType(userId, type);
     }
 
     @Override
-    public void invalidateByUserIdAndTypes(UUID userId, List<String> types) {
+    public void invalidateByUserIdAndTypes(UUID userId, List<AuthToken.Type> types) {
         authTokenRepository.invalidateByUserIdAndTypes(userId, types);
     }
 
@@ -65,16 +64,12 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     }
 
     @Override
-    public AuthTokenDTO findOneAndVerifyJwt(String jwt, String type) {
-        if (StringUtils.isBlank(jwt) || StringUtils.isBlank(type)) {
+    public AuthTokenDTO findOneAndVerifyJwt(String jwt, AuthToken.Type type) {
+        if (StringUtils.isBlank(jwt) || type == null) {
             return null;
         }
         JWTPayload jwtPayload = jwtService.verify(jwt);
-        if (jwtPayload == null) {
-            return null;
-        }
-        String tokenType = CommonType.fromIndex(jwtPayload.getType());
-        if (!type.equals(tokenType)) {
+        if (jwtPayload == null || !type.equals(jwtPayload.getType())) {
             return null;
         }
         UUID userId = ConversionUtils.toUUID(jwtPayload.getSubject());
@@ -90,7 +85,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
     @Override
     public AuthTokenDTO createRefreshToken(UUID userId) {
-        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, CommonType.REFRESH_TOKEN);
+        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.REFRESH_TOKEN);
         JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
         result.setValue(jwtPayload.getValue());
         return result;
@@ -98,7 +93,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
     @Override
     public AuthTokenDTO createResetPasswordToken(UUID userId) {
-        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, CommonType.RESET_PASSWORD);
+        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.RESET_PASSWORD);
         JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
         result.setValue(jwtPayload.getValue());
         return result;
@@ -106,7 +101,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
     @Override
     public AuthTokenDTO createActivateAccountToken(UUID userId) {
-        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, CommonType.ACTIVATE_ACCOUNT);
+        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.ACTIVATE_ACCOUNT);
         JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
         result.setValue(jwtPayload.getValue());
         return result;
