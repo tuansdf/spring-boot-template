@@ -1,6 +1,5 @@
 package com.example.sbt.infrastructure.filter;
 
-import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
@@ -44,11 +43,11 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        List<String> permissions = PermissionCode.fromIndexes(jwtPayload.getPermissions());
+        List<String> permissions = jwtPayload.getPermissions();
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 jwtPayload.getSubject(),
                 null,
-                permissions.stream().map(SimpleGrantedAuthority::new).toList());
+                permissions != null ? permissions.stream().map(SimpleGrantedAuthority::new).toList() : null);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UUID userId = ConversionUtils.toUUID(jwtPayload.getSubject());

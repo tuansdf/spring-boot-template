@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -27,9 +29,18 @@ public class JWTPayload {
 
     @JsonProperty(JWTPayloadKey.TYPE)
     private AuthToken.Type type;
-    @JsonProperty(JWTPayloadKey.PERMISSIONS)
-    private List<Integer> permissions;
+    @JsonProperty(JWTPayloadKey.SCOPE)
+    private List<String> permissions;
 
     @JsonIgnore
     private String value;
+
+    public void setPermissions(List<String> permissions) {
+        this.permissions = permissions;
+    }
+
+    public void setPermissions(String permissions) {
+        if (StringUtils.isBlank(permissions)) return;
+        this.permissions = Arrays.asList(permissions.split(" "));
+    }
 }

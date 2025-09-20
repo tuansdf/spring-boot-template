@@ -1,7 +1,6 @@
 package com.example.sbt.module.authtoken.service;
 
 import com.example.sbt.common.constant.ApplicationProperties;
-import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.infrastructure.helper.JWTHelper;
 import com.example.sbt.module.authtoken.entity.AuthToken;
@@ -25,7 +24,7 @@ public class JWTServiceImpl implements JWTService {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
         jwtPayload.setSubject(userId.toString());
-        jwtPayload.setPermissions(PermissionCode.toIndexes(permissions));
+        jwtPayload.setPermissions(permissions);
         jwtPayload.setIssuedAt(now);
         jwtPayload.setNotBefore(now);
         jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtAccessLifetime()));

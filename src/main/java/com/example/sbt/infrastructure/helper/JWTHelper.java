@@ -58,7 +58,7 @@ public class JWTHelper {
                 claimsBuilder.claim(JWTPayloadKey.TYPE, jwtPayload.getType());
             }
             if (CollectionUtils.isNotEmpty(jwtPayload.getPermissions())) {
-                claimsBuilder.claim(JWTPayloadKey.PERMISSIONS, jwtPayload.getPermissions());
+                claimsBuilder.claim(JWTPayloadKey.SCOPE, String.join(" ", jwtPayload.getPermissions()));
             }
             JWTClaimsSet claimsSet = claimsBuilder.build();
 

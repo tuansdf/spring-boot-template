@@ -7,5 +7,5 @@ public class JWTPayloadKey {
     public static final String SUBJECT = "sub";
     public static final String ISSUER = "iss";
     public static final String TYPE = "typ";
-    public static final String PERMISSIONS = "per";
+    public static final String SCOPE = "scope";
 }
