@@ -75,10 +75,10 @@ public class UserServiceImpl implements UserService {
             if (Boolean.TRUE.equals(requestDTO.getIsDetail())) {
                 builder.append(" u.is_enabled, u.is_verified, u.is_otp_enabled, ");
                 builder.append(" string_agg(distinct(r.code), ',') as roles, ");
-                builder.append(" string_agg(distinct(p.code), ',') as permissions, ");
+                builder.append(" string_agg(distinct(p.code), ',') as permissions ");
             } else {
                 builder.append(" null as is_enabled, null as is_verified, u.is_otp_enabled, ");
-                builder.append(" null as roles, null as permissions, ");
+                builder.append(" null as roles, null as permissions ");
             }
             builder.append(" from _user u ");
             builder.append(" inner join ( ");

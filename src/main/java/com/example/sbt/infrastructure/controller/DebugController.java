@@ -12,13 +12,16 @@ import com.example.sbt.module.file.service.FileObjectService;
 import com.example.sbt.module.file.service.UploadFileService;
 import com.example.sbt.module.notification.dto.SendNotificationRequest;
 import com.example.sbt.module.notification.service.SendNotificationService;
+import com.example.sbt.module.user.dto.SearchUserRequest;
 import com.example.sbt.module.user.dto.UserDTO;
+import com.example.sbt.module.user.service.UserService;
 import com.google.common.collect.Sets;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.openjdk.jol.info.GraphLayout;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
@@ -43,6 +46,7 @@ public class DebugController {
     private final FileObjectService fileObjectService;
     private final UploadFileService uploadFileService;
     private final SendEmailService sendEmailService;
+    private final UserService userService;
 
     @GetMapping("/health")
     public String check() {
@@ -366,6 +370,16 @@ public class DebugController {
         result.put("clean-file-name", FileUtils.cleanFilename(body.getText()));
         result.put("string-join", String.join("", "a", "b", null, "c"));
         return result;
+    }
+
+    @GetMapping(value = "/users/all", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object getUsers() {
+        var response = userService.search(SearchUserRequest.builder().pageSize(5000L).build(), false);
+        var items = response.getItems();
+        log.info("items: {} {}", items.size(), items.getFirst());
+        System.out.println(GraphLayout.parseInstance(items).toFootprint());
+        System.out.println("Total bytes: " + GraphLayout.parseInstance(items).totalSize());
+        return "OK";
     }
 
     @Data

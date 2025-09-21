@@ -58,6 +58,7 @@ dependencies {
     implementation 'com.github.pjfanning:excel-streaming-reader:5.0.3'
     implementation 'com.nimbusds:nimbus-jose-jwt:10.3'
     implementation 'com.atlassian:onetime:2.1.2'
+    implementation 'org.openjdk.jol:jol-core:0.17'
 
     compileOnly 'org.projectlombok:lombok'
     implementation 'org.mapstruct:mapstruct:1.6.3'

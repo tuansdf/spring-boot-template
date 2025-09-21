@@ -1,7 +1,6 @@
 package com.example.sbt.common.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -80,10 +79,10 @@ public class DateUtils {
         return toOffsetDateTime(input, null, null);
     }
 
-    public static OffsetDateTime toOffsetDateTime(String input, DateTimeFormatter formatter) {
-        if (StringUtils.isBlank(input)) return null;
+    public static OffsetDateTime toOffsetDateTime(Object input, DateTimeFormatter formatter) {
+        if (input == null) return null;
         try {
-            return OffsetDateTime.parse(input, formatter);
+            return toOffsetDateTime(input, formatter);
         } catch (Exception e) {
             return null;
         }

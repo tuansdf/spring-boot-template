@@ -1,7 +1,9 @@
 package com.example.sbt.infrastructure.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.smile.databind.SmileMapper;
@@ -44,19 +46,21 @@ public class RedisConfig {
 
     @Bean
     public RedisCacheConfiguration baseRedisCacheConfig() {
-        var smileMapper = SmileMapper.builder().build()
+        var objectMapper = SmileMapper.builder()
                 .enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                .registerModule(new JavaTimeModule())
-                .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-                .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+                .addModule(new JavaTimeModule())
+                .serializationInclusion(JsonInclude.Include.NON_NULL)
+                .propertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
+                .build();
+        objectMapper.activateDefaultTyping(objectMapper.getPolymorphicTypeValidator(), ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
 
         RedisSerializationContext.SerializationPair<String> keySer =
                 RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer());
 
         RedisSerializationContext.SerializationPair<Object> valueSer =
-                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(smileMapper));
+                RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper));
 
         return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(keySer)
