@@ -1,5 +1,6 @@
 package com.example.sbt.module.configuration.service;
 
+import com.example.sbt.common.constant.CacheKey;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
@@ -42,9 +43,8 @@ public class ConfigurationServiceImpl implements ConfigurationService {
 
     @Override
     @Caching(evict = {
-            @CacheEvict(value = "configurations", key = "#requestDTO.code"),
-            @CacheEvict(value = "configuration_values", key = "#requestDTO.code"),
-            @CacheEvict(value = "configuration_maps", allEntries = true),
+            @CacheEvict(value = CacheKey.CONFIGURATION_VALUES, key = "#requestDTO.code"),
+            @CacheEvict(value = CacheKey.CONFIGURATION_MAPS, allEntries = true),
     })
     public ConfigurationDTO save(ConfigurationDTO requestDTO) {
         configurationValidator.cleanRequest(requestDTO);
@@ -67,14 +67,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    @Cacheable(value = "configurations", key = "#code", sync = true)
     public ConfigurationDTO findOneByCode(String code) {
         if (StringUtils.isBlank(code)) return null;
         return configurationRepository.findTopByCode(code).map(commonMapper::toDTO).orElse(null);
     }
 
     @Override
-    @Cacheable(value = "configurations", key = "#code", sync = true)
     public ConfigurationDTO findOneByCodeOrThrow(String code) {
         ConfigurationDTO result = findOneByCode(code);
         if (result == null) {
@@ -84,7 +82,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    @Cacheable(value = "configuration_values", key = "#code", sync = true)
+    @Cacheable(value = CacheKey.CONFIGURATION_VALUES, key = "#code", sync = true)
     public String findValueByCode(String code) {
         ConfigurationDTO result = findOneByCode(code);
         if (result == null || !ConversionUtils.safeToBoolean(result.getIsEnabled())) {
@@ -94,7 +92,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     @Override
-    @Cacheable(value = "configuration_maps", key = "#codes", sync = true)
+    @Cacheable(value = CacheKey.CONFIGURATION_MAPS, key = "#codes", sync = true)
     public Map<String, String> findPublicValuesByCodes(List<String> codes) {
         Map<String, String> result = new HashMap<>();
         if (CollectionUtils.isEmpty(codes)) return result;

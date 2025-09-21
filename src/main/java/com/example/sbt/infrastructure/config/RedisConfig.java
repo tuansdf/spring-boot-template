@@ -65,7 +65,7 @@ public class RedisConfig {
         return RedisCacheConfiguration.defaultCacheConfig()
                 .serializeKeysWith(keySer)
                 .serializeValuesWith(valueSer)
-                .entryTtl(Duration.ofHours(1));
+                .entryTtl(Duration.ofSeconds(90));
     }
 
     @Bean
