@@ -24,9 +24,9 @@ public class ExcelUtils {
     private static final String DEFAULT_SHEET = "Sheet1";
 
     public static void writeFile(Workbook workbook, String outputPath) {
-        if (workbook == null || StringUtils.isBlank(outputPath)) return;
         try (workbook; FileOutputStream outputStream = new FileOutputStream(outputPath);
              BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
+            if (workbook == null || StringUtils.isBlank(outputPath)) return;
             workbook.write(bufferedOutputStream);
         } catch (Exception e) {
             log.error("writeFile ", e);
@@ -53,8 +53,8 @@ public class ExcelUtils {
         return result;
     }
 
-    public static Row getRow(Sheet sheet, Integer rowIdx) {
-        if (sheet == null || rowIdx == null) return null;
+    public static Row getRow(Sheet sheet, int rowIdx) {
+        if (sheet == null || rowIdx < 0) return null;
         Row result = sheet.getRow(rowIdx);
         if (result == null) {
             result = sheet.createRow(rowIdx);
@@ -62,8 +62,8 @@ public class ExcelUtils {
         return result;
     }
 
-    public static Cell getCell(Row row, Integer colIdx) {
-        if (row == null || colIdx == null) return null;
+    public static Cell getCell(Row row, int colIdx) {
+        if (row == null || colIdx < 0) return null;
         Cell result = row.getCell(colIdx);
         if (result == null) {
             result = row.createCell(colIdx);
@@ -85,11 +85,11 @@ public class ExcelUtils {
         }
     }
 
-    public static Object getCellValue(Row row, Integer colIdx) {
+    public static Object getCellValue(Row row, int colIdx) {
         return getCellValue(getCell(row, colIdx));
     }
 
-    public static Object getCellValue(Sheet sheet, Integer rowIdx, Integer colIdx) {
+    public static Object getCellValue(Sheet sheet, int rowIdx, int colIdx) {
         return getCellValue(getCell(getRow(sheet, rowIdx), colIdx));
     }
 
@@ -111,11 +111,11 @@ public class ExcelUtils {
         }
     }
 
-    public static void setCellValue(Sheet sheet, Integer rowIdx, Integer colIdx, Object value) {
+    public static void setCellValue(Sheet sheet, int rowIdx, int colIdx, Object value) {
         setCellValue(getCell(getRow(sheet, rowIdx), colIdx), value);
     }
 
-    public static void setCellValue(Row row, Integer colIdx, Object value) {
+    public static void setCellValue(Row row, int colIdx, Object value) {
         setCellValue(getCell(row, colIdx), value);
     }
 
@@ -128,7 +128,7 @@ public class ExcelUtils {
         }
     }
 
-    public static void setCellValues(Sheet sheet, Integer rowIdx, List<Object> objects) {
+    public static void setCellValues(Sheet sheet, int rowIdx, List<Object> objects) {
         if (CollectionUtils.isEmpty(objects)) return;
         Row row = getRow(sheet, rowIdx);
         if (row == null) return;

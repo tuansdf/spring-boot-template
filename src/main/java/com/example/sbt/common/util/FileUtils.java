@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +29,14 @@ public class FileUtils {
     private static final String EXTENSION_SEPARATOR = ".";
     private static final Pattern UNSAFE_CHARS = Pattern.compile("[^A-Za-z0-9._-]");
     private static final Pattern MARK_CHARS = Pattern.compile("\\p{M}");
+
+    public static byte[] toBytes(String filePath) {
+        try {
+            return Files.readAllBytes(Path.of(filePath));
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public static void writeFile(byte[] bytes, String outputPath) {
         if (bytes == null) return;
