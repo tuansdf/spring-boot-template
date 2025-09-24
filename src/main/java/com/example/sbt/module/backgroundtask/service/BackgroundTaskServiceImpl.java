@@ -2,7 +2,6 @@ package com.example.sbt.module.backgroundtask.service;
 
 import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.infrastructure.exception.CustomException;
-import com.example.sbt.module.backgroundtask.constant.BackgroundTaskStatus;
 import com.example.sbt.module.backgroundtask.dto.BackgroundTaskDTO;
 import com.example.sbt.module.backgroundtask.entity.BackgroundTask;
 import com.example.sbt.module.backgroundtask.repository.BackgroundTaskRepository;
@@ -28,7 +27,7 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
         BackgroundTask result = new BackgroundTask();
         result.setCacheKey(cacheKey);
         result.setType(type);
-        result.setStatus(BackgroundTaskStatus.ENQUEUED);
+        result.setStatus(BackgroundTask.Status.ENQUEUED);
         result.setCreatedBy(requestContext.getUserId());
         return backgroundTaskMapper.toDTO(backgroundTaskRepository.save(result));
     }
@@ -38,7 +37,7 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
         if (StringUtils.isBlank(cacheKey)) {
             return null;
         }
-        return backgroundTaskRepository.findTopByCacheKeyAndTypeAndStatus(cacheKey, type, BackgroundTaskStatus.SUCCEEDED).map(backgroundTaskMapper::toDTO).orElse(null);
+        return backgroundTaskRepository.findTopByCacheKeyAndTypeAndStatus(cacheKey, type, BackgroundTask.Status.SUCCEEDED).map(backgroundTaskMapper::toDTO).orElse(null);
     }
 
     @Override
@@ -47,7 +46,7 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
         if (existing == null) {
             return false;
         }
-        updateStatus(taskId, BackgroundTaskStatus.SUCCEEDED, existing.getFileId());
+        updateStatus(taskId, BackgroundTask.Status.SUCCEEDED, existing.getFileId());
         return true;
     }
 
@@ -67,13 +66,13 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
     }
 
     @Override
-    public void updateStatus(UUID id, String status, UUID fileId) {
+    public void updateStatus(UUID id, BackgroundTask.Status status, UUID fileId) {
         if (id == null) return;
         backgroundTaskRepository.updateStatusById(id, status, fileId);
     }
 
     @Override
-    public void updateStatus(UUID id, String status) {
+    public void updateStatus(UUID id, BackgroundTask.Status status) {
         if (id == null) return;
         backgroundTaskRepository.updateStatusById(id, status);
     }

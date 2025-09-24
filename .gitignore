@@ -37,6 +37,7 @@ out/
 .vscode/
 
 .temp/
+temp/
 *.xlsx
 *.csv
 *.gz
