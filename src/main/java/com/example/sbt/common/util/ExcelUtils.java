@@ -75,7 +75,13 @@ public class ExcelUtils {
         if (cell == null) return null;
         try {
             return switch (cell.getCellType()) {
-                case NUMERIC -> cell.getNumericCellValue();
+                case NUMERIC -> {
+                    double value = cell.getNumericCellValue();
+                    if (value % 1 == 0) {
+                        yield (long) value;
+                    }
+                    yield value;
+                }
                 case STRING -> cell.getStringCellValue();
                 default -> null;
             };
@@ -96,8 +102,8 @@ public class ExcelUtils {
     public static List<Object> getRowCellValues(Row row) {
         if (row == null) return null;
         List<Object> rowData = new ArrayList<>();
-        for (Cell cell : row) {
-            rowData.add(getCellValue(cell));
+        for (int i = 0; i < row.getLastCellNum(); i++) {
+            rowData.add(getCellValue(row.getCell(i)));
         }
         return rowData;
     }
