@@ -1,10 +1,7 @@
 package com.example.sbt.module.backgroundtask.entity;
 
 import com.example.sbt.infrastructure.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -33,10 +30,18 @@ public class BackgroundTask extends BaseEntity {
     private String cacheKey;
     @Column(name = "type", length = 32)
     private String type;
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 16)
-    private String status;
+    private Status status;
     @Column(name = "error_message", length = 255)
     private String errorMessage;
     @Column(name = "created_by", updatable = false)
     private UUID createdBy;
+
+    public enum Status {
+        ENQUEUED,
+        PROCESSING,
+        SUCCEEDED,
+        FAILED,
+    }
 }

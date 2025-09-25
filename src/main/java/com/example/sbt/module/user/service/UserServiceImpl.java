@@ -10,9 +10,9 @@ import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.helper.AuthHelper;
 import com.example.sbt.infrastructure.helper.CommonHelper;
 import com.example.sbt.infrastructure.helper.SQLHelper;
-import com.example.sbt.module.backgroundtask.constant.BackgroundTaskStatus;
 import com.example.sbt.module.backgroundtask.constant.BackgroundTaskType;
 import com.example.sbt.module.backgroundtask.dto.BackgroundTaskDTO;
+import com.example.sbt.module.backgroundtask.entity.BackgroundTask;
 import com.example.sbt.module.backgroundtask.service.BackgroundTaskService;
 import com.example.sbt.module.file.dto.FileObjectDTO;
 import com.example.sbt.module.file.service.FileObjectService;
@@ -29,13 +29,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -300,48 +296,37 @@ public class UserServiceImpl implements UserService {
             if (succeeded) {
                 return;
             }
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.PROCESSING);
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTask.Status.PROCESSING);
             FileObjectDTO fileObjectDTO = export(requestDTO, requestContext);
             if (fileObjectDTO == null) {
                 throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.SUCCEEDED, fileObjectDTO.getId());
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTask.Status.SUCCEEDED, fileObjectDTO.getId());
         } catch (Exception e) {
             log.error("handleExportTask {}", e.toString());
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTaskStatus.FAILED);
+            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTask.Status.FAILED);
         }
     }
 
-    private FileObjectDTO export(SearchUserRequest requestDTO, RequestContext requestContext) throws IOException {
+    private FileObjectDTO export(SearchUserRequest requestDTO, RequestContext requestContext) {
         if (requestDTO == null) {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         List<UserDTO> users = executeSearchList(requestDTO);
-        byte[] file = null;
-        try (Workbook workbook = new SXSSFWorkbook()) {
-            Sheet sheet = workbook.createSheet();
-            List<Object> header = List.of("Username", "Email", "Name", "Is Enabled", "Is Verified", "Is OTP Enabled", "Roles", "Permissions");
-            ExcelUtils.setCellValues(sheet, 0, header);
-            int idx = 1;
-            for (UserDTO user : users) {
-                List<Object> data = Arrays.asList(
-                        user.getUsername(),
-                        user.getEmail(),
-                        user.getName(),
-                        ConversionUtils.safeToBoolean(user.getIsEnabled()),
-                        ConversionUtils.safeToBoolean(user.getIsVerified()),
-                        ConversionUtils.safeToBoolean(user.getIsOtpEnabled()),
-                        String.join(",", user.getRoleCodes()),
-                        String.join(",", user.getPermissionCodes()));
-                ExcelUtils.setCellValues(sheet, idx, data);
-                idx++;
-            }
-            file = ExcelUtils.toBytes(workbook);
-        }
+        List<Object> header = List.of("Username", "Email", "Name", "Is Enabled", "Is Verified", "Is OTP Enabled", "Roles", "Permissions");
+        byte[] file = ExcelUtils.writeDataToBytes(header, users, (user) -> Arrays.asList(
+                user.getUsername(),
+                user.getEmail(),
+                user.getName(),
+                ConversionUtils.safeToBoolean(user.getIsEnabled()),
+                ConversionUtils.safeToBoolean(user.getIsVerified()),
+                ConversionUtils.safeToBoolean(user.getIsOtpEnabled()),
+                String.join(",", user.getRoleCodes()),
+                String.join(",", user.getPermissionCodes())));
         if (file == null || file.length == 0) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        String filename = FileUtils.toFilename("ExportUsers_" + ConversionUtils.safeToString(DateUtils.currentEpochMillis()), FileType.XLSX);
+        String filename = FileUtils.toFilename("ExportUsers_" + DateUtils.currentEpochMillis(), FileType.XLSX);
         return fileObjectService.setFileUrls(fileObjectService.uploadFile(file, "", filename, requestContext));
     }
 }

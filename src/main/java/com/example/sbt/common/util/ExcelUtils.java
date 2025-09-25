@@ -113,7 +113,7 @@ public class ExcelUtils {
         switch (value) {
             case String v -> cell.setCellValue(v);
             case Number v -> cell.setCellValue(v.doubleValue());
-            default -> cell.setCellValue(ConversionUtils.toString(value));
+            default -> cell.setCellValue(value.toString());
         }
     }
 
@@ -152,32 +152,32 @@ public class ExcelUtils {
         }
     }
 
-    public static Workbook toWorkbook(String filePath) {
+    public static Workbook toStreamingWorkbook(String filePath) {
         if (StringUtils.isBlank(filePath)) return null;
         try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
-            log.error("toWorkbook ", e);
+            log.error("toStreamingWorkbook ", e);
             return null;
         }
     }
 
-    public static Workbook toWorkbook(byte[] file) {
+    public static Workbook toStreamingWorkbook(byte[] file) {
         if (file == null) return null;
         try (InputStream inputStream = new ByteArrayInputStream(file)) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
-            log.error("toWorkbook ", e);
+            log.error("toStreamingWorkbook ", e);
             return null;
         }
     }
 
-    public static Workbook toWorkbook(MultipartFile file) {
+    public static Workbook toStreamingWorkbook(MultipartFile file) {
         if (file == null) return null;
         try (InputStream inputStream = file.getInputStream()) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
-            log.error("toWorkbook ", e);
+            log.error("toStreamingWorkbook ", e);
             return null;
         }
     }
@@ -205,7 +205,7 @@ public class ExcelUtils {
 
     public static <T> List<T> toData(MultipartFile file, Function<List<Object>, T> rowProcessor) {
         if (file == null) return null;
-        try (Workbook workbook = toWorkbook(file)) {
+        try (Workbook workbook = toStreamingWorkbook(file)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
             log.error("toData ", e);
@@ -215,7 +215,7 @@ public class ExcelUtils {
 
     public static <T> List<T> toData(String filePath, Function<List<Object>, T> rowProcessor) {
         if (StringUtils.isBlank(filePath)) return null;
-        try (Workbook workbook = toWorkbook(filePath)) {
+        try (Workbook workbook = toStreamingWorkbook(filePath)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
             log.error("toData ", e);
@@ -225,7 +225,7 @@ public class ExcelUtils {
 
     public static <T> List<T> toData(byte[] file, Function<List<Object>, T> rowProcessor) {
         if (file == null) return null;
-        try (Workbook workbook = toWorkbook(file)) {
+        try (Workbook workbook = toStreamingWorkbook(file)) {
             return toData(workbook, rowProcessor);
         } catch (Exception e) {
             log.error("toData ", e);
@@ -241,7 +241,7 @@ public class ExcelUtils {
                 ExcelUtils.setCellValues(sheet, 0, header);
             }
             if (CollectionUtils.isNotEmpty(data) && rowProcessor != null) {
-                int idx = 1;
+                int idx = CollectionUtils.isNotEmpty(header) ? 1 : 0;
                 for (T item : data) {
                     ExcelUtils.setCellValues(sheet, idx, rowProcessor.apply(item));
                     idx++;
