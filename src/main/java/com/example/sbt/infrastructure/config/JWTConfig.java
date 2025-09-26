@@ -1,6 +1,6 @@
 package com.example.sbt.infrastructure.config;
 
-import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.constant.CustomProperties;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 @Configuration
 public class JWTConfig {
-    private final ApplicationProperties applicationProperties;
+    private final CustomProperties customProperties;
 
     @Bean
     public JWSHeader jwtHeader() {
@@ -20,11 +20,11 @@ public class JWTConfig {
 
     @Bean
     public JWSSigner jwtSigner() throws KeyLengthException {
-        return new MACSigner(applicationProperties.getJwtSecret().getBytes());
+        return new MACSigner(customProperties.getJwtSecret().getBytes());
     }
 
     @Bean
     public JWSVerifier jwsVerifier() throws JOSEException {
-        return new MACVerifier(applicationProperties.getJwtSecret().getBytes());
+        return new MACVerifier(customProperties.getJwtSecret().getBytes());
     }
 }

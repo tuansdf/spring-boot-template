@@ -44,11 +44,11 @@ public class JWTFilter extends OncePerRequestFilter {
         }
 
         List<String> permissions = jwtPayload.getPermissions();
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                jwtPayload.getSubject(),
-                null,
-                permissions != null ? permissions.stream().map(SimpleGrantedAuthority::new).toList() : null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+//        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+//                jwtPayload.getSubject(),
+//                null,
+//                permissions != null ? permissions.stream().map(SimpleGrantedAuthority::new).toList() : null);
+//        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UUID userId = ConversionUtils.toUUID(jwtPayload.getSubject());
         String username = null;

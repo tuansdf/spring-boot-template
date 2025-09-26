@@ -1,6 +1,6 @@
 package com.example.sbt.infrastructure.config;
 
-import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.constant.CustomProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,17 +14,17 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 @RequiredArgsConstructor
 @Configuration
 public class AWSConfig {
-    private final ApplicationProperties applicationProperties;
+    private final CustomProperties customProperties;
 
     @Bean
     public AwsCredentials awsCredentials() {
-        return AwsBasicCredentials.create(applicationProperties.getAwsAccessKey(), applicationProperties.getAwsSecretKey());
+        return AwsBasicCredentials.create(customProperties.getAwsAccessKey(), customProperties.getAwsSecretKey());
     }
 
     @Bean
     public S3Client s3Client(AwsCredentials awsCredentials) {
         return S3Client.builder()
-                .region(Region.of(applicationProperties.getAwsRegion()))
+                .region(Region.of(customProperties.getAwsRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }
@@ -32,7 +32,7 @@ public class AWSConfig {
     @Bean
     public S3Presigner s3Presigner(AwsCredentials awsCredentials) {
         return S3Presigner.builder()
-                .region(Region.of(applicationProperties.getAwsRegion()))
+                .region(Region.of(customProperties.getAwsRegion()))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }

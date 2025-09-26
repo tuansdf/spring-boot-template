@@ -1,6 +1,6 @@
 package com.example.sbt.module.file.service;
 
-import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.constant.CustomProperties;
 import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
@@ -35,7 +35,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     private static final int OBJECT_KEY_BATCH_SIZE = 500;
     private static final int DEFAULT_HEADER_BYTES_SIZE = 512;
 
-    private final ApplicationProperties applicationProperties;
+    private final CustomProperties customProperties;
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
 
@@ -68,7 +68,7 @@ public class UploadFileServiceImpl implements UploadFileService {
                 return null;
             }
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
+                    .bucket(customProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
                     .build();
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file, fileSize));
@@ -105,7 +105,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             if (StringUtils.isBlank(filePath)) return null;
             seconds = CommonUtils.defaultWhenNotPositive(seconds, DEFAULT_PRESIGN_GET_SECONDS);
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
+                    .bucket(customProperties.getAwsS3Bucket())
                     .responseContentDisposition(FileUtils.buildContentDisposition(filename))
                     .key(filePath)
                     .build();
@@ -134,7 +134,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             }
             seconds = CommonUtils.defaultWhenNotPositive(seconds, DEFAULT_PRESIGN_PUT_SECONDS);
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
+                    .bucket(customProperties.getAwsS3Bucket())
                     .key(objectKey.getFilePath())
                     .contentType(objectKey.getFileType().getMimeType())
                     .ifNoneMatch("*") // api clients need to include this header: If-None-Match: *
@@ -162,7 +162,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         try {
             if (StringUtils.isBlank(filePath)) return null;
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
+                    .bucket(customProperties.getAwsS3Bucket())
                     .key(filePath)
                     .build();
             return s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
@@ -179,7 +179,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             size = CommonUtils.defaultWhenNotPositive(size, DEFAULT_HEADER_BYTES_SIZE);
             String rangeHeader = "bytes=0-" + (size - 1);
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
+                    .bucket(customProperties.getAwsS3Bucket())
                     .key(filePath)
                     .range(rangeHeader)
                     .build();
@@ -200,7 +200,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         try {
             if (StringUtils.isBlank(filePath)) return null;
             HeadObjectRequest request = HeadObjectRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
+                    .bucket(customProperties.getAwsS3Bucket())
                     .key(filePath)
                     .build();
             HeadObjectResponse response = s3Client.headObject(request);
@@ -227,7 +227,7 @@ public class UploadFileServiceImpl implements UploadFileService {
         try {
             if (StringUtils.isBlank(filePath)) return;
             DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                    .bucket(applicationProperties.getAwsS3Bucket())
+                    .bucket(customProperties.getAwsS3Bucket())
                     .key(filePath)
                     .build();
             s3Client.deleteObject(deleteObjectRequest);
@@ -247,7 +247,7 @@ public class UploadFileServiceImpl implements UploadFileService {
             for (int i = 0; i < size; i += OBJECT_KEY_BATCH_SIZE) {
                 int to = Math.max(i + OBJECT_KEY_BATCH_SIZE, size);
                 DeleteObjectsRequest deleteObjectsRequest = DeleteObjectsRequest.builder()
-                        .bucket(applicationProperties.getAwsS3Bucket())
+                        .bucket(customProperties.getAwsS3Bucket())
                         .delete(Delete.builder().objects(objectIds.subList(i, to)).build())
                         .build();
                 s3Client.deleteObjects(deleteObjectsRequest);

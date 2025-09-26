@@ -1,6 +1,6 @@
 package com.example.sbt.infrastructure.helper;
 
-import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.constant.CustomProperties;
 import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.common.dto.JWTPayloadKey;
 import com.example.sbt.common.util.DateUtils;
@@ -22,7 +22,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @Component
 public class JWTHelper {
-    private final ApplicationProperties applicationProperties;
+    private final CustomProperties customProperties;
     private final ObjectMapper objectMapper;
     private final JWSHeader jwsHeader;
     private final JWSSigner jwsSigner;
@@ -41,7 +41,7 @@ public class JWTHelper {
                 jwtPayload.setNotBefore(now);
             }
             if (jwtPayload.getExpiresAt() == null) {
-                jwtPayload.setExpiresAt(now.plusSeconds(applicationProperties.getJwtAccessLifetime()));
+                jwtPayload.setExpiresAt(now.plusSeconds(customProperties.getJwtAccessLifetime()));
             }
 
             JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();

@@ -1,6 +1,6 @@
 package com.example.sbt.module.notification.service;
 
-import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.constant.CustomProperties;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestContextHolder;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public class NotificationServiceImpl implements NotificationService {
     private final SQLHelper sqlHelper;
     private final LocaleHelper localeHelper;
-    private final ApplicationProperties applicationProperties;
+    private final CustomProperties customProperties;
     private final CommonMapper commonMapper;
     private final NotificationRepository notificationRepository;
     private final SendNotificationEventPublisher sendNotificationEventPublisher;
@@ -176,7 +176,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public NotificationDTO sendNewComerNotification(UUID userId) {
         NotificationDTO notificationDTO = new NotificationDTO();
-        notificationDTO.setTitle(localeHelper.getMessage("notification.new_comer_title", applicationProperties.getApplicationName()));
+        notificationDTO.setTitle(localeHelper.getMessage("notification.new_comer_title", customProperties.getAppName()));
         notificationDTO.setBody(localeHelper.getMessage("notification.new_comer_content"));
         notificationDTO.setUserId(userId);
         return triggerSend(notificationDTO);

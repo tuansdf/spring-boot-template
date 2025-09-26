@@ -1,7 +1,9 @@
 package com.example.sbt.infrastructure.config;
 
+import com.example.sbt.common.constant.CustomProperties;
 import com.example.sbt.infrastructure.filter.JWTFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -21,11 +23,13 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+@Slf4j
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
+    private final CustomProperties customProperties;
     private final JWTFilter jwtFilter;
 
     @Bean
@@ -34,10 +38,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(configurer -> configurer
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests((configurer) -> configurer
                         .requestMatchers("/actuator/**", "/public/**").permitAll()
                         .anyRequest().authenticated())
+//                .oauth2Login(oauth2 -> oauth2
+//                        .failureHandler((request, response, exception) -> {
+//                            log.error("oauth2", exception);
+//                            response.sendRedirect("/" + customProperties.getClientOauthCallbackPath());
+//                        })
+//                )
                 .exceptionHandling(configurer -> configurer
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,6 +1,6 @@
 package com.example.sbt.module.email.service;
 
-import com.example.sbt.common.constant.ApplicationProperties;
+import com.example.sbt.common.constant.CustomProperties;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.module.email.dto.SendEmailRequest;
 import jakarta.mail.internet.MimeMessage;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 @Transactional(rollbackOn = Exception.class)
 public class SendEmailServiceImpl implements SendEmailService {
     private final JavaMailSender mailSender;
-    private final ApplicationProperties applicationProperties;
+    private final CustomProperties customProperties;
 
     @Override
     public void send(SendEmailRequest request) {
@@ -29,7 +29,7 @@ public class SendEmailServiceImpl implements SendEmailService {
             helper.setTo(request.getToEmail());
             helper.setSubject(request.getSubject());
             helper.setText(request.getBody(), ConversionUtils.safeToBoolean(request.getIsHtml()));
-            helper.setFrom(applicationProperties.getMailFrom(), applicationProperties.getMailFromName());
+            helper.setFrom(customProperties.getMailFrom(), customProperties.getMailFromName());
 
             mailSender.send(message);
         } catch (Exception e) {
