@@ -7,7 +7,7 @@
 
 ###
 
-POST {{base_url}}/open/v1/auth/login
+POST {{base_url}}/public/v1/auth/login
 Content-Type: application/json
 
 {
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 ###
 
-POST {{base_url}}/open/v1/auth/register
+POST {{base_url}}/public/v1/auth/register
 Content-Type: application/json
 
 {
@@ -29,7 +29,7 @@ Content-Type: application/json
 
 ###
 
-POST {{base_url}}/open/v1/auth/password/reset/request
+POST {{base_url}}/public/v1/auth/password/reset/request
 Content-Type: application/json
 
 {
@@ -38,7 +38,7 @@ Content-Type: application/json
 
 ###
 
-POST {{base_url}}/open/v1/auth/password/reset
+POST {{base_url}}/public/v1/auth/password/reset
 Content-Type: application/json
 
 {
@@ -48,7 +48,7 @@ Content-Type: application/json
 
 ###
 
-POST {{base_url}}/open/v1/auth/token/refresh
+POST {{base_url}}/public/v1/auth/token/refresh
 Content-Type: application/json
 
 {
@@ -57,11 +57,11 @@ Content-Type: application/json
 
 ###
 
-GET {{base_url}}/open/v1/auth/account/activate?token={{activate_token}}
+GET {{base_url}}/public/v1/auth/account/activate?token={{activate_token}}
 
 ###
 
-POST {{base_url}}/open/v1/auth/account/activate/request
+POST {{base_url}}/public/v1/auth/account/activate/request
 Content-Type: application/json
 
 {
