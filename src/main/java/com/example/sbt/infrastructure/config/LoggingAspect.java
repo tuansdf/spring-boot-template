@@ -1,7 +1,6 @@
 package com.example.sbt.infrastructure.config;
 
 import com.example.sbt.common.constant.LoggerKey;
-import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -49,7 +48,7 @@ public class LoggingAspect {
                     .addKeyValue(LoggerKey.METHOD_NAME, methodName)
                     .addKeyValue(LoggerKey.METHOD_ARGUMENTS, arguments)
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
-                    .log(ConversionUtils.toString(result));
+                    .log("{}", result);
         } catch (Throwable e) {
             double elapsedMs = (System.nanoTime() - start) / 1_000_000.0;
             log.atError()

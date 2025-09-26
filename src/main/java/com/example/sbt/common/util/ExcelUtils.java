@@ -86,7 +86,7 @@ public class ExcelUtils {
                 default -> null;
             };
         } catch (Exception e) {
-            log.error("getCellValue ", e);
+            log.debug("getCellValue ", e);
             return null;
         }
     }
