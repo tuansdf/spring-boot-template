@@ -13,13 +13,13 @@ public interface AuthService {
 
     void changePassword(ChangePasswordRequest requestDTO, UUID userId);
 
-    RefreshTokenResponse exchangeOauth2Token(String jwt, RequestContext requestContext);
-
     void requestResetPassword(RequestResetPasswordRequest requestDTO);
 
     void resetPassword(ResetPasswordRequest requestDTO);
 
-    RefreshTokenResponse refreshAccessToken(String refreshJwt, RequestContext requestContext);
+    LoginResponse refreshAccessToken(String refreshJwt, RequestContext requestContext);
+
+    LoginResponse exchangeOauth2Token(String jwt, RequestContext requestContext);
 
     void requestActivateAccount(RequestActivateAccountRequest requestDTO);
 

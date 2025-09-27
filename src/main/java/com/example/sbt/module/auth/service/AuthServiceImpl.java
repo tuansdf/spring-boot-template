@@ -77,22 +77,24 @@ public class AuthServiceImpl implements AuthService {
 
         authValidator.validateLogin(requestDTO);
 
+        Integer maxAttempts = configurations.getLoginMaxAttempts();
+        Integer timeWindow = configurations.getLoginTimeWindow();
+        if (CommonUtils.isPositive(maxAttempts) && CommonUtils.isPositive(timeWindow)) {
+            long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(requestDTO.getUsername(), Instant.now().minusSeconds(timeWindow));
+            if (attempts >= maxAttempts) {
+                throw new CustomException(localeHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
+            }
+        }
+
         UserDTO userDTO = userRepository.findTopByUsername(requestDTO.getUsername()).map(userMapper::toDTO).orElse(null);
         if (userDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
 
-        if (!ConversionUtils.safeToBoolean(userDTO.getIsEnabled())) {
-            throw new CustomException(localeHelper.getMessage("auth.error.account_disabled"), HttpStatus.UNAUTHORIZED);
-        }
-
-        Integer maxAttempts = configurations.getLoginMaxAttempts();
-        Integer timeWindow = configurations.getLoginTimeWindow();
-        if (CommonUtils.isPositive(maxAttempts) && CommonUtils.isPositive(timeWindow)) {
-            long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(userDTO.getId(), Instant.now().minusSeconds(timeWindow));
-            if (attempts >= maxAttempts) {
-                throw new CustomException(localeHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
-            }
+        boolean isPasswordCorrect = authHelper.verifyPassword(requestDTO.getPassword(), userDTO.getPassword());
+        if (!isPasswordCorrect) {
+            loginAuditService.add(userDTO.getId(), false);
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
 
         if (ConversionUtils.safeToBoolean(userDTO.getIsOtpEnabled())) {
@@ -106,18 +108,16 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        boolean isPasswordCorrect = authHelper.verifyPassword(requestDTO.getPassword(), userDTO.getPassword());
-        if (!isPasswordCorrect) {
-            loginAuditService.add(userDTO.getId(), false);
-            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
-        }
-
         List<String> validDomains = configurations.getLoginEmailDomains();
         if (validDomains != null) {
             String emailDomain = userDTO.getEmail().substring(userDTO.getEmail().lastIndexOf("@") + 1);
             if (!validDomains.contains(emailDomain)) {
                 throw new CustomException(localeHelper.getMessage("auth.error.invalid_domains"), HttpStatus.BAD_REQUEST);
             }
+        }
+
+        if (!ConversionUtils.safeToBoolean(userDTO.getIsEnabled())) {
+            throw new CustomException(localeHelper.getMessage("auth.error.account_disabled"), HttpStatus.UNAUTHORIZED);
         }
 
         loginAuditService.add(userDTO.getId(), true);
@@ -188,58 +188,44 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public RefreshTokenResponse refreshAccessToken(String refreshJwt, RequestContext requestContext) {
+    public LoginResponse refreshAccessToken(String refreshJwt, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(refreshJwt, AuthToken.Type.REFRESH_TOKEN);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
-        UUID userId = ConversionUtils.toUUID(authTokenDTO.getUserId());
-        if (userId == null) {
-            throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
+        UserDTO userDTO = userRepository.findById(authTokenDTO.getUserId()).map(userMapper::toDTO).orElse(null);
+        if (userDTO == null) {
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
-        boolean isUserValid = userRepository.existsByIdAndIsEnabled(userId, true);
-        if (!isUserValid) {
-            throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
+        if (!ConversionUtils.safeToBoolean(userDTO.getIsEnabled())) {
+            throw new CustomException(localeHelper.getMessage("auth.error.account_disabled"), HttpStatus.UNAUTHORIZED);
         }
         List<String> permissions = permissionService.findAllCodesByUserId(authTokenDTO.getUserId());
         JWTPayload accessJwt = jwtService.createAccessJwt(authTokenDTO.getUserId(), permissions);
-        return RefreshTokenResponse.builder()
+        return LoginResponse.builder()
                 .accessToken(accessJwt.getValue())
                 .build();
     }
 
     @Override
-    public RefreshTokenResponse exchangeOauth2Token(String jwt, RequestContext requestContext) {
+    public LoginResponse exchangeOauth2Token(String jwt, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
-
-//        if (StringUtils.isBlank(jwt) || type == null) {
-//            return null;
-//        }
-//        JWTPayload jwtPayload = jwtService.verify(jwt);
-//        if (jwtPayload == null || !type.equals(jwtPayload.getType())) {
-//            return null;
-//        }
-        
-        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(jwt, AuthToken.Type.REFRESH_TOKEN);
+        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(jwt, AuthToken.Type.OAUTH2);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
-        UUID userId = ConversionUtils.toUUID(authTokenDTO.getUserId());
-        if (userId == null) {
-            throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
+        UserDTO userDTO = userRepository.findById(authTokenDTO.getUserId()).map(userMapper::toDTO).orElse(null);
+        if (userDTO == null) {
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }
-        boolean isUserValid = userRepository.existsByIdAndIsEnabled(userId, true);
-        if (!isUserValid) {
-            throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
+        if (!ConversionUtils.safeToBoolean(userDTO.getIsEnabled())) {
+            throw new CustomException(localeHelper.getMessage("auth.error.account_disabled"), HttpStatus.UNAUTHORIZED);
         }
-        List<String> permissions = permissionService.findAllCodesByUserId(authTokenDTO.getUserId());
-        JWTPayload accessJwt = jwtService.createAccessJwt(authTokenDTO.getUserId(), permissions);
-        return RefreshTokenResponse.builder()
-                .accessToken(accessJwt.getValue())
-                .build();
+        List<String> permissions = permissionService.findAllCodesByUserId(userDTO.getId());
+        return createLoginResponse(userDTO.getId(), permissions);
     }
 
     @Override

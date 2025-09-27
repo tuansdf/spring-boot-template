@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface JWTService {
-    JWTPayload createOauth2Jwt(UUID userId);
+    JWTPayload createOauth2ExchangeJwt(UUID userId);
 
     JWTPayload createAccessJwt(UUID userId, List<String> permissions);
 

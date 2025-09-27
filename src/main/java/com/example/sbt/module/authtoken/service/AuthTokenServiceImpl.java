@@ -28,13 +28,13 @@ public class AuthTokenServiceImpl implements AuthTokenService {
 
     private AuthTokenDTO findOneOrCreateByUserIdAndType(UUID userId, AuthToken.Type type) {
         Instant now = Instant.now();
-        AuthTokenDTO result = authTokenRepository.findTopByUserIdAndType(userId, type).map(commonMapper::toDTO).orElse(null);
-        if (result != null) return result;
-        AuthToken authToken = new AuthToken();
-        authToken.setUserId(userId);
-        authToken.setValidFrom(now);
-        authToken.setType(type);
-        return commonMapper.toDTO(authTokenRepository.save(authToken));
+        return authTokenRepository.findTopByUserIdAndType(userId, type).map(commonMapper::toDTO).orElseGet(() -> {
+            AuthToken authToken = new AuthToken();
+            authToken.setUserId(userId);
+            authToken.setValidFrom(now);
+            authToken.setType(type);
+            return commonMapper.toDTO(authTokenRepository.save(authToken));
+        });
     }
 
     private AuthTokenDTO findOneByUserIdAndType(UUID userId, AuthToken.Type type) {
@@ -87,6 +87,14 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     public AuthTokenDTO createRefreshToken(UUID userId) {
         AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.REFRESH_TOKEN);
         JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
+        result.setValue(jwtPayload.getValue());
+        return result;
+    }
+
+    @Override
+    public AuthTokenDTO createOauth2ExchangeToken(UUID userId) {
+        AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.OAUTH2);
+        JWTPayload jwtPayload = jwtService.createOauth2ExchangeJwt(userId);
         result.setValue(jwtPayload.getValue());
         return result;
     }

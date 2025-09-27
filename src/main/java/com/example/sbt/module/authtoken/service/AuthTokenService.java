@@ -19,6 +19,8 @@ public interface AuthTokenService {
 
     AuthTokenDTO createRefreshToken(UUID userId);
 
+    AuthTokenDTO createOauth2ExchangeToken(UUID userId);
+
     AuthTokenDTO createResetPasswordToken(UUID userId);
 
     AuthTokenDTO createActivateAccountToken(UUID userId);

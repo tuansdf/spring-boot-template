@@ -10,5 +10,5 @@ public interface LoginAuditService {
 
     void add(UUID userId, boolean isSuccess);
 
-    long countRecentlyFailedAttemptsByUserId(UUID userId, Instant fromTime);
+    long countRecentlyFailedAttemptsByUserId(String username, Instant fromTime);
 }

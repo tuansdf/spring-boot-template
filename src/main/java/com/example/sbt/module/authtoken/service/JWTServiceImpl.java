@@ -20,7 +20,7 @@ public class JWTServiceImpl implements JWTService {
     private final JWTHelper jwtHelper;
 
     @Override
-    public JWTPayload createOauth2Jwt(UUID userId) {
+    public JWTPayload createOauth2ExchangeJwt(UUID userId) {
         Instant now = Instant.now();
         JWTPayload jwtPayload = new JWTPayload();
         jwtPayload.setSubject(userId.toString());

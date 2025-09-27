@@ -33,4 +33,9 @@ public class ExceptionHelper {
         CommonResponse<T> response = toResponse(e);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+    public String toResponseMessage(Exception e) {
+        CommonResponse<Object> response = toResponse(e);
+        return response.getMessage();
+    }
 }
