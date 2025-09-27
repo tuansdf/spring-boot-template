@@ -1,6 +1,5 @@
 package com.example.sbt.infrastructure.config;
 
-import com.example.sbt.common.constant.CustomProperties;
 import com.example.sbt.infrastructure.filter.JWTFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,25 +28,21 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
-    private final CustomProperties customProperties;
-    private final JWTFilter jwtFilter;
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JWTFilter jwtFilter, Oauth2SuccessHandler oauth2SuccessHandler, Oauth2FailureHandler oauth2FailureHandler) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(configurer -> configurer
-                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((configurer) -> configurer
                         .requestMatchers("/actuator/**", "/public/**").permitAll()
                         .anyRequest().authenticated())
-//                .oauth2Login(oauth2 -> oauth2
-//                        .failureHandler((request, response, exception) -> {
-//                            log.error("oauth2", exception);
-//                            response.sendRedirect("/" + customProperties.getClientOauthCallbackPath());
-//                        })
-//                )
+                .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(auth -> auth.baseUri("/public/oauth2/authorization/*"))
+                        .redirectionEndpoint(auth -> auth.baseUri("/public/oauth2/callback/*"))
+                        .successHandler(oauth2SuccessHandler)
+                        .failureHandler(oauth2FailureHandler))
                 .exceptionHandling(configurer -> configurer
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

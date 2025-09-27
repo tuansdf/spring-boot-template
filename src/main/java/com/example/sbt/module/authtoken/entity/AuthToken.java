@@ -33,6 +33,7 @@ public class AuthToken extends BaseEntity {
     private Type type;
 
     public enum Type {
+        OAUTH2,
         ACCESS_TOKEN,
         REFRESH_TOKEN,
         RESET_PASSWORD,

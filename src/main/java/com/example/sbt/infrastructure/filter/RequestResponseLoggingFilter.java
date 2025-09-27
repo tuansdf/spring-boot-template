@@ -56,7 +56,6 @@ public class RequestResponseLoggingFilter implements Filter {
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
                     .addKeyValue(LoggerKey.HTTP_METHOD, httpRequest.getMethod())
                     .addKeyValue(LoggerKey.HTTP_PATH, httpRequest.getServletPath())
-                    .addKeyValue(LoggerKey.HTTP_QUERY, httpRequest.getQueryString())
                     .addKeyValue(LoggerKey.HTTP_STATUS, httpResponse.getStatus())
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
                     .log();

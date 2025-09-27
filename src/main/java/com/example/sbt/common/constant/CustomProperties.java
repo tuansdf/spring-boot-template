@@ -31,5 +31,5 @@ public class CustomProperties {
     private String mailFrom;
     private String mailFromName;
 
-    private String clientOauthCallbackPath;
+    private String oauth2CallbackUrl;
 }

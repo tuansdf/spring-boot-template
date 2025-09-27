@@ -31,7 +31,7 @@ public class FirebaseConfig {
                 return GoogleCredentials.fromStream(inputStream);
             }
         } catch (Exception e) {
-            log.error("GoogleCredentials {}", e.toString());
+            log.error("GoogleCredentials", e);
             return null;
         }
     }

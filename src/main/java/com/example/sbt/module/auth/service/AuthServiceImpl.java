@@ -83,7 +83,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         if (!ConversionUtils.safeToBoolean(userDTO.getIsEnabled())) {
-            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
+            throw new CustomException(localeHelper.getMessage("auth.error.account_disabled"), HttpStatus.UNAUTHORIZED);
         }
 
         Integer maxAttempts = configurations.getLoginMaxAttempts();
@@ -192,6 +192,38 @@ public class AuthServiceImpl implements AuthService {
         validateIp(requestContext.getIp());
 
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(refreshJwt, AuthToken.Type.REFRESH_TOKEN);
+        if (authTokenDTO == null) {
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
+        }
+        UUID userId = ConversionUtils.toUUID(authTokenDTO.getUserId());
+        if (userId == null) {
+            throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
+        }
+        boolean isUserValid = userRepository.existsByIdAndIsEnabled(userId, true);
+        if (!isUserValid) {
+            throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.UNAUTHORIZED);
+        }
+        List<String> permissions = permissionService.findAllCodesByUserId(authTokenDTO.getUserId());
+        JWTPayload accessJwt = jwtService.createAccessJwt(authTokenDTO.getUserId(), permissions);
+        return RefreshTokenResponse.builder()
+                .accessToken(accessJwt.getValue())
+                .build();
+    }
+
+    @Override
+    public RefreshTokenResponse exchangeOauth2Token(String jwt, RequestContext requestContext) {
+        validateIp(requestContext.getIp());
+
+
+//        if (StringUtils.isBlank(jwt) || type == null) {
+//            return null;
+//        }
+//        JWTPayload jwtPayload = jwtService.verify(jwt);
+//        if (jwtPayload == null || !type.equals(jwtPayload.getType())) {
+//            return null;
+//        }
+        
+        AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(jwt, AuthToken.Type.REFRESH_TOKEN);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
         }

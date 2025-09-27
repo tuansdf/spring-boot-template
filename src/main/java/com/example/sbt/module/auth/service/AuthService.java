@@ -13,6 +13,8 @@ public interface AuthService {
 
     void changePassword(ChangePasswordRequest requestDTO, UUID userId);
 
+    RefreshTokenResponse exchangeOauth2Token(String jwt, RequestContext requestContext);
+
     void requestResetPassword(RequestResetPasswordRequest requestDTO);
 
     void resetPassword(ResetPasswordRequest requestDTO);
