@@ -123,7 +123,7 @@ public class DebugController {
 
     @GetMapping("/excel/import")
     public String testImportExcel(@RequestParam String filePath) {
-        List<UserDTO> items = ExcelUtils.toData(filePath, (data) -> {
+        List<UserDTO> items = ExcelUtils.readData(filePath, (data) -> {
             UserDTO temp = new UserDTO();
             temp.setId(ConversionUtils.toUUID(CommonUtils.get(data, 0)));
             temp.setUsername(ConversionUtils.toString(CommonUtils.get(data, 1)));

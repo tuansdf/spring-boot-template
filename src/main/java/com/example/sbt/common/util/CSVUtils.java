@@ -57,9 +57,9 @@ public class CSVUtils {
         }
     }
 
-    public static <T> List<T> readData(MultipartFile file, Function<String[], T> rowProcessor) {
-        try (InputStream is = file.getInputStream();
-             Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+    public static <T> List<T> readData(byte[] file, Function<String[], T> rowProcessor) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(file);
+             Reader reader = new InputStreamReader(bais, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readData", e);
@@ -67,9 +67,9 @@ public class CSVUtils {
         }
     }
 
-    public static <T> List<T> readData(byte[] file, Function<String[], T> rowProcessor) {
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(file);
-             Reader reader = new InputStreamReader(bais, StandardCharsets.UTF_8)) {
+    public static <T> List<T> readData(MultipartFile file, Function<String[], T> rowProcessor) {
+        try (InputStream is = file.getInputStream();
+             Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readData", e);
@@ -88,9 +88,9 @@ public class CSVUtils {
         }
     }
 
-    public static <T> List<T> readDataFromGzip(MultipartFile file, Function<String[], T> rowProcessor) {
-        try (InputStream is = file.getInputStream();
-             GzipCompressorInputStream gis = new GzipCompressorInputStream(is);
+    public static <T> List<T> readDataFromGzip(byte[] file, Function<String[], T> rowProcessor) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(file);
+             GzipCompressorInputStream gis = new GzipCompressorInputStream(bais);
              Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
@@ -99,9 +99,9 @@ public class CSVUtils {
         }
     }
 
-    public static <T> List<T> readDataFromGzip(byte[] file, Function<String[], T> rowProcessor) {
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(file);
-             GzipCompressorInputStream gis = new GzipCompressorInputStream(bais);
+    public static <T> List<T> readDataFromGzip(MultipartFile file, Function<String[], T> rowProcessor) {
+        try (InputStream is = file.getInputStream();
+             GzipCompressorInputStream gis = new GzipCompressorInputStream(is);
              Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {

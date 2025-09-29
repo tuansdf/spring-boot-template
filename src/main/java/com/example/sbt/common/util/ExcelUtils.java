@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class ExcelUtils {
             if (workbook == null || StringUtils.isBlank(outputPath)) return;
             workbook.write(bufferedOutputStream);
         } catch (Exception e) {
-            log.error("writeFile ", e);
+            log.error("writeFile", e);
         }
     }
 
@@ -39,7 +40,7 @@ public class ExcelUtils {
             workbook.write(outputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
-            log.error("toBytes ", e);
+            log.error("toBytes", e);
             return null;
         }
     }
@@ -86,7 +87,7 @@ public class ExcelUtils {
                 default -> null;
             };
         } catch (Exception e) {
-            log.debug("getCellValue ", e);
+            log.debug("getCellValue", e);
             return null;
         }
     }
@@ -157,7 +158,7 @@ public class ExcelUtils {
         try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
-            log.error("toStreamingWorkbook ", e);
+            log.error("toStreamingWorkbook", e);
             return null;
         }
     }
@@ -167,7 +168,7 @@ public class ExcelUtils {
         try (InputStream inputStream = new ByteArrayInputStream(file)) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
-            log.error("toStreamingWorkbook ", e);
+            log.error("toStreamingWorkbook", e);
             return null;
         }
     }
@@ -177,58 +178,68 @@ public class ExcelUtils {
         try (InputStream inputStream = file.getInputStream()) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
-            log.error("toStreamingWorkbook ", e);
+            log.error("toStreamingWorkbook", e);
             return null;
         }
     }
 
-    public static <T> List<T> toData(Workbook workbook, Function<List<Object>, T> rowProcessor) {
+    public static void readData(Workbook workbook, Consumer<List<Object>> rowProcessor) {
         try (workbook) {
-            if (workbook == null) return null;
-            List<T> result = new ArrayList<>();
+            if (workbook == null) return;
             Sheet sheet = workbook.getSheetAt(0);
-            if (sheet == null) return null;
+            if (sheet == null) return;
             boolean isHeader = true;
             for (Row row : sheet) {
                 if (isHeader) {
                     isHeader = false;
                     continue;
                 }
-                result.add(rowProcessor.apply(ExcelUtils.getRowCellValues(row)));
+                rowProcessor.accept(ExcelUtils.getRowCellValues(row));
             }
+        } catch (Exception e) {
+            log.error("toData", e);
+        }
+    }
+
+    public static <T> List<T> readData(Workbook workbook, Function<List<Object>, T> rowProcessor) {
+        try (workbook) {
+            List<T> result = new ArrayList<>();
+            readData(workbook, (row) -> {
+                result.add(rowProcessor.apply(row));
+            });
             return result;
         } catch (Exception e) {
-            log.error("toData ", e);
+            log.error("toData", e);
             return null;
         }
     }
 
-    public static <T> List<T> toData(MultipartFile file, Function<List<Object>, T> rowProcessor) {
-        if (file == null) return null;
-        try (Workbook workbook = toStreamingWorkbook(file)) {
-            return toData(workbook, rowProcessor);
-        } catch (Exception e) {
-            log.error("toData ", e);
-            return null;
-        }
-    }
-
-    public static <T> List<T> toData(String filePath, Function<List<Object>, T> rowProcessor) {
+    public static <T> List<T> readData(String filePath, Function<List<Object>, T> rowProcessor) {
         if (StringUtils.isBlank(filePath)) return null;
         try (Workbook workbook = toStreamingWorkbook(filePath)) {
-            return toData(workbook, rowProcessor);
+            return readData(workbook, rowProcessor);
         } catch (Exception e) {
-            log.error("toData ", e);
+            log.error("toData", e);
             return null;
         }
     }
 
-    public static <T> List<T> toData(byte[] file, Function<List<Object>, T> rowProcessor) {
+    public static <T> List<T> readData(byte[] file, Function<List<Object>, T> rowProcessor) {
         if (file == null) return null;
         try (Workbook workbook = toStreamingWorkbook(file)) {
-            return toData(workbook, rowProcessor);
+            return readData(workbook, rowProcessor);
         } catch (Exception e) {
-            log.error("toData ", e);
+            log.error("toData", e);
+            return null;
+        }
+    }
+
+    public static <T> List<T> readData(MultipartFile file, Function<List<Object>, T> rowProcessor) {
+        if (file == null) return null;
+        try (Workbook workbook = toStreamingWorkbook(file)) {
+            return readData(workbook, rowProcessor);
+        } catch (Exception e) {
+            log.error("toData", e);
             return null;
         }
     }
@@ -248,7 +259,7 @@ public class ExcelUtils {
                 }
             }
         } catch (Exception e) {
-            log.error("writeData ", e);
+            log.error("writeData", e);
         }
     }
 
@@ -257,7 +268,7 @@ public class ExcelUtils {
             writeData(workbook, header, data, rowProcessor);
             return toBytes(workbook);
         } catch (Exception e) {
-            log.error("writeDataToBytes ", e);
+            log.error("writeDataToBytes", e);
             return null;
         }
     }
@@ -267,7 +278,7 @@ public class ExcelUtils {
             writeData(workbook, header, data, rowProcessor);
             writeFile(workbook, filePath);
         } catch (Exception e) {
-            log.error("writeDataToFile ", e);
+            log.error("writeDataToFile", e);
         }
     }
 }
