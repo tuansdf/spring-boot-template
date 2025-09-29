@@ -103,12 +103,12 @@ public class DebugController {
             @RequestParam(required = false) String folder
     ) {
         List<UserDTO> data = createData(total);
-        String exportPath = "csv-" + DateUtils.currentEpochMicros() + ".csv";
+        String exportPath = "csv-" + DateUtils.currentEpochMicros() + ".csv.gz";
         if (folder != null) {
             exportPath = folder + "/" + exportPath;
         }
         String[] header = new String[]{"ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At"};
-        CSVUtils.writeDataToFile(exportPath, header, data, (row) -> new String[]{
+        CSVUtils.writeDataToGzipFile(exportPath, header, data, (row) -> new String[]{
                 ConversionUtils.safeToString(row.getId()),
                 ConversionUtils.safeToString(row.getUsername()),
                 ConversionUtils.safeToString(row.getEmail()),
@@ -143,7 +143,7 @@ public class DebugController {
 
     @GetMapping("/csv/import")
     public String testImportCsv(@RequestParam String filePath) {
-        List<UserDTO> items = CSVUtils.toData(filePath, (data) -> {
+        List<UserDTO> items = CSVUtils.readDataFromGzip(filePath, (data) -> {
             UserDTO temp = new UserDTO();
             temp.setId(ConversionUtils.toUUID(CommonUtils.get(data, 0)));
             temp.setUsername(ConversionUtils.toString(CommonUtils.get(data, 1)));

@@ -4,6 +4,9 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipParameters;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,48 +16,96 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.zip.Deflater;
 
 @Slf4j
 public class CSVUtils {
-    public static <T> List<T> toData(Reader reader, Function<String[], T> rowProcessor) {
-        if (reader == null) return null;
+    public static void readData(Reader reader, Consumer<String[]> rowProcessor) {
+        if (reader == null) return;
         try (CSVReader csvReader = new CSVReader(reader)) {
-            List<T> result = new ArrayList<>();
-            boolean isHeader = true;
+            if (csvReader.readNext() == null) return;
             for (String[] row : csvReader) {
-                if (isHeader) {
-                    isHeader = false;
-                    continue;
-                }
-                result.add(rowProcessor.apply(row));
+                rowProcessor.accept(row);
             }
+        } catch (Exception e) {
+            log.error("readData", e);
+        }
+    }
+
+    public static <T> List<T> readData(Reader reader, Function<String[], T> rowProcessor) {
+        if (reader == null) return null;
+        try {
+            List<T> result = new ArrayList<>();
+            readData(reader, (row) -> {
+                result.add(rowProcessor.apply(row));
+            });
             return result;
         } catch (Exception e) {
+            log.error("readData", e);
             return null;
         }
     }
 
-    public static <T> List<T> toData(String filePath, Function<String[], T> rowProcessor) {
+    public static <T> List<T> readData(String filePath, Function<String[], T> rowProcessor) {
         try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
-            return toData(reader, rowProcessor);
+            return readData(reader, rowProcessor);
         } catch (Exception e) {
+            log.error("readData", e);
             return null;
         }
     }
 
-    public static <T> List<T> toData(MultipartFile file, Function<String[], T> rowProcessor) {
-        try (Reader reader = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8)) {
-            return toData(reader, rowProcessor);
+    public static <T> List<T> readData(MultipartFile file, Function<String[], T> rowProcessor) {
+        try (InputStream is = file.getInputStream();
+             Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+            return readData(reader, rowProcessor);
         } catch (Exception e) {
+            log.error("readData", e);
             return null;
         }
     }
 
-    public static <T> List<T> toData(byte[] file, Function<String[], T> rowProcessor) {
-        try (Reader reader = new InputStreamReader(new ByteArrayInputStream(file), StandardCharsets.UTF_8)) {
-            return toData(reader, rowProcessor);
+    public static <T> List<T> readData(byte[] file, Function<String[], T> rowProcessor) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(file);
+             Reader reader = new InputStreamReader(bais, StandardCharsets.UTF_8)) {
+            return readData(reader, rowProcessor);
         } catch (Exception e) {
+            log.error("readData", e);
+            return null;
+        }
+    }
+
+    public static <T> List<T> readDataFromGzip(String filePath, Function<String[], T> rowProcessor) {
+        try (InputStream is = Files.newInputStream(Paths.get(filePath));
+             GzipCompressorInputStream gis = new GzipCompressorInputStream(is);
+             Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
+            return readData(reader, rowProcessor);
+        } catch (Exception e) {
+            log.error("readDataFromGzipBytes", e);
+            return null;
+        }
+    }
+
+    public static <T> List<T> readDataFromGzip(MultipartFile file, Function<String[], T> rowProcessor) {
+        try (InputStream is = file.getInputStream();
+             GzipCompressorInputStream gis = new GzipCompressorInputStream(is);
+             Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
+            return readData(reader, rowProcessor);
+        } catch (Exception e) {
+            log.error("readDataFromGzipBytes", e);
+            return null;
+        }
+    }
+
+    public static <T> List<T> readDataFromGzip(byte[] file, Function<String[], T> rowProcessor) {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(file);
+             GzipCompressorInputStream gis = new GzipCompressorInputStream(bais);
+             Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
+            return readData(reader, rowProcessor);
+        } catch (Exception e) {
+            log.error("readDataFromGzipBytes", e);
             return null;
         }
     }
@@ -70,16 +121,18 @@ public class CSVUtils {
                     csvWriter.writeNext(rowProcessor.apply(item));
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            log.error("writeData", e);
         }
     }
 
     public static <T> byte[] writeDataToBytes(String[] header, List<T> data, Function<T, String[]> rowProcessor) {
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-             Writer writer = new OutputStreamWriter(outputStream)) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             Writer writer = new OutputStreamWriter(baos)) {
             writeData(writer, header, data, rowProcessor);
-            return outputStream.toByteArray();
+            return baos.toByteArray();
         } catch (Exception e) {
+            log.error("writeDataToBytes", e);
             return null;
         }
     }
@@ -87,7 +140,35 @@ public class CSVUtils {
     public static <T> void writeDataToFile(String filePath, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
         try (Writer writer = new FileWriter(filePath)) {
             writeData(writer, header, data, rowProcessor);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            log.error("writeDataToFile", e);
+        }
+    }
+
+    public static <T> byte[] writeDataToGzipBytes(String[] header, List<T> data, Function<T, String[]> rowProcessor) {
+        GzipParameters parameters = new GzipParameters();
+        parameters.setCompressionLevel(Deflater.BEST_SPEED);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             OutputStream gos = new GzipCompressorOutputStream(baos, parameters);
+             Writer writer = new OutputStreamWriter(gos)) {
+            writeData(writer, header, data, rowProcessor);
+            return baos.toByteArray();
+        } catch (Exception e) {
+            log.error("writeDataToGzipBytes", e);
+            return null;
+        }
+    }
+
+    public static <T> void writeDataToGzipFile(String filePath, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
+        GzipParameters parameters = new GzipParameters();
+        parameters.setCompressionLevel(Deflater.BEST_SPEED);
+        try (OutputStream fos = Files.newOutputStream(Paths.get(filePath));
+             BufferedOutputStream bos = new BufferedOutputStream(fos);
+             OutputStream gos = new GzipCompressorOutputStream(bos, parameters);
+             Writer writer = new OutputStreamWriter(gos)) {
+            writeData(writer, header, data, rowProcessor);
+        } catch (Exception e) {
+            log.error("writeDataToGzipFile", e);
         }
     }
 }
