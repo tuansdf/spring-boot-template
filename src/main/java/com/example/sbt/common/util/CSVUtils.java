@@ -23,7 +23,6 @@ import java.util.zip.Deflater;
 @Slf4j
 public class CSVUtils {
     public static void readData(Reader reader, Consumer<String[]> rowProcessor) {
-        if (reader == null) return;
         try (CSVReader csvReader = new CSVReader(reader)) {
             if (csvReader.readNext() == null) return;
             for (String[] row : csvReader) {
@@ -35,7 +34,6 @@ public class CSVUtils {
     }
 
     public static <T> List<T> readData(Reader reader, Function<String[], T> rowProcessor) {
-        if (reader == null) return null;
         try {
             List<T> result = new ArrayList<>();
             readData(reader, (row) -> {
@@ -49,7 +47,7 @@ public class CSVUtils {
     }
 
     public static <T> List<T> readData(String filePath, Function<String[], T> rowProcessor) {
-        try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath))) {
+        try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath), StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readData", e);
@@ -111,7 +109,6 @@ public class CSVUtils {
     }
 
     public static <T> void writeData(Writer writer, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
-        if (writer == null) return;
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
             if (ArrayUtils.isNotEmpty(header)) {
                 csvWriter.writeNext(header);
@@ -128,7 +125,7 @@ public class CSVUtils {
 
     public static <T> byte[] writeDataToBytes(String[] header, List<T> data, Function<T, String[]> rowProcessor) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             OutputStreamWriter writer = new OutputStreamWriter(baos)) {
+             OutputStreamWriter writer = new OutputStreamWriter(baos, StandardCharsets.UTF_8)) {
             writeData(writer, header, data, rowProcessor);
             return baos.toByteArray();
         } catch (Exception e) {
@@ -150,7 +147,7 @@ public class CSVUtils {
         parameters.setCompressionLevel(Deflater.BEST_SPEED);
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              GzipCompressorOutputStream gos = new GzipCompressorOutputStream(baos, parameters);
-             OutputStreamWriter writer = new OutputStreamWriter(gos)) {
+             OutputStreamWriter writer = new OutputStreamWriter(gos, StandardCharsets.UTF_8)) {
             writeData(writer, header, data, rowProcessor);
             return baos.toByteArray();
         } catch (Exception e) {
@@ -163,9 +160,8 @@ public class CSVUtils {
         GzipParameters parameters = new GzipParameters();
         parameters.setCompressionLevel(Deflater.BEST_SPEED);
         try (OutputStream fos = Files.newOutputStream(Path.of(filePath));
-             BufferedOutputStream bos = new BufferedOutputStream(fos);
-             GzipCompressorOutputStream gos = new GzipCompressorOutputStream(bos, parameters);
-             OutputStreamWriter writer = new OutputStreamWriter(gos)) {
+             GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters);
+             OutputStreamWriter writer = new OutputStreamWriter(gos, StandardCharsets.UTF_8)) {
             writeData(writer, header, data, rowProcessor);
         } catch (Exception e) {
             log.error("writeDataToGzipFile", e);
