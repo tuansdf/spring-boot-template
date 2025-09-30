@@ -21,9 +21,9 @@ public class AuthValidator {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        requestDTO.setUsername(ConversionUtils.safeTrim(requestDTO.getUsername()));
-        requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
-        requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
+        requestDTO.setUsername(ConversionUtils.safeToString(requestDTO.getUsername()).trim());
+        requestDTO.setEmail(ConversionUtils.safeToString(requestDTO.getEmail()).trim().toLowerCase());
+        requestDTO.setName(ConversionUtils.safeToString(requestDTO.getName()).trim());
         String usernameError = validationHelper.validateUsername(requestDTO.getUsername());
         if (usernameError != null) {
             throw new CustomException(usernameError);

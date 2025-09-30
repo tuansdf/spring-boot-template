@@ -14,6 +14,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
@@ -35,8 +38,11 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         try {
-            if (authentication.getPrincipal() instanceof DefaultOAuth2User oAuth2User) {
-                String email = oAuth2User.getAttribute("email");
+            if (authentication.getPrincipal() instanceof DefaultOAuth2User oauth2User) {
+                String email = ConversionUtils.safeToString(oauth2User.getAttribute("email")).trim().toLowerCase();
+                if (StringUtils.isBlank(email)) {
+                    throw new RuntimeException("Email is blank");
+                }
                 User user = userRepository.findTopByEmail(email).orElse(null);
                 if (user == null) {
                     Boolean isRegistrationEnabled = configurations.isRegistrationEnabled();
@@ -47,7 +53,7 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
                     newUser.setUsername(email);
                     newUser.setEmail(email);
                     newUser.setPassword(null);
-                    newUser.setName(oAuth2User.getName());
+                    newUser.setName(oauth2User.getName());
                     newUser.setIsEnabled(true);
                     newUser.setIsVerified(true);
                     user = userRepository.save(newUser);
@@ -60,6 +66,11 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
                         .replace("{code}", tokenDTO.getValue()).replace("{error}", ""));
             }
         } catch (Exception e) {
+            if (e instanceof CustomException) {
+                log.error("onAuthenticationSuccess {}", e.toString());
+            } else {
+                log.error("onAuthenticationSuccess", e);
+            }
             response.sendRedirect(ConversionUtils.safeToString(customProperties.getOauth2CallbackUrl())
                     .replace("{code}", "").replace("{error}", exceptionHelper.toResponseMessage(e)));
         }

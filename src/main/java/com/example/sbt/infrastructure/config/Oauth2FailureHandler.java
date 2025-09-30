@@ -22,6 +22,7 @@ public class Oauth2FailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         log.error("oauth2", exception);
-        response.sendRedirect(ConversionUtils.safeToString(customProperties.getOauth2CallbackUrl()).replace("{code}", ""));
+        response.sendRedirect(ConversionUtils.safeToString(customProperties.getOauth2CallbackUrl())
+                .replace("{code}", "").replace("{error}", ""));
     }
 }
