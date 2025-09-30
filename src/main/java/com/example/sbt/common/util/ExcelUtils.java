@@ -31,7 +31,7 @@ public class ExcelUtils {
         try (workbook; OutputStream fos = Files.newOutputStream(Path.of(outputPath))) {
             workbook.write(fos);
         } catch (Exception e) {
-            log.error("writeFile", e);
+            log.error("", e);
         }
     }
 
@@ -40,7 +40,7 @@ public class ExcelUtils {
             workbook.write(outputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
-            log.error("toBytes", e);
+            log.error("", e);
             return null;
         }
     }
@@ -158,7 +158,7 @@ public class ExcelUtils {
         try (InputStream fis = Files.newInputStream(Path.of(filePath))) {
             return StreamingReader.builder().open(fis);
         } catch (Exception e) {
-            log.error("toStreamingWorkbook", e);
+            log.error("", e);
             return null;
         }
     }
@@ -168,7 +168,7 @@ public class ExcelUtils {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(file)) {
             return StreamingReader.builder().open(bais);
         } catch (Exception e) {
-            log.error("toStreamingWorkbook", e);
+            log.error("", e);
             return null;
         }
     }
@@ -178,7 +178,7 @@ public class ExcelUtils {
         try (InputStream inputStream = file.getInputStream()) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
-            log.error("toStreamingWorkbook", e);
+            log.error("", e);
             return null;
         }
     }
@@ -197,7 +197,7 @@ public class ExcelUtils {
                 rowProcessor.accept(ExcelUtils.getRowCellValues(row));
             }
         } catch (Exception e) {
-            log.error("toData", e);
+            log.error("", e);
         }
     }
 
@@ -209,7 +209,7 @@ public class ExcelUtils {
             });
             return result;
         } catch (Exception e) {
-            log.error("toData", e);
+            log.error("", e);
             return null;
         }
     }
@@ -219,7 +219,7 @@ public class ExcelUtils {
         try (Workbook workbook = toStreamingWorkbook(filePath)) {
             return readData(workbook, rowProcessor);
         } catch (Exception e) {
-            log.error("toData", e);
+            log.error("", e);
             return null;
         }
     }
@@ -229,7 +229,7 @@ public class ExcelUtils {
         try (Workbook workbook = toStreamingWorkbook(file)) {
             return readData(workbook, rowProcessor);
         } catch (Exception e) {
-            log.error("toData", e);
+            log.error("", e);
             return null;
         }
     }
@@ -239,7 +239,7 @@ public class ExcelUtils {
         try (Workbook workbook = toStreamingWorkbook(file)) {
             return readData(workbook, rowProcessor);
         } catch (Exception e) {
-            log.error("toData", e);
+            log.error("", e);
             return null;
         }
     }
@@ -259,7 +259,7 @@ public class ExcelUtils {
                 }
             }
         } catch (Exception e) {
-            log.error("writeData", e);
+            log.error("", e);
         }
     }
 
@@ -268,7 +268,7 @@ public class ExcelUtils {
             writeData(workbook, header, data, rowProcessor);
             return toBytes(workbook);
         } catch (Exception e) {
-            log.error("writeDataToBytes", e);
+            log.error("", e);
             return null;
         }
     }
@@ -278,7 +278,7 @@ public class ExcelUtils {
             writeData(workbook, header, data, rowProcessor);
             writeFile(workbook, filePath);
         } catch (Exception e) {
-            log.error("writeDataToFile", e);
+            log.error("", e);
         }
     }
 }

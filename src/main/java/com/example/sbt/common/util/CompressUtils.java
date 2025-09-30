@@ -17,14 +17,18 @@ public class CompressUtils {
     }
 
     public static class Gzip {
+        public static final GzipParameters GZIP_FAST = new GzipParameters();
+
+        static {
+            GZIP_FAST.setCompressionLevel(Deflater.BEST_SPEED);
+        }
+
         private Gzip() {
         }
 
         public static byte[] compress(byte[] bytes) throws IOException {
-            GzipParameters parameters = new GzipParameters();
-            parameters.setCompressionLevel(Deflater.BEST_SPEED);
             try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                 OutputStream gos = new GzipCompressorOutputStream(baos, parameters)) {
+                 OutputStream gos = new GzipCompressorOutputStream(baos, GZIP_FAST)) {
                 gos.write(bytes);
                 gos.flush();
                 gos.close();
