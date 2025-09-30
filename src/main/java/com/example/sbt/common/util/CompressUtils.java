@@ -13,26 +13,36 @@ import java.util.zip.Deflater;
 
 @Slf4j
 public class CompressUtils {
-    public static byte[] compressToGzip(byte[] bytes) throws IOException {
-        GzipParameters parameters = new GzipParameters();
-        parameters.setCompressionLevel(Deflater.BEST_SPEED);
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-             OutputStream outputStream = new GzipCompressorOutputStream(byteArrayOutputStream, parameters)) {
-            outputStream.write(bytes);
-            return byteArrayOutputStream.toByteArray();
-        }
+    private CompressUtils() {
     }
 
-    public static byte[] decompressFromGzip(byte[] bytes) throws IOException {
-        try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-             GzipCompressorInputStream gis = new GzipCompressorInputStream(bais);
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[8192];
-            int n;
-            while ((n = gis.read(buffer)) != -1) {
-                baos.write(buffer, 0, n);
+    public static class Gzip {
+        private Gzip() {
+        }
+
+        public static byte[] compress(byte[] bytes) throws IOException {
+            GzipParameters parameters = new GzipParameters();
+            parameters.setCompressionLevel(Deflater.BEST_SPEED);
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                 OutputStream gos = new GzipCompressorOutputStream(baos, parameters)) {
+                gos.write(bytes);
+                gos.flush();
+                gos.close();
+                return baos.toByteArray();
             }
-            return baos.toByteArray();
+        }
+
+        public static byte[] decompress(byte[] bytes) throws IOException {
+            try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+                 GzipCompressorInputStream gis = new GzipCompressorInputStream(bais);
+                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                byte[] buffer = new byte[8192];
+                int n;
+                while ((n = gis.read(buffer)) != -1) {
+                    baos.write(buffer, 0, n);
+                }
+                return baos.toByteArray();
+            }
         }
     }
 }

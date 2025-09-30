@@ -48,7 +48,7 @@ public class LoggingAspect {
                     .addKeyValue(LoggerKey.METHOD_NAME, methodName)
                     .addKeyValue(LoggerKey.METHOD_ARGUMENTS, arguments)
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
-                    .log("{}", result);
+                    .log();
         } catch (Throwable e) {
             double elapsedMs = (System.nanoTime() - start) / 1_000_000.0;
             log.atError()
