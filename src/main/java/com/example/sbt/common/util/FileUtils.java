@@ -11,8 +11,8 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.Normalizer;
@@ -40,9 +40,9 @@ public class FileUtils {
 
     public static void writeFile(byte[] bytes, String outputPath) {
         if (bytes == null) return;
-        try (FileOutputStream outputStream = new FileOutputStream(outputPath);
-             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
-            bufferedOutputStream.write(bytes);
+        try (OutputStream fos = Files.newOutputStream(Path.of(outputPath));
+             BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+            bos.write(bytes);
         } catch (Exception e) {
             log.error("writeFile {}", e.toString());
         }

@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -49,7 +49,7 @@ public class CSVUtils {
     }
 
     public static <T> List<T> readData(String filePath, Function<String[], T> rowProcessor) {
-        try (Reader reader = Files.newBufferedReader(Paths.get(filePath))) {
+        try (BufferedReader reader = Files.newBufferedReader(Path.of(filePath))) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readData", e);
@@ -69,7 +69,7 @@ public class CSVUtils {
 
     public static <T> List<T> readData(MultipartFile file, Function<String[], T> rowProcessor) {
         try (InputStream is = file.getInputStream();
-             Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+             InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readData", e);
@@ -78,9 +78,9 @@ public class CSVUtils {
     }
 
     public static <T> List<T> readDataFromGzip(String filePath, Function<String[], T> rowProcessor) {
-        try (InputStream is = Files.newInputStream(Paths.get(filePath));
+        try (InputStream is = Files.newInputStream(Path.of(filePath));
              GzipCompressorInputStream gis = new GzipCompressorInputStream(is);
-             Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
+             InputStreamReader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readDataFromGzipBytes", e);
@@ -91,7 +91,7 @@ public class CSVUtils {
     public static <T> List<T> readDataFromGzip(byte[] file, Function<String[], T> rowProcessor) {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(file);
              GzipCompressorInputStream gis = new GzipCompressorInputStream(bais);
-             Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
+             InputStreamReader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readDataFromGzipBytes", e);
@@ -102,7 +102,7 @@ public class CSVUtils {
     public static <T> List<T> readDataFromGzip(MultipartFile file, Function<String[], T> rowProcessor) {
         try (InputStream is = file.getInputStream();
              GzipCompressorInputStream gis = new GzipCompressorInputStream(is);
-             Reader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
+             InputStreamReader reader = new InputStreamReader(gis, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readDataFromGzipBytes", e);
@@ -128,7 +128,7 @@ public class CSVUtils {
 
     public static <T> byte[] writeDataToBytes(String[] header, List<T> data, Function<T, String[]> rowProcessor) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             Writer writer = new OutputStreamWriter(baos)) {
+             OutputStreamWriter writer = new OutputStreamWriter(baos)) {
             writeData(writer, header, data, rowProcessor);
             return baos.toByteArray();
         } catch (Exception e) {
@@ -138,7 +138,7 @@ public class CSVUtils {
     }
 
     public static <T> void writeDataToFile(String filePath, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
-        try (Writer writer = new FileWriter(filePath)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Path.of(filePath), StandardCharsets.UTF_8)) {
             writeData(writer, header, data, rowProcessor);
         } catch (Exception e) {
             log.error("writeDataToFile", e);
@@ -149,8 +149,8 @@ public class CSVUtils {
         GzipParameters parameters = new GzipParameters();
         parameters.setCompressionLevel(Deflater.BEST_SPEED);
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             OutputStream gos = new GzipCompressorOutputStream(baos, parameters);
-             Writer writer = new OutputStreamWriter(gos)) {
+             GzipCompressorOutputStream gos = new GzipCompressorOutputStream(baos, parameters);
+             OutputStreamWriter writer = new OutputStreamWriter(gos)) {
             writeData(writer, header, data, rowProcessor);
             return baos.toByteArray();
         } catch (Exception e) {
@@ -162,10 +162,10 @@ public class CSVUtils {
     public static <T> void writeDataToGzipFile(String filePath, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
         GzipParameters parameters = new GzipParameters();
         parameters.setCompressionLevel(Deflater.BEST_SPEED);
-        try (OutputStream fos = Files.newOutputStream(Paths.get(filePath));
+        try (OutputStream fos = Files.newOutputStream(Path.of(filePath));
              BufferedOutputStream bos = new BufferedOutputStream(fos);
-             OutputStream gos = new GzipCompressorOutputStream(bos, parameters);
-             Writer writer = new OutputStreamWriter(gos)) {
+             GzipCompressorOutputStream gos = new GzipCompressorOutputStream(bos, parameters);
+             OutputStreamWriter writer = new OutputStreamWriter(gos)) {
             writeData(writer, header, data, rowProcessor);
         } catch (Exception e) {
             log.error("writeDataToGzipFile", e);

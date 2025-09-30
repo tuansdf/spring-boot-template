@@ -12,9 +12,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,17 +28,14 @@ public class ExcelUtils {
     private static final String DEFAULT_SHEET = "Sheet1";
 
     public static void writeFile(Workbook workbook, String outputPath) {
-        try (workbook; FileOutputStream outputStream = new FileOutputStream(outputPath);
-             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(outputStream)) {
-            if (workbook == null || StringUtils.isBlank(outputPath)) return;
-            workbook.write(bufferedOutputStream);
+        try (workbook; OutputStream fos = Files.newOutputStream(Path.of(outputPath))) {
+            workbook.write(fos);
         } catch (Exception e) {
             log.error("writeFile", e);
         }
     }
 
     public static byte[] toBytes(Workbook workbook) {
-        if (workbook == null) return null;
         try (workbook; ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             workbook.write(outputStream);
             return outputStream.toByteArray();
@@ -155,8 +155,8 @@ public class ExcelUtils {
 
     public static Workbook toStreamingWorkbook(String filePath) {
         if (StringUtils.isBlank(filePath)) return null;
-        try (InputStream inputStream = Files.newInputStream(Paths.get(filePath))) {
-            return StreamingReader.builder().open(inputStream);
+        try (InputStream fis = Files.newInputStream(Path.of(filePath))) {
+            return StreamingReader.builder().open(fis);
         } catch (Exception e) {
             log.error("toStreamingWorkbook", e);
             return null;
@@ -165,8 +165,8 @@ public class ExcelUtils {
 
     public static Workbook toStreamingWorkbook(byte[] file) {
         if (file == null) return null;
-        try (InputStream inputStream = new ByteArrayInputStream(file)) {
-            return StreamingReader.builder().open(inputStream);
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(file)) {
+            return StreamingReader.builder().open(bais);
         } catch (Exception e) {
             log.error("toStreamingWorkbook", e);
             return null;
