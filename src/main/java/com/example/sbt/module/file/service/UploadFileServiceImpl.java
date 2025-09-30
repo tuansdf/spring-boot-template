@@ -158,17 +158,17 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public byte[] getFile(String filePath) {
+    public InputStream getFile(String filePath) {
         try {
             if (StringUtils.isBlank(filePath)) return null;
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(customProperties.getAwsS3Bucket())
                     .key(filePath)
                     .build();
-            return s3Client.getObject(getObjectRequest, ResponseTransformer.toBytes()).asByteArray();
+            return s3Client.getObject(getObjectRequest);
         } catch (Exception e) {
             log.error("getFile {}", e.toString());
-            return null;
+            return InputStream.nullInputStream();
         }
     }
 

@@ -4,6 +4,7 @@ import com.example.sbt.module.file.dto.ObjectKey;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface UploadFileService {
@@ -19,7 +20,7 @@ public interface UploadFileService {
 
     ObjectKey createPresignedPutUrl(String dirPath, String filename);
 
-    byte[] getFile(String filePath);
+    InputStream getFile(String filePath);
 
     byte[] getFileHeaderBytes(String filePath, Integer size);
 

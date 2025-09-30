@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
@@ -31,28 +32,43 @@ public class FileUtils {
     private static final Pattern UNSAFE_CHARS = Pattern.compile("[^A-Za-z0-9._-]");
     private static final Pattern MARK_CHARS = Pattern.compile("\\p{M}");
 
-    public static byte[] toBytes(String filePath) {
-        try (InputStream fis = Files.newInputStream(Path.of(filePath));
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+    public static byte[] toBytes(InputStream is) {
+        try (is; ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[8192];
             int n;
-            while ((n = fis.read(buffer)) != -1) {
+            while ((n = is.read(buffer)) != -1) {
                 baos.write(buffer, 0, n);
             }
             return baos.toByteArray();
         } catch (Exception e) {
-            log.error("toBytes", e);
+            log.error("", e);
             return null;
         }
     }
 
+    public static byte[] toBytes(String filePath) {
+        try (InputStream fis = Files.newInputStream(Path.of(filePath))) {
+            return toBytes(fis);
+        } catch (Exception e) {
+            log.error("", e);
+            return null;
+        }
+    }
+
+    public static void writeFile(InputStream is, String outputPath) {
+        try (is) {
+            Files.copy(is, Paths.get(outputPath));
+        } catch (Exception e) {
+            log.error("", e);
+        }
+    }
+
     public static void writeFile(byte[] bytes, String outputPath) {
-        if (bytes == null) return;
         try (OutputStream fos = Files.newOutputStream(Path.of(outputPath));
-             BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+             OutputStream bos = new BufferedOutputStream(fos)) {
             bos.write(bytes);
         } catch (Exception e) {
-            log.error("writeFile", e);
+            log.error("", e);
         }
     }
 

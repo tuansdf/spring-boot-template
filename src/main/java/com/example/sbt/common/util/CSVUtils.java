@@ -47,7 +47,7 @@ public class CSVUtils {
     }
 
     public static <T> List<T> read(InputStream is, Function<String[], T> rowProcessor) {
-        try (InputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
+        try (is; InputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
              Reader reader = new InputStreamReader(bis, StandardCharsets.UTF_8)) {
             return read(reader, rowProcessor);
         } catch (Exception e) {
@@ -84,7 +84,7 @@ public class CSVUtils {
     }
 
     public static <T> List<T> readGzip(InputStream is, Function<String[], T> rowProcessor) {
-        try (InputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
+        try (is; InputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
              InputStream gis = new GzipCompressorInputStream(bis)) {
             return read(gis, rowProcessor);
         } catch (Exception e) {
