@@ -38,7 +38,7 @@ public class LoginAuditServiceImpl implements LoginAuditService {
     }
 
     @Override
-    public long countRecentlyFailedAttemptsByUserId(String username, Instant fromTime) {
-        return ConversionUtils.safeToLong(loginAuditRepository.countRecentlyFailedAttemptsByUserId(username, fromTime));
+    public long countRecentlyFailedAttemptsByUsername(String username, Instant fromTime) {
+        return ConversionUtils.safeToLong(loginAuditRepository.countRecentlyFailedAttemptsByUsername(username, fromTime));
     }
 }

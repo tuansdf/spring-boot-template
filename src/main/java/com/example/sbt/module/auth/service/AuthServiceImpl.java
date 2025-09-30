@@ -80,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
         Integer maxAttempts = configurations.getLoginMaxAttempts();
         Integer timeWindow = configurations.getLoginTimeWindow();
         if (CommonUtils.isPositive(maxAttempts) && CommonUtils.isPositive(timeWindow)) {
-            long attempts = loginAuditService.countRecentlyFailedAttemptsByUserId(requestDTO.getUsername(), Instant.now().minusSeconds(timeWindow));
+            long attempts = loginAuditService.countRecentlyFailedAttemptsByUsername(requestDTO.getUsername(), Instant.now().minusSeconds(timeWindow));
             if (attempts >= maxAttempts) {
                 throw new CustomException(localeHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
             }
