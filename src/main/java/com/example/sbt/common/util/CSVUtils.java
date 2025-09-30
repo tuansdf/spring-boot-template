@@ -57,7 +57,7 @@ public class CSVUtils {
 
     public static <T> List<T> readData(byte[] file, Function<String[], T> rowProcessor) {
         try (ByteArrayInputStream bais = new ByteArrayInputStream(file);
-             Reader reader = new InputStreamReader(bais, StandardCharsets.UTF_8)) {
+             InputStreamReader reader = new InputStreamReader(bais, StandardCharsets.UTF_8)) {
             return readData(reader, rowProcessor);
         } catch (Exception e) {
             log.error("readData", e);

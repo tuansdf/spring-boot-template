@@ -11,6 +11,7 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -31,9 +32,16 @@ public class FileUtils {
     private static final Pattern MARK_CHARS = Pattern.compile("\\p{M}");
 
     public static byte[] toBytes(String filePath) {
-        try {
-            return Files.readAllBytes(Path.of(filePath));
+        try (InputStream fis = Files.newInputStream(Path.of(filePath));
+             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[8192];
+            int n;
+            while ((n = fis.read(buffer)) != -1) {
+                baos.write(buffer, 0, n);
+            }
+            return baos.toByteArray();
         } catch (Exception e) {
+            log.error("toBytes", e);
             return null;
         }
     }
@@ -44,7 +52,7 @@ public class FileUtils {
              BufferedOutputStream bos = new BufferedOutputStream(fos)) {
             bos.write(bytes);
         } catch (Exception e) {
-            log.error("writeFile {}", e.toString());
+            log.error("writeFile", e);
         }
     }
 
