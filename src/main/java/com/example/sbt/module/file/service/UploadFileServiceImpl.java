@@ -2,6 +2,7 @@ package com.example.sbt.module.file.service;
 
 import com.example.sbt.common.constant.CustomProperties;
 import com.example.sbt.common.constant.FileType;
+import com.example.sbt.common.dto.TempFile;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.FileUtils;
@@ -23,8 +24,11 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -158,7 +162,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     @Override
-    public InputStream getFile(String filePath) {
+    public InputStream getFileStream(String filePath) {
         try {
             if (StringUtils.isBlank(filePath)) return null;
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
@@ -167,8 +171,25 @@ public class UploadFileServiceImpl implements UploadFileService {
                     .build();
             return s3Client.getObject(getObjectRequest);
         } catch (Exception e) {
-            log.error("getFile {}", e.toString());
+            log.error("", e);
             return InputStream.nullInputStream();
+        }
+    }
+
+    @Override
+    public TempFile getFile(String filePath) {
+        try {
+            if (StringUtils.isBlank(filePath)) return null;
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(customProperties.getAwsS3Bucket())
+                    .key(filePath)
+                    .build();
+            Path path = Files.createTempFile(UUID.randomUUID().toString(), "." + FileUtils.getFileExtension(filePath));
+            s3Client.getObject(getObjectRequest, ResponseTransformer.toFile(path));
+            return new TempFile(path);
+        } catch (Exception e) {
+            log.error("", e);
+            return null;
         }
     }
 

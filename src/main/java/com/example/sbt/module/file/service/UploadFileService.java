@@ -1,5 +1,6 @@
 package com.example.sbt.module.file.service;
 
+import com.example.sbt.common.dto.TempFile;
 import com.example.sbt.module.file.dto.ObjectKey;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
@@ -20,7 +21,9 @@ public interface UploadFileService {
 
     ObjectKey createPresignedPutUrl(String dirPath, String filename);
 
-    InputStream getFile(String filePath);
+    InputStream getFileStream(String filePath);
+
+    TempFile getFile(String filePath);
 
     byte[] getFileHeaderBytes(String filePath, Integer size);
 

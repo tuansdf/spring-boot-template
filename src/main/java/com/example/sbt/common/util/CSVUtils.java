@@ -95,7 +95,7 @@ public class CSVUtils {
 
     public static <T> List<T> readGzip(String filePath, Function<String[], T> rowProcessor) {
         try (InputStream is = Files.newInputStream(Path.of(filePath))) {
-            return read(is, rowProcessor);
+            return readGzip(is, rowProcessor);
         } catch (Exception e) {
             log.error("", e);
             return null;
@@ -104,7 +104,7 @@ public class CSVUtils {
 
     public static <T> List<T> readGzip(byte[] file, Function<String[], T> rowProcessor) {
         try (InputStream is = new ByteArrayInputStream(file)) {
-            return read(is, rowProcessor);
+            return readGzip(is, rowProcessor);
         } catch (Exception e) {
             log.error("", e);
             return null;
@@ -113,7 +113,7 @@ public class CSVUtils {
 
     public static <T> List<T> readGzip(MultipartFile file, Function<String[], T> rowProcessor) {
         try (InputStream is = file.getInputStream()) {
-            return read(is, rowProcessor);
+            return readGzip(is, rowProcessor);
         } catch (Exception e) {
             log.error("", e);
             return null;
@@ -172,7 +172,7 @@ public class CSVUtils {
 
     public static <T> void writeGzip(String filePath, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
         try (OutputStream fos = Files.newOutputStream(Path.of(filePath))) {
-            write(fos, header, data, rowProcessor);
+            writeGzip(fos, header, data, rowProcessor);
         } catch (Exception e) {
             log.error("", e);
         }
@@ -180,7 +180,7 @@ public class CSVUtils {
 
     public static <T> byte[] writeGzip(String[] header, List<T> data, Function<T, String[]> rowProcessor) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            write(baos, header, data, rowProcessor);
+            writeGzip(baos, header, data, rowProcessor);
             return baos.toByteArray();
         } catch (Exception e) {
             log.error("", e);
