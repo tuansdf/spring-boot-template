@@ -15,8 +15,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Slf4j
 public class CSVUtils {
@@ -47,7 +50,7 @@ public class CSVUtils {
     }
 
     public static <T> List<T> read(InputStream is, Function<String[], T> rowProcessor) {
-        try (is; InputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
+        try (InputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
              Reader reader = new InputStreamReader(bis, StandardCharsets.UTF_8)) {
             return read(reader, rowProcessor);
         } catch (Exception e) {
@@ -84,7 +87,7 @@ public class CSVUtils {
     }
 
     public static <T> List<T> readGzip(InputStream is, Function<String[], T> rowProcessor) {
-        try (is; InputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
+        try (InputStream bis = new BufferedInputStream(is, BUFFER_SIZE);
              InputStream gis = new GzipCompressorInputStream(bis)) {
             return read(gis, rowProcessor);
         } catch (Exception e) {
@@ -122,6 +125,7 @@ public class CSVUtils {
 
     public static <T> void write(Writer writer, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
         try (CSVWriter csvWriter = new CSVWriter(writer)) {
+            writer.write('\uFEFF'); // UTF-8
             if (ArrayUtils.isNotEmpty(header)) {
                 csvWriter.writeNext(header);
             }
