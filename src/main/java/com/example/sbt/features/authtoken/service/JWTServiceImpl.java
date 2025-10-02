@@ -2,7 +2,7 @@ package com.example.sbt.features.authtoken.service;
 
 import com.example.sbt.common.constant.CustomProperties;
 import com.example.sbt.common.dto.JWTPayload;
-import com.example.sbt.infrastructure.helper.JWTHelper;
+import com.example.sbt.infrastructure.security.JWTHelper;
 import com.example.sbt.features.authtoken.entity.AuthToken;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -4,7 +4,7 @@ import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
-import com.example.sbt.infrastructure.helper.SQLHelper;
+import com.example.sbt.infrastructure.persistence.SQLHelper;
 import com.example.sbt.features.permission.service.PermissionService;
 import com.example.sbt.features.role.dto.RoleDTO;
 import com.example.sbt.features.role.dto.SearchRoleRequest;

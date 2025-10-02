@@ -5,7 +5,7 @@ import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
-import com.example.sbt.infrastructure.helper.SQLHelper;
+import com.example.sbt.infrastructure.persistence.SQLHelper;
 import com.example.sbt.features.permission.dto.PermissionDTO;
 import com.example.sbt.features.permission.dto.SearchPermissionRequest;
 import com.example.sbt.features.permission.entity.Permission;

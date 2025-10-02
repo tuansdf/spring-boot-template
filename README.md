@@ -8,7 +8,7 @@ This template is designed with a modular architecture, separating concerns into 
 
 ## Features
 
-- **Authentication:**
+- **Authentication:* *
   - **JWT (JSON Web Token):** Secure, stateless authentication.
   - **OAuth2:** Support for social logins.
   - **Role-Based Access Control (RBAC):** Manage user permissions with a flexible User/Role/Permission model.

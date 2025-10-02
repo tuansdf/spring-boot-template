@@ -1,6 +1,6 @@
 package com.example.sbt.features.configuration.entity;
 
-import com.example.sbt.infrastructure.entity.BaseEntity;
+import com.example.sbt.infrastructure.persistence.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

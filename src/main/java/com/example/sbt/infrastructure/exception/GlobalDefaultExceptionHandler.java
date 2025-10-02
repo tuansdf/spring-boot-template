@@ -1,7 +1,6 @@
 package com.example.sbt.infrastructure.exception;
 
 import com.example.sbt.common.dto.CommonResponse;
-import com.example.sbt.infrastructure.helper.ExceptionHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

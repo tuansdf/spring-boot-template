@@ -10,7 +10,7 @@ import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.common.util.FileUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.exception.NoRollbackException;
-import com.example.sbt.infrastructure.helper.SQLHelper;
+import com.example.sbt.infrastructure.persistence.SQLHelper;
 import com.example.sbt.features.file.dto.FileObjectDTO;
 import com.example.sbt.features.file.dto.FileObjectPendingDTO;
 import com.example.sbt.features.file.dto.ObjectKey;

@@ -5,7 +5,7 @@ import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.infrastructure.helper.LocaleHelper;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.file.dto.FileObjectDTO;
 import com.example.sbt.features.user.dto.SearchUserRequest;
 import com.example.sbt.features.user.dto.UserDTO;

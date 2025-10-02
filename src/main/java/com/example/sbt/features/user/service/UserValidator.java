@@ -2,8 +2,8 @@ package com.example.sbt.features.user.service;
 
 import com.example.sbt.common.dto.LocaleKey;
 import com.example.sbt.infrastructure.exception.CustomException;
-import com.example.sbt.infrastructure.helper.LocaleHelper;
-import com.example.sbt.infrastructure.helper.ValidationHelper;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
+import com.example.sbt.infrastructure.web.helper.ValidationHelper;
 import com.example.sbt.features.user.dto.UserDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

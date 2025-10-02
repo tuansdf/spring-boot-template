@@ -2,9 +2,9 @@ package com.example.sbt.features.auth.controller;
 
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.dto.RequestContextHolder;
-import com.example.sbt.infrastructure.helper.ExceptionHelper;
-import com.example.sbt.infrastructure.helper.HTMLTemplate;
-import com.example.sbt.infrastructure.helper.LocaleHelper;
+import com.example.sbt.infrastructure.exception.ExceptionHelper;
+import com.example.sbt.infrastructure.web.helper.HTMLTemplate;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.auth.dto.*;
 import com.example.sbt.features.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
