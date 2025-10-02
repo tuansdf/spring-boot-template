@@ -1,6 +1,6 @@
 package com.example.sbt.common.dto;
 
-import com.example.sbt.module.authtoken.entity.AuthToken;
+import com.example.sbt.features.authtoken.entity.AuthToken;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
