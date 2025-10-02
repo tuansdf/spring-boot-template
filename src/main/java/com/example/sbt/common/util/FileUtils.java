@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
@@ -46,8 +45,8 @@ public class FileUtils {
         }
     }
 
-    public static byte[] toBytes(String filePath) {
-        try (InputStream fis = Files.newInputStream(Path.of(filePath))) {
+    public static byte[] toBytes(Path path) {
+        try (InputStream fis = Files.newInputStream(path)) {
             return toBytes(fis);
         } catch (Exception e) {
             log.error("", e);
@@ -55,16 +54,16 @@ public class FileUtils {
         }
     }
 
-    public static void writeFile(InputStream is, String outputPath) {
+    public static void writeFile(InputStream is, Path path) {
         try (is) {
-            Files.copy(is, Paths.get(outputPath));
+            Files.copy(is, path);
         } catch (Exception e) {
             log.error("", e);
         }
     }
 
-    public static void writeFile(byte[] bytes, String outputPath) {
-        try (OutputStream fos = Files.newOutputStream(Path.of(outputPath));
+    public static void writeFile(byte[] bytes, Path path) {
+        try (OutputStream fos = Files.newOutputStream(path);
              OutputStream bos = new BufferedOutputStream(fos)) {
             bos.write(bytes);
         } catch (Exception e) {

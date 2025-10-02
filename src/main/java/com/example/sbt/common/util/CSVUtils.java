@@ -15,11 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Slf4j
 public class CSVUtils {
@@ -59,8 +56,8 @@ public class CSVUtils {
         }
     }
 
-    public static <T> List<T> read(String filePath, Function<String[], T> rowProcessor) {
-        try (Reader reader = Files.newBufferedReader(Path.of(filePath), StandardCharsets.UTF_8)) {
+    public static <T> List<T> read(Path path, Function<String[], T> rowProcessor) {
+        try (Reader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             return read(reader, rowProcessor);
         } catch (Exception e) {
             log.error("", e);
@@ -96,8 +93,8 @@ public class CSVUtils {
         }
     }
 
-    public static <T> List<T> readGzip(String filePath, Function<String[], T> rowProcessor) {
-        try (InputStream is = Files.newInputStream(Path.of(filePath))) {
+    public static <T> List<T> readGzip(Path path, Function<String[], T> rowProcessor) {
+        try (InputStream is = Files.newInputStream(path)) {
             return readGzip(is, rowProcessor);
         } catch (Exception e) {
             log.error("", e);
@@ -147,8 +144,8 @@ public class CSVUtils {
         }
     }
 
-    public static <T> void write(String filePath, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
-        try (Writer writer = Files.newBufferedWriter(Path.of(filePath), StandardCharsets.UTF_8)) {
+    public static <T> void write(Path path, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
+        try (Writer writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             write(writer, header, data, rowProcessor);
         } catch (Exception e) {
             log.error("", e);
@@ -174,8 +171,8 @@ public class CSVUtils {
         }
     }
 
-    public static <T> void writeGzip(String filePath, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
-        try (OutputStream fos = Files.newOutputStream(Path.of(filePath))) {
+    public static <T> void writeGzip(Path path, String[] header, List<T> data, Function<T, String[]> rowProcessor) {
+        try (OutputStream fos = Files.newOutputStream(path)) {
             writeGzip(fos, header, data, rowProcessor);
         } catch (Exception e) {
             log.error("", e);

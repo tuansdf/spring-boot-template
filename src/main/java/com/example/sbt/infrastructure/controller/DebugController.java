@@ -15,6 +15,7 @@ import com.example.sbt.module.notification.service.SendNotificationService;
 import com.example.sbt.module.user.dto.SearchUserRequest;
 import com.example.sbt.module.user.dto.UserDTO;
 import com.example.sbt.module.user.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.*;
@@ -28,6 +29,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -47,6 +49,7 @@ public class DebugController {
     private final UploadFileService uploadFileService;
     private final SendEmailService sendEmailService;
     private final UserService userService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/health")
     public String check() {
@@ -84,7 +87,7 @@ public class DebugController {
             exportPath = folder + "/" + exportPath;
         }
         List<Object> header = List.of("ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At");
-        ExcelUtils.writeDataToFile(exportPath, header, data, (row) -> Arrays.asList(
+        ExcelUtils.writeDataToFile(Path.of(exportPath), header, data, (row) -> Arrays.asList(
                 row.getId(),
                 row.getUsername(),
                 row.getEmail(),
@@ -108,7 +111,7 @@ public class DebugController {
             exportPath = folder + "/" + exportPath;
         }
         String[] header = new String[]{"ID", "Username", "Email", "Name", "Is Enabled", "Is Verified", "Created At", "Updated At"};
-        CSVUtils.writeGzip(exportPath, header, data, (row) -> new String[]{
+        CSVUtils.writeGzip(Path.of(exportPath), header, data, (row) -> new String[]{
                 ConversionUtils.safeToString(row.getId()),
                 ConversionUtils.safeToString(row.getUsername()),
                 ConversionUtils.safeToString(row.getEmail()),
@@ -123,7 +126,7 @@ public class DebugController {
 
     @GetMapping("/excel/import")
     public String testImportExcel(@RequestParam String filePath) {
-        List<UserDTO> items = ExcelUtils.readData(filePath, (data) -> {
+        List<UserDTO> items = ExcelUtils.readData(Path.of(filePath), (data) -> {
             UserDTO temp = new UserDTO();
             temp.setId(ConversionUtils.toUUID(CommonUtils.get(data, 0)));
             temp.setUsername(ConversionUtils.toString(CommonUtils.get(data, 1)));
@@ -143,7 +146,7 @@ public class DebugController {
 
     @GetMapping("/csv/import")
     public String testImportCsv(@RequestParam String filePath) {
-        List<UserDTO> items = CSVUtils.readGzip(filePath, (data) -> {
+        List<UserDTO> items = CSVUtils.readGzip(Path.of(filePath), (data) -> {
             UserDTO temp = new UserDTO();
             temp.setId(ConversionUtils.toUUID(CommonUtils.get(data, 0)));
             temp.setUsername(ConversionUtils.toString(CommonUtils.get(data, 1)));
@@ -312,10 +315,8 @@ public class DebugController {
     }
 
     @GetMapping(value = "/s3/get", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Object testS3GetFile(
-            @RequestParam String filePath
-    ) {
-        FileUtils.writeFile(uploadFileService.getFile(filePath), ".temp/" + FilenameUtils.getBaseName(filePath) + "-" + DateUtils.currentEpochMillis() + "." + FilenameUtils.getExtension(filePath));
+    public Object testS3GetFile(@RequestParam String filePath) {
+        FileUtils.writeFile(uploadFileService.getFileStream(filePath), Path.of(".temp/" + FilenameUtils.getBaseName(filePath) + "-" + DateUtils.currentEpochMillis() + "." + FilenameUtils.getExtension(filePath)));
         return "OK";
     }
 

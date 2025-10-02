@@ -4,7 +4,6 @@ import com.github.pjfanning.xlsx.StreamingReader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -27,8 +26,8 @@ import java.util.function.Function;
 public class ExcelUtils {
     private static final String DEFAULT_SHEET = "Sheet1";
 
-    public static void writeFile(Workbook workbook, String outputPath) {
-        try (workbook; OutputStream fos = Files.newOutputStream(Path.of(outputPath))) {
+    public static void writeFile(Workbook workbook, Path path) {
+        try (OutputStream fos = Files.newOutputStream(path)) {
             workbook.write(fos);
         } catch (Exception e) {
             log.error("", e);
@@ -36,7 +35,7 @@ public class ExcelUtils {
     }
 
     public static byte[] toBytes(Workbook workbook) {
-        try (workbook; ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             workbook.write(outputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
@@ -153,9 +152,8 @@ public class ExcelUtils {
         }
     }
 
-    public static Workbook toStreamingWorkbook(String filePath) {
-        if (StringUtils.isBlank(filePath)) return null;
-        try (InputStream fis = Files.newInputStream(Path.of(filePath))) {
+    public static Workbook toStreamingWorkbook(Path path) {
+        try (InputStream fis = Files.newInputStream(path)) {
             return StreamingReader.builder().open(fis);
         } catch (Exception e) {
             log.error("", e);
@@ -164,7 +162,6 @@ public class ExcelUtils {
     }
 
     public static Workbook toStreamingWorkbook(byte[] file) {
-        if (file == null) return null;
         try (ByteArrayInputStream bais = new ByteArrayInputStream(file)) {
             return StreamingReader.builder().open(bais);
         } catch (Exception e) {
@@ -174,7 +171,6 @@ public class ExcelUtils {
     }
 
     public static Workbook toStreamingWorkbook(MultipartFile file) {
-        if (file == null) return null;
         try (InputStream inputStream = file.getInputStream()) {
             return StreamingReader.builder().open(inputStream);
         } catch (Exception e) {
@@ -214,9 +210,8 @@ public class ExcelUtils {
         }
     }
 
-    public static <T> List<T> readData(String filePath, Function<List<Object>, T> rowProcessor) {
-        if (StringUtils.isBlank(filePath)) return null;
-        try (Workbook workbook = toStreamingWorkbook(filePath)) {
+    public static <T> List<T> readData(Path path, Function<List<Object>, T> rowProcessor) {
+        try (Workbook workbook = toStreamingWorkbook(path)) {
             return readData(workbook, rowProcessor);
         } catch (Exception e) {
             log.error("", e);
@@ -225,7 +220,6 @@ public class ExcelUtils {
     }
 
     public static <T> List<T> readData(byte[] file, Function<List<Object>, T> rowProcessor) {
-        if (file == null) return null;
         try (Workbook workbook = toStreamingWorkbook(file)) {
             return readData(workbook, rowProcessor);
         } catch (Exception e) {
@@ -235,7 +229,6 @@ public class ExcelUtils {
     }
 
     public static <T> List<T> readData(MultipartFile file, Function<List<Object>, T> rowProcessor) {
-        if (file == null) return null;
         try (Workbook workbook = toStreamingWorkbook(file)) {
             return readData(workbook, rowProcessor);
         } catch (Exception e) {
@@ -246,7 +239,6 @@ public class ExcelUtils {
 
     public static <T> void writeData(Workbook workbook, List<Object> header, List<T> data, Function<T, List<Object>> rowProcessor) {
         try {
-            if (workbook == null) return;
             Sheet sheet = getSheet(workbook);
             if (CollectionUtils.isNotEmpty(header)) {
                 ExcelUtils.setCellValues(sheet, 0, header);
@@ -273,10 +265,10 @@ public class ExcelUtils {
         }
     }
 
-    public static <T> void writeDataToFile(String filePath, List<Object> header, List<T> data, Function<T, List<Object>> rowProcessor) {
+    public static <T> void writeDataToFile(Path path, List<Object> header, List<T> data, Function<T, List<Object>> rowProcessor) {
         try (Workbook workbook = new SXSSFWorkbook()) {
             writeData(workbook, header, data, rowProcessor);
-            writeFile(workbook, filePath);
+            writeFile(workbook, path);
         } catch (Exception e) {
             log.error("", e);
         }
