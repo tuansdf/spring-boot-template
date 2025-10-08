@@ -28,7 +28,10 @@ public class SearchUserRequest {
     private String orderBy;
     private String orderDirection;
 
+    private boolean isDetail;
+    private boolean isAll;
+    private boolean isCount;
+
     private String cacheType;
     private Instant cacheTime;
-    private Boolean isDetail;
 }

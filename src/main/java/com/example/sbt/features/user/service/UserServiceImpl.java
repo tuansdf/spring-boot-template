@@ -59,96 +59,75 @@ public class UserServiceImpl implements UserService {
     private final ExportUserEventPublisher exportUserEventPublisher;
     private final BackgroundTaskService backgroundTaskService;
 
-    private PaginationData<UserDTO> executeSearch(SearchUserRequest requestDTO, boolean isCount, boolean isAll) {
+    private PaginationData<UserDTO> executeSearch(SearchUserRequest requestDTO) {
         requestDTO.setOrderBy(CommonUtils.inListOrNull(requestDTO.getOrderBy(), List.of("username", "email")));
         requestDTO.setOrderDirection(CommonUtils.inListOrNull(requestDTO.getOrderDirection(), List.of("asc", "desc")));
         PaginationData<UserDTO> result = sqlHelper.initData(requestDTO.getPageNumber(), requestDTO.getPageSize());
         List<Object> params = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
-        if (!isCount) {
+        if (requestDTO.isCount()) {
+            builder.append(" select count(*) ");
+        } else {
             builder.append(" select ");
             builder.append(" u.id, u.username, u.email, u.name, u.created_at, u.updated_at, ");
-            if (Boolean.TRUE.equals(requestDTO.getIsDetail())) {
-                builder.append(" u.is_enabled, u.is_verified, u.is_otp_enabled, ");
-                builder.append(" string_agg(distinct(r.code), ',') as roles, ");
-                builder.append(" string_agg(distinct(p.code), ',') as permissions ");
+            if (requestDTO.isDetail()) {
+                builder.append(" u.is_enabled, u.is_verified, u.is_otp_enabled ");
             } else {
-                builder.append(" null as is_enabled, null as is_verified, u.is_otp_enabled, ");
-                builder.append(" null as roles, null as permissions ");
-            }
-            builder.append(" from _user u ");
-            builder.append(" inner join ( ");
-        }
-        {
-            if (isCount) {
-                builder.append(" select count(*) ");
-            } else {
-                builder.append(" select u.id ");
-            }
-            builder.append(" from _user u ");
-            builder.append(" where 1=1 ");
-            if (requestDTO.getId() != null) {
-                builder.append(" and u.id = ? ");
-                params.add(requestDTO.getId());
-            }
-            if (StringUtils.isNotBlank(requestDTO.getUsername())) {
-                builder.append(" and u.username = ? ");
-                params.add(requestDTO.getUsername());
-            }
-            if (StringUtils.isNotBlank(requestDTO.getEmail())) {
-                builder.append(" and u.email = ? ");
-                params.add(requestDTO.getEmail());
-            }
-            if (requestDTO.getIdFrom() != null) {
-                builder.append(" and u.id > ? ");
-                params.add(requestDTO.getIdFrom());
-            }
-            if (StringUtils.isNotBlank(requestDTO.getUsernameFrom())) {
-                builder.append(" and u.username > ? ");
-                params.add(requestDTO.getUsernameFrom());
-            }
-            if (StringUtils.isNotBlank(requestDTO.getEmailFrom())) {
-                builder.append(" and u.email > ? ");
-                params.add(requestDTO.getEmailFrom());
-            }
-            if (requestDTO.getIsEnabled() != null) {
-                builder.append(" and u.is_enabled = ? ");
-                params.add(requestDTO.getIsEnabled());
-            }
-            if (requestDTO.getIsVerified() != null) {
-                builder.append(" and u.is_verified = ? ");
-                params.add(requestDTO.getIsVerified());
-            }
-            if (requestDTO.getCreatedAtFrom() != null) {
-                builder.append(" and u.created_at >= ? ");
-                params.add(requestDTO.getCreatedAtFrom());
-            }
-            if (requestDTO.getCreatedAtTo() != null) {
-                builder.append(" and u.created_at < ? ");
-                params.add(requestDTO.getCreatedAtTo());
-            }
-            if (!isCount) {
-                builder.append(" order by ");
-                builder.append(CommonUtils.joinWhenNoNull(" u.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
-                builder.append(" u.id asc ");
-            }
-            if (!isAll) {
-                builder.append(" limit ? offset ? ");
-                sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
+                builder.append(" null as is_enabled, null as is_verified, u.is_otp_enabled ");
             }
         }
-        if (!isCount) {
-            builder.append(" ) as filter on (filter.id = u.id) ");
-            builder.append(" left join user_role ur on (ur.user_id = u.id) ");
-            builder.append(" left join role r on (r.id = ur.role_id) ");
-            builder.append(" left join role_permission rp on (rp.role_id = ur.role_id) ");
-            builder.append(" left join permission p on (p.id = rp.permission_id) ");
-            builder.append(" group by u.id ");
+        builder.append(" from _user u ");
+        builder.append(" where 1=1 ");
+        if (requestDTO.getId() != null) {
+            builder.append(" and u.id = ? ");
+            params.add(requestDTO.getId());
+        }
+        if (StringUtils.isNotBlank(requestDTO.getUsername())) {
+            builder.append(" and u.username = ? ");
+            params.add(requestDTO.getUsername());
+        }
+        if (StringUtils.isNotBlank(requestDTO.getEmail())) {
+            builder.append(" and u.email = ? ");
+            params.add(requestDTO.getEmail());
+        }
+        if (requestDTO.getIdFrom() != null) {
+            builder.append(" and u.id > ? ");
+            params.add(requestDTO.getIdFrom());
+        }
+        if (StringUtils.isNotBlank(requestDTO.getUsernameFrom())) {
+            builder.append(" and u.username > ? ");
+            params.add(requestDTO.getUsernameFrom());
+        }
+        if (StringUtils.isNotBlank(requestDTO.getEmailFrom())) {
+            builder.append(" and u.email > ? ");
+            params.add(requestDTO.getEmailFrom());
+        }
+        if (requestDTO.getIsEnabled() != null) {
+            builder.append(" and u.is_enabled = ? ");
+            params.add(requestDTO.getIsEnabled());
+        }
+        if (requestDTO.getIsVerified() != null) {
+            builder.append(" and u.is_verified = ? ");
+            params.add(requestDTO.getIsVerified());
+        }
+        if (requestDTO.getCreatedAtFrom() != null) {
+            builder.append(" and u.created_at >= ? ");
+            params.add(requestDTO.getCreatedAtFrom());
+        }
+        if (requestDTO.getCreatedAtTo() != null) {
+            builder.append(" and u.created_at < ? ");
+            params.add(requestDTO.getCreatedAtTo());
+        }
+        if (!requestDTO.isCount()) {
             builder.append(" order by ");
             builder.append(CommonUtils.joinWhenNoNull(" u.", requestDTO.getOrderBy(), " ", requestDTO.getOrderDirection(), ", "));
             builder.append(" u.id asc ");
         }
-        if (isCount) {
+        if (!requestDTO.isAll()) {
+            builder.append(" limit ? offset ? ");
+            sqlHelper.setLimitOffset(params, result.getPageNumber(), result.getPageSize());
+        }
+        if (requestDTO.isCount()) {
             Query query = entityManager.createNativeQuery(builder.toString());
             sqlHelper.setParams(query, params);
             long count = ConversionUtils.safeToLong(query.getSingleResult());
@@ -166,12 +145,10 @@ public class UserServiceImpl implements UserService {
                 dto.setName(ConversionUtils.toString(x[3]));
                 dto.setCreatedAt(DateUtils.toInstant(x[4]));
                 dto.setUpdatedAt(DateUtils.toInstant(x[5]));
-                if (Boolean.TRUE.equals(requestDTO.getIsDetail())) {
+                if (requestDTO.isDetail()) {
                     dto.setIsEnabled(ConversionUtils.toBoolean(x[6]));
                     dto.setIsVerified(ConversionUtils.toBoolean(x[7]));
                     dto.setIsOtpEnabled(ConversionUtils.toBoolean(x[8]));
-                    dto.setRoleCodes(ConversionUtils.toString(x[9]));
-                    dto.setPermissionCodes(ConversionUtils.toString(x[10]));
                 }
                 return dto;
             }).collect(Collectors.toCollection(ArrayList::new));
@@ -181,12 +158,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private List<UserDTO> executeSearchList(SearchUserRequest requestDTO) {
-        return ConversionUtils.safeToList(executeSearch(requestDTO, false, false).getItems());
+        requestDTO.setAll(false);
+        requestDTO.setCount(false);
+        return ConversionUtils.safeToList(executeSearch(requestDTO).getItems());
     }
 
     private UserDTO executeSearchOne(SearchUserRequest requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         requestDTO.setPageNumber(1L);
         requestDTO.setPageSize(1L);
@@ -195,8 +174,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PaginationData<UserDTO> search(SearchUserRequest requestDTO, boolean isCount) {
-        PaginationData<UserDTO> result = executeSearch(requestDTO, true, true);
+        if (requestDTO == null) {
+            throw new CustomException(HttpStatus.BAD_REQUEST);
+        }
+        requestDTO.setAll(true);
+        requestDTO.setCount(true);
+        PaginationData<UserDTO> result = executeSearch(requestDTO);
         if (!isCount && result.getTotalItems() > 0) {
+            requestDTO.setAll(false);
+            requestDTO.setCount(false);
             result.setItems(executeSearchList(requestDTO));
         }
         return result;
@@ -313,16 +299,15 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(HttpStatus.BAD_REQUEST);
         }
         List<UserDTO> users = executeSearchList(requestDTO);
-        List<Object> header = List.of("Username", "Email", "Name", "Is Enabled", "Is Verified", "Is OTP Enabled", "Roles", "Permissions");
+        List<Object> header = List.of("Username", "Email", "Name", "Is Enabled", "Is Verified", "Is OTP Enabled");
         byte[] file = ExcelUtils.writeDataToBytes(header, users, (user) -> Arrays.asList(
                 user.getUsername(),
                 user.getEmail(),
                 user.getName(),
                 ConversionUtils.safeToBoolean(user.getIsEnabled()),
                 ConversionUtils.safeToBoolean(user.getIsVerified()),
-                ConversionUtils.safeToBoolean(user.getIsOtpEnabled()),
-                String.join(",", user.getRoleCodes()),
-                String.join(",", user.getPermissionCodes())));
+                ConversionUtils.safeToBoolean(user.getIsOtpEnabled())
+        ));
         if (file == null || file.length == 0) {
             throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
