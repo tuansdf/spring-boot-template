@@ -1,10 +1,10 @@
 package com.example.sbt.features.backgroundtask.service;
 
 import com.example.sbt.common.dto.RequestContext;
-import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.features.backgroundtask.dto.BackgroundTaskDTO;
 import com.example.sbt.features.backgroundtask.entity.BackgroundTask;
 import com.example.sbt.features.backgroundtask.repository.BackgroundTaskRepository;
+import com.example.sbt.infrastructure.exception.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +46,7 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
         if (existing == null) {
             return false;
         }
-        updateStatus(taskId, BackgroundTask.Status.SUCCEEDED, existing.getFileId());
+        updateStatusIfCurrent(taskId, BackgroundTask.Status.SUCCEEDED, BackgroundTask.Status.ENQUEUED, existing.getFileId());
         return true;
     }
 
@@ -66,13 +66,13 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
     }
 
     @Override
-    public void updateStatus(UUID id, BackgroundTask.Status status, UUID fileId) {
+    public void updateStatusIfCurrent(UUID id, BackgroundTask.Status status, BackgroundTask.Status current, UUID fileId) {
         if (id == null) return;
         backgroundTaskRepository.updateStatusById(id, status, fileId);
     }
 
     @Override
-    public void updateStatus(UUID id, BackgroundTask.Status status) {
+    public void updateStatusIfCurrent(UUID id, BackgroundTask.Status status, BackgroundTask.Status current) {
         if (id == null) return;
         backgroundTaskRepository.updateStatusById(id, status);
     }

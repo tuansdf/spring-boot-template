@@ -6,10 +6,6 @@ import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.*;
-import com.example.sbt.infrastructure.exception.CustomException;
-import com.example.sbt.infrastructure.security.AuthHelper;
-import com.example.sbt.infrastructure.web.helper.CommonHelper;
-import com.example.sbt.infrastructure.persistence.SQLHelper;
 import com.example.sbt.features.backgroundtask.constant.BackgroundTaskType;
 import com.example.sbt.features.backgroundtask.dto.BackgroundTaskDTO;
 import com.example.sbt.features.backgroundtask.entity.BackgroundTask;
@@ -23,6 +19,10 @@ import com.example.sbt.features.user.entity.User;
 import com.example.sbt.features.user.event.ExportUserEventPublisher;
 import com.example.sbt.features.user.mapper.UserMapper;
 import com.example.sbt.features.user.repository.UserRepository;
+import com.example.sbt.infrastructure.exception.CustomException;
+import com.example.sbt.infrastructure.persistence.SQLHelper;
+import com.example.sbt.infrastructure.security.AuthHelper;
+import com.example.sbt.infrastructure.web.helper.CommonHelper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -296,15 +296,15 @@ public class UserServiceImpl implements UserService {
             if (succeeded) {
                 return;
             }
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTask.Status.PROCESSING);
+            backgroundTaskService.updateStatusIfCurrent(backgroundTaskId, BackgroundTask.Status.PROCESSING, BackgroundTask.Status.ENQUEUED);
             FileObjectDTO fileObjectDTO = export(requestDTO, requestContext);
             if (fileObjectDTO == null) {
                 throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTask.Status.SUCCEEDED, fileObjectDTO.getId());
+            backgroundTaskService.updateStatusIfCurrent(backgroundTaskId, BackgroundTask.Status.SUCCEEDED, BackgroundTask.Status.PROCESSING, fileObjectDTO.getId());
         } catch (Exception e) {
             log.error("handleExportTask {}", e.toString());
-            backgroundTaskService.updateStatus(backgroundTaskId, BackgroundTask.Status.FAILED);
+            backgroundTaskService.updateStatusIfCurrent(backgroundTaskId, BackgroundTask.Status.FAILED, BackgroundTask.Status.PROCESSING);
         }
     }
 

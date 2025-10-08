@@ -17,7 +17,7 @@ public interface BackgroundTaskService {
 
     BackgroundTaskDTO findOneByIdOrThrow(UUID id);
 
-    void updateStatus(UUID id, BackgroundTask.Status status, UUID fileId);
+    void updateStatusIfCurrent(UUID id, BackgroundTask.Status status, BackgroundTask.Status current, UUID fileId);
 
-    void updateStatus(UUID id, BackgroundTask.Status status);
+    void updateStatusIfCurrent(UUID id, BackgroundTask.Status status, BackgroundTask.Status current);
 }
