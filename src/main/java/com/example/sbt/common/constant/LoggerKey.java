@@ -13,4 +13,5 @@ public class LoggerKey {
     public static final String HTTP_PATH = "http_path";
     public static final String HTTP_QUERY = "http_query";
     public static final String HTTP_STATUS = "http_status";
+    public static final String CONTEXT = "context";
 }

@@ -12,11 +12,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,11 +37,17 @@ public class RequestResponseLoggingFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         try {
+            String timeZone = httpRequest.getHeader(HTTPHeader.X_TIME_ZONE);
+            ZoneOffset zoneOffset = null;
+            if (StringUtils.isNotBlank(timeZone)) {
+                zoneOffset = ZoneId.of(timeZone).getRules().getOffset(Instant.now());
+            }
             RequestContext requestContext = RequestContext.builder()
                     .requestId(ConversionUtils.toString(RandomUtils.insecure().randomUUID()))
                     .locale(LocaleContextHolder.getLocale())
                     .tenantId(httpRequest.getHeader(HTTPHeader.X_TENANT_ID))
                     .ip(servletHelper.getClientIp(httpRequest))
+                    .zoneOffset(zoneOffset)
                     .build();
             RequestContextHolder.set(requestContext);
 
@@ -47,6 +57,7 @@ public class RequestResponseLoggingFilter implements Filter {
                     .addKeyValue(LoggerKey.HTTP_METHOD, httpRequest.getMethod())
                     .addKeyValue(LoggerKey.HTTP_PATH, httpRequest.getServletPath())
                     .addKeyValue(LoggerKey.HTTP_QUERY, httpRequest.getQueryString())
+                    .addKeyValue(LoggerKey.CONTEXT, requestContext)
                     .log();
             filterChain.doFilter(request, response);
         } finally {

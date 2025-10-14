@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Value;
 import lombok.With;
 
+import java.time.ZoneOffset;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -22,4 +23,6 @@ public class RequestContext {
     String username;
     @With
     String ip;
+    @With
+    ZoneOffset zoneOffset;
 }

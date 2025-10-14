@@ -14,28 +14,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoggingAspect {
     @Around("within(@org.springframework.web.bind.annotation.RestController *) || " +
-            "within(@org.springframework.stereotype.Service *) || " +
-            "within(@org.springframework.stereotype.Repository *)")
+            "within(@org.springframework.stereotype.Service *)")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.nanoTime();
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         String methodName = signature.toShortString();
-        String[] paramNames = signature.getParameterNames();
-        Object[] paramValues = joinPoint.getArgs();
-
-        StringBuilder params = new StringBuilder();
-        for (int i = 0; i < paramNames.length; i++) {
-            if (i > 0) params.append(", ");
-            params.append(paramNames[i]).append("=").append(paramValues[i]);
-        }
-        String arguments = params.toString();
 
         log.atInfo()
                 .addKeyValue(LoggerKey.EVENT, "ENTER")
                 .addKeyValue(LoggerKey.AROUND_KEY, start)
                 .addKeyValue(LoggerKey.METHOD_NAME, methodName)
-                .addKeyValue(LoggerKey.METHOD_ARGUMENTS, arguments)
                 .log();
 
         Object result = null;
@@ -46,7 +35,6 @@ public class LoggingAspect {
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
                     .addKeyValue(LoggerKey.METHOD_NAME, methodName)
-                    .addKeyValue(LoggerKey.METHOD_ARGUMENTS, arguments)
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
                     .log();
         } catch (Throwable e) {
@@ -55,7 +43,6 @@ public class LoggingAspect {
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
                     .addKeyValue(LoggerKey.METHOD_NAME, methodName)
-                    .addKeyValue(LoggerKey.METHOD_ARGUMENTS, arguments)
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
                     .setCause(e instanceof CustomException ? null : e)
                     .log(e.toString());
