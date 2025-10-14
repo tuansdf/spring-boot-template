@@ -1,6 +1,6 @@
 package com.example.sbt.features.file.service;
 
-import com.example.sbt.common.constant.CustomProperties;
+import com.example.sbt.infrastructure.web.config.CustomProperties;
 import com.example.sbt.common.constant.FileType;
 import com.example.sbt.common.dto.TempFile;
 import com.example.sbt.common.util.CommonUtils;

@@ -1,6 +1,6 @@
 package com.example.sbt.infrastructure.integration;
 
-import com.example.sbt.common.constant.CustomProperties;
+import com.example.sbt.infrastructure.web.config.CustomProperties;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;

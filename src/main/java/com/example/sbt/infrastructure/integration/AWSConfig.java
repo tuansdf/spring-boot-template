@@ -1,6 +1,6 @@
 package com.example.sbt.infrastructure.integration;
 
-import com.example.sbt.common.constant.CustomProperties;
+import com.example.sbt.infrastructure.web.config.CustomProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

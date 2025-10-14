@@ -1,6 +1,6 @@
 package com.example.sbt.features.email.service;
 
-import com.example.sbt.common.constant.CustomProperties;
+import com.example.sbt.infrastructure.web.config.CustomProperties;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.features.email.dto.SendEmailRequest;
 import jakarta.mail.internet.MimeMessage;

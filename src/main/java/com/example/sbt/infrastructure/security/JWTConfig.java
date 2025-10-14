@@ -1,6 +1,6 @@
 package com.example.sbt.infrastructure.security;
 
-import com.example.sbt.common.constant.CustomProperties;
+import com.example.sbt.infrastructure.web.config.CustomProperties;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;

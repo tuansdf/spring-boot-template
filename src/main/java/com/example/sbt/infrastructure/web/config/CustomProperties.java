@@ -1,4 +1,4 @@
-package com.example.sbt.common.constant;
+package com.example.sbt.infrastructure.web.config;
 
 import lombok.Getter;
 import lombok.Setter;

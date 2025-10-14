@@ -1,6 +1,6 @@
 package com.example.sbt.features.notification.service;
 
-import com.example.sbt.common.constant.CustomProperties;
+import com.example.sbt.infrastructure.web.config.CustomProperties;
 import com.example.sbt.common.constant.CommonStatus;
 import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestContextHolder;

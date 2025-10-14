@@ -1,4 +1,4 @@
-package com.example.sbt.features.scheduledjob.controller;
+package com.example.sbt.features.scheduledjob;
 
 import com.example.sbt.common.constant.PermissionCode;
 import com.example.sbt.common.dto.CommonResponse;
