@@ -1,20 +1,20 @@
 package com.example.sbt.features.authtoken.service;
 
-import com.example.sbt.common.dto.JWTPayload;
+import com.example.sbt.infrastructure.security.JWTPayload;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface JWTService {
-    JWTPayload createOauth2ExchangeJwt(UUID userId);
+    String createOauth2ExchangeJwt(UUID userId);
 
-    JWTPayload createAccessJwt(UUID userId, List<String> permissions);
+    String createAccessJwt(UUID userId, List<String> permissions);
 
-    JWTPayload createRefreshJwt(UUID tokenId);
+    String createRefreshJwt(UUID tokenId);
 
-    JWTPayload createResetPasswordJwt(UUID tokenId);
+    String createResetPasswordJwt(UUID tokenId);
 
-    JWTPayload createActivateAccountJwt(UUID tokenId);
+    String createActivateAccountJwt(UUID tokenId);
 
     JWTPayload verify(String token);
 }

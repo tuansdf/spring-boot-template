@@ -1,4 +1,4 @@
-package com.example.sbt.common.dto;
+package com.example.sbt.infrastructure.security;
 
 import com.example.sbt.features.authtoken.entity.AuthToken;
 import com.fasterxml.jackson.annotation.JsonIgnore;

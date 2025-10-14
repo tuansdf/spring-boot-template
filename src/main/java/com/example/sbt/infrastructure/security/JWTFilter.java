@@ -1,6 +1,5 @@
 package com.example.sbt.infrastructure.security;
 
-import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.infrastructure.web.helper.ServletHelper;

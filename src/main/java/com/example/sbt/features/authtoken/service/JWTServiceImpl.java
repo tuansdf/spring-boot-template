@@ -1,92 +1,163 @@
 package com.example.sbt.features.authtoken.service;
 
-import com.example.sbt.common.constant.CustomProperties;
-import com.example.sbt.common.dto.JWTPayload;
-import com.example.sbt.infrastructure.security.JWTHelper;
+import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.features.authtoken.entity.AuthToken;
+import com.example.sbt.infrastructure.security.JWTKeyID;
+import com.example.sbt.infrastructure.security.JWTLifetime;
+import com.example.sbt.infrastructure.security.JWTPayload;
+import com.example.sbt.infrastructure.security.JWTPayloadKey;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.JWSSigner;
+import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class JWTServiceImpl implements JWTService {
-    private final CustomProperties customProperties;
-    private final JWTHelper jwtHelper;
+    private final ObjectMapper objectMapper;
+    private final Map<String, JWSHeader> jwsHeaders;
+    private final Map<String, JWSSigner> jwsSigners;
+    private final Map<String, JWSVerifier> jwsVerifiers;
+    private final Map<String, JWTLifetime> jwtLifetimes;
 
     @Override
-    public JWTPayload createOauth2ExchangeJwt(UUID userId) {
-        Instant now = Instant.now();
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(userId.toString());
-        jwtPayload.setIssuedAt(now);
-        jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(30));
-        jwtPayload.setType(AuthToken.Type.OAUTH2);
-        jwtPayload.setValue(jwtHelper.create(jwtPayload));
-        return jwtPayload;
+    public String createOauth2ExchangeJwt(UUID userId) {
+        try {
+            Instant now = Instant.now();
+            String keyId = JWTKeyID.OAUTH2;
+            AuthToken.Type type = AuthToken.Type.OAUTH2;
+
+            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
+            claimsBuilder.issueTime(DateUtils.toDate(now));
+            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
+            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
+            claimsBuilder.subject(userId.toString());
+            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
+            JWTClaimsSet claimsSet = claimsBuilder.build();
+
+            SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
+            signedJWT.sign(jwsSigners.get(keyId));
+            return signedJWT.serialize();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
-    public JWTPayload createAccessJwt(UUID userId, List<String> permissions) {
-        Instant now = Instant.now();
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(userId.toString());
-        jwtPayload.setPermissions(permissions);
-        jwtPayload.setIssuedAt(now);
-        jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(customProperties.getJwtAccessLifetime()));
-        jwtPayload.setType(AuthToken.Type.ACCESS_TOKEN);
-        jwtPayload.setValue(jwtHelper.create(jwtPayload));
-        return jwtPayload;
+    public String createAccessJwt(UUID userId, List<String> permissions) {
+        try {
+            Instant now = Instant.now();
+            String keyId = JWTKeyID.ACCESS;
+            AuthToken.Type type = AuthToken.Type.ACCESS_TOKEN;
+
+            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
+            claimsBuilder.issueTime(DateUtils.toDate(now));
+            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
+            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
+            claimsBuilder.subject(userId.toString());
+            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
+            claimsBuilder.claim(JWTPayloadKey.SCOPE, String.join(" ", permissions));
+            JWTClaimsSet claimsSet = claimsBuilder.build();
+
+            SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
+            signedJWT.sign(jwsSigners.get(keyId));
+            return signedJWT.serialize();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
-    public JWTPayload createRefreshJwt(UUID userId) {
-        Instant now = Instant.now();
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(userId.toString());
-        jwtPayload.setIssuedAt(now);
-        jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(customProperties.getJwtRefreshLifetime()));
-        jwtPayload.setType(AuthToken.Type.REFRESH_TOKEN);
-        jwtPayload.setValue(jwtHelper.create(jwtPayload));
-        return jwtPayload;
+    public String createRefreshJwt(UUID userId) {
+        try {
+            Instant now = Instant.now();
+            String keyId = JWTKeyID.REFRESH;
+            AuthToken.Type type = AuthToken.Type.REFRESH_TOKEN;
+
+            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
+            claimsBuilder.issueTime(DateUtils.toDate(now));
+            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
+            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
+            claimsBuilder.subject(userId.toString());
+            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
+            JWTClaimsSet claimsSet = claimsBuilder.build();
+
+            SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
+            signedJWT.sign(jwsSigners.get(keyId));
+            return signedJWT.serialize();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
-    public JWTPayload createResetPasswordJwt(UUID userId) {
-        Instant now = Instant.now();
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(userId.toString());
-        jwtPayload.setIssuedAt(now);
-        jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(customProperties.getJwtResetPasswordLifetime()));
-        jwtPayload.setType(AuthToken.Type.RESET_PASSWORD);
-        jwtPayload.setValue(jwtHelper.create(jwtPayload));
-        return jwtPayload;
+    public String createResetPasswordJwt(UUID userId) {
+        try {
+            Instant now = Instant.now();
+            String keyId = JWTKeyID.PASSWORD_RESET;
+            AuthToken.Type type = AuthToken.Type.RESET_PASSWORD;
+
+            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
+            claimsBuilder.issueTime(DateUtils.toDate(now));
+            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
+            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
+            claimsBuilder.subject(userId.toString());
+            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
+            JWTClaimsSet claimsSet = claimsBuilder.build();
+
+            SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
+            signedJWT.sign(jwsSigners.get(keyId));
+            return signedJWT.serialize();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
-    public JWTPayload createActivateAccountJwt(UUID userId) {
-        Instant now = Instant.now();
-        JWTPayload jwtPayload = new JWTPayload();
-        jwtPayload.setSubject(userId.toString());
-        jwtPayload.setIssuedAt(now);
-        jwtPayload.setNotBefore(now);
-        jwtPayload.setExpiresAt(now.plusSeconds(customProperties.getJwtActivateAccountLifetime()));
-        jwtPayload.setType(AuthToken.Type.ACTIVATE_ACCOUNT);
-        jwtPayload.setValue(jwtHelper.create(jwtPayload));
-        return jwtPayload;
+    public String createActivateAccountJwt(UUID userId) {
+        try {
+            Instant now = Instant.now();
+            String keyId = JWTKeyID.ACCOUNT_ACTIVATION;
+            AuthToken.Type type = AuthToken.Type.ACTIVATE_ACCOUNT;
+
+            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
+            claimsBuilder.issueTime(DateUtils.toDate(now));
+            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
+            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
+            claimsBuilder.subject(userId.toString());
+            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
+            JWTClaimsSet claimsSet = claimsBuilder.build();
+
+            SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
+            signedJWT.sign(jwsSigners.get(keyId));
+            return signedJWT.serialize();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
     public JWTPayload verify(String token) {
-        return jwtHelper.verify(token);
+        try {
+            if (StringUtils.isBlank(token)) return null;
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            if (!signedJWT.verify(jwsVerifiers.get(signedJWT.getHeader().getKeyID()))) return null;
+            return objectMapper.readValue(signedJWT.getPayload().toString(), JWTPayload.class);
+        } catch (Exception e) {
+            log.error("verify {}", e.toString());
+            return null;
+        }
     }
 }

@@ -1,11 +1,11 @@
 package com.example.sbt.features.authtoken.service;
 
-import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.features.authtoken.dto.AuthTokenDTO;
 import com.example.sbt.features.authtoken.entity.AuthToken;
 import com.example.sbt.features.authtoken.repository.AuthTokenRepository;
+import com.example.sbt.infrastructure.security.JWTPayload;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,32 +86,28 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     @Override
     public AuthTokenDTO createRefreshToken(UUID userId) {
         AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.REFRESH_TOKEN);
-        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
-        result.setValue(jwtPayload.getValue());
+        result.setValue(jwtService.createRefreshJwt(userId));
         return result;
     }
 
     @Override
     public AuthTokenDTO createOauth2ExchangeToken(UUID userId) {
         AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.OAUTH2);
-        JWTPayload jwtPayload = jwtService.createOauth2ExchangeJwt(userId);
-        result.setValue(jwtPayload.getValue());
+        result.setValue(jwtService.createOauth2ExchangeJwt(userId));
         return result;
     }
 
     @Override
     public AuthTokenDTO createResetPasswordToken(UUID userId) {
         AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.RESET_PASSWORD);
-        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
-        result.setValue(jwtPayload.getValue());
+        result.setValue(jwtService.createResetPasswordJwt(userId));
         return result;
     }
 
     @Override
     public AuthTokenDTO createActivateAccountToken(UUID userId) {
         AuthTokenDTO result = findOneOrCreateByUserIdAndType(userId, AuthToken.Type.ACTIVATE_ACCOUNT);
-        JWTPayload jwtPayload = jwtService.createActivateAccountJwt(userId);
-        result.setValue(jwtPayload.getValue());
+        result.setValue(jwtService.createActivateAccountJwt(userId));
         return result;
     }
 }

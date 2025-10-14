@@ -1,14 +1,9 @@
 package com.example.sbt.features.auth.service;
 
-import com.example.sbt.common.dto.JWTPayload;
 import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.TOTPUtils;
-import com.example.sbt.infrastructure.exception.CustomException;
-import com.example.sbt.infrastructure.exception.NoRollbackException;
-import com.example.sbt.infrastructure.security.AuthHelper;
-import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.auth.dto.*;
 import com.example.sbt.features.authtoken.dto.AuthTokenDTO;
 import com.example.sbt.features.authtoken.entity.AuthToken;
@@ -24,6 +19,10 @@ import com.example.sbt.features.user.dto.UserDTO;
 import com.example.sbt.features.user.entity.User;
 import com.example.sbt.features.user.mapper.UserMapper;
 import com.example.sbt.features.user.repository.UserRepository;
+import com.example.sbt.infrastructure.exception.CustomException;
+import com.example.sbt.infrastructure.exception.NoRollbackException;
+import com.example.sbt.infrastructure.security.AuthHelper;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,10 +53,10 @@ public class AuthServiceImpl implements AuthService {
     private final LoginAuditService loginAuditService;
 
     private LoginResponse createLoginResponse(UUID userId, List<String> permissionCodes) {
-        JWTPayload accessJwt = jwtService.createAccessJwt(userId, permissionCodes);
+        String accessJwt = jwtService.createAccessJwt(userId, permissionCodes);
         AuthTokenDTO refreshToken = authTokenService.createRefreshToken(userId);
         return LoginResponse.builder()
-                .accessToken(accessJwt.getValue())
+                .accessToken(accessJwt)
                 .refreshToken(refreshToken.getValue())
                 .build();
     }
@@ -203,9 +202,8 @@ public class AuthServiceImpl implements AuthService {
             throw new CustomException(localeHelper.getMessage("auth.error.account_disabled"), HttpStatus.UNAUTHORIZED);
         }
         List<String> permissions = permissionService.findAllCodesByUserId(authTokenDTO.getUserId());
-        JWTPayload accessJwt = jwtService.createAccessJwt(authTokenDTO.getUserId(), permissions);
         return LoginResponse.builder()
-                .accessToken(accessJwt.getValue())
+                .accessToken(jwtService.createAccessJwt(authTokenDTO.getUserId(), permissions))
                 .build();
     }
 

@@ -13,11 +13,16 @@ public class CustomProperties {
     private String appName;
     private String appVersion;
 
-    private String jwtSecret;
+    private String jwtAccessSecret;
+    private String jwtRefreshSecret;
+    private String jwtOauth2Secret;
+    private String jwtPasswordResetSecret;
+    private String jwtAccountActivationSecret;
     private Integer jwtAccessLifetime;
     private Integer jwtRefreshLifetime;
-    private Integer jwtResetPasswordLifetime;
-    private Integer jwtActivateAccountLifetime;
+    private Integer jwtOauth2Lifetime;
+    private Integer jwtPasswordResetLifetime;
+    private Integer jwtAccountActivationLifetime;
 
     private String serverBaseUrl;
     private String clientBaseUrl;

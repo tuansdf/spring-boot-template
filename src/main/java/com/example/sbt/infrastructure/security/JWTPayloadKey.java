@@ -1,4 +1,4 @@
-package com.example.sbt.common.dto;
+package com.example.sbt.infrastructure.security;
 
 public class JWTPayloadKey {
     public static final String ISSUED_AT = "iat";
