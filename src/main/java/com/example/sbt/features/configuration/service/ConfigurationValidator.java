@@ -2,12 +2,13 @@ package com.example.sbt.features.configuration.service;
 
 import com.example.sbt.common.dto.LocaleKey;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.features.configuration.dto.ConfigurationDTO;
+import com.example.sbt.features.configuration.repository.ConfigurationRepository;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.infrastructure.web.helper.ValidationHelper;
-import com.example.sbt.features.configuration.dto.ConfigurationDTO;
-import com.example.sbt.features.configuration.repository.ConfigurationRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class ConfigurationValidator {
     public void cleanRequest(ConfigurationDTO requestDTO) {
         if (requestDTO == null) return;
         requestDTO.setCode(ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase());
-        requestDTO.setDescription(ConversionUtils.safeTrim(requestDTO.getDescription()));
+        requestDTO.setDescription(StringUtils.trimToNull(requestDTO.getDescription()));
         requestDTO.setValue(ConversionUtils.safeToString(requestDTO.getValue()));
         requestDTO.setIsEnabled(ConversionUtils.safeToBoolean(requestDTO.getIsEnabled()));
         requestDTO.setIsPublic(ConversionUtils.safeToBoolean(requestDTO.getIsPublic()));

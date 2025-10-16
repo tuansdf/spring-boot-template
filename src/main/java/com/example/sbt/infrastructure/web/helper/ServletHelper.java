@@ -47,19 +47,22 @@ public class ServletHelper {
 
     public String getBearerToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.isBlank(bearerToken)) {
-            Cookie[] cookies = request.getCookies();
-            if (ObjectUtils.isEmpty(cookies)) return null;
-            for (Cookie cookie : cookies) {
-                if (HttpHeaders.AUTHORIZATION.equalsIgnoreCase(cookie.getName())) {
-                    bearerToken = cookie.getValue();
-                }
+        if (StringUtils.isNotBlank(bearerToken)) {
+            if (!bearerToken.startsWith(AUTHORIZATION_START_WITH)) {
+                return null;
+            }
+            return bearerToken.substring(TOKEN_START_AT);
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if (ObjectUtils.isEmpty(cookies)) return null;
+        for (Cookie cookie : cookies) {
+            if (HttpHeaders.AUTHORIZATION.equalsIgnoreCase(cookie.getName())) {
+                return StringUtils.trimToNull(cookie.getValue());
             }
         }
-        if (StringUtils.isBlank(bearerToken) || !bearerToken.startsWith(AUTHORIZATION_START_WITH)) {
-            return null;
-        }
-        return bearerToken.substring(TOKEN_START_AT);
+
+        return null;
     }
 
     public void sendJson(HttpServletResponse response, Object json, HttpStatus status) throws IOException {

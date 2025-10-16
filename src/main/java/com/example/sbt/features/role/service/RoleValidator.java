@@ -3,14 +3,15 @@ package com.example.sbt.features.role.service;
 import com.example.sbt.common.constant.Constants;
 import com.example.sbt.common.dto.LocaleKey;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.infrastructure.exception.CustomException;
-import com.example.sbt.infrastructure.web.helper.LocaleHelper;
-import com.example.sbt.infrastructure.web.helper.ValidationHelper;
 import com.example.sbt.features.permission.repository.PermissionRepository;
 import com.example.sbt.features.role.dto.RoleDTO;
 import com.example.sbt.features.role.repository.RoleRepository;
+import com.example.sbt.infrastructure.exception.CustomException;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
+import com.example.sbt.infrastructure.web.helper.ValidationHelper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -24,8 +25,8 @@ public class RoleValidator {
     public void cleanRequest(RoleDTO requestDTO) {
         if (requestDTO == null) return;
         requestDTO.setCode(ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase());
-        requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
-        requestDTO.setDescription(ConversionUtils.safeTrim(requestDTO.getDescription()));
+        requestDTO.setName(StringUtils.trimToNull(requestDTO.getName()));
+        requestDTO.setDescription(StringUtils.trimToNull(requestDTO.getDescription()));
     }
 
     public void validateUpdate(RoleDTO requestDTO) {

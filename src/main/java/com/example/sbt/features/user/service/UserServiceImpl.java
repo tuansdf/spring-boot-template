@@ -199,21 +199,21 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(HttpStatus.NOT_FOUND);
         }
         if (requestDTO.getUsername() != null) {
-            requestDTO.setUsername(ConversionUtils.safeTrim(requestDTO.getUsername()));
+            requestDTO.setUsername(StringUtils.trimToNull(requestDTO.getUsername()));
             if (!user.getUsername().equals(requestDTO.getUsername()) && userRepository.existsByUsername(requestDTO.getUsername())) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }
             user.setUsername(requestDTO.getUsername());
         }
         if (requestDTO.getEmail() != null) {
-            requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
+            requestDTO.setEmail(StringUtils.trimToNull(requestDTO.getEmail()));
             if (!user.getEmail().equals(requestDTO.getEmail()) && userRepository.existsByEmail(requestDTO.getEmail())) {
                 throw new CustomException(HttpStatus.CONFLICT);
             }
             user.setEmail(requestDTO.getEmail());
         }
         if (requestDTO.getName() != null) {
-            requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
+            requestDTO.setName(StringUtils.trimToNull(requestDTO.getName()));
             user.setName(requestDTO.getName());
         }
         boolean isAdmin = authHelper.hasAnyPermission(PermissionCode.SYSTEM_ADMIN, PermissionCode.UPDATE_USER);

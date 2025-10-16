@@ -19,26 +19,15 @@ public class ConversionUtils {
 
     public static String safeToString(Object input) {
         try {
-            String result = switch (input) {
+            return switch (input) {
                 case null -> "";
                 case String v -> v;
                 default -> input.toString();
             };
-            return result == null ? "" : result;
         } catch (Exception e) {
             return "";
         }
     }
-
-    public static String safeTrim(Object input) {
-        try {
-            if (input == null) return null;
-            return safeToString(input).trim();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
 
     public static UUID toUUID(Object input) {
         try {

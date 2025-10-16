@@ -3,12 +3,13 @@ package com.example.sbt.features.permission.service;
 import com.example.sbt.common.constant.Constants;
 import com.example.sbt.common.dto.LocaleKey;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.features.permission.dto.PermissionDTO;
+import com.example.sbt.features.permission.repository.PermissionRepository;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.infrastructure.web.helper.ValidationHelper;
-import com.example.sbt.features.permission.dto.PermissionDTO;
-import com.example.sbt.features.permission.repository.PermissionRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class PermissionValidator {
     public void cleanRequest(PermissionDTO requestDTO) {
         if (requestDTO == null) return;
         requestDTO.setCode(ConversionUtils.safeToString(requestDTO.getCode()).trim().toUpperCase());
-        requestDTO.setName(ConversionUtils.safeTrim(requestDTO.getName()));
+        requestDTO.setName(StringUtils.trimToNull(requestDTO.getName()));
     }
 
     public void validateUpdate(PermissionDTO requestDTO) {

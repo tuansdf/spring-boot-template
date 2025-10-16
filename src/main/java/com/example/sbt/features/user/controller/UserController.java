@@ -37,9 +37,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     @Secured({PermissionCode.SYSTEM_ADMIN})
-    public ResponseEntity<CommonResponse<UserDTO>> findOne(
-            @PathVariable UUID id
-    ) {
+    public ResponseEntity<CommonResponse<UserDTO>> findOne(@PathVariable UUID id) {
         var result = userService.findOneByIdOrThrow(id);
         return ResponseEntity.ok(new CommonResponse<>(result));
     }

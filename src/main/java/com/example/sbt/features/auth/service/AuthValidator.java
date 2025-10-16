@@ -2,11 +2,11 @@ package com.example.sbt.features.auth.service;
 
 import com.example.sbt.common.dto.LocaleKey;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.features.auth.dto.*;
+import com.example.sbt.features.user.dto.ChangePasswordRequest;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.infrastructure.web.helper.ValidationHelper;
-import com.example.sbt.features.auth.dto.*;
-import com.example.sbt.features.user.dto.ChangePasswordRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class AuthValidator {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        requestDTO.setUsername(ConversionUtils.safeTrim(requestDTO.getUsername()));
+        requestDTO.setUsername(StringUtils.trimToNull(requestDTO.getUsername()));
         String usernameError = validationHelper.validateUsername(requestDTO.getUsername());
         if (usernameError != null) {
             throw new CustomException(usernameError);
@@ -57,7 +57,7 @@ public class AuthValidator {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
+        requestDTO.setEmail(StringUtils.trimToNull(requestDTO.getEmail()));
         String emailError = validationHelper.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
             throw new CustomException(emailError);
@@ -68,7 +68,7 @@ public class AuthValidator {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        requestDTO.setEmail(ConversionUtils.safeTrim(requestDTO.getEmail()));
+        requestDTO.setEmail(StringUtils.trimToNull(requestDTO.getEmail()));
         String emailError = validationHelper.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
             throw new CustomException(emailError);
