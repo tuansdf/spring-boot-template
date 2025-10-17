@@ -190,7 +190,7 @@ public class ExcelUtils {
                     isHeader = false;
                     continue;
                 }
-                rowProcessor.accept(ExcelUtils.getRowCellValues(row));
+                rowProcessor.accept(getRowCellValues(row));
             }
         } catch (Exception e) {
             log.error("", e);
@@ -241,12 +241,12 @@ public class ExcelUtils {
         try {
             Sheet sheet = getSheet(workbook);
             if (CollectionUtils.isNotEmpty(header)) {
-                ExcelUtils.setCellValues(sheet, 0, header);
+                setCellValues(sheet, 0, header);
             }
             if (CollectionUtils.isNotEmpty(data) && rowProcessor != null) {
                 int idx = CollectionUtils.isNotEmpty(header) ? 1 : 0;
                 for (T item : data) {
-                    ExcelUtils.setCellValues(sheet, idx, rowProcessor.apply(item));
+                    setCellValues(sheet, idx, rowProcessor.apply(item));
                     idx++;
                 }
             }
