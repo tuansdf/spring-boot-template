@@ -20,6 +20,9 @@ import com.google.common.collect.Sets;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.openjdk.jol.info.GraphLayout;
@@ -42,6 +45,24 @@ import java.util.regex.Pattern;
 @RestController
 @RequestMapping("/debug")
 public class DebugController {
+    private static final String USER_JSON_SCHEMA = """
+            {
+              "type": "record",
+              "name": "User",
+              "fields": [
+                {"name": "id",           "type": ["null","string"], "default": null},
+                {"name": "username",     "type": ["null","string"], "default": null},
+                {"name": "email",        "type": ["null","string"], "default": null},
+                {"name": "name",         "type": ["null","string"], "default": null},
+                {"name": "isEnabled",    "type": ["null","boolean"], "default": null},
+                {"name": "isVerified",   "type": ["null","boolean"], "default": null},
+                {"name": "isOtpEnabled", "type": ["null","boolean"], "default": null},
+                {"name": "createdAt",    "type": ["null",{"type":"long","logicalType":"timestamp-millis"}], "default": null},
+                {"name": "updatedAt",    "type": ["null",{"type":"long","logicalType":"timestamp-millis"}], "default": null}
+              ]
+            }""";
+    public static final Schema USER_SCHEMA = new Schema.Parser().parse(USER_JSON_SCHEMA);
+
     private final LocaleHelper localeHelper;
     private final StringRedisTemplate redisTemplate;
     private final SendNotificationService sendNotificationService;
@@ -97,6 +118,52 @@ public class DebugController {
                 row.getCreatedAt(),
                 row.getUpdatedAt()
         ));
+        return "OK";
+    }
+
+    @GetMapping("/parquet/export")
+    public String testExportParquet(
+            @RequestParam(required = false, defaultValue = "1000") Integer total,
+            @RequestParam(required = false) String folder
+    ) {
+        List<UserDTO> data = createData(total);
+        String exportPath = "parquet-" + DateUtils.currentEpochMicros() + ".parquet";
+        if (folder != null) {
+            exportPath = folder + "/" + exportPath;
+        }
+        ParquetUtils.write(Path.of(exportPath), USER_SCHEMA, data, (row) -> {
+            GenericRecord record = new GenericData.Record(USER_SCHEMA);
+            record.put("id", ConversionUtils.toString(row.getId()));
+            record.put("username", row.getUsername());
+            record.put("email", row.getEmail());
+            record.put("name", row.getName());
+            record.put("isEnabled", row.getIsEnabled());
+            record.put("isVerified", row.getIsVerified());
+            record.put("isOtpEnabled", row.getIsOtpEnabled());
+            record.put("createdAt", DateUtils.toEpochMillis(row.getCreatedAt()));
+            record.put("updatedAt", DateUtils.toEpochMillis(row.getUpdatedAt()));
+            return record;
+        });
+        return "OK";
+    }
+
+    @GetMapping("/parquet/import")
+    public String testImportParquet(@RequestParam String filePath) {
+        List<UserDTO> items = ParquetUtils.read(Path.of(filePath), (data) -> {
+            UserDTO temp = new UserDTO();
+            temp.setId(ConversionUtils.toUUID(data.get("id")));
+            temp.setUsername(ConversionUtils.toString(data.get("username")));
+            temp.setEmail(ConversionUtils.toString(data.get("email")));
+            temp.setName(ConversionUtils.toString(data.get("name")));
+            temp.setIsEnabled(ConversionUtils.toBoolean(data.get("isEnabled")));
+            temp.setIsVerified(ConversionUtils.toBoolean(data.get("isVerified")));
+            temp.setCreatedAt(DateUtils.toInstant(data.get("createdAt")));
+            temp.setUpdatedAt(DateUtils.toInstant(data.get("updatedAt")));
+            return temp;
+        });
+        if (CollectionUtils.isNotEmpty(items)) {
+            log.info("items {}", items.subList(0, Math.min(items.size(), 100)));
+        }
         return "OK";
     }
 

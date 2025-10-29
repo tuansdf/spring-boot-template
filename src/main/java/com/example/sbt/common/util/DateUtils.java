@@ -8,17 +8,17 @@ import java.util.Date;
 
 @Slf4j
 public class DateUtils {
-    public static long toEpochSeconds(Instant instant) {
-        if (instant == null) instant = Instant.now();
+    public static Long toEpochSeconds(Instant instant) {
+        if (instant == null) return null;
         return instant.getEpochSecond();
     }
 
     public static long currentEpochSeconds() {
-        return toEpochSeconds(null);
+        return toEpochSeconds(Instant.now());
     }
 
-    public static long toEpochMillis(Instant instant) {
-        if (instant == null) instant = Instant.now();
+    public static Long toEpochMillis(Instant instant) {
+        if (instant == null) return null;
         return instant.toEpochMilli();
     }
 
@@ -26,22 +26,22 @@ public class DateUtils {
         return System.currentTimeMillis();
     }
 
-    public static long toEpochMicros(Instant instant) {
-        if (instant == null) instant = Instant.now();
+    public static Long toEpochMicros(Instant instant) {
+        if (instant == null) return null;
         return instant.getEpochSecond() * 1_000_000L + (instant.getNano() / 1000);
     }
 
     public static long currentEpochMicros() {
-        return toEpochMicros(null);
+        return toEpochMicros(Instant.now());
     }
 
-    public static long toEpochNanos(Instant instant) {
-        if (instant == null) instant = Instant.now();
+    public static Long toEpochNanos(Instant instant) {
+        if (instant == null) return null;
         return instant.getEpochSecond() * 1_000_000_000L + instant.getNano();
     }
 
     public static long currentEpochNanos() {
-        return toEpochNanos(null);
+        return toEpochNanos(Instant.now());
     }
 
     public static OffsetDateTime toOffsetDateTime(Object input, DateTimeFormatter formatter, ZoneOffset offset) {
