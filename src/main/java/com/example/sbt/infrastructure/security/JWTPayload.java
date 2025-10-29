@@ -31,6 +31,8 @@ public class JWTPayload {
     private AuthToken.Type type;
     @JsonProperty(JWTPayloadKey.SCOPE)
     private List<String> permissions;
+    @JsonProperty(JWTPayloadKey.TENANT)
+    private String tenant;
 
     @JsonIgnore
     private String value;

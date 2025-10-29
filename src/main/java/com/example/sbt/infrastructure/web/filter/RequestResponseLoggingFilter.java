@@ -49,11 +49,11 @@ public class RequestResponseLoggingFilter implements Filter {
                     .addKeyValue(LoggerKey.HTTP_METHOD, httpRequest.getMethod())
                     .addKeyValue(LoggerKey.HTTP_PATH, httpRequest.getServletPath())
                     .addKeyValue(LoggerKey.HTTP_QUERY, httpRequest.getQueryString())
-                    .addKeyValue(LoggerKey.CONTEXT, requestContext)
                     .log();
             filterChain.doFilter(request, response);
         } finally {
             double elapsedMs = (System.nanoTime() - start) / 1_000_000.0;
+            RequestContext requestContext = RequestContextHolder.get();
             log.atInfo()
                     .addKeyValue(LoggerKey.EVENT, "EXIT")
                     .addKeyValue(LoggerKey.AROUND_KEY, start)
@@ -61,6 +61,9 @@ public class RequestResponseLoggingFilter implements Filter {
                     .addKeyValue(LoggerKey.HTTP_PATH, httpRequest.getServletPath())
                     .addKeyValue(LoggerKey.HTTP_STATUS, httpResponse.getStatus())
                     .addKeyValue(LoggerKey.ELAPSED_MS, elapsedMs)
+                    .addKeyValue(LoggerKey.CONTEXT, requestContext)
+                    .addKeyValue(LoggerKey.USER_ID, requestContext.getUserId())
+                    .addKeyValue(LoggerKey.TENANT_ID, requestContext.getTenantId())
                     .log();
             RequestContextHolder.clear();
         }

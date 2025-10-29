@@ -39,4 +39,6 @@ public class User extends BaseEntity {
     private Boolean isOtpEnabled;
     @Column(name = "otp_secret", length = 255)
     private String otpSecret;
+    @Column(name = "tenant_id", length = 255)
+    private String tenantId;
 }

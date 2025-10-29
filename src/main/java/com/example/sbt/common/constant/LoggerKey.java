@@ -3,6 +3,7 @@ package com.example.sbt.common.constant;
 public class LoggerKey {
     public static final String REQUEST_ID = "request_id";
     public static final String USER_ID = "user_id";
+    public static final String TENANT_ID = "tenant_id";
     public static final String USERNAME = "username";
     public static final String EVENT = "event";
     public static final String METHOD_NAME = "method_name";

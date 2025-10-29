@@ -2,9 +2,9 @@ package com.example.sbt.infrastructure.security;
 
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
-import com.example.sbt.infrastructure.web.helper.ServletHelper;
 import com.example.sbt.features.authtoken.entity.AuthToken;
 import com.example.sbt.features.authtoken.service.JWTService;
+import com.example.sbt.infrastructure.web.helper.ServletHelper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,6 +53,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String username = null;
         if (userId == null) username = jwtPayload.getSubject();
         RequestContextHolder.set(RequestContextHolder.get()
+                .withTenantId(jwtPayload.getTenant())
                 .withUserId(userId)
                 .withUsername(username));
 

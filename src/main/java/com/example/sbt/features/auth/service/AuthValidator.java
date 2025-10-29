@@ -1,6 +1,7 @@
 package com.example.sbt.features.auth.service;
 
 import com.example.sbt.common.dto.LocaleKey;
+import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.features.auth.dto.*;
 import com.example.sbt.features.user.dto.ChangePasswordRequest;
@@ -24,6 +25,9 @@ public class AuthValidator {
         requestDTO.setUsername(ConversionUtils.safeToString(requestDTO.getUsername()).trim());
         requestDTO.setEmail(ConversionUtils.safeToString(requestDTO.getEmail()).trim().toLowerCase());
         requestDTO.setName(ConversionUtils.safeToString(requestDTO.getName()).trim());
+        if (RequestContextHolder.get().getTenantId() == null) {
+            throw new CustomException("Missing tenant ID");
+        }
         String usernameError = validationHelper.validateUsername(requestDTO.getUsername());
         if (usernameError != null) {
             throw new CustomException(usernameError);

@@ -1,6 +1,7 @@
 package com.example.sbt.features.auth.service;
 
 import com.example.sbt.common.dto.RequestContext;
+import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.TOTPUtils;
@@ -158,6 +159,7 @@ public class AuthServiceImpl implements AuthService {
         user.setName(requestDTO.getName());
         user.setIsEnabled(false);
         user.setIsVerified(false);
+        user.setTenantId(RequestContextHolder.get().getTenantId());
         user = userRepository.save(user);
 
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());

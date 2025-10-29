@@ -1,6 +1,7 @@
 package com.example.sbt.common.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +15,7 @@ public class DateUtils {
     }
 
     public static long currentEpochSeconds() {
-        return toEpochSeconds(Instant.now());
+        return System.currentTimeMillis() / 1000;
     }
 
     public static Long toEpochMillis(Instant instant) {
@@ -152,6 +153,15 @@ public class DateUtils {
             return formatter.format(dateTime);
         } catch (Exception e) {
             return "";
+        }
+    }
+
+    public static ZoneOffset toZoneOffset(String input) {
+        try {
+            if (StringUtils.isBlank(input)) return ZoneOffset.UTC;
+            return ZoneId.of(input).getRules().getOffset(Instant.now());
+        } catch (Exception e) {
+            return ZoneOffset.UTC;
         }
     }
 }

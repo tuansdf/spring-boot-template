@@ -1,5 +1,7 @@
 package com.example.sbt.features.authtoken.service;
 
+import com.example.sbt.common.dto.RequestContextHolder;
+import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.features.authtoken.entity.AuthToken;
 import com.example.sbt.infrastructure.security.JWTKeyID;
@@ -39,13 +41,14 @@ public class JWTServiceImpl implements JWTService {
             String keyId = JWTKeyID.OAUTH2;
             AuthToken.Type type = AuthToken.Type.OAUTH2;
 
-            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
-            claimsBuilder.issueTime(DateUtils.toDate(now));
-            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
-            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
-            claimsBuilder.subject(userId.toString());
-            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
-            JWTClaimsSet claimsSet = claimsBuilder.build();
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .issueTime(DateUtils.toDate(now))
+                    .notBeforeTime(DateUtils.toDate(now))
+                    .expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())))
+                    .subject(userId.toString())
+                    .claim(JWTPayloadKey.TYPE, type)
+                    .claim(JWTPayloadKey.TENANT, ConversionUtils.toString(RequestContextHolder.get().getTenantId()))
+                    .build();
 
             SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
             signedJWT.sign(jwsSigners.get(keyId));
@@ -62,14 +65,15 @@ public class JWTServiceImpl implements JWTService {
             String keyId = JWTKeyID.ACCESS;
             AuthToken.Type type = AuthToken.Type.ACCESS_TOKEN;
 
-            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
-            claimsBuilder.issueTime(DateUtils.toDate(now));
-            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
-            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
-            claimsBuilder.subject(userId.toString());
-            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
-            claimsBuilder.claim(JWTPayloadKey.SCOPE, String.join(" ", permissions));
-            JWTClaimsSet claimsSet = claimsBuilder.build();
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .issueTime(DateUtils.toDate(now))
+                    .notBeforeTime(DateUtils.toDate(now))
+                    .expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())))
+                    .subject(userId.toString())
+                    .claim(JWTPayloadKey.TYPE, type)
+                    .claim(JWTPayloadKey.SCOPE, String.join(" ", permissions))
+                    .claim(JWTPayloadKey.TENANT, ConversionUtils.toString(RequestContextHolder.get().getTenantId()))
+                    .build();
 
             SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
             signedJWT.sign(jwsSigners.get(keyId));
@@ -86,13 +90,14 @@ public class JWTServiceImpl implements JWTService {
             String keyId = JWTKeyID.REFRESH;
             AuthToken.Type type = AuthToken.Type.REFRESH_TOKEN;
 
-            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
-            claimsBuilder.issueTime(DateUtils.toDate(now));
-            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
-            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
-            claimsBuilder.subject(userId.toString());
-            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
-            JWTClaimsSet claimsSet = claimsBuilder.build();
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .issueTime(DateUtils.toDate(now))
+                    .notBeforeTime(DateUtils.toDate(now))
+                    .expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())))
+                    .subject(userId.toString())
+                    .claim(JWTPayloadKey.TYPE, type)
+                    .claim(JWTPayloadKey.TENANT, ConversionUtils.toString(RequestContextHolder.get().getTenantId()))
+                    .build();
 
             SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
             signedJWT.sign(jwsSigners.get(keyId));
@@ -109,13 +114,13 @@ public class JWTServiceImpl implements JWTService {
             String keyId = JWTKeyID.PASSWORD_RESET;
             AuthToken.Type type = AuthToken.Type.RESET_PASSWORD;
 
-            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
-            claimsBuilder.issueTime(DateUtils.toDate(now));
-            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
-            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
-            claimsBuilder.subject(userId.toString());
-            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
-            JWTClaimsSet claimsSet = claimsBuilder.build();
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .issueTime(DateUtils.toDate(now))
+                    .notBeforeTime(DateUtils.toDate(now))
+                    .expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())))
+                    .subject(userId.toString())
+                    .claim(JWTPayloadKey.TYPE, type)
+                    .build();
 
             SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
             signedJWT.sign(jwsSigners.get(keyId));
@@ -132,13 +137,13 @@ public class JWTServiceImpl implements JWTService {
             String keyId = JWTKeyID.ACCOUNT_ACTIVATION;
             AuthToken.Type type = AuthToken.Type.ACTIVATE_ACCOUNT;
 
-            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder();
-            claimsBuilder.issueTime(DateUtils.toDate(now));
-            claimsBuilder.notBeforeTime(DateUtils.toDate(now));
-            claimsBuilder.expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())));
-            claimsBuilder.subject(userId.toString());
-            claimsBuilder.claim(JWTPayloadKey.TYPE, type);
-            JWTClaimsSet claimsSet = claimsBuilder.build();
+            JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                    .issueTime(DateUtils.toDate(now))
+                    .notBeforeTime(DateUtils.toDate(now))
+                    .expirationTime(DateUtils.toDate(now.plusSeconds(jwtLifetimes.get(keyId).seconds())))
+                    .subject(userId.toString())
+                    .claim(JWTPayloadKey.TYPE, type)
+                    .build();
 
             SignedJWT signedJWT = new SignedJWT(jwsHeaders.get(keyId), claimsSet);
             signedJWT.sign(jwsSigners.get(keyId));
