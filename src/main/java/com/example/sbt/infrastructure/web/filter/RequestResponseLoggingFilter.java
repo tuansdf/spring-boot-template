@@ -4,7 +4,7 @@ import com.example.sbt.common.constant.HTTPHeader;
 import com.example.sbt.common.constant.LoggerKey;
 import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.dto.RequestContextHolder;
-import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.common.util.RandomUtils;
 import com.example.sbt.infrastructure.web.helper.ServletHelper;
 import jakarta.servlet.*;
@@ -12,15 +12,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -38,16 +34,12 @@ public class RequestResponseLoggingFilter implements Filter {
 
         try {
             String timeZone = httpRequest.getHeader(HTTPHeader.X_TIME_ZONE);
-            ZoneOffset zoneOffset = null;
-            if (StringUtils.isNotBlank(timeZone)) {
-                zoneOffset = ZoneId.of(timeZone).getRules().getOffset(Instant.now());
-            }
             RequestContext requestContext = RequestContext.builder()
-                    .requestId(ConversionUtils.toString(RandomUtils.insecure().randomUUID()))
+                    .requestId(RandomUtils.insecure().randomUUID().toString())
                     .locale(LocaleContextHolder.getLocale())
                     .tenantId(httpRequest.getHeader(HTTPHeader.X_TENANT_ID))
                     .ip(servletHelper.getClientIp(httpRequest))
-                    .zoneOffset(zoneOffset)
+                    .zoneOffset(DateUtils.toZoneOffset(timeZone))
                     .build();
             RequestContextHolder.set(requestContext);
 
