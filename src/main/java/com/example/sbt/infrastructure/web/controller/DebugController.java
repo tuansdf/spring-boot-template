@@ -26,6 +26,14 @@ import org.apache.avro.generic.GenericRecord;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.openjdk.jol.info.GraphLayout;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
@@ -34,6 +42,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -71,6 +80,8 @@ public class DebugController {
     private final SendEmailService sendEmailService;
     private final UserService userService;
     private final ObjectMapper objectMapper;
+    private final JobLauncher jobLauncher;
+    private final Job exportUsersJob;
 
     @GetMapping("/health")
     public String check() {
@@ -448,6 +459,20 @@ public class DebugController {
         System.out.println(GraphLayout.parseInstance(items).toFootprint());
         System.out.println("Total bytes: " + GraphLayout.parseInstance(items).totalSize());
         return "OK";
+    }
+
+    @GetMapping(value = "/users/export", produces = MediaType.TEXT_PLAIN_VALUE)
+    public Object exportUsers() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        String filename = "users_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".csv";
+
+        JobParameters params = new JobParametersBuilder()
+                .addString("outputFile", filename)
+                .addLong("run.id", System.currentTimeMillis()) // uniqueness
+                .toJobParameters();
+
+        jobLauncher.run(exportUsersJob, params);
+
+        return "Started export job. Output: " + filename;
     }
 
     @Data

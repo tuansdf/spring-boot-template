@@ -34,6 +34,7 @@ public class ConversionUtils {
             return switch (input) {
                 case UUID v -> v;
                 case String v -> UUID.fromString(v);
+                case byte[] v -> UUID.nameUUIDFromBytes(v);
                 case null, default -> null;
             };
         } catch (Exception e) {

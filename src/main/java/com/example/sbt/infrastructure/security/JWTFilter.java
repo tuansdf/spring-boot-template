@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,6 +53,10 @@ public class JWTFilter extends OncePerRequestFilter {
         UUID userId = ConversionUtils.toUUID(jwtPayload.getSubject());
         String username = null;
         if (userId == null) username = jwtPayload.getSubject();
+        String tenantId = null;
+        if (StringUtils.isBlank(jwtPayload.getTenant())) {
+            tenantId = jwtPayload.getTenant();
+        }
         RequestContextHolder.set(RequestContextHolder.get()
                 .withTenantId(jwtPayload.getTenant())
                 .withUserId(userId)
