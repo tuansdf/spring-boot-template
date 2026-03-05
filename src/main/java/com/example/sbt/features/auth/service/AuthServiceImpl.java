@@ -77,7 +77,6 @@ public class AuthServiceImpl implements AuthService {
         validateIp(requestContext.getIp());
 
         authValidator.sanitizeLogin(requestDTO);
-        authValidator.validateLogin(requestDTO);
 
         checkRateLimit(requestDTO.getUsername());
 
@@ -153,7 +152,7 @@ public class AuthServiceImpl implements AuthService {
         validateIp(requestContext.getIp());
 
         authValidator.sanitizeRegister(requestDTO);
-        authValidator.validateRegister(requestDTO);
+        authValidator.validateRegisterBusiness(requestDTO);
 
         Boolean isRegistrationEnabled = configurations.isRegistrationEnabled();
         if (isRegistrationEnabled != null && !isRegistrationEnabled) {
@@ -191,7 +190,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void changePassword(ChangePasswordRequest requestDTO, UUID userId) {
-        authValidator.validateChangePassword(requestDTO);
+
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.user_not_found"), HttpStatus.NOT_FOUND);
@@ -253,7 +252,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void requestResetPassword(RequestResetPasswordRequest requestDTO) {
         authValidator.sanitizeRequestResetPassword(requestDTO);
-        authValidator.validateRequestResetPassword(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.reset_password_email_sent"), HttpStatus.BAD_REQUEST);
@@ -266,7 +264,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void resetPassword(ResetPasswordRequest requestDTO) {
-        authValidator.validateResetPassword(requestDTO);
+
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(requestDTO.getToken(), AuthToken.Type.RESET_PASSWORD);
         if (authTokenDTO == null) {
             throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
@@ -283,7 +281,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void requestActivateAccount(RequestActivateAccountRequest requestDTO) {
         authValidator.sanitizeRequestActivateAccount(requestDTO);
-        authValidator.validateRequestActivateAccount(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), false).orElse(null);
         if (user == null) {
             throw new CustomException(localeHelper.getMessage("auth.activate_account_email_sent"), HttpStatus.UNAUTHORIZED);

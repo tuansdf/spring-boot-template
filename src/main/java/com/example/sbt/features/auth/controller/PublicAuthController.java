@@ -7,6 +7,7 @@ import com.example.sbt.infrastructure.web.helper.HTMLTemplate;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.auth.dto.*;
 import com.example.sbt.features.auth.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -25,28 +26,28 @@ public class PublicAuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<CommonResponse<LoginResponse>> login(@RequestBody LoginRequest requestDTO) {
+    public ResponseEntity<CommonResponse<LoginResponse>> login(@RequestBody @Valid LoginRequest requestDTO) {
         RequestContextHolder.set(RequestContextHolder.get().withUsername(requestDTO.getUsername()));
         var result = authService.login(requestDTO, RequestContextHolder.get());
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<CommonResponse<Object>> register(@RequestBody RegisterRequest requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> register(@RequestBody @Valid RegisterRequest requestDTO) {
         authService.register(requestDTO, RequestContextHolder.get());
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
     @PostMapping("/password/reset/request")
-    public ResponseEntity<CommonResponse<Object>> requestResetPassword(@RequestBody RequestResetPasswordRequest requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> requestResetPassword(@RequestBody @Valid RequestResetPasswordRequest requestDTO) {
         authService.requestResetPassword(requestDTO);
         var message = localeHelper.getMessage("auth.reset_password_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
     }
 
     @PostMapping("/password/reset")
-    public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody ResetPasswordRequest requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> resetPassword(@RequestBody @Valid ResetPasswordRequest requestDTO) {
         authService.resetPassword(requestDTO);
         var message = localeHelper.getMessage("auth.reset_password_success");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));
@@ -73,7 +74,7 @@ public class PublicAuthController {
     }
 
     @PostMapping("/account/activate/request")
-    public ResponseEntity<CommonResponse<Object>> requestActivateAccount(@RequestBody RequestActivateAccountRequest requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> requestActivateAccount(@RequestBody @Valid RequestActivateAccountRequest requestDTO) {
         authService.requestActivateAccount(requestDTO);
         var message = localeHelper.getMessage("auth.activate_account_email_sent");
         return ResponseEntity.ok(new CommonResponse<>(message, HttpStatus.OK));

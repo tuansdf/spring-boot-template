@@ -8,6 +8,7 @@ import com.example.sbt.features.auth.dto.EnableOtpRequest;
 import com.example.sbt.features.auth.service.AuthService;
 import com.example.sbt.features.authtoken.service.AuthTokenService;
 import com.example.sbt.features.user.dto.ChangePasswordRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PatchMapping("/password")
-    public ResponseEntity<CommonResponse<Object>> changePassword(@RequestBody ChangePasswordRequest requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> changePassword(@RequestBody @Valid ChangePasswordRequest requestDTO) {
         UUID userId = RequestContextHolder.get().getUserId();
         authService.changePassword(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>());
@@ -43,7 +44,7 @@ public class AuthController {
     }
 
     @PostMapping("/2fa/enable")
-    public ResponseEntity<CommonResponse<Object>> enableOtp(@RequestBody EnableOtpRequest requestDTO) {
+    public ResponseEntity<CommonResponse<Object>> enableOtp(@RequestBody @Valid EnableOtpRequest requestDTO) {
         UUID userId = RequestContextHolder.get().getUserId();
         var result = authService.enableOtp(requestDTO, userId);
         return ResponseEntity.ok(new CommonResponse<>(result));
