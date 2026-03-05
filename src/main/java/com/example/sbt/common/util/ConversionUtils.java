@@ -1,7 +1,11 @@
 package com.example.sbt.common.util;
 
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.UUID;
+
+@Slf4j
 
 public class ConversionUtils {
     public static String toString(Object input) {
@@ -12,6 +16,7 @@ public class ConversionUtils {
                 default -> input.toString();
             };
         } catch (Exception e) {
+            log.trace("Conversion failed for input: {}", input, e);
             return null;
         }
     }
@@ -24,6 +29,7 @@ public class ConversionUtils {
                 default -> input.toString();
             };
         } catch (Exception e) {
+            log.trace("Conversion failed for input: {}", input, e);
             return "";
         }
     }
@@ -136,16 +142,6 @@ public class ConversionUtils {
             };
         } catch (Exception e) {
             return false;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> T safeCast(Object value) {
-        try {
-            if (value == null) return null;
-            return (T) value;
-        } catch (Exception e) {
-            return null;
         }
     }
 }

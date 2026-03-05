@@ -1,14 +1,12 @@
 package com.example.sbt.infrastructure.exception;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
 public class ValidationException extends CustomException {
     private final List<String> errors;
 

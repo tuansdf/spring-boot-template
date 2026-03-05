@@ -1,11 +1,9 @@
 package com.example.sbt.infrastructure.exception;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
 public class CustomException extends RuntimeException {
     protected HttpStatus status;
 

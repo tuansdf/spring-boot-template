@@ -20,7 +20,7 @@ import com.example.sbt.features.email.event.SendEmailEventPublisher;
 import com.example.sbt.features.email.repository.EmailRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Transactional(rollbackOn = Exception.class)
+@Transactional(readOnly = true)
 public class EmailServiceImpl implements EmailService {
     private final SQLHelper sqlHelper;
     private final LocaleHelper localeHelper;
@@ -139,6 +139,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public EmailDTO findOneById(UUID id, RequestContext requestContext) {
         if (id == null) return null;
         Email result = emailRepository.findTopByIdAndUserId(id, requestContext.getUserId()).orElse(null);
@@ -153,6 +154,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public EmailDTO triggerSend(EmailDTO emailDTO) {
         emailDTO.setId(null);
         emailDTO.setStatus(CommonStatus.UNREAD);
@@ -163,6 +165,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public void executeSend(EmailDTO email) {
         if (email == null || !CommonStatus.PENDING.equals(email.getSendStatus())) return;
         sendEmailService.send(commonMapper.toSendRequest(email));
@@ -186,6 +189,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public EmailDTO sendResetPasswordEmail(String email, String name, String token, UUID userId) {
         throttleSend(userId, AuthToken.Type.RESET_PASSWORD.toString(), () -> {
             throw new CustomException(localeHelper.getMessage("auth.reset_password_email_sent"), HttpStatus.OK);
@@ -200,6 +204,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public EmailDTO sendActivateAccountEmail(String email, String name, String token, UUID userId) {
         throttleSend(userId, AuthToken.Type.ACTIVATE_ACCOUNT.toString(), () -> {
             throw new CustomException(localeHelper.getMessage("auth.activate_account_email_sent"), HttpStatus.OK);

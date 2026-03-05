@@ -43,7 +43,7 @@ public class CommonUtils {
             Arrays.fill(result, padValue);
             return result;
         }
-        if (size - array.length > 0) {
+        if (size <= array.length) {
             return array;
         }
         String[] result = Arrays.copyOf(array, size);

@@ -4,6 +4,7 @@ import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.features.auth.dto.*;
 import com.example.sbt.infrastructure.exception.CustomException;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Component
 public class AuthValidator {
+    private final LocaleHelper localeHelper;
 
     public void sanitizeRegister(RegisterRequest requestDTO) {
         if (requestDTO == null) return;
@@ -21,7 +23,7 @@ public class AuthValidator {
 
     public void validateRegisterBusiness(RegisterRequest requestDTO) {
         if (RequestContextHolder.get().getTenantId() == null) {
-            throw new CustomException("Missing tenant ID");
+            throw new CustomException(localeHelper.getMessage("auth.error.missing_tenant_id"));
         }
     }
 

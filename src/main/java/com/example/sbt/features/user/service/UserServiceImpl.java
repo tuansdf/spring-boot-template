@@ -27,7 +27,7 @@ import com.example.sbt.infrastructure.security.AuthHelper;
 import com.example.sbt.infrastructure.web.helper.CommonHelper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Transactional(rollbackOn = Exception.class)
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private static final long MAX_ITEMS = 1_000_000L;
 
@@ -172,7 +172,7 @@ public class UserServiceImpl implements UserService {
         }
         requestDTO.setPageNumber(1L);
         requestDTO.setPageSize(1L);
-        return executeSearchList(requestDTO).getFirst();
+        return executeSearchList(requestDTO).stream().findFirst().orElse(null);
     }
 
     @Override
@@ -192,6 +192,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public UserDTO updateProfile(UserDTO requestDTO) {
         if (requestDTO.getId() == null) {
             throw new CustomException(localeHelper.getMessage("user.error.not_found"), HttpStatus.NOT_FOUND);
@@ -259,6 +260,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void triggerExport(SearchUserRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("common.error.missing_request"), HttpStatus.BAD_REQUEST);
@@ -278,6 +280,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void handleExportTask(UUID backgroundTaskId, SearchUserRequest requestDTO, RequestContext requestContext) {
         try {
             String cacheKey = commonHelper.createCacheKey(requestDTO);

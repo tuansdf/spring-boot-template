@@ -17,11 +17,9 @@ public class ExceptionHelper {
     public <T> CommonResponse<T> toResponse(Exception e) {
         CommonResponse<T> result = new CommonResponse<>();
         if (e instanceof CustomException ce) {
-            if (ce.getStatus() == null) {
-                ce.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            HttpStatus status = ce.getStatus() != null ? ce.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
             result.setMessage(ce.getMessage());
-            result.setStatus(ce.getStatus().value());
+            result.setStatus(status.value());
         } else {
             result.setMessage(localeHelper.getMessage("common.error"));
             result.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());

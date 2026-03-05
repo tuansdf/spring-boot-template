@@ -25,7 +25,7 @@ import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.exception.NoRollbackException;
 import com.example.sbt.infrastructure.security.AuthHelper;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
@@ -40,7 +40,7 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Transactional(rollbackOn = Exception.class, dontRollbackOn = NoRollbackException.class)
+@Transactional(readOnly = true)
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final AuthHelper authHelper;
@@ -74,6 +74,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(noRollbackFor = NoRollbackException.class)
     public LoginResponse login(LoginRequest requestDTO, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
@@ -149,6 +150,7 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
+    @Transactional
     public void register(RegisterRequest requestDTO, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
@@ -190,6 +192,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void changePassword(ChangePasswordRequest requestDTO, UUID userId) {
 
         User user = userRepository.findById(userId).orElse(null);
@@ -211,6 +214,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public LoginResponse refreshAccessToken(String refreshJwt, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
@@ -232,6 +236,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public LoginResponse exchangeOauth2Token(String jwt, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
@@ -251,11 +256,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(noRollbackFor = NoRollbackException.class)
     public void requestResetPassword(RequestResetPasswordRequest requestDTO) {
         authValidator.sanitizeRequestResetPassword(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
         if (user == null) {
-            throw new CustomException(localeHelper.getMessage("auth.reset_password_email_sent"), HttpStatus.BAD_REQUEST);
+            return;
         }
         authTokenService.invalidateByUserIdAndType(user.getId(), AuthToken.Type.RESET_PASSWORD);
         AuthTokenDTO authTokenDTO = authTokenService.createResetPasswordToken(user.getId());
@@ -264,6 +270,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void resetPassword(ResetPasswordRequest requestDTO) {
 
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(requestDTO.getToken(), AuthToken.Type.RESET_PASSWORD);
@@ -280,6 +287,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(noRollbackFor = NoRollbackException.class)
     public void requestActivateAccount(RequestActivateAccountRequest requestDTO) {
         authValidator.sanitizeRequestActivateAccount(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), false).orElse(null);
@@ -293,6 +301,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void activateAccount(String jwt) {
         AuthTokenDTO authTokenDTO = authTokenService.findOneAndVerifyJwt(jwt, AuthToken.Type.ACTIVATE_ACCOUNT);
         if (authTokenDTO == null) {
@@ -316,6 +325,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public EnableOtpResponse enableOtp(EnableOtpRequest requestDTO, UUID userId) {
         User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
@@ -336,6 +346,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void confirmOtp(ConfirmOtpRequest requestDTO, UUID userId) {
         User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
@@ -353,6 +364,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional
     public void disableOtp(DisableOtpRequest requestDTO, UUID userId) {
         User user = userRepository.findTopByIdAndIsEnabled(userId, true).orElse(null);
         if (user == null) {
