@@ -1,7 +1,6 @@
 package com.example.sbt.common.util;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.UUID;
 
 public class ConversionUtils {
@@ -138,11 +137,6 @@ public class ConversionUtils {
         } catch (Exception e) {
             return false;
         }
-    }
-
-    public static <T> List<T> safeToList(List<T> input) {
-        if (input == null) return new ArrayList<>();
-        return input;
     }
 
     @SuppressWarnings("unchecked")

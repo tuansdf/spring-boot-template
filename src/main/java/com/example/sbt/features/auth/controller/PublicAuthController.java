@@ -3,7 +3,6 @@ package com.example.sbt.features.auth.controller;
 import com.example.sbt.common.dto.CommonResponse;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.infrastructure.exception.ExceptionHelper;
-import com.example.sbt.infrastructure.web.helper.HTMLTemplate;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.auth.dto.*;
 import com.example.sbt.features.auth.service.AuthService;
@@ -12,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -59,8 +58,8 @@ public class PublicAuthController {
         return ResponseEntity.ok(new CommonResponse<>(result));
     }
 
-    @GetMapping(value = "/account/activate", produces = MediaType.TEXT_HTML_VALUE)
-    public String activateAccount(@RequestParam(required = false) String token) {
+    @GetMapping("/account/activate")
+    public ModelAndView activateAccount(@RequestParam(required = false) String token) {
         String result = localeHelper.getMessage("common.error");
         try {
             if (StringUtils.isNotEmpty(token)) {
@@ -70,7 +69,10 @@ public class PublicAuthController {
         } catch (Exception e) {
             result = exceptionHelper.toResponse(e).getMessage();
         }
-        return HTMLTemplate.createCenteredHtml(localeHelper.getMessage("email.activate_account_subject"), result);
+        ModelAndView mav = new ModelAndView("centered");
+        mav.addObject("title", localeHelper.getMessage("email.activate_account_subject"));
+        mav.addObject("message", result);
+        return mav;
     }
 
     @PostMapping("/account/activate/request")

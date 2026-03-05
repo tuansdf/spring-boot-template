@@ -7,6 +7,7 @@ import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.DateUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.infrastructure.persistence.SQLHelper;
 import com.example.sbt.features.notification.dto.NotificationDTO;
@@ -117,7 +118,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private List<NotificationDTO> executeSearchList(SearchNotificationRequest requestDTO) {
-        return ConversionUtils.safeToList(executeSearch(requestDTO, false).getItems());
+        return new ArrayList<>(CollectionUtils.emptyIfNull(executeSearch(requestDTO, false).getItems()));
     }
 
     @Override

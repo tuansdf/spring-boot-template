@@ -37,15 +37,8 @@ public class CompressUtils {
         }
 
         public static byte[] decompress(byte[] bytes) throws IOException {
-            try (ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                 GzipCompressorInputStream gis = new GzipCompressorInputStream(bais);
-                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-                byte[] buffer = new byte[8192];
-                int n;
-                while ((n = gis.read(buffer)) != -1) {
-                    baos.write(buffer, 0, n);
-                }
-                return baos.toByteArray();
+            try (GzipCompressorInputStream gis = new GzipCompressorInputStream(new ByteArrayInputStream(bytes))) {
+                return gis.readAllBytes();
             }
         }
     }

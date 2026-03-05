@@ -28,6 +28,7 @@ import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -184,7 +185,7 @@ public class AuthServiceImpl implements AuthService {
         user = userRepository.save(user);
 
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
-        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), user.getEmail(), "");
+        String name = ObjectUtils.firstNonNull(user.getName(), user.getUsername(), user.getEmail(), "");
         emailService.sendActivateAccountEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
     }
 
@@ -258,7 +259,7 @@ public class AuthServiceImpl implements AuthService {
         }
         authTokenService.invalidateByUserIdAndType(user.getId(), AuthToken.Type.RESET_PASSWORD);
         AuthTokenDTO authTokenDTO = authTokenService.createResetPasswordToken(user.getId());
-        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
+        String name = ObjectUtils.firstNonNull(user.getName(), user.getUsername(), "");
         emailService.sendResetPasswordEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
     }
 
@@ -287,7 +288,7 @@ public class AuthServiceImpl implements AuthService {
         }
         authTokenService.invalidateByUserIdAndType(user.getId(), AuthToken.Type.ACTIVATE_ACCOUNT);
         AuthTokenDTO authTokenDTO = authTokenService.createActivateAccountToken(user.getId());
-        String name = CommonUtils.coalesce(user.getName(), user.getUsername(), "");
+        String name = ObjectUtils.firstNonNull(user.getName(), user.getUsername(), "");
         emailService.sendActivateAccountEmail(user.getEmail(), name, authTokenDTO.getValue(), user.getId());
     }
 

@@ -6,6 +6,7 @@ import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.*;
+import org.apache.commons.collections4.CollectionUtils;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.backgroundtask.constant.BackgroundTaskType;
 import com.example.sbt.features.backgroundtask.dto.BackgroundTaskDTO;
@@ -162,7 +163,7 @@ public class UserServiceImpl implements UserService {
     private List<UserDTO> executeSearchList(SearchUserRequest requestDTO) {
         requestDTO.setAll(false);
         requestDTO.setCount(false);
-        return ConversionUtils.safeToList(executeSearch(requestDTO).getItems());
+        return new ArrayList<>(CollectionUtils.emptyIfNull(executeSearch(requestDTO).getItems()));
     }
 
     private UserDTO executeSearchOne(SearchUserRequest requestDTO) {

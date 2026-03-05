@@ -21,29 +21,6 @@ public class CommonUtils {
         }
     }
 
-    public static String coalesce(String... values) {
-        if (ArrayUtils.isEmpty(values)) {
-            return null;
-        }
-        for (String value : values) {
-            if (value != null) {
-                return value;
-            }
-        }
-        return null;
-    }
-
-    public static Object coalesce(Object... values) {
-        if (ArrayUtils.isEmpty(values)) {
-            return null;
-        }
-        for (Object value : values) {
-            if (value != null) {
-                return value;
-            }
-        }
-        return null;
-    }
 
     public static <T> List<T> padRight(List<T> list, int size, T padValue) {
         if (list == null) {
@@ -124,9 +101,6 @@ public class CommonUtils {
         return String.join("", values);
     }
 
-    public static <T> T defaultWhenNull(T value, T defaultValue) {
-        return value == null ? defaultValue : value;
-    }
 
     public static <T extends Number> T defaultWhenNotPositive(T value, T defaultValue) {
         return value == null || value.doubleValue() <= 0 ? defaultValue : value;

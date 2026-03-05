@@ -11,7 +11,6 @@ import org.springframework.http.ContentDisposition;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -32,13 +31,8 @@ public class FileUtils {
     private static final Pattern MARK_CHARS = Pattern.compile("\\p{M}");
 
     public static byte[] toBytes(InputStream is) {
-        try (is; ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            byte[] buffer = new byte[8192];
-            int n;
-            while ((n = is.read(buffer)) != -1) {
-                baos.write(buffer, 0, n);
-            }
-            return baos.toByteArray();
+        try (is) {
+            return is.readAllBytes();
         } catch (Exception e) {
             log.error("", e);
             return null;
@@ -73,9 +67,7 @@ public class FileUtils {
 
     public static String getFileExtension(String filename) {
         if (StringUtils.isBlank(filename)) return "";
-        int dotIndex = filename.lastIndexOf(EXTENSION_SEPARATOR);
-        if (dotIndex < 0 || dotIndex == filename.length() - 1) return "";
-        return filename.substring(dotIndex + 1);
+        return org.apache.commons.io.FilenameUtils.getExtension(filename);
     }
 
     public static String toFilename(String name, FileType fileType) {

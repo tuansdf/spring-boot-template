@@ -6,6 +6,7 @@ import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.mapper.CommonMapper;
 import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.DateUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.infrastructure.persistence.SQLHelper;
@@ -117,7 +118,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private List<EmailDTO> executeSearchList(SearchEmailRequest requestDTO) {
-        return ConversionUtils.safeToList(executeSearch(requestDTO, false).getItems());
+        return new ArrayList<>(CollectionUtils.emptyIfNull(executeSearch(requestDTO, false).getItems()));
     }
 
     @Override
