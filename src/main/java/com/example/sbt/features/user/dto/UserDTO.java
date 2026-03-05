@@ -22,6 +22,7 @@ public class UserDTO {
     private Boolean isEnabled;
     private Boolean isVerified;
     private Boolean isOtpEnabled;
+    @JsonIgnore
     private String otpSecret;
     private Instant createdAt;
     private Instant updatedAt;

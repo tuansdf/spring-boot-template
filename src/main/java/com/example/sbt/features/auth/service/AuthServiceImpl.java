@@ -4,6 +4,7 @@ import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.CommonUtils;
 import com.example.sbt.common.util.ConversionUtils;
+import com.example.sbt.common.util.EmailUtils;
 import com.example.sbt.common.util.TOTPUtils;
 import com.example.sbt.features.auth.dto.*;
 import com.example.sbt.features.authtoken.dto.AuthTokenDTO;
@@ -75,50 +76,16 @@ public class AuthServiceImpl implements AuthService {
     public LoginResponse login(LoginRequest requestDTO, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
+        authValidator.sanitizeLogin(requestDTO);
         authValidator.validateLogin(requestDTO);
 
-        Integer maxAttempts = configurations.getLoginMaxAttempts();
-        Integer timeWindow = configurations.getLoginTimeWindow();
-        if (CommonUtils.isPositive(maxAttempts) && CommonUtils.isPositive(timeWindow)) {
-            long attempts = loginAuditService.countRecentlyFailedAttemptsByUsername(requestDTO.getUsername(), Instant.now().minusSeconds(timeWindow));
-            if (attempts >= maxAttempts) {
-                throw new CustomException(localeHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
-            }
-        }
+        checkRateLimit(requestDTO.getUsername());
 
-        UserDTO userDTO = userRepository.findTopByUsername(requestDTO.getUsername()).map(userMapper::toDTO).orElse(null);
-        if (userDTO == null) {
-            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
-        }
-
-        boolean isPasswordCorrect = authHelper.verifyPassword(requestDTO.getPassword(), userDTO.getPassword());
-        if (!isPasswordCorrect) {
-            loginAuditService.add(userDTO.getId(), false);
-            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
-        }
-
-        if (ConversionUtils.safeToBoolean(userDTO.getIsOtpEnabled())) {
-            if (StringUtils.isBlank(requestDTO.getOtpCode())) {
-                throw new CustomException(localeHelper.getMessage("auth.error.missing_otp_code"), HttpStatus.UNAUTHORIZED);
-            }
-            boolean isOtpCorrect = TOTPUtils.verify(requestDTO.getOtpCode(), userDTO.getOtpSecret());
-            if (!isOtpCorrect) {
-                loginAuditService.add(userDTO.getId(), false);
-                throw new CustomException(localeHelper.getMessage("auth.error.invalid_otp_code"), HttpStatus.UNAUTHORIZED);
-            }
-        }
-
-        List<String> validDomains = configurations.getLoginEmailDomains();
-        if (validDomains != null) {
-            String emailDomain = userDTO.getEmail().substring(userDTO.getEmail().lastIndexOf("@") + 1);
-            if (!validDomains.contains(emailDomain)) {
-                throw new CustomException(localeHelper.getMessage("auth.error.invalid_domains"), HttpStatus.BAD_REQUEST);
-            }
-        }
-
-        if (!ConversionUtils.safeToBoolean(userDTO.getIsEnabled())) {
-            throw new CustomException(localeHelper.getMessage("auth.error.account_disabled"), HttpStatus.UNAUTHORIZED);
-        }
+        UserDTO userDTO = findUserByUsernameOrThrow(requestDTO.getUsername());
+        verifyPassword(requestDTO.getPassword(), userDTO);
+        verifyOtpIfEnabled(requestDTO.getOtpCode(), userDTO);
+        checkEmailDomain(userDTO.getEmail(), configurations.getLoginEmailDomains());
+        checkAccountEnabled(userDTO);
 
         loginAuditService.add(userDTO.getId(), true);
 
@@ -127,10 +94,65 @@ public class AuthServiceImpl implements AuthService {
         return createLoginResponse(userDTO.getId(), permissions);
     }
 
+    private void checkRateLimit(String username) {
+        Integer maxAttempts = configurations.getLoginMaxAttempts();
+        Integer timeWindow = configurations.getLoginTimeWindow();
+        if (CommonUtils.isPositive(maxAttempts) && CommonUtils.isPositive(timeWindow)) {
+            long attempts = loginAuditService.countRecentlyFailedAttemptsByUsername(username, Instant.now().minusSeconds(timeWindow));
+            if (attempts >= maxAttempts) {
+                throw new CustomException(localeHelper.getMessage("auth.error.login_attempts_exceeded"), HttpStatus.UNAUTHORIZED);
+            }
+        }
+    }
+
+    private UserDTO findUserByUsernameOrThrow(String username) {
+        UserDTO userDTO = userRepository.findTopByUsername(username).map(userMapper::toDTO).orElse(null);
+        if (userDTO == null) {
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
+        }
+        return userDTO;
+    }
+
+    private void verifyPassword(String rawPassword, UserDTO userDTO) {
+        boolean isPasswordCorrect = authHelper.verifyPassword(rawPassword, userDTO.getPassword());
+        if (!isPasswordCorrect) {
+            loginAuditService.add(userDTO.getId(), false);
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_credentials"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private void verifyOtpIfEnabled(String otpCode, UserDTO userDTO) {
+        if (!ConversionUtils.safeToBoolean(userDTO.getIsOtpEnabled())) return;
+        if (StringUtils.isBlank(otpCode)) {
+            throw new CustomException(localeHelper.getMessage("auth.error.missing_otp_code"), HttpStatus.UNAUTHORIZED);
+        }
+        boolean isOtpCorrect = TOTPUtils.verify(otpCode, userDTO.getOtpSecret());
+        if (!isOtpCorrect) {
+            loginAuditService.add(userDTO.getId(), false);
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_otp_code"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    private void checkEmailDomain(String email, List<String> validDomains) {
+        if (validDomains == null) return;
+        String emailDomain = EmailUtils.extractDomain(email);
+        if (!validDomains.contains(emailDomain)) {
+            throw new CustomException(localeHelper.getMessage("auth.error.invalid_domains"), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void checkAccountEnabled(UserDTO userDTO) {
+        if (!ConversionUtils.safeToBoolean(userDTO.getIsEnabled())) {
+            throw new CustomException(localeHelper.getMessage("auth.error.account_disabled"), HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+
     @Override
     public void register(RegisterRequest requestDTO, RequestContext requestContext) {
         validateIp(requestContext.getIp());
 
+        authValidator.sanitizeRegister(requestDTO);
         authValidator.validateRegister(requestDTO);
 
         Boolean isRegistrationEnabled = configurations.isRegistrationEnabled();
@@ -140,7 +162,7 @@ public class AuthServiceImpl implements AuthService {
 
         List<String> validDomains = configurations.getRegisterEmailDomains();
         if (validDomains != null) {
-            String emailDomain = requestDTO.getEmail().substring(requestDTO.getEmail().lastIndexOf("@") + 1);
+            String emailDomain = EmailUtils.extractDomain(requestDTO.getEmail());
             if (!validDomains.contains(emailDomain)) {
                 throw new CustomException(localeHelper.getMessage("auth.error.invalid_domains"), HttpStatus.BAD_REQUEST);
             }
@@ -230,6 +252,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void requestResetPassword(RequestResetPasswordRequest requestDTO) {
+        authValidator.sanitizeRequestResetPassword(requestDTO);
         authValidator.validateRequestResetPassword(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), true).orElse(null);
         if (user == null) {
@@ -259,6 +282,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void requestActivateAccount(RequestActivateAccountRequest requestDTO) {
+        authValidator.sanitizeRequestActivateAccount(requestDTO);
         authValidator.validateRequestActivateAccount(requestDTO);
         User user = userRepository.findTopByEmailAndIsEnabled(requestDTO.getEmail(), false).orElse(null);
         if (user == null) {

@@ -5,6 +5,7 @@ import com.example.sbt.features.backgroundtask.dto.BackgroundTaskDTO;
 import com.example.sbt.features.backgroundtask.entity.BackgroundTask;
 import com.example.sbt.features.backgroundtask.repository.BackgroundTaskRepository;
 import com.example.sbt.infrastructure.exception.CustomException;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import java.util.UUID;
 public class BackgroundTaskServiceImpl implements BackgroundTaskService {
     private final BackgroundTaskRepository backgroundTaskRepository;
     private final BackgroundTaskMapper backgroundTaskMapper;
+    private final LocaleHelper localeHelper;
 
     @Override
     public BackgroundTaskDTO init(String cacheKey, String type, RequestContext requestContext) {
@@ -60,7 +62,7 @@ public class BackgroundTaskServiceImpl implements BackgroundTaskService {
     public BackgroundTaskDTO findOneByIdOrThrow(UUID id) {
         BackgroundTaskDTO result = findOneById(id);
         if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("backgroundtask.error.not_found"), HttpStatus.NOT_FOUND);
         }
         return result;
     }

@@ -7,6 +7,7 @@ import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.persistence.SQLHelper;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.configuration.dto.ConfigurationDTO;
 import com.example.sbt.features.configuration.dto.SearchConfigurationRequest;
 import com.example.sbt.features.configuration.entity.Configuration;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackOn = Exception.class)
 public class ConfigurationServiceImpl implements ConfigurationService {
     private final SQLHelper sqlHelper;
+    private final LocaleHelper localeHelper;
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final ConfigurationRepository configurationRepository;
@@ -76,7 +78,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public ConfigurationDTO findOneByCodeOrThrow(String code) {
         ConfigurationDTO result = findOneByCode(code);
         if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("configuration.error.not_found"), HttpStatus.NOT_FOUND);
         }
         return result;
     }

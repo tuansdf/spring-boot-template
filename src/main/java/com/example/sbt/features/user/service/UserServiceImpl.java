@@ -6,6 +6,7 @@ import com.example.sbt.common.dto.PaginationData;
 import com.example.sbt.common.dto.RequestContext;
 import com.example.sbt.common.dto.RequestContextHolder;
 import com.example.sbt.common.util.*;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.backgroundtask.constant.BackgroundTaskType;
 import com.example.sbt.features.backgroundtask.dto.BackgroundTaskDTO;
 import com.example.sbt.features.backgroundtask.entity.BackgroundTask;
@@ -47,6 +48,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private static final long MAX_ITEMS = 1_000_000L;
 
+    private final LocaleHelper localeHelper;
     private final CommonHelper commonHelper;
     private final SQLHelper sqlHelper;
     private final AuthHelper authHelper;
@@ -165,7 +167,7 @@ public class UserServiceImpl implements UserService {
 
     private UserDTO executeSearchOne(SearchUserRequest requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("common.error.missing_request"), HttpStatus.BAD_REQUEST);
         }
         requestDTO.setPageNumber(1L);
         requestDTO.setPageSize(1L);
@@ -175,7 +177,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PaginationData<UserDTO> search(SearchUserRequest requestDTO, boolean isCount) {
         if (requestDTO == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("common.error.missing_request"), HttpStatus.BAD_REQUEST);
         }
         requestDTO.setAll(true);
         requestDTO.setCount(true);
@@ -191,24 +193,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO updateProfile(UserDTO requestDTO) {
         if (requestDTO.getId() == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("user.error.not_found"), HttpStatus.NOT_FOUND);
         }
         userValidator.validateUpdate(requestDTO);
         User user = userRepository.findById(requestDTO.getId()).orElse(null);
         if (user == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("user.error.not_found"), HttpStatus.NOT_FOUND);
         }
         if (requestDTO.getUsername() != null) {
             requestDTO.setUsername(StringUtils.trimToNull(requestDTO.getUsername()));
             if (!user.getUsername().equals(requestDTO.getUsername()) && userRepository.existsByUsername(requestDTO.getUsername())) {
-                throw new CustomException(HttpStatus.CONFLICT);
+                throw new CustomException(localeHelper.getMessage("user.error.username_taken"), HttpStatus.CONFLICT);
             }
             user.setUsername(requestDTO.getUsername());
         }
         if (requestDTO.getEmail() != null) {
             requestDTO.setEmail(StringUtils.trimToNull(requestDTO.getEmail()));
             if (!user.getEmail().equals(requestDTO.getEmail()) && userRepository.existsByEmail(requestDTO.getEmail())) {
-                throw new CustomException(HttpStatus.CONFLICT);
+                throw new CustomException(localeHelper.getMessage("user.error.email_taken"), HttpStatus.CONFLICT);
             }
             user.setEmail(requestDTO.getEmail());
         }
@@ -238,7 +240,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO findOneByIdOrThrow(UUID userId) {
         UserDTO result = findOneById(userId);
         if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("user.error.not_found"), HttpStatus.NOT_FOUND);
         }
         return result;
     }
@@ -258,7 +260,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void triggerExport(SearchUserRequest requestDTO) {
         if (requestDTO == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("common.error.missing_request"), HttpStatus.BAD_REQUEST);
         }
         Instant cacheTime = Instant.now().truncatedTo(ChronoUnit.HOURS);
         requestDTO.setPageNumber(1L);
@@ -285,7 +287,7 @@ public class UserServiceImpl implements UserService {
             backgroundTaskService.updateStatusIfCurrent(backgroundTaskId, BackgroundTask.Status.PROCESSING, BackgroundTask.Status.ENQUEUED);
             FileObjectDTO fileObjectDTO = export(requestDTO, requestContext);
             if (fileObjectDTO == null) {
-                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new CustomException(localeHelper.getMessage("user.error.export_failed"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             backgroundTaskService.updateStatusIfCurrent(backgroundTaskId, BackgroundTask.Status.SUCCEEDED, BackgroundTask.Status.PROCESSING, fileObjectDTO.getId());
         } catch (Exception e) {
@@ -296,7 +298,7 @@ public class UserServiceImpl implements UserService {
 
     private FileObjectDTO export(SearchUserRequest requestDTO, RequestContext requestContext) {
         if (requestDTO == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("common.error.missing_request"), HttpStatus.BAD_REQUEST);
         }
         List<UserDTO> users = executeSearchList(requestDTO);
         List<Object> header = List.of("Username", "Email", "Name", "Is Enabled", "Is Verified", "Is OTP Enabled");
@@ -309,7 +311,7 @@ public class UserServiceImpl implements UserService {
                 ConversionUtils.safeToBoolean(user.getIsOtpEnabled())
         ));
         if (file == null || file.length == 0) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(localeHelper.getMessage("user.error.export_failed"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         String filename = FileUtils.toFilename("ExportUsers_" + DateUtils.currentEpochMillis(), FileType.XLSX);
         return fileObjectService.setFileUrls(fileObjectService.uploadFile(file, "", filename, requestContext));

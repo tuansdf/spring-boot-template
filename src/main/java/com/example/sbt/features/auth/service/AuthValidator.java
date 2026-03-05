@@ -18,13 +18,17 @@ public class AuthValidator {
     private final LocaleHelper localeHelper;
     private final ValidationHelper validationHelper;
 
+    public void sanitizeRegister(RegisterRequest requestDTO) {
+        if (requestDTO == null) return;
+        requestDTO.setUsername(ConversionUtils.safeToString(requestDTO.getUsername()).trim());
+        requestDTO.setEmail(ConversionUtils.safeToString(requestDTO.getEmail()).trim().toLowerCase());
+        requestDTO.setName(ConversionUtils.safeToString(requestDTO.getName()).trim());
+    }
+
     public void validateRegister(RegisterRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        requestDTO.setUsername(ConversionUtils.safeToString(requestDTO.getUsername()).trim());
-        requestDTO.setEmail(ConversionUtils.safeToString(requestDTO.getEmail()).trim().toLowerCase());
-        requestDTO.setName(ConversionUtils.safeToString(requestDTO.getName()).trim());
         if (RequestContextHolder.get().getTenantId() == null) {
             throw new CustomException("Missing tenant ID");
         }
@@ -42,11 +46,15 @@ public class AuthValidator {
         }
     }
 
+    public void sanitizeLogin(LoginRequest requestDTO) {
+        if (requestDTO == null) return;
+        requestDTO.setUsername(StringUtils.trimToNull(requestDTO.getUsername()));
+    }
+
     public void validateLogin(LoginRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        requestDTO.setUsername(StringUtils.trimToNull(requestDTO.getUsername()));
         String usernameError = validationHelper.validateUsername(requestDTO.getUsername());
         if (usernameError != null) {
             throw new CustomException(usernameError);
@@ -57,22 +65,30 @@ public class AuthValidator {
         }
     }
 
+    public void sanitizeRequestResetPassword(RequestResetPasswordRequest requestDTO) {
+        if (requestDTO == null) return;
+        requestDTO.setEmail(StringUtils.trimToNull(requestDTO.getEmail()));
+    }
+
     public void validateRequestResetPassword(RequestResetPasswordRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        requestDTO.setEmail(StringUtils.trimToNull(requestDTO.getEmail()));
         String emailError = validationHelper.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
             throw new CustomException(emailError);
         }
     }
 
+    public void sanitizeRequestActivateAccount(RequestActivateAccountRequest requestDTO) {
+        if (requestDTO == null) return;
+        requestDTO.setEmail(StringUtils.trimToNull(requestDTO.getEmail()));
+    }
+
     public void validateRequestActivateAccount(RequestActivateAccountRequest requestDTO) {
         if (requestDTO == null) {
             throw new CustomException(localeHelper.getMessage("validation.error.missing", new LocaleKey("field.request")));
         }
-        requestDTO.setEmail(StringUtils.trimToNull(requestDTO.getEmail()));
         String emailError = validationHelper.validateEmail(requestDTO.getEmail());
         if (emailError != null) {
             throw new CustomException(emailError);

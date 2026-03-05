@@ -88,7 +88,7 @@ public class GlobalDefaultExceptionHandler {
     }
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<CommonResponse<Object>> handleMissingRequestBody(CustomException ex) {
+    public ResponseEntity<CommonResponse<Object>> handleCustomException(CustomException ex) {
         return exceptionHelper.toResponseEntity(ex);
     }
 

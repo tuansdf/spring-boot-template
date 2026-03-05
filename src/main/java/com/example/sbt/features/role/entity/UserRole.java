@@ -1,4 +1,4 @@
-package com.example.sbt.features.user.entity;
+package com.example.sbt.features.role.entity;
 
 import com.example.sbt.infrastructure.persistence.BaseEntity;
 import jakarta.persistence.*;

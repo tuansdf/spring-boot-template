@@ -1,6 +1,6 @@
-package com.example.sbt.features.user.repository;
+package com.example.sbt.features.role.repository;
 
-import com.example.sbt.features.user.entity.UserRole;
+import com.example.sbt.features.role.entity.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

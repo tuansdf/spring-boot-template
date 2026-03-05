@@ -173,13 +173,13 @@ public class EmailServiceImpl implements EmailService {
     private void throttleSend(UUID userId, String type, Runnable onError) {
         Integer timeWindow = configurations.getEmailThrottleTimeWindow();
         if (timeWindow == null) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(localeHelper.getMessage("common.error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         if (ConversionUtils.safeToBoolean(emailRepository.existsByUserIdAndTypeAndCreatedAtAfter(userId, type, Instant.now().minusSeconds(timeWindow)))) {
             if (onError != null) {
                 onError.run();
             } else {
-                throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new CustomException(localeHelper.getMessage("common.error"), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
     }

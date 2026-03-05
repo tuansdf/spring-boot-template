@@ -6,6 +6,7 @@ import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.persistence.SQLHelper;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.permission.dto.PermissionDTO;
 import com.example.sbt.features.permission.dto.SearchPermissionRequest;
 import com.example.sbt.features.permission.entity.Permission;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackOn = Exception.class)
 public class PermissionServiceImpl implements PermissionService {
     private final SQLHelper sqlHelper;
+    private final LocaleHelper localeHelper;
     private final CommonMapper commonMapper;
     private final PermissionRepository permissionRepository;
     private final EntityManager entityManager;
@@ -84,7 +86,7 @@ public class PermissionServiceImpl implements PermissionService {
     public PermissionDTO findOneByIdOrThrow(UUID id) {
         PermissionDTO result = findOneById(id);
         if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("permission.error.not_found"), HttpStatus.NOT_FOUND);
         }
         return result;
     }
@@ -99,7 +101,7 @@ public class PermissionServiceImpl implements PermissionService {
     public PermissionDTO findOneByCodeOrThrow(String code) {
         PermissionDTO result = findOneByCode(code);
         if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("permission.error.not_found"), HttpStatus.NOT_FOUND);
         }
         return result;
     }

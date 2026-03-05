@@ -5,14 +5,15 @@ import com.example.sbt.common.util.ConversionUtils;
 import com.example.sbt.common.util.DateUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.persistence.SQLHelper;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.permission.service.PermissionService;
 import com.example.sbt.features.role.dto.RoleDTO;
 import com.example.sbt.features.role.dto.SearchRoleRequest;
 import com.example.sbt.features.role.entity.Role;
 import com.example.sbt.features.role.mapper.RoleMapper;
 import com.example.sbt.features.role.repository.RoleRepository;
-import com.example.sbt.features.user.entity.UserRole;
-import com.example.sbt.features.user.repository.UserRoleRepository;
+import com.example.sbt.features.role.entity.UserRole;
+import com.example.sbt.features.role.repository.UserRoleRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackOn = Exception.class)
 public class RoleServiceImpl implements RoleService {
     private final SQLHelper sqlHelper;
+    private final LocaleHelper localeHelper;
     private final RoleMapper roleMapper;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
@@ -89,7 +91,7 @@ public class RoleServiceImpl implements RoleService {
     public RoleDTO findOneByIdOrThrow(UUID id) {
         RoleDTO result = findOneById(id);
         if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("role.error.not_found"), HttpStatus.NOT_FOUND);
         }
         return result;
     }
@@ -104,7 +106,7 @@ public class RoleServiceImpl implements RoleService {
     public RoleDTO findOneByCodeOrThrow(String code) {
         RoleDTO result = findOneByCode(code);
         if (result == null) {
-            throw new CustomException(HttpStatus.NOT_FOUND);
+            throw new CustomException(localeHelper.getMessage("role.error.not_found"), HttpStatus.NOT_FOUND);
         }
         return result;
     }

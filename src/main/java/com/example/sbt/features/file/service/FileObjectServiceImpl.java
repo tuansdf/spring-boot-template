@@ -11,6 +11,7 @@ import com.example.sbt.common.util.FileUtils;
 import com.example.sbt.infrastructure.exception.CustomException;
 import com.example.sbt.infrastructure.exception.NoRollbackException;
 import com.example.sbt.infrastructure.persistence.SQLHelper;
+import com.example.sbt.infrastructure.web.helper.LocaleHelper;
 import com.example.sbt.features.file.dto.FileObjectDTO;
 import com.example.sbt.features.file.dto.FileObjectPendingDTO;
 import com.example.sbt.features.file.dto.ObjectKey;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 @Transactional(rollbackOn = Exception.class, dontRollbackOn = NoRollbackException.class)
 public class FileObjectServiceImpl implements FileObjectService {
     private final SQLHelper sqlHelper;
+    private final LocaleHelper localeHelper;
     private final CommonMapper commonMapper;
     private final EntityManager entityManager;
     private final UploadFileService uploadFileService;
@@ -52,15 +54,15 @@ public class FileObjectServiceImpl implements FileObjectService {
     @Override
     public FileObjectDTO uploadFile(MultipartFile file, String dirPath, RequestContext requestContext) {
         if (file == null || file.isEmpty()) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.empty"), HttpStatus.BAD_REQUEST);
         }
         boolean isFileValid = FileUtils.validateFileType(file);
         if (!isFileValid) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.invalid_type"), HttpStatus.BAD_REQUEST);
         }
         String filePath = uploadFileService.uploadFile(file, dirPath, file.getOriginalFilename());
         if (filePath == null) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(localeHelper.getMessage("file.error.upload_failed"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         FileObject result = new FileObject();
         result.setFilePath(filePath);
@@ -74,15 +76,15 @@ public class FileObjectServiceImpl implements FileObjectService {
     @Override
     public FileObjectDTO uploadFile(byte[] file, String dirPath, String filename, RequestContext requestContext) {
         if (file == null || file.length == 0) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.empty"), HttpStatus.BAD_REQUEST);
         }
         FileType fileType = FileUtils.validateFileType(file);
         if (fileType == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.invalid_type"), HttpStatus.BAD_REQUEST);
         }
         String filePath = uploadFileService.uploadFile(file, dirPath, filename);
         if (filePath == null) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(localeHelper.getMessage("file.error.upload_failed"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         FileObject result = new FileObject();
         result.setFilePath(filePath);
@@ -99,11 +101,11 @@ public class FileObjectServiceImpl implements FileObjectService {
         String extension = FileUtils.getFileExtension(filename);
         FileType fileType = FileType.fromExtension(extension);
         if (fileType == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.invalid_type"), HttpStatus.BAD_REQUEST);
         }
         ObjectKey objectKey = uploadFileService.createPresignedPutUrl(dirPath, filename, EXPIRES_SECONDS);
         if (objectKey == null) {
-            throw new CustomException(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException(localeHelper.getMessage("file.error.upload_failed"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         FileObjectPending result = new FileObjectPending();
         result.setFilePath(objectKey.getFilePath());
@@ -130,19 +132,19 @@ public class FileObjectServiceImpl implements FileObjectService {
     public FileObjectDTO savePendingUpload(UUID id, RequestContext requestContext) {
         FileObjectPendingDTO pendingDTO = fileObjectPendingRepository.findTopByIdAndCreatedBy(id, requestContext.getUserId()).map(commonMapper::toDTO).orElse(null);
         if (pendingDTO == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.pending_not_found"), HttpStatus.BAD_REQUEST);
         }
         FileType fileType = FileType.fromMimeType(pendingDTO.getFileType());
         if (fileType == null) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.invalid_type"), HttpStatus.BAD_REQUEST);
         }
         HeadObjectResponse metadata = uploadFileService.getFileMetadata(pendingDTO.getFilePath());
         if (metadata == null || metadata.contentLength() <= 0) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.invalid_metadata"), HttpStatus.BAD_REQUEST);
         }
         byte[] headerBytes = uploadFileService.getFileHeaderBytes(pendingDTO.getFilePath());
         if (headerBytes == null || headerBytes.length == 0) {
-            throw new CustomException(HttpStatus.BAD_REQUEST);
+            throw new CustomException(localeHelper.getMessage("file.error.invalid_metadata"), HttpStatus.BAD_REQUEST);
         }
         FileType validFileType = FileUtils.validateFileType(headerBytes, List.of(fileType));
         if (validFileType == null) {
